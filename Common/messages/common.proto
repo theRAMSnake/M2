@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package common; 
+
+message MateriaMessage
+{
+   string from = 1;
+   string to = 2;
+   string operationName = 3;
+   
+   bytes payload = 4;
+}

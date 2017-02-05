@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 2.6)
+project(m2common)
+
+LIST(APPEND CMAKE_MODULE_PATH "..")
+include_directories("../build/Common")
+
+find_package(Boost COMPONENTS system REQUIRED)
+find_package(Protobuf REQUIRED)
+
+add_subdirectory(messages)
+
+add_library(m2common STATIC 
+   ZmqPbChannel.hpp
+   ZmqPbChannel.cpp
+)
+
+target_link_libraries(m2common m2commonMessages)

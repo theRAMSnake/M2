@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
-project(m2)
 
-add_executable(m2 main.cpp)
+LIST(APPEND CMAKE_MODULE_PATH "FindZeroMQ.cmake")
 
-install(TARGETS m2 RUNTIME DESTINATION bin)
+add_subdirectory(Common)
+add_subdirectory(Central)
+add_subdirectory(Shell)
