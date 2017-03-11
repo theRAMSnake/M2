@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 2.6)
+project(Test)
+
+LIST(APPEND CMAKE_MODULE_PATH "..")
+
+include_directories("../build/Common")
+include_directories("..")
+
+add_executable(Test 
+AdminServiceHighLevelTest.cpp
+InboxServiceHighLevelTest.cpp
+)
+
+find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+find_package(ZeroMQ REQUIRED)
+
+target_link_libraries(Test m2common ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread)

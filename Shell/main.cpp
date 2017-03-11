@@ -2,12 +2,25 @@
 #include <iostream>
 #include <string>
 #include <messages/common.pb.h>
+#include <messages/admin.pb.h>
+#include <messages/actions.pb.h>
+#include <messages/inbox.pb.h>
 #include <Common/ZmqPbChannel.hpp>
+#include "TShellMateriaServiceProvider.hpp"
+#include "MessageFactory.hpp"
+#include <boost/asio.hpp>
 
-#include "AdminServiceProvider.hpp"
+namespace ip = boost::asio::ip;
+
+void errorCallback(const std::string& str)
+{
+   std::cout << "Error: " << str.c_str() << std::endl;
+}
 
 int main(int argc, char *argv[])
 {
+   using namespace std::placeholders;
+   materia::MessageFactory::init();
    std::string address = "localhost";
    if(argc == 2)
    {
@@ -25,10 +38,16 @@ int main(int argc, char *argv[])
       std::cout << "Cannot connect!";
    }
    
-   materia::ZmqPbChannel channel(socket);
+   boost::asio::io_service io_service;
+   ip::tcp::resolver resolver(io_service);
+ 
+   materia::ZmqPbChannel channel(socket, ip::host_name());
+   channel.setErrorCallback(std::bind(&errorCallback, _1));
    
    std::map<std::string, std::shared_ptr<materia::IMateriaServiceProvider>> providers;
-   providers.insert(std::make_pair("admin", new materia::AdminServiceProvider(channel)));
+   providers.insert(std::make_pair("admin", new materia::TShellMateriaServiceProvider<admin::AdminService>(channel)));
+   providers.insert(std::make_pair("inbox", new materia::TShellMateriaServiceProvider<inbox::InboxService>(channel)));
+   providers.insert(std::make_pair("actions", new materia::TShellMateriaServiceProvider<actions::ActionsService>(channel)));
 
    while(true)
    {
@@ -36,7 +55,7 @@ int main(int argc, char *argv[])
       std::cin >> userText;
       
       std::size_t pointPos = userText.find('.');
-      if(pointPos == -1)
+      if(pointPos == std::string::npos)
       {
          std::cout << "Invalid input: expected \'componentName.operationName\'" << std::endl;
          continue;

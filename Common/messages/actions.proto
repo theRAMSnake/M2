@@ -1,0 +1,44 @@
+syntax = "proto3";
+option cc_generic_services = true;
+
+import "common.proto";
+
+package actions; 
+
+message TaskInfo
+{
+   common.UniqueId taskId = 1;
+   string name = 2;
+   common.UniqueId groupId = 3;
+}
+
+message TaskList
+{
+   repeated TaskInfo list = 1;
+}
+
+message GroupInfo
+{
+   common.UniqueId id = 1;
+   string name = 2;
+}
+
+message GroupList
+{
+   repeated GroupInfo list = 1;
+}
+
+service ActionsService 
+{
+  rpc GetGroups (common.EmptyMessage) returns (GroupList);
+  rpc GetTasksOfGroup (common.UniqueId) returns (TaskList);
+  
+  rpc AddGroup (GroupInfo) returns (common.UniqueId);
+  rpc AddTask (TaskInfo) returns (common.UniqueId);
+  
+  rpc DeleteTask (common.UniqueId) returns (common.OperationResultMessage);
+  rpc DeleteGroup (common.UniqueId) returns (common.OperationResultMessage);
+  
+  rpc EditTask (GroupInfo) returns (common.OperationResultMessage);
+  rpc EditGroup (TaskInfo) returns (common.OperationResultMessage);
+}

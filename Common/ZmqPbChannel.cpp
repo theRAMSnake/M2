@@ -6,15 +6,23 @@
 namespace materia
 {
    
-ZmqPbChannel::ZmqPbChannel(zmq::socket_t& zmqSocket)
+ZmqPbChannel::ZmqPbChannel(zmq::socket_t& zmqSocket, const std::string& owner)
 : mZmqSocket(zmqSocket)
+, mOwner(owner)
 {
 }
    
 void ZmqPbChannel::CallMethod(const MethodDescriptor * method, RpcController * controller, const Message * request, Message * response, Closure * done)
 {
-   zmq::message_t req (request->ByteSizeLong());
-   request->SerializeToArray(req.data (), req.size());
+   common::MateriaMessage envelope;
+   envelope.set_from(mOwner);
+   envelope.set_to(method->service()->name());
+   envelope.set_operationname(method->name());
+   
+   envelope.set_payload(request->SerializeAsString());
+   
+   zmq::message_t req (envelope.ByteSizeLong());
+   envelope.SerializeToArray(req.data (), req.size());
    
    mZmqSocket.send (req);
    
@@ -26,12 +34,20 @@ void ZmqPbChannel::CallMethod(const MethodDescriptor * method, RpcController * c
    
    if(expectedMessage.payload().empty())
    {
-      //LOG_WARNING_HERE
+      if(mErrorCallback != nullptr)
+      {
+         mErrorCallback(expectedMessage.error());
+      }
    }
    else
    {
       response->ParseFromString(expectedMessage.payload());
    }
+}
+
+void ZmqPbChannel::setErrorCallback(TErrorCallback errorCallback)
+{
+   mErrorCallback = errorCallback;
 }
 
 }

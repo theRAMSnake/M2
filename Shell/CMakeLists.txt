@@ -4,7 +4,11 @@ project(m2shell)
 include_directories("../build/Common")
 include_directories("..")
 
-add_executable(m2shell main.cpp AdminServiceProvicer.cpp)
+add_executable(m2shell 
+main.cpp 
+TShellMateriaServiceProvider.hpp
+MessageFactory.cpp
+)
 
 LIST(APPEND CMAKE_MODULE_PATH "..")
 

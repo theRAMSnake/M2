@@ -7,6 +7,22 @@ message MateriaMessage
    string from = 1;
    string to = 2;
    string operationName = 3;
+   string error = 4;
    
-   bytes payload = 4;
+   bytes payload = 5;
+}
+
+message EmptyMessage
+{
+
+}
+
+message UniqueId
+{
+   uint64 id = 1;
+}
+
+message OperationResultMessage
+{
+   bool success = 1;
 }
