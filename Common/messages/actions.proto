@@ -5,40 +5,31 @@ import "common.proto";
 
 package actions; 
 
-message TaskInfo
+enum ActionType
 {
-   common.UniqueId taskId = 1;
-   string name = 2;
-   common.UniqueId groupId = 3;
+   Task = 0;
+   Group = 1;
 }
 
-message TaskList
-{
-   repeated TaskInfo list = 1;
-}
-
-message GroupInfo
+message ActionInfo
 {
    common.UniqueId id = 1;
-   string name = 2;
+   common.UniqueId parentId = 2;
+   string title = 3;
+   ActionType type = 4;
 }
 
-message GroupList
+message ActionsList
 {
-   repeated GroupInfo list = 1;
+   repeated ActionInfo list = 1;
 }
 
 service ActionsService 
 {
-  rpc GetGroups (common.EmptyMessage) returns (GroupList);
-  rpc GetTasksOfGroup (common.UniqueId) returns (TaskList);
+  rpc GetChildren (common.UniqueId) returns (ActionsList);
+  rpc GetParentlessElements (common.EmptyMessage) returns (ActionsList);  
   
-  rpc AddGroup (GroupInfo) returns (common.UniqueId);
-  rpc AddTask (TaskInfo) returns (common.UniqueId);
-  
-  rpc DeleteTask (common.UniqueId) returns (common.OperationResultMessage);
-  rpc DeleteGroup (common.UniqueId) returns (common.OperationResultMessage);
-  
-  rpc EditTask (GroupInfo) returns (common.OperationResultMessage);
-  rpc EditGroup (TaskInfo) returns (common.OperationResultMessage);
+  rpc AddElement (ActionInfo) returns (common.UniqueId);
+  rpc DeleteElement (common.UniqueId) returns (common.OperationResultMessage);
+  rpc EditElement (ActionInfo) returns (common.OperationResultMessage);
 }

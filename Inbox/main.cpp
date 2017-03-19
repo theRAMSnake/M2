@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
    materia::InboxServiceImpl serviceImpl;
    materia::InterprocessService<materia::InboxServiceImpl> service(serviceImpl);
    
-   service.provideAt("InboxService");
+   service.provideAt("*:5911", "InboxService");
    
    return 0;
 }

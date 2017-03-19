@@ -4,157 +4,145 @@
 #include <zmq.hpp>
 #include <cstdlib>
 
-#include "ComponentGateway.hpp"
 #include "AdminServiceImpl.hpp"
 
-class LocalProcessConnection : public materia::IComponentConnection
+class ConnectionManager : public materia::IComponentInfoProvider
 {
 public:
-   typedef std::function<common::MateriaMessage(const common::MateriaMessage&)> TRedirectMessage;
-   LocalProcessConnection(const std::string& name, TRedirectMessage redirectTo)
-   : mRedirectTo(redirectTo)
-   , mName(name)
-   {
-   }
-   
-   virtual common::MateriaMessage sendMessage(const common::MateriaMessage& msg) override
-   {
-      return mRedirectTo(msg);
-   }
-   
-   virtual std::string getName() const override
-   {
-      return mName;
-   }
-   
-   virtual bool isConnected() const override
-   {
-      return true;
-   }
-   
-private:
-   TRedirectMessage mRedirectTo;
-   std::string mName;
-};
-
-class TimeoutException : public std::exception{};
-
-class RemoteProcessConnection : public materia::IComponentConnection
-{
-public:
-   RemoteProcessConnection(const std::string& name)
-   : mContext(1)
-   , mSocket(mContext, ZMQ_REQ)
-   , mName(name)
-   {    
-      mSocket.connect((std::string("ipc://") + name).c_str());
-   }
-   
-   virtual common::MateriaMessage sendMessage(const common::MateriaMessage& msg) override
-   {     
-      zmq::message_t req (msg.ByteSizeLong());
-      msg.SerializeToArray(req.data (), req.size());
-      mSocket.send(req);
-   
-      zmq::message_t resp;
-      mSocket.recv(&resp);
-      
-      common::MateriaMessage result;
-      result.ParseFromArray(resp.data(), resp.size());
-      
-      return result;
-   }
-   
-   virtual std::string getName() const override
-   {
-      return mName;
-   }
-   
-   virtual bool isConnected() const override
-   {
-      return mSocket.connected();
-   }
-   
-private:
-   zmq::context_t mContext;
-   zmq::socket_t mSocket;
-   std::string mName;
-};
-
-void *worker_routine (void *arg)
-{
-   using namespace std::placeholders;
-   
-    zmq::context_t *context = (zmq::context_t *) arg;
-
-    zmq::socket_t socket (*context, ZMQ_REP);
-    socket.connect ("inproc://workers");
-    
-    materia::ComponentGateway componentGateway;
-    
-    componentGateway.addConnection("InboxService", new RemoteProcessConnection("InboxService"));
-    
-    materia::AdminServiceImpl adminServiceImpl(componentGateway);
-    materia::ServiceWrapper<materia::AdminServiceImpl> adminServiceProvider(adminServiceImpl);
-    componentGateway.addConnection("AdminService", new LocalProcessConnection(
-       "AdminService",
-       std::bind(&materia::ServiceWrapper<materia::AdminServiceImpl>::sendMessage, &adminServiceProvider, _1)));
-
-    while (true) 
+    ConnectionManager(zmq::context_t& context, zmq::socket_t& clientSocket)
+    : mClientSocket(clientSocket)
+    , mAdminServiceImpl(*this)
+    , mAdminServiceProvider(mAdminServiceImpl)
     {
-        //  Wait for next request from client
-        zmq::message_t request;
-        socket.recv (&request);
-        
-        common::MateriaMessage requestMsg;
-        requestMsg.ParseFromArray(request.data(), request.size());
-        
-        std::cout << "Received: " << requestMsg.ShortDebugString() << std::endl;
-        
-        common::MateriaMessage replyMsg;
-        try
-        {
-           replyMsg = componentGateway.routeMessage(requestMsg);
-        }
-        catch(materia::CannotRouteException& ex)
-        {
-           replyMsg.set_from("central");
-           replyMsg.set_error("Unable to route message: " + requestMsg.ShortDebugString());
-        }
-        catch(TimeoutException& ex)
-        {
-           replyMsg.set_from("central");
-           replyMsg.set_error("No responce from service");
-        }
-        
-        zmq::message_t responce (replyMsg.ByteSizeLong());
-        replyMsg.SerializeToArray(responce.data (), responce.size());
-        
-        std::cout << "Sent: " << replyMsg.ShortDebugString() << std::endl;
-      
-        socket.send (responce);
+        std::shared_ptr<zmq::socket_t> inboxSocket (new zmq::socket_t(context, ZMQ_DEALER));
+        inboxSocket->connect("tcp://localhost:5911");
+        mSockets.insert(std::make_pair("InboxService", inboxSocket));
     }
-    return (NULL);
-}
+
+    void routeMessage(const zmq::message_t& msg)
+    {
+        common::MateriaMessage materiaMsg;
+        materiaMsg.ParseFromArray(msg.data(), msg.size());
+
+        doRouting(materiaMsg);
+    }
+
+    void routeClientMessage(const zmq::message_t& id, const zmq::message_t& msg)
+    {
+        common::MateriaMessage materiaMsg;
+        materiaMsg.ParseFromArray(msg.data(), msg.size());
+
+        std::string id_str;
+        id_str.resize(id.size());
+        memcpy(&id_str[0], id.data(), id.size());
+
+        materiaMsg.set_from(id_str);
+
+        doRouting(materiaMsg);
+    }
+
+    virtual std::vector<materia::IComponentInfoProvider::Info> getComponentInfos() const override
+    {
+        std::vector<materia::IComponentInfoProvider::Info> result;
+
+        return result;  
+    }
+
+    void fillPollSet(std::vector<zmq::pollitem_t>& pollItems)
+    {
+        for(auto x : mSockets)
+        {
+            pollItems.push_back({*x.second, 0, ZMQ_POLLIN, 0});
+        }
+    }
+
+private:
+    void doRouting(const common::MateriaMessage& materiaMsg)
+    {
+        std::cout << "Routing: " << materiaMsg.ShortDebugString() << std::endl;
+
+        if(materiaMsg.to() == "AdminService")
+        {
+            doRouting(mAdminServiceProvider.sendMessage(materiaMsg));
+        }
+        else 
+        {
+            auto pos = mSockets.find(materiaMsg.to());
+            if(pos != mSockets.end())
+            {
+                pos->second->send(zmq::message_t());
+
+                zmq::message_t msgToSend (materiaMsg.ByteSizeLong());
+                materiaMsg.SerializeToArray(msgToSend.data (), msgToSend.size());
+
+                pos->second->send(msgToSend);
+            }
+            else //must be a client
+            {
+                zmq::message_t requestEndpoint(materiaMsg.to().size());
+                memcpy(requestEndpoint.data(), &materiaMsg.to().front(), materiaMsg.to().size());
+                mClientSocket.send (requestEndpoint);
+
+                zmq::message_t delimeterMessage;
+                mClientSocket.send (delimeterMessage);
+
+                zmq::message_t msgToSend (materiaMsg.ByteSizeLong());
+                materiaMsg.SerializeToArray(msgToSend.data (), msgToSend.size());
+                mClientSocket.send (msgToSend);
+            }
+        }
+    }
+
+    zmq::socket_t& mClientSocket;
+    materia::AdminServiceImpl mAdminServiceImpl;
+    materia::ServiceWrapper<materia::AdminServiceImpl> mAdminServiceProvider;
+    std::map<std::string, std::shared_ptr<zmq::socket_t>> mSockets;
+};
 
 int main()
 {
-    zmq::context_t context (1);
-    zmq::socket_t clients (context, ZMQ_ROUTER);
-    clients.bind ("tcp://*:5000");
-    zmq::socket_t workers (context, ZMQ_DEALER);
-    workers.bind ("inproc://workers");
-
-    //  Launch pool of worker threads
-    for (int thread_nbr = 0; thread_nbr != 4; thread_nbr++) 
-    {
-        pthread_t worker;
-        pthread_create (&worker, NULL, worker_routine, (void *) &context);
-    }
-    
     std::system(("./m2InboxService"));
+
+    zmq::context_t context (1);
+    zmq::socket_t clientSocket (context, ZMQ_ROUTER);
+    clientSocket.bind ("tcp://*:5910");
+
+    std::vector<zmq::pollitem_t> pollItems;
+    pollItems.push_back({clientSocket, 0, ZMQ_POLLIN, 0});
+
+    ConnectionManager connManager(context, clientSocket);
+    connManager.fillPollSet(pollItems);
     
-    //  Connect work threads to client threads via a queue
-    zmq::proxy (clients, workers, NULL);
+    while(true)
+    {
+        zmq::poll(pollItems);
+
+        if (pollItems [0].revents & ZMQ_POLLIN)
+        {
+            //message came to the router part - so we have it split by 3 parts
+            zmq::message_t requestEndpoint;
+            clientSocket.recv (&requestEndpoint);
+            zmq::message_t delimeterMessage;
+            clientSocket.recv (&delimeterMessage);
+            zmq::message_t clientMessage;
+            clientSocket.recv (&clientMessage);
+
+            connManager.routeClientMessage(requestEndpoint, clientMessage);
+        }
+
+        for(std::size_t i = 1; i < pollItems.size(); ++i)
+        {
+            //this messages came from DEALER sockets, so have delimiters
+            if (pollItems [i].revents & ZMQ_POLLIN)
+            {
+                zmq::message_t delimeterMessage;
+                reinterpret_cast<zmq::socket_t*>(pollItems[i].socket)->recv (&delimeterMessage);
+                zmq::message_t cmpMessage;
+                clientSocket.recv (&cmpMessage);
+
+                connManager.routeMessage(cmpMessage);
+            }
+        }
+    }
     return 0;
 }

@@ -8,7 +8,6 @@ include_directories("..")
 
 add_executable(m2central 
 main.cpp
-ComponentGateway.cpp
 AdminServiceImpl.cpp
 )
 

@@ -9,7 +9,8 @@ namespace materia
 class IMateriaServiceProvider
 {
 public:
-   virtual std::string execute(const std::string& input) = 0;
+   virtual std::string execute(const int methodIndex) = 0;
+   virtual std::vector<std::string> getMethodNames() const = 0;
 };
    
 template<class TService>
@@ -21,9 +22,9 @@ public:
    {
    }
    
-   virtual std::string execute(const std::string& input)
+   virtual std::string execute(const int methodIndex)
    {
-      auto method = mService.descriptor()->FindMethodByName(input);
+      auto method = mService.descriptor()->method(methodIndex);
       if(!method)
       {
          return "Unsupported operation";
@@ -38,6 +39,19 @@ public:
       std::unique_ptr<google::protobuf::Message> resp(mService.GetResponsePrototype(method).New());
       mService.CallMethod(method, nullptr, req.get(), resp.get(), nullptr);
       return resp->DebugString();
+   }
+
+   virtual std::vector<std::string> getMethodNames() const
+   {
+      std::vector<std::string> result;
+
+      auto desc = mService.descriptor();
+      for(int i = 0; i < desc->method_count(); ++i)
+      {
+         result.push_back(desc->method(i)->name());
+      }
+
+      return result;
    }
    
 private:

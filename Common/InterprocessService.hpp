@@ -15,10 +15,10 @@ public:
    {
    }
    
-   void provideAt(const std::string& path)
+   void provideAt(const std::string& path, const std::string& name)
    {
-      mSocket.bind("ipc://" + path);
-      std::ofstream log((path + ".log").c_str());
+      mSocket.bind("tcp://" + path);
+      std::ofstream log((name + ".log").c_str());
       
       while(true)
       {

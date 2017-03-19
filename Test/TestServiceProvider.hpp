@@ -12,7 +12,7 @@ public:
    , mChannel(mSocket, "test")
    , mService(&mChannel)
    {
-      mSocket.connect("tcp://localhost:5000");
+      mSocket.connect("tcp://localhost:5910");
    }
    
    typename TService::Stub& getService()

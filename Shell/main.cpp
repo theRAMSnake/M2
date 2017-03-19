@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
    zmq::context_t context(NUM_THREADS);
    zmq::socket_t socket (context, ZMQ_REQ);
    
-   socket.connect((std::string("tcp://") + address + ":5000").c_str());
+   socket.connect((std::string("tcp://") + address + ":5910").c_str());
    
    if(!socket.connected())
    {
@@ -51,25 +51,44 @@ int main(int argc, char *argv[])
 
    while(true)
    {
-      std::string userText;
-      std::cin >> userText;
-      
-      std::size_t pointPos = userText.find('.');
-      if(pointPos == std::string::npos)
+      std::cout << "Service: " << std::endl;
+
+      int num = 0;
+      for(auto x : providers)
       {
-         std::cout << "Invalid input: expected \'componentName.operationName\'" << std::endl;
+         std::cout << "\t " << ++num << " - " << x.first << std::endl;
+      }
+
+      std::size_t userChoise;
+      std::cin >> userChoise;
+
+      if(userChoise < 1 || userChoise > providers.size())
+      {
+         std::cout << "Invalid choise" << std::endl;
+         continue;
+      }     
+      
+      auto iter = providers.begin();
+      std::advance(iter, userChoise - 1);
+      std::vector<std::string> methodNames = iter->second->getMethodNames();
+
+      std::cout << "Method: " << std::endl;
+
+      num = 0;
+      for(auto x : methodNames)
+      {
+         std::cout << "\t " << ++num << " - " << x << std::endl;
+      }
+
+      std::cin >> userChoise;
+
+      if(userChoise < 1 || userChoise > methodNames.size())
+      {
+         std::cout << "Invalid choise" << std::endl;
          continue;
       }
       
-      std::string cmpName = userText.substr(0, pointPos);
-      auto iter = providers.find(cmpName);
-      if(iter == providers.end())
-      {
-         std::cout << "Invalid input: component not found" << std::endl;
-         continue;
-      }
-      
-      std::cout << iter->second->execute(userText.substr(pointPos + 1, -1)) << std::endl;
+      std::cout << iter->second->execute(userChoise - 1) << std::endl;
    }
    
    return 0;

@@ -15,3 +15,9 @@ find_package(Boost COMPONENTS unit_test_framework REQUIRED)
 find_package(ZeroMQ REQUIRED)
 
 target_link_libraries(Test m2common ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread)
+
+add_custom_command(
+        TARGET Test POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+                ${CMAKE_CURRENT_BINARY_DIR}/Test
+                ../../bin/test)
