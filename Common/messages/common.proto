@@ -19,7 +19,7 @@ message EmptyMessage
 
 message UniqueId
 {
-   uint64 id = 1;
+   string guid = 1;
 }
 
 message OperationResultMessage

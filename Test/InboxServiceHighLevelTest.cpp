@@ -10,21 +10,10 @@ bool isItemsConsistent(inbox::InboxService& service)
    
    service.GetInbox(nullptr, &emptyMsg, &responce, nullptr);
    
-   return 5 == responce.items_size() &&
-      "item0" == responce.items(0).text() &&
-      "item1" == responce.items(1).text() &&
-      "item2" == responce.items(2).text() &&
-      "item3" == responce.items(3).text() &&
-      "item4" == responce.items(4).text();
+   return 0 == responce.items_size();
 }
 
-BOOST_AUTO_TEST_CASE( Inbox_GetInbox ) 
-{
-   TestServiceProvider<inbox::InboxService> serviceProvider;
-   auto& service = serviceProvider.getService();
-   
-   BOOST_CHECK(isItemsConsistent(service));
-}
+const int GUID_STRING_SIZE = 32 + 4; //4 of '-'
 
 BOOST_AUTO_TEST_CASE( Inbox_AddDeleteInbox ) 
 {
@@ -37,8 +26,7 @@ BOOST_AUTO_TEST_CASE( Inbox_AddDeleteInbox )
    common::UniqueId responce;
    
    service.AddItem(nullptr, &request, &responce, nullptr);
-   
-   BOOST_CHECK(responce.id() != 0);
+   BOOST_CHECK(responce.guid().size() == GUID_STRING_SIZE);
    
    {
       common::EmptyMessage emptyMsg;
@@ -46,7 +34,7 @@ BOOST_AUTO_TEST_CASE( Inbox_AddDeleteInbox )
       
       service.GetInbox(nullptr, &emptyMsg, &responce, nullptr);
       
-      BOOST_CHECK_EQUAL(6, responce.items_size());
+      BOOST_CHECK_EQUAL(1, responce.items_size());
       
       auto pos = std::find_if(responce.items().begin(), responce.items().end(), 
          [](auto x){return x.text() == "text";});
@@ -54,7 +42,7 @@ BOOST_AUTO_TEST_CASE( Inbox_AddDeleteInbox )
       
       {
          common::UniqueId request;
-         request.set_id(pos->id().id());
+         request.set_guid(pos->id().guid());
          
          common::OperationResultMessage opResult;
          service.DeleteItem(nullptr, &request, &opResult, nullptr);
@@ -71,7 +59,7 @@ BOOST_AUTO_TEST_CASE( Inbox_DeleteWrongInbox )
    auto& service = serviceProvider.getService();
    
    common::UniqueId request;
-   request.set_id(50);
+   request.set_guid("50");
    
    common::OperationResultMessage opResult;
    service.DeleteItem(nullptr, &request, &opResult, nullptr);
@@ -87,7 +75,7 @@ BOOST_AUTO_TEST_CASE( Inbox_EditWrongInbox )
    
    inbox::InboxItemInfo request;
    request.set_text("text");
-   request.mutable_id()->set_id(50);
+   request.mutable_id()->set_guid("50");
    
    common::OperationResultMessage opResult;
    
@@ -109,9 +97,9 @@ BOOST_AUTO_TEST_CASE( Inbox_EditInbox )
    
    service.AddItem(nullptr, &request, &responce, nullptr);
    
-   BOOST_CHECK(responce.id() != 0);
+   BOOST_CHECK(responce.guid().size() == GUID_STRING_SIZE);
    
-   request.mutable_id()->set_id(responce.id());
+   request.mutable_id()->set_guid(responce.guid());
    request.set_text("other_text");
    
    common::OperationResultMessage opResult;
@@ -125,16 +113,16 @@ BOOST_AUTO_TEST_CASE( Inbox_EditInbox )
       
       service.GetInbox(nullptr, &emptyMsg, &responce, nullptr);
       
-      BOOST_CHECK_EQUAL(6, responce.items_size());
+      BOOST_CHECK_EQUAL(1, responce.items_size());
       
       auto pos = std::find_if(responce.items().begin(), responce.items().end(), 
          [](auto x){return x.text() == "other_text";});
       BOOST_REQUIRE(pos != responce.items().end());
-      BOOST_CHECK(pos->id().id() == request.id().id());
+      BOOST_CHECK(pos->id().guid() == request.id().guid());
       
       {
          common::UniqueId request;
-         request.set_id(pos->id().id());
+         request.set_guid(pos->id().guid());
          
          common::OperationResultMessage opResult;
          service.DeleteItem(nullptr, &request, &opResult, nullptr);
