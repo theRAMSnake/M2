@@ -9,9 +9,10 @@ include_directories("..")
 add_executable(Test 
 AdminServiceHighLevelTest.cpp
 InboxServiceHighLevelTest.cpp
+ActionServiceHighLevelTest.cpp
 )
 
-find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+find_package(Boost COMPONENTS unit_test_framework filesystem REQUIRED)
 find_package(ZeroMQ REQUIRED)
 
 target_link_libraries(Test m2common ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread)

@@ -16,7 +16,8 @@ message ActionInfo
    common.UniqueId id = 1;
    common.UniqueId parentId = 2;
    string title = 3;
-   ActionType type = 4;
+   string description = 4;
+   ActionType type = 5;
 }
 
 message ActionsList

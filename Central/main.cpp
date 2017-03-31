@@ -18,6 +18,10 @@ public:
         std::shared_ptr<zmq::socket_t> inboxSocket (new zmq::socket_t(context, ZMQ_DEALER));
         inboxSocket->connect("tcp://localhost:5911");
         mSockets.insert(std::make_pair("InboxService", inboxSocket));
+
+        std::shared_ptr<zmq::socket_t> actionsSocket (new zmq::socket_t(context, ZMQ_DEALER));
+        actionsSocket->connect("tcp://localhost:5912");
+        mSockets.insert(std::make_pair("ActionsService", actionsSocket));
     }
 
     void routeMessage(const zmq::message_t& msg)
