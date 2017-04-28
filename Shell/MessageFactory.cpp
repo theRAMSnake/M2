@@ -1,6 +1,8 @@
 #include "MessageFactory.hpp"
 #include <map>
+#include <iostream>
 #include <messages/common.pb.h>
+#include <messages/inbox.pb.h>
 
 namespace materia
 {
@@ -13,10 +15,40 @@ google::protobuf::Message* EmptyMessageBuilder()
 {
    return new common::EmptyMessage();
 }
+
+google::protobuf::Message* UniqueIdBuilder()
+{
+   std::cout << "Id: " << std::endl;
+   std::string id;
+   std::cin >> id;
+   auto idMsg = new common::UniqueId();
+   idMsg->set_guid(id);
+
+   return idMsg;
+}
+
+google::protobuf::Message* InboxItemInfoBuilder()
+{
+   std::cout << "Id: " << std::endl;
+   std::string id;
+   std::cin >> id;
+
+   std::cout << "Text: " << std::endl;
+   std::string text;
+   std::cin >> text;
+
+   auto msg = new inbox::InboxItemInfo();
+   msg->mutable_id()->set_guid(id);
+   msg->set_text(text);
+
+   return msg;
+}
    
 void MessageFactory::init()
 {
    REGISTER_BUILDER(EmptyMessage);
+   REGISTER_BUILDER(InboxItemInfo);
+   REGISTER_BUILDER(UniqueId);
 }
 
 google::protobuf::Message* MessageFactory::queryMessageFromUser(const std::string& messageName)
