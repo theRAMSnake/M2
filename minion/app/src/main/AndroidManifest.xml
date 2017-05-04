@@ -21,7 +21,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".InboxActivity" />
-        <activity android:name=".SyncActivity"></activity>
+        <activity android:name=".SyncActivity" />
+        <activity android:name=".InboxItemViewActivity"></activity>
     </application>
 
 </manifest>

@@ -1,5 +1,6 @@
 package snakesoft.minion;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 /**
@@ -27,10 +28,18 @@ public class GlobalModel
         mInboxModel.sync();
     }
 
-    public static void init()
+    public static void init(Context context)
     {
         mConnection = new MateriaConnection();
         mInboxModel = new InboxModel(new InboxServiceProxy(mConnection));
+        mLocalDatabase = new LocalDatabase(context);
+
+        loadState();
+    }
+
+    private static void loadState()
+    {
+        mInboxModel.loadState(mLocalDatabase);
     }
 
     public static void sync(SyncListener listener)
@@ -44,5 +53,6 @@ public class GlobalModel
     }
 
     static private MateriaConnection mConnection;
+    static private LocalDatabase mLocalDatabase;
     static private InboxModel mInboxModel;
 }

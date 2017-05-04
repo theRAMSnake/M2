@@ -31,10 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mSettingsBtn = (Button) findViewById(R.id.btnSettings);
         mSettingsBtn.setOnClickListener(MainActivity.this);
 
-        GlobalModel.init();
-
-        Intent myIntent = new Intent(MainActivity.this, SyncActivity.class);
-        MainActivity.this.startActivity(myIntent);
+        GlobalModel.init(getApplicationContext());
     }
 
     @Override
@@ -43,6 +40,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(v == mInboxBtn)
         {
             Intent myIntent = new Intent(MainActivity.this, InboxActivity.class);
+            MainActivity.this.startActivity(myIntent);
+        }
+        if(v == mSyncBtn)
+        {
+            Intent myIntent = new Intent(MainActivity.this, SyncActivity.class);
             MainActivity.this.startActivity(myIntent);
         }
     }

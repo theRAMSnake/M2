@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="snakesoft.minion.InboxItemViewActivity">
+
+    <GridLayout
+        android:layout_width="368dp"
+        android:layout_height="551dp"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="6dp">
+
+        <EditText
+            android:id="@+id/txtText"
+            android:layout_width="match_parent"
+            android:layout_column="0"
+            android:layout_columnSpan="2"
+            android:layout_columnWeight="0"
+            android:layout_row="0"
+            android:layout_rowSpan="1"
+            android:layout_rowWeight="0"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="ffff"
+            tools:layout_editor_absoluteX="233dp"
+            tools:layout_editor_absoluteY="-198dp" />
+
+        <Button
+            android:id="@+id/btnAccept"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:layout_row="1"
+            android:text="Accept"
+            tools:layout_editor_absoluteX="1145dp"
+            tools:layout_editor_absoluteY="350dp" />
+
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="0"
+            android:layout_row="1"
+            android:text="Delete"
+            tools:layout_editor_absoluteX="-249dp"
+            tools:layout_editor_absoluteY="369dp" />
+    </GridLayout>
+
+</android.support.constraint.ConstraintLayout>
