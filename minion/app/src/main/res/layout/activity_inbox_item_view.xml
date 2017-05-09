@@ -23,7 +23,6 @@
             android:layout_rowWeight="0"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="ffff"
             tools:layout_editor_absoluteX="233dp"
             tools:layout_editor_absoluteY="-198dp" />
 

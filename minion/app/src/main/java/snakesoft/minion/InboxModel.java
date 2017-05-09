@@ -4,13 +4,11 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.util.List;
 import java.util.Vector;
 
 import inbox.Inbox;
 import inbox.Inbox.InboxItems;
-
-import static snakesoft.minion.StatusOfChange.Type.Edit;
 
 class StatusOfChange implements java.io.Serializable
 {
@@ -19,7 +17,8 @@ class StatusOfChange implements java.io.Serializable
         None,
         Add,
         Delete,
-        Edit
+        Edit,
+        Junk
     }
 
     public Type type;
@@ -44,9 +43,17 @@ public class InboxModel
         {
             for(int i = 0; i < mItemsChanges.size(); ++i)
             {
-                if(mItemsChanges.get(i).type == Edit)
+                if(mItemsChanges.get(i).type == StatusOfChange.Type.Edit)
                 {
                     mProxy.editItem(mItems.getItems(i));
+                }
+                else if(mItemsChanges.get(i).type == StatusOfChange.Type.Delete)
+                {
+                    mProxy.deleteItem(mItems.getItems(i).getId());
+                }
+                else if(mItemsChanges.get(i).type == StatusOfChange.Type.Add)
+                {
+                    mProxy.addItem(mItems.getItems(i));
                 }
             }
 
@@ -66,9 +73,20 @@ public class InboxModel
         saveState();
     }
 
-    public InboxItems getItems()
+    public List<Inbox.InboxItemInfo> getItems()
     {
-        return mItems;
+        List<Inbox.InboxItemInfo> result = new Vector<>();
+
+        for(int i = 0; i < mItems.getItemsCount(); ++i)
+        {
+            if(mItemsChanges.get(i).type != StatusOfChange.Type.Delete &&
+                    mItemsChanges.get(i).type != StatusOfChange.Type.Junk)
+            {
+                result.add(mItems.getItems(i));
+            }
+        }
+
+        return result;
     }
 
     public void modifyItem(Inbox.InboxItemInfo item)
@@ -78,12 +96,48 @@ public class InboxModel
             if(mItems.getItems(i).getId().getGuid().equals(item.getId().getGuid()))
             {
                 mItems = InboxItems.newBuilder(mItems).setItems(i, item).build();
-                StatusOfChange ch = new StatusOfChange();
-                ch.type = Edit;
-                mItemsChanges.set(i, ch);
+
+                if(mItemsChanges.get(i).type != StatusOfChange.Type.Add)
+                {
+                    StatusOfChange ch = new StatusOfChange();
+                    ch.type = StatusOfChange.Type.Edit;
+                    mItemsChanges.set(i, ch);
+                }
+
                 break;
             }
         }
+
+        saveState();
+    }
+
+    public void deleteItem(String guid)
+    {
+        for(int i = 0; i < mItems.getItemsCount(); ++i)
+        {
+            if (mItems.getItems(i).getId().getGuid().equals(guid))
+            {
+                StatusOfChange newStatus = new StatusOfChange();
+
+                newStatus.type = mItemsChanges.get(i).type == StatusOfChange.Type.Add
+                        ? StatusOfChange.Type.Junk
+                        : StatusOfChange.Type.Delete;
+
+                mItemsChanges.set(i, newStatus);
+                break;
+            }
+        }
+
+        saveState();
+    }
+
+    public void addItem(Inbox.InboxItemInfo item)
+    {
+        mItems = InboxItems.newBuilder(mItems).addItems(item).build();
+
+        StatusOfChange ch = new StatusOfChange();
+        ch.type = StatusOfChange.Type.Add;
+        mItemsChanges.add(ch);
 
         saveState();
     }
@@ -138,6 +192,12 @@ public class InboxModel
         mLocalDb.put("InboxItemsStatus", bos.toByteArray());
     }
 
+    public String getNewId()
+    {
+        return NEW_ID;
+    }
+
+    private final String NEW_ID = "NEW_ID";
     private InboxServiceProxy mProxy;
     private InboxItems mItems;
     private LocalDatabase mLocalDb;

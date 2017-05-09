@@ -28,7 +28,8 @@ public class InboxActivity extends AppCompatActivity implements AdapterView.OnIt
         Vector<String> itemsAsString = new Vector<>();
         if(GlobalModel.getInboxModel().getItems() != null)
         {
-            for(Inbox.InboxItemInfo x : GlobalModel.getInboxModel().getItems().getItemsList())
+            itemsAsString.add("New...");
+            for(Inbox.InboxItemInfo x : GlobalModel.getInboxModel().getItems())
             {
                 itemsAsString.add(x.getText());
             }
@@ -58,10 +59,20 @@ public class InboxActivity extends AppCompatActivity implements AdapterView.OnIt
 
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
-        Intent myIntent = new Intent(InboxActivity.this, InboxItemViewActivity.class);
-        myIntent.putExtra("Text", GlobalModel.getInboxModel().getItems().getItemsList().get(position).getText());
-        myIntent.putExtra("Id", GlobalModel.getInboxModel().getItems().getItemsList().get(position).getId().getGuid());
-        myIntent.putExtra("IsNewItem", false);
-        InboxActivity.this.startActivityForResult(myIntent, 1);
+        if(position != 0)
+        {
+            Intent myIntent = new Intent(InboxActivity.this, InboxItemViewActivity.class);
+            myIntent.putExtra("Text", GlobalModel.getInboxModel().getItems().get(position - 1).getText());
+            myIntent.putExtra("Id", GlobalModel.getInboxModel().getItems().get(position - 1).getId().getGuid());
+            myIntent.putExtra("IsNewItem", false);
+            InboxActivity.this.startActivityForResult(myIntent, 1);
+        }
+        else
+        {
+            Intent myIntent = new Intent(InboxActivity.this, InboxItemViewActivity.class);
+            myIntent.putExtra("IsNewItem", true);
+            myIntent.putExtra("Id", GlobalModel.getInboxModel().getNewId());
+            InboxActivity.this.startActivityForResult(myIntent, 1);
+        }
     }
 }
