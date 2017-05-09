@@ -3,6 +3,8 @@ package snakesoft.minion;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import java.io.UnsupportedEncodingException;
+
 /**
  * Created by snake on 4/28/17.
  */
@@ -30,9 +32,28 @@ public class GlobalModel
 
     public static void init(Context context)
     {
-        mConnection = new MateriaConnection();
-        mInboxModel = new InboxModel(new InboxServiceProxy(mConnection));
         mLocalDatabase = new LocalDatabase(context);
+
+        byte[] ipbytes = mLocalDatabase.get("Settings.IP");
+        if(ipbytes != null)
+        {
+            String ip = null;
+            try
+            {
+                ip = new String(ipbytes, "UTF-8");
+            }
+            catch (UnsupportedEncodingException e)
+            {
+
+            }
+            mConnection = new MateriaConnection(ip);
+        }
+        else
+        {
+            mConnection = new MateriaConnection("localhost");
+        }
+
+        mInboxModel = new InboxModel(new InboxServiceProxy(mConnection));
 
         loadState();
     }
@@ -50,6 +71,20 @@ public class GlobalModel
     public static InboxModel getInboxModel()
     {
         return mInboxModel;
+    }
+
+    public static String getIp()
+    {
+        return mConnection.getIp();
+    }
+
+    public static void setNewIp(String ip)
+    {
+        if(!mConnection.getIp().equals(ip))
+        {
+            mLocalDatabase.put("Settings.IP", ip.getBytes());
+            mConnection.setNewIp(ip);
+        }
     }
 
     static private MateriaConnection mConnection;

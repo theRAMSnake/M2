@@ -17,11 +17,29 @@ import common.Common;
 
 public class MateriaConnection
 {
+    private String mIp;
+
+    public MateriaConnection(String ip)
+    {
+        mIp = ip;
+    }
+
+    public String getIp()
+    {
+        return mIp;
+    }
+
+    public void setNewIp(String ip)
+    {
+        mIp = ip;
+        mConnected = false;
+    }
+
     void connect()
     {
         mContext = ZMQ.context(1);
         mSocket = mContext.socket(ZMQ.REQ);
-        mSocket.connect("tcp://192.168.10.8:5910");
+        mSocket.connect("tcp://" + mIp + ":5910");
         mConnected = true;
     }
 
