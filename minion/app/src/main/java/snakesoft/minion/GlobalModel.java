@@ -28,6 +28,7 @@ public class GlobalModel
     protected static void doSync()
     {
         mInboxModel.sync();
+        mActionsModel.sync();
     }
 
     public static void init(Context context)
@@ -54,6 +55,7 @@ public class GlobalModel
         }
 
         mInboxModel = new InboxModel(new InboxServiceProxy(mConnection));
+        mActionsModel = new ActionsModel(new ActionsServiceProxy(mConnection));
 
         loadState();
     }
@@ -61,6 +63,7 @@ public class GlobalModel
     private static void loadState()
     {
         mInboxModel.loadState(mLocalDatabase);
+        mActionsModel.loadState(mLocalDatabase);
     }
 
     public static void sync(SyncListener listener)
@@ -72,6 +75,7 @@ public class GlobalModel
     {
         return mInboxModel;
     }
+    public static ActionsModel getActionsModel() {return mActionsModel; }
 
     public static String getIp()
     {
@@ -90,4 +94,5 @@ public class GlobalModel
     static private MateriaConnection mConnection;
     static private LocalDatabase mLocalDatabase;
     static private InboxModel mInboxModel;
+    static private ActionsModel mActionsModel;
 }

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <messages/common.pb.h>
 #include <messages/inbox.pb.h>
+#include <messages/actions.pb.h>
 
 namespace materia
 {
@@ -43,12 +44,49 @@ google::protobuf::Message* InboxItemInfoBuilder()
 
    return msg;
 }
+
+google::protobuf::Message* ActionInfoBuilder()
+{
+   std::cout << "Id: " << std::endl;
+   std::string id;
+   std::cin >> id;
+
+   std::cout << "ParentId: (-1 for none)" << std::endl;
+   std::string parentId;
+   std::cin >> parentId;
+
+   std::cout << "Title: " << std::endl;
+   std::string title;
+   std::cin >> title;
+
+   std::cout << "Description: " << std::endl;
+   std::string description;
+   std::cin >> description;
+
+   std::cout << "Type (0 - task, 1 - group): " << std::endl;
+   int atype;
+   std::cin >> atype;
+
+   auto msg = new actions::ActionInfo();
+   msg->mutable_id()->set_guid(id);
+   if(parentId != "-1")
+   {
+      msg->mutable_parentid()->set_guid(parentId);
+   }
+   
+   msg->set_title(title);
+   msg->set_description(description);
+   msg->set_type(static_cast<actions::ActionType>(atype));
+
+   return msg;
+}
    
 void MessageFactory::init()
 {
    REGISTER_BUILDER(EmptyMessage);
    REGISTER_BUILDER(InboxItemInfo);
    REGISTER_BUILDER(UniqueId);
+   REGISTER_BUILDER(ActionInfo);
 }
 
 google::protobuf::Message* MessageFactory::queryMessageFromUser(const std::string& messageName)
