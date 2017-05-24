@@ -36,7 +36,8 @@ google::protobuf::Message* InboxItemInfoBuilder()
 
    std::cout << "Text: " << std::endl;
    std::string text;
-   std::cin >> text;
+   std::getline(std::cin, text);
+   std::getline(std::cin, text);
 
    auto msg = new inbox::InboxItemInfo();
    msg->mutable_id()->set_guid(id);

@@ -30,7 +30,10 @@ public:
          std::string content;
 
          std::ifstream file(iter->path().string());
-         file >> content;
+
+         content = std::string((std::istreambuf_iterator<char>(file)),
+                 std::istreambuf_iterator<char>());
+
          file.close();
 
          auto item = response->add_items();

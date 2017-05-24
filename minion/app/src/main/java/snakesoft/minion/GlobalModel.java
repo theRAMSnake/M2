@@ -88,6 +88,8 @@ public class GlobalModel
         {
             mLocalDatabase.put("Settings.IP", ip.getBytes());
             mConnection.setNewIp(ip);
+            mInboxModel.resetChanges();
+            mActionsModel.resetChanges();
         }
     }
 

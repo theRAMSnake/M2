@@ -265,6 +265,11 @@ public class ActionsModel
         saveState();
     }
 
+    public void resetChanges()
+    {
+        mItemsChanges.clear();
+    }
+
     public String genId()
     {
         return Integer.toString(++mLastVirtualId);
@@ -275,4 +280,6 @@ public class ActionsModel
     private LocalDatabase mLocalDb;
     private Vector<StatusOfChange> mItemsChanges;
     private int mLastVirtualId = 0;
+
+
 }

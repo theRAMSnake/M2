@@ -54,6 +54,11 @@ public class InboxModel
         saveState();
     }
 
+    public void resetChanges()
+    {
+        mItemsChanges.clear();
+    }
+
     public List<Inbox.InboxItemInfo> getItems()
     {
         List<Inbox.InboxItemInfo> result = new Vector<>();
@@ -183,4 +188,6 @@ public class InboxModel
     private InboxItems mItems;
     private LocalDatabase mLocalDb;
     private Vector<StatusOfChange> mItemsChanges;
+
+
 }
