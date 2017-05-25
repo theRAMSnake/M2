@@ -1,10 +1,12 @@
 package snakesoft.minion;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -41,6 +43,11 @@ public class ActionsItemViewActivity extends AppCompatActivity implements View.O
                 }
             });
             builder.show();
+
+            TextView txtView = (TextView) findViewById(R.id.action_item_title);
+            txtView.requestFocus();
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
         }
         else
         {

@@ -146,6 +146,18 @@ public class InboxModel
             }
 
             assert mItemsChanges.size() == mItems.getItemsCount();
+
+            for(int i = 0; i < mItems.getItemsCount(); ++i)
+            {
+                if(mItems.getItems(i).getId().getGuid().length() < 10)
+                {
+                    int curVirtualId = Integer.parseInt(mItems.getItems(i).getId().getGuid());
+                    if(curVirtualId > mLastVirtualId)
+                    {
+                        mLastVirtualId = curVirtualId;
+                    }
+                }
+            }
         }
         catch (InvalidProtocolBufferException ex)
         {
@@ -180,10 +192,10 @@ public class InboxModel
 
     public String getNewId()
     {
-        return NEW_ID;
+        return Integer.toString(++mLastVirtualId);
     }
 
-    private final String NEW_ID = "NEW_ID";
+    private int mLastVirtualId = 0;
     private InboxServiceProxy mProxy;
     private InboxItems mItems;
     private LocalDatabase mLocalDb;
