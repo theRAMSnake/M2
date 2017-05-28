@@ -1,6 +1,7 @@
 #include <iostream>
 #include <messages/common.pb.h>
 #include <Common/ServiceWrapper.hpp>
+#include <Common/PortLayout.hpp>
 #include <zmq.hpp>
 #include <cstdlib>
 #include <iomanip>
@@ -16,11 +17,11 @@ public:
     , mAdminServiceProvider(mAdminServiceImpl)
     {
         std::shared_ptr<zmq::socket_t> inboxSocket (new zmq::socket_t(context, ZMQ_DEALER));
-        inboxSocket->connect("tcp://localhost:5911");
+        inboxSocket->connect("tcp://localhost:" + gInboxPort);
         mSockets.insert(std::make_pair("InboxService", inboxSocket));
 
         std::shared_ptr<zmq::socket_t> actionsSocket (new zmq::socket_t(context, ZMQ_DEALER));
-        actionsSocket->connect("tcp://localhost:5912");
+        actionsSocket->connect("tcp://localhost:" + gActionsPort);
         mSockets.insert(std::make_pair("ActionsService", actionsSocket));
     }
 
@@ -153,7 +154,7 @@ int main()
 {
     zmq::context_t context (1);
     zmq::socket_t clientSocket (context, ZMQ_ROUTER);
-    clientSocket.bind ("tcp://*:5910");
+    clientSocket.bind ("tcp://*:" + gCentralPort);
 
     std::vector<zmq::pollitem_t> pollItems;
     pollItems.push_back({clientSocket, 0, ZMQ_POLLIN, 0});

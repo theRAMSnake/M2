@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <Common/InterprocessService.hpp>
+#include <Common/PortLayout.hpp>
 #include <messages/actions.pb.h>
 #include <boost/filesystem.hpp>
 #include <boost/uuid/uuid_generators.hpp>
@@ -143,7 +144,7 @@ int main(int argc, char *argv[])
    materia::ActionsServiceImpl serviceImpl;
    materia::InterprocessService<materia::ActionsServiceImpl> service(serviceImpl);
    
-   service.provideAt("*:5912", "ActionsService");
+   service.provideAt("*:" + gActionsPort, "ActionsService");
    
    return 0;
 }

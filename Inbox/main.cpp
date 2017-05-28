@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <Common/InterprocessService.hpp>
+#include <Common/PortLayout.hpp>
 #include <messages/inbox.pb.h>
 #include <boost/filesystem.hpp>
 #include <boost/uuid/uuid_generators.hpp>
@@ -103,7 +104,7 @@ int main(int argc, char *argv[])
    materia::InboxServiceImpl serviceImpl;
    materia::InterprocessService<materia::InboxServiceImpl> service(serviceImpl);
    
-   service.provideAt("*:5911", "InboxService");
+   service.provideAt("*:" + gInboxPort, "InboxService");
    
    return 0;
 }
