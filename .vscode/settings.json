@@ -118,6 +118,13 @@
       "wdate": "cpp",
       "wpanel": "cpp",
       "wtoolbar": "cpp",
-      "wlineedit": "cpp"
+      "wlineedit": "cpp",
+      "wtablecolumn": "cpp",
+      "wtablerow": "cpp",
+      "wdialog": "cpp",
+      "winplaceedit": "cpp",
+      "wlabel": "cpp",
+      "wmessagebox": "cpp",
+      "wtablecell": "cpp"
    }
 }

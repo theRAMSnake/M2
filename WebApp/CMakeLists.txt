@@ -9,6 +9,9 @@ include_directories("..")
 add_executable(WebApp 
 main.cpp
 WebApp.cpp
+MainScreen.cpp
+InboxView.cpp
+CommonDialogManager.cpp
 )
 
 find_package(Boost COMPONENTS system REQUIRED)

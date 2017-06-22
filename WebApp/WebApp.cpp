@@ -1,4 +1,5 @@
 #include "WebApp.hpp"
+#include "MainScreen.hpp"
 
 #include <Wt/WBootstrapTheme>
 #include <Wt/WOverlayLoadingIndicator>
@@ -31,6 +32,7 @@ void WebApp::showLogin()
 
    Wt::WLineEdit *edit = new Wt::WLineEdit();
    edit->setEchoMode(Wt::WLineEdit::EchoMode::Password);
+   edit->setFocus();
    edit->enterPressed().connect(std::bind([=] () {
       onPasswordSent(edit->text());
    }));
@@ -44,5 +46,11 @@ void WebApp::onPasswordSent(const Wt::WString& text)
    if(text == "test")
    {
       root()->removeWidget(mLoginScreen);
+      showMainScreen();
    }
+}
+
+void WebApp::showMainScreen()
+{
+   root()->addWidget(new MainScreen());
 }
