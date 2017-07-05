@@ -1,5 +1,6 @@
 #include "MainScreen.hpp"
 #include "InboxView.hpp"
+#include "ActionsView.hpp"
 
 #include <Wt/WNavigationBar>
 #include <Wt/WText>
@@ -17,7 +18,7 @@ MainScreen::MainScreen()
     Wt::WMenu *leftMenu = new Wt::WMenu(contentsStack, this);
 
     leftMenu->addItem("Inbox", new InboxView());
-    leftMenu->addItem("Actions", new Wt::WText("actions"));
+    leftMenu->addItem("Actions", new ActionsView());
     
     navigation->addMenu(leftMenu);
 }

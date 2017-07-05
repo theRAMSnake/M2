@@ -18,6 +18,7 @@ WebApp::WebApp(const Wt::WEnvironment & env)
     theme->setVersion(Wt::WBootstrapTheme::Version3);
     setTheme(theme);
     useStyleSheet("resources/bootstrap.css");
+    useStyleSheet("custom.css");
 
     showLogin();
 }

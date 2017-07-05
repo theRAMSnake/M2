@@ -125,6 +125,14 @@
       "winplaceedit": "cpp",
       "wlabel": "cpp",
       "wmessagebox": "cpp",
-      "wtablecell": "cpp"
+      "wtablecell": "cpp",
+      "wpopupwidget": "cpp",
+      "wtable": "cpp",
+      "wtextedit": "cpp",
+      "iomanip": "cpp",
+      "optional": "cpp",
+      "sstream": "cpp",
+      "string_view": "cpp",
+      "cmakeccompilerid.c": "cpp"
    }
 }

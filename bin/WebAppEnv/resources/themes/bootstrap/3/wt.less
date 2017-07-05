@@ -778,8 +778,8 @@ body.Wt-rtl {
     .Wt-ctrl {
 	float: left;
 	display: block;
-	width: 19px;
-	height: 19px;
+	width: 30px;
+	height: 30px;
 
 	&.Wt-noexpand {
 	    background: url(../../../line-middle.gif) no-repeat 0 0;
@@ -951,11 +951,13 @@ body.Wt-rtl .Wt-sbspacer {
 	width: 19px;
 
 	&.expand {
-	    background: url(../nav-plus.gif) no-repeat 0 center;
+	    background: url(resources/plus.png) no-repeat 0 center;
+		background-size:contain;
 	}
 
 	&.collapse {
-	    background: url(../nav-minus.gif) no-repeat 0 center;
+	    background: url(resources/minus.png) no-repeat 0 center;
+		background-size:contain;
 	    display: block;
 	}
 
@@ -1015,11 +1017,13 @@ body.Wt-rtl {
 	    float: right;
 
 	    &.expand {
-		background-image: url(../nav-plus-rtl.gif);
+		background-image: url(resources/plus.png);
+		background-size:contain;
 	    }
 
 	    &.collapse {
-		background-image: url(../nav-minus-rtl.gif);
+		background-image: url(resources/minus.png);
+		background-size:contain;
 	    }
 
 	    &.noexpand {

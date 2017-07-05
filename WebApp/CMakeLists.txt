@@ -11,6 +11,7 @@ main.cpp
 WebApp.cpp
 MainScreen.cpp
 InboxView.cpp
+ActionsView.cpp
 CommonDialogManager.cpp
 )
 

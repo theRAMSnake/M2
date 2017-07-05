@@ -934,14 +934,16 @@ body.Wt-rtl .Wt-sbspacer {
   width: 19px;
 }
 .Wt-treeview .Wt-ctrl.expand {
-  background-image: url(../nav-plus.gif);
+  background-image: url(resources/plus.png);
   background-repeat: no-repeat;
-  background-position: 0 center;
+  background-position: center center;
+  background-size:contain;
 }
 .Wt-treeview .Wt-ctrl.collapse {
-  background: url(../nav-minus.gif);
+  background: url(resources/minus.png);
   background-repeat: no-repeat;
-  background-position: 0 center;
+  background-position: center center;
+  background-size:contain;
 }
 .Wt-treeview .Wt-ctrl.noexpand {
   background: url(../../../line-middle.gif);
@@ -988,10 +990,12 @@ body.Wt-rtl .Wt-treeview .Wt-ctrl {
   float: right;
 }
 body.Wt-rtl .Wt-treeview .Wt-ctrl.expand {
-  background-image: url(../nav-plus-rtl.gif);
+  background-image: url(resources/plus.png);
+  background-size:contain;
 }
 body.Wt-rtl .Wt-treeview .Wt-ctrl.collapse {
-  background-image: url(../nav-minus-rtl.gif);
+  background-image: url(resources/minus.png);
+  background-size:contain;
 }
 body.Wt-rtl .Wt-treeview .Wt-ctrl.noexpand {
   background-image: url(../../../line-middle-rtl.gif);

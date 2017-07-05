@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Common/ZmqPbChannel.hpp>
 #include <Common/PortLayout.hpp>
 

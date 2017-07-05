@@ -18,7 +18,7 @@ public class ActionsItemViewActivity extends AppCompatActivity implements View.O
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);=====
         setContentView(R.layout.activity_actions_item_view);
 
         mAcceptBtn = (Button) findViewById(R.id.action_item_accept);
