@@ -66,7 +66,7 @@ public class ActionsModel
             mItems = Actions.ActionsList.newBuilder(items).build();
             for(int i = 0; i < items.getListCount(); ++i)
             {
-                if(items.getList(i).getType() == Actions.ActionType.Group)
+                //if(items.getList(i).getType() == Actions.ActionType.Group)
                 {
                     mItems = merge(mItems, fetchRecursive(items.getList(i).getId()));
                 }
@@ -157,7 +157,7 @@ public class ActionsModel
         Actions.ActionsList result = Actions.ActionsList.newBuilder(items).build();
         for(int i = 0; i < items.getListCount(); ++i)
         {
-            if(items.getList(i).getType() == Actions.ActionType.Group)
+            //if(items.getList(i).getType() == Actions.ActionType.Group)
             {
                 result = merge(result, fetchRecursive(items.getList(i).getId()));
             }

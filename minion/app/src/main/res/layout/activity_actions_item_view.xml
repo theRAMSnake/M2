@@ -12,20 +12,6 @@
         tools:layout_editor_absoluteX="8dp"
         tools:layout_editor_absoluteY="6dp">
 
-        <EditText
-            android:id="@+id/action.item.title"
-            android:layout_width="match_parent"
-            android:layout_column="0"
-            android:layout_columnSpan="2"
-            android:layout_columnWeight="0"
-            android:layout_row="0"
-            android:layout_rowSpan="1"
-            android:layout_rowWeight="0"
-            android:ems="10"
-            android:inputType="textPersonName"
-            tools:layout_editor_absoluteX="233dp"
-            tools:layout_editor_absoluteY="-198dp" />
-
         <Button
             android:id="@+id/action.item.delete"
             android:layout_width="wrap_content"
@@ -47,16 +33,28 @@
             tools:layout_editor_absoluteY="350dp" />
 
         <EditText
+            android:id="@+id/action.item.title"
+            android:layout_width="match_parent"
+            android:layout_column="0"
+            android:layout_columnSpan="2"
+            android:layout_columnWeight="0"
+            android:layout_row="0"
+            android:layout_rowSpan="1"
+            android:layout_rowWeight="0"
+            android:ems="10"
+            android:inputType="textPersonName"
+            tools:layout_editor_absoluteX="233dp"
+            tools:layout_editor_absoluteY="-198dp" />
+
+        <WebView
             android:id="@+id/action.item.description"
             android:layout_width="match_parent"
             android:layout_column="0"
             android:layout_columnSpan="2"
             android:layout_columnWeight="0"
             android:layout_row="1"
-            android:layout_rowSpan="1"
-            android:layout_rowWeight="0"
-            android:ems="10"
-            android:inputType="textMultiLine" />
+            android:layout_height="454dp" />
+
     </GridLayout>
 
 </android.support.constraint.ConstraintLayout>

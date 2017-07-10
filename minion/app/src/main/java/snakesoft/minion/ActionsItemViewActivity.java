@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -18,7 +20,7 @@ public class ActionsItemViewActivity extends AppCompatActivity implements View.O
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        super.onCreate(savedInstanceState);=====
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_actions_item_view);
 
         mAcceptBtn = (Button) findViewById(R.id.action_item_accept);
@@ -54,8 +56,10 @@ public class ActionsItemViewActivity extends AppCompatActivity implements View.O
             TextView txtView = (TextView) findViewById(R.id.action_item_title);
             txtView.setText(getIntent().getStringExtra("Title"));
 
-            TextView txtView2 = (TextView) findViewById(R.id.action_item_description);
-            txtView2.setText(getIntent().getStringExtra("Desc"));
+            WebView txtView2 = (WebView) findViewById(R.id.action_item_description);
+            String str = "<html><body>" + getIntent().getStringExtra("Desc") + "</body></html>";
+            //String str = "<html><body>" + "adjkfksdkjfk" + "</body></html>";
+            txtView2.loadData(str, "text/html", "UTF-8");
         }
     }
 
@@ -70,11 +74,10 @@ public class ActionsItemViewActivity extends AppCompatActivity implements View.O
         if(v == mAcceptBtn)
         {
             TextView txtTitle = (TextView) findViewById(R.id.action_item_title);
-            TextView txtDescription = (TextView) findViewById(R.id.action_item_description);
 
             Actions.ActionInfo.Builder b = Actions.ActionInfo.newBuilder()
                     .setTitle(txtTitle.getText().toString())
-                    .setDescription(txtDescription.getText().toString())
+                    .setDescription(getIntent().getBooleanExtra("IsNewItem", false) ? "" : getIntent().getStringExtra("Desc"))
                     .setId(Common.UniqueId.newBuilder().setGuid(guid).build())
                     .setType(Actions.ActionType.values()[itemType]);
 
