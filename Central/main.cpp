@@ -23,6 +23,10 @@ public:
         std::shared_ptr<zmq::socket_t> actionsSocket (new zmq::socket_t(context, ZMQ_DEALER));
         actionsSocket->connect("tcp://localhost:" + gActionsPort);
         mSockets.insert(std::make_pair("ActionsService", actionsSocket));
+
+        std::shared_ptr<zmq::socket_t> databaseSocket (new zmq::socket_t(context, ZMQ_DEALER));
+        databaseSocket->connect("tcp://localhost:" + gDatabasePort);
+        mSockets.insert(std::make_pair("DatabaseService", databaseSocket));
     }
 
     void routeMessage(const zmq::message_t& msg)

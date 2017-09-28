@@ -1,0 +1,44 @@
+syntax = "proto3";
+option cc_generic_services = true;
+import "common.proto";
+
+package database; 
+
+message DocumentHeader
+{
+   string key = 1;
+   string category = 2;
+}
+
+message Document
+{
+   DocumentHeader header = 1;
+   string body = 2;
+}
+
+message KeyValue
+{
+   string key = 1;
+   string value = 2;
+}
+
+message DocumentQuery
+{
+   repeated KeyValue query = 1;
+   string category = 2;
+}
+
+message Documents
+{
+   repeated Document result = 1;
+}
+
+service DatabaseService 
+{
+   rpc GetDocument (DocumentHeader) returns (Documents);
+   rpc SearchDocuments (DocumentQuery) returns (Documents);
+
+   rpc AddDocument (Document) returns (common.UniqueId);
+   rpc ModifyDocument (Document) returns (common.OperationResultMessage);
+   rpc DeleteDocument (DocumentHeader) returns (common.OperationResultMessage);
+}

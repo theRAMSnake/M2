@@ -24,7 +24,7 @@ InboxView::InboxView()
    mTable->decorationStyle().font().setSize(Wt::WFont::Size::XXLarge);
    gb->addWidget(mTable);
 
-   mService.reset(new MateriaServiceProvider<inbox::InboxService>());
+   mService.reset(new MateriaServiceProxy<inbox::InboxService>("WebApp"));
    mInbox = &mService->getService();
    
    common::EmptyMessage msg;

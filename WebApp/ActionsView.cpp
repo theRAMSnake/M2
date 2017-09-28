@@ -257,7 +257,7 @@ private:
 
 ActionsView::ActionsView()
 {
-   mService.reset(new MateriaServiceProvider<actions::ActionsService>());
+   mService.reset(new MateriaServiceProxy<actions::ActionsService>("WebApp"));
    mActions = &mService->getService();
 
    addWidget(new Wt::WText("Ctrl+click = delete, shift+click = add    "));

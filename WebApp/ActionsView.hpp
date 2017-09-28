@@ -1,7 +1,7 @@
 #pragma once
 #include <Wt/WContainerWidget>
 #include <messages/actions.pb.h>
-#include "MateriaServiceProvider.hpp"
+#include "Common/MateriaServiceProxy.hpp"
 
 class ActionsView : public Wt::WContainerWidget
 {
@@ -10,6 +10,6 @@ public:
 
 private:
 
-   std::unique_ptr<MateriaServiceProvider<actions::ActionsService>> mService;
+   std::unique_ptr<MateriaServiceProxy<actions::ActionsService>> mService;
    actions::ActionsService_Stub* mActions;
 };

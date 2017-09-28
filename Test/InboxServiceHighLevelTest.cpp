@@ -2,6 +2,26 @@
 #include <boost/test/unit_test.hpp>
 #include <messages/inbox.pb.h>
 #include "TestServiceProvider.hpp"
+#include <boost/filesystem.hpp>
+
+#include <mongocxx/instance.hpp>
+#include <mongocxx/client.hpp>
+#include <mongocxx/stdx.hpp>
+#include <mongocxx/uri.hpp>
+
+namespace 
+{
+   void cleanUp()
+   {   
+      boost::filesystem::remove_all("inbox_service_data");
+      boost::filesystem::create_directory("inbox_service_data");
+
+      mongocxx::instance instance{}; 
+      mongocxx::client client{mongocxx::uri{}};
+
+      client["materia"].drop();
+   }
+}
 
 bool isItemsConsistent(inbox::InboxService& service)
 {
@@ -17,6 +37,8 @@ const int GUID_STRING_SIZE = 32 + 4; //4 of '-'
 
 BOOST_AUTO_TEST_CASE( Inbox_AddDeleteInbox ) 
 {
+   cleanUp();
+
    TestServiceProvider<inbox::InboxService> serviceProvider;
    auto& service = serviceProvider.getService();
    
@@ -35,6 +57,8 @@ BOOST_AUTO_TEST_CASE( Inbox_AddDeleteInbox )
       service.GetInbox(nullptr, &emptyMsg, &responce, nullptr);
       
       BOOST_CHECK_EQUAL(1, responce.items_size());
+
+      //printf("%s", responce.items().begin()->text().c_str());
       
       auto pos = std::find_if(responce.items().begin(), responce.items().end(), 
          [](auto x){return x.text() == "text";});
@@ -55,6 +79,8 @@ BOOST_AUTO_TEST_CASE( Inbox_AddDeleteInbox )
 
 BOOST_AUTO_TEST_CASE( Inbox_DeleteWrongInbox ) 
 {
+   cleanUp();
+
    TestServiceProvider<inbox::InboxService> serviceProvider;
    auto& service = serviceProvider.getService();
    
@@ -70,6 +96,8 @@ BOOST_AUTO_TEST_CASE( Inbox_DeleteWrongInbox )
 
 BOOST_AUTO_TEST_CASE( Inbox_EditWrongInbox ) 
 {
+   cleanUp();
+
    TestServiceProvider<inbox::InboxService> serviceProvider;
    auto& service = serviceProvider.getService();
    
@@ -87,6 +115,8 @@ BOOST_AUTO_TEST_CASE( Inbox_EditWrongInbox )
 
 BOOST_AUTO_TEST_CASE( Inbox_EditInbox ) 
 {
+   cleanUp(); 
+
    TestServiceProvider<inbox::InboxService> serviceProvider;
    auto& service = serviceProvider.getService();
    

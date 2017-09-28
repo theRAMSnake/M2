@@ -14,7 +14,7 @@ BOOST_AUTO_TEST_CASE( Admin_GetComponentInfo )
    admin::ComponentInfoResponce responce;
    service.GetComponentInfo(nullptr, &emptyMsg, &responce, nullptr);
    
-   BOOST_CHECK_EQUAL(3, responce.componentinfos_size());
+   BOOST_CHECK_EQUAL(4, responce.componentinfos_size());
    BOOST_CHECK_EQUAL(true, responce.componentinfos(0).status());
    BOOST_CHECK_EQUAL("AdminService", responce.componentinfos(0).name());
    
@@ -22,5 +22,8 @@ BOOST_AUTO_TEST_CASE( Admin_GetComponentInfo )
    BOOST_CHECK_EQUAL("ActionsService", responce.componentinfos(1).name());
 
    BOOST_CHECK_EQUAL(true, responce.componentinfos(2).status());
-   BOOST_CHECK_EQUAL("InboxService", responce.componentinfos(2).name());
+   BOOST_CHECK_EQUAL("DatabaseService", responce.componentinfos(2).name());
+   
+   BOOST_CHECK_EQUAL(true, responce.componentinfos(3).status());
+   BOOST_CHECK_EQUAL("InboxService", responce.componentinfos(3).name());
 }

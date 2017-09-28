@@ -6,6 +6,10 @@
 #include <boost/filesystem.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <Common/MateriaServiceProxy.hpp>
+#include <messages/database.pb.h>
 
 namespace materia
 {
@@ -13,12 +17,46 @@ namespace materia
 boost::uuids::random_generator generator;
 boost::filesystem::path g_dir("actions_service_data");
 
+void from_json(const std::string& json, actions::ActionInfo& result)
+{
+   boost::property_tree::ptree pt;
+   std::istringstream is (json);
+   read_json (is, pt);
+   
+   result.mutable_id()->set_guid(pt.get<std::string> ("id"));
+   result.mutable_parentid()->set_guid(pt.get<std::string> ("parent_id"));
+   result.set_title(pt.get<std::string> ("title"));
+   result.set_description(pt.get<std::string> ("description"));
+   result.set_type(static_cast<actions::ActionType> (pt.get<int> ("type")));
+}
+
+std::string to_json(const actions::ActionInfo& from)
+{
+   boost::property_tree::ptree pt;
+
+   pt.put ("id", from.id().guid());
+   pt.put ("parent_id", from.parentid().guid());
+   pt.put ("title", from.title());
+   pt.put ("description", from.description());
+   pt.put ("type", from.type());
+
+   std::ostringstream buf; 
+   write_json (buf, pt, false);
+   return buf.str();
+}
+
+std::string make_string_query_value(const std::string& from)
+{
+   return "\"" + from + "\"";
+}
+
 class ActionsServiceImpl : public actions::ActionsService
 {
 public:
    ActionsServiceImpl()
    {
-      boost::filesystem::create_directory(g_dir);
+      mService.reset(new MateriaServiceProxy<database::DatabaseService>("InboxService"));
+      mDatabase = &mService->getService();
    }
 
    void GetChildren(::google::protobuf::RpcController* controller,
@@ -26,7 +64,8 @@ public:
                        ::actions::ActionsList* response,
                        ::google::protobuf::Closure* done)
    {
-      for (boost::filesystem::directory_iterator iter(g_dir); iter != boost::filesystem::directory_iterator(); ++iter)
+      ///Old style impl
+      /*for (boost::filesystem::directory_iterator iter(g_dir); iter != boost::filesystem::directory_iterator(); ++iter)
       {
          std::ifstream file(iter->path().string());
 
@@ -39,6 +78,20 @@ public:
          }
 
          file.close();
+      }*/
+      database::DocumentQuery query;
+      query.set_category(mCategory);
+      auto kvl = query.add_query();
+      kvl->set_key("parent_id");
+      kvl->set_value(make_string_query_value(request->guid()));
+
+      database::Documents result;
+      mDatabase->SearchDocuments(nullptr, &query, &result, nullptr);
+
+      for(auto x : result.result())
+      {
+         auto item = response->add_list();
+         from_json(x.body(), *item);
       }
    }
 
@@ -47,7 +100,8 @@ public:
                        ::actions::ActionsList* response,
                        ::google::protobuf::Closure* done)
    {
-      for (boost::filesystem::directory_iterator iter(g_dir); iter != boost::filesystem::directory_iterator(); ++iter)
+      ///Old style impl
+      /*for (boost::filesystem::directory_iterator iter(g_dir); iter != boost::filesystem::directory_iterator(); ++iter)
       {
          std::ifstream file(iter->path().string());
 
@@ -60,6 +114,20 @@ public:
          }
 
          file.close();
+      }*/
+      database::DocumentQuery query;
+      query.set_category(mCategory);
+      auto kvl = query.add_query();
+      kvl->set_key("parent_id");
+      kvl->set_value(make_string_query_value(""));
+
+      database::Documents result;
+      mDatabase->SearchDocuments(nullptr, &query, &result, nullptr);
+
+      for(auto x : result.result())
+      {
+         auto item = response->add_list();
+         from_json(x.body(), *item);
       }
    }
 
@@ -68,16 +136,34 @@ public:
                        ::common::UniqueId* response,
                        ::google::protobuf::Closure* done)
    {
-      if(request->parentid().guid().empty() || boost::filesystem::exists(g_dir / request->parentid().guid()))
+      if(request->parentid().guid().empty() || is_item_exist(request->parentid().guid()))
       {
          std::string id = to_string(generator());
          
          actions::ActionInfo newItem(*request);
          newItem.mutable_id()->set_guid(id);
-         saveItem(id, newItem);
 
-         response->set_guid(id);
+         common::UniqueId result;
+         database::Document doc;
+         doc.set_body(to_json(newItem));
+         doc.mutable_header()->set_key(id);
+         doc.mutable_header()->set_category(mCategory);
+      
+         mDatabase->AddDocument(nullptr, &doc, &result, nullptr);
+         response->set_guid(result.guid());
       }
+   }
+
+   bool is_item_exist(const std::string& guid)
+   {
+      database::DocumentHeader head;
+      head.set_category(mCategory);
+      head.set_key(guid);
+
+      database::Documents result;
+      mDatabase->GetDocument(nullptr, &head, &result, nullptr);
+
+      return result.result_size() > 0;
    }
 
    void DeleteElement(::google::protobuf::RpcController* controller,
@@ -86,10 +172,15 @@ public:
                        ::google::protobuf::Closure* done)
    {
       auto id = request->guid();
-      if(boost::filesystem::exists(g_dir / id))
-      {
-         boost::filesystem::remove(g_dir / id);
 
+      database::DocumentHeader head;
+      head.set_key(id);
+      head.set_category(mCategory);
+      common::OperationResultMessage result;
+
+      mDatabase->DeleteDocument(nullptr, &head, &result, nullptr);
+      if(result.success())
+      {
          actions::ActionsList children;
          GetChildren(0, request, &children, 0);
          for(int i = 0; i < children.list_size(); ++i)
@@ -116,11 +207,17 @@ public:
 
       if(id != parent_id)
       {
-         if(boost::filesystem::exists(g_dir / id) &&
-            (parent_id.empty() || boost::filesystem::exists(g_dir / parent_id)))
+         if(parent_id.empty() || is_item_exist(parent_id))
          {
-            saveItem(request->id().guid(), *request);
-            response->set_success(true);
+            database::Document doc;
+            doc.set_body(to_json(*request));
+            doc.mutable_header()->set_category(mCategory);
+            doc.mutable_header()->set_key(id);
+      
+            common::OperationResultMessage result;
+            mDatabase->ModifyDocument(nullptr, &doc, &result, nullptr);
+      
+            response->set_success(result.success());
             return;
          }
       }
@@ -129,12 +226,9 @@ public:
    }
 
 private:
-   void saveItem(const std::string& fileName, const actions::ActionInfo& item)
-   {
-      std::ofstream f((g_dir / fileName).string());
-      item.SerializeToOstream(&f);
-      f.close();
-   }
+   std::unique_ptr<MateriaServiceProxy<database::DatabaseService>> mService;
+   database::DatabaseService_Stub* mDatabase;
+   const std::string mCategory = "ACTIONS";
 };
 
 }

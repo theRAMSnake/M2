@@ -3,7 +3,7 @@
 #include <Wt/WTable>
 #include <Wt/WEvent>
 #include <messages/inbox.pb.h>
-#include "MateriaServiceProvider.hpp"
+#include "Common/MateriaServiceProxy.hpp"
 
 class InboxView : public Wt::WContainerWidget
 {
@@ -20,7 +20,7 @@ private:
    void commitItemDelete(const std::string& itemId);
 
    Wt::WTable* mTable;
-   std::unique_ptr<MateriaServiceProvider<inbox::InboxService>> mService;
+   std::unique_ptr<MateriaServiceProxy<inbox::InboxService>> mService;
    inbox::InboxService_Stub* mInbox;
 
    inbox::InboxItems mItems;

@@ -4,10 +4,23 @@
 #include <boost/filesystem.hpp>
 #include "TestServiceProvider.hpp"
 
-void cleanUp()
-{   
-   boost::filesystem::remove_all("actions_service_data");
-   boost::filesystem::create_directory("actions_service_data");
+#include <mongocxx/instance.hpp>
+#include <mongocxx/client.hpp>
+#include <mongocxx/stdx.hpp>
+#include <mongocxx/uri.hpp>
+
+namespace 
+{
+   void cleanUp()
+   {   
+      boost::filesystem::remove_all("actions_service_data");
+      boost::filesystem::create_directory("actions_service_data");
+
+      mongocxx::instance instance{}; 
+      mongocxx::client client{mongocxx::uri{}};
+
+      client["materia"].drop();
+   }
 }
 
 BOOST_AUTO_TEST_CASE( Actions_AddDeleteAction_Parentless ) 
@@ -399,10 +412,15 @@ BOOST_AUTO_TEST_CASE( Actions_EditAction_Deparent )
       service.GetParentlessElements(nullptr, &dummy, &responce, nullptr);
       BOOST_CHECK_EQUAL(2, responce.list_size());
 
-      BOOST_CHECK(responce.list(0).title() == "other_title");
-      BOOST_CHECK(responce.list(0).description() == "other_description");
-      BOOST_CHECK(responce.list(0).type() == actions::ActionType::Task);
-      BOOST_CHECK(responce.list(0).id().guid() == childId.guid());
+      for(int i = 0; i < responce.list_size(); ++i)
+      {
+         if(responce.list(i).id().guid() == childId.guid())
+         {
+            BOOST_CHECK(responce.list(i).title() == "other_title");
+            BOOST_CHECK(responce.list(i).description() == "other_description");
+            BOOST_CHECK(responce.list(i).type() == actions::ActionType::Task);
+         }
+      }
    }
 }
 

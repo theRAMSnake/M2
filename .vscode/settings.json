@@ -133,6 +133,13 @@
       "optional": "cpp",
       "sstream": "cpp",
       "string_view": "cpp",
-      "cmakeccompilerid.c": "cpp"
+      "cmakeccompilerid.c": "cpp",
+      "hash_map": "cpp",
+      "valarray": "cpp",
+      "bitset": "cpp",
+      "strstream": "cpp",
+      "complex": "cpp",
+      "numeric": "cpp",
+      "wabstracttogglebutton": "cpp"
    }
 }
