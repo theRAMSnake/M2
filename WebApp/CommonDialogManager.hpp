@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <functional>
-#include <Wt/WDialog>
+#include <Wt/WDialog.h>
 
 enum class FieldType
 {
@@ -24,6 +24,7 @@ public:
    static void showDialog(const std::string& caption, const std::vector<FieldInfo>& fields, TCallback& callback); 
    static void showOneLineDialog(const std::string& caption, const std::string & fieldName, const std::string& defaultValue, std::function<void(std::string)>& callback);
    static void showConfirmationDialog(const std::string& text, std::function<void(void)>& callback);
+   static void showMessage(const std::string& text);
    static void showLinesDialog(const std::vector<Wt::WString>& lines, std::function<void(const std::vector<Wt::WString>&)> callback);
    
 private:

@@ -2,14 +2,14 @@
 #include "CommonDialogManager.hpp"
 #include <Common/ZmqPbChannel.hpp>
 #include <Common/PortLayout.hpp>
-#include <Wt/WTree>
-#include <Wt/WTreeNode>
-#include <Wt/WCssDecorationStyle>
-#include <Wt/WTextEdit>
-#include <Wt/WLineEdit>
-#include <Wt/WPushButton>
-#include <Wt/WDialog>
-#include <Wt/WCheckBox>
+#include <Wt/WTree.h>
+#include <Wt/WTreeNode.h>
+#include <Wt/WCssDecorationStyle.h>
+#include <Wt/WTextEdit.h>
+#include <Wt/WLineEdit.h>
+#include <Wt/WPushButton.h>
+#include <Wt/WDialog.h>
+#include <Wt/WCheckBox.h>
 
 class ActionsTreeNodeEditDialog : public Wt::WDialog
 {
@@ -19,30 +19,30 @@ public:
    {
       setWidth(Wt::WLength("75%"));
       mTitle = new Wt::WLineEdit(title);
-      contents()->addWidget(mTitle);
+      contents()->addWidget(std::unique_ptr<Wt::WLineEdit>(mTitle));
 
       mDesc = new Wt::WTextEdit();
       mDesc->setHeight(500);
       mDesc->setConfigurationSetting("branding", false);
       mDesc->setText(desc);
       
-      contents()->addWidget(mDesc);
+      contents()->addWidget(std::unique_ptr<Wt::WTextEdit>(mDesc));
 
       auto ok = new Wt::WPushButton("Accept");
       ok->setDefault(true);
       ok->clicked().connect(std::bind([=]() {
         accept();
       }));
-      footer()->addWidget(ok);
+      footer()->addWidget(std::unique_ptr<Wt::WPushButton>(ok));
 
       auto cancel = new Wt::WPushButton("Cancel");
-      footer()->addWidget(cancel);
+      footer()->addWidget(std::unique_ptr<Wt::WPushButton>(cancel));
       cancel->clicked().connect(this, &Wt::WDialog::reject);
 
       rejectWhenEscapePressed();
 
       finished().connect(std::bind([=]() {
-        if (result() == Wt::WDialog::Accepted)
+        if (result() == Wt::DialogCode::Accepted)
         {
             cb(mTitle->text().narrow(), mDesc->text().narrow());
         }
@@ -77,7 +77,7 @@ public:
 
       for(int i = 0; i < result.list_size(); ++i)
       {
-         addChildNode(new ActionsTreeNode(result.list(i), mActionsService));
+         addChildNode(Wt::cpp14::make_unique<ActionsTreeNode>(result.list(i), mActionsService));
       }
    }
 
@@ -88,8 +88,7 @@ public:
       common::OperationResultMessage dummy;
       mActionsService.EditElement(nullptr, &mActionInfo, &dummy, nullptr);
       
-      parentNode()->removeChildNode(this);
-      newParentNode->addChildNode(this);
+      newParentNode->addChildNode(parentNode()->removeChildNode(this));
    }
 
    void dropEvent	(Wt::WDropEvent dropEvent)	
@@ -143,7 +142,7 @@ private:
 
    void onClick(Wt::WMouseEvent ev)
    {
-      if(ev.modifiers() & Wt::KeyboardModifier::ControlModifier)
+      if(ev.modifiers().test(Wt::KeyboardModifier::Control))
       {
           std::function<void()> elementDeletedFunc = [=] () {
             common::OperationResultMessage dummy;
@@ -155,7 +154,7 @@ private:
 
           CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
       }
-      else if(ev.modifiers() & Wt::KeyboardModifier::ShiftModifier)
+      else if(ev.modifiers().test(Wt::KeyboardModifier::Shift))
       {
           auto dlg = new ActionsTreeNodeEditDialog(
           "",
@@ -172,7 +171,7 @@ private:
 
               newItem.set_allocated_id(newId);
               
-              addChildNode(new ActionsTreeNode(newItem, mActionsService));
+              addChildNode(Wt::cpp14::make_unique<ActionsTreeNode>(newItem, mActionsService));
           });
           dlg->show();
       }
@@ -201,7 +200,7 @@ public:
 
       for(int i = 0; i < result.list_size(); ++i)
       {
-         addChildNode(new ActionsTreeNode(result.list(i), mActionsService));
+         addChildNode(Wt::cpp14::make_unique<ActionsTreeNode>(result.list(i), mActionsService));
       }
    }
 
@@ -231,7 +230,7 @@ public:
 private:
    void onClick(Wt::WMouseEvent ev)
    {
-      if(ev.modifiers() & Wt::KeyboardModifier::ShiftModifier)
+      if(ev.modifiers().test(Wt::KeyboardModifier::Shift))
       {
          auto dlg = new ActionsTreeNodeEditDialog(
          "",
@@ -246,7 +245,7 @@ private:
             mActionsService.AddElement(nullptr, &newItem, newId, nullptr);
 
             newItem.set_allocated_id(newId);
-            addChildNode(new ActionsTreeNode(newItem, mActionsService));
+            addChildNode(Wt::cpp14::make_unique<ActionsTreeNode>(newItem, mActionsService));
          });
          dlg->show();
       }
@@ -260,7 +259,7 @@ ActionsView::ActionsView()
    mService.reset(new MateriaServiceProxy<actions::ActionsService>("WebApp"));
    mActions = &mService->getService();
 
-   addWidget(new Wt::WText("Ctrl+click = delete, shift+click = add    "));
+   addWidget(Wt::cpp14::make_unique< Wt::WText>("Ctrl+click = delete, shift+click = add    "));
 
    auto tree = new Wt::WTree();
    auto root = new ActionsRootTreeNode(*mActions);
@@ -268,14 +267,14 @@ ActionsView::ActionsView()
    auto cbMoveMode = new Wt::WCheckBox("Move mode");
    cbMoveMode->checked().connect(std::bind([=](){root->setMoveMode(true);}));
    cbMoveMode->unChecked().connect(std::bind([=](){root->setMoveMode(false);}));
-   addWidget(cbMoveMode);
+   addWidget(std::unique_ptr<Wt::WCheckBox>(cbMoveMode));
 
    
-   tree->setTreeRoot(root);
+   tree->setTreeRoot(std::unique_ptr<ActionsRootTreeNode>(root));
    tree->setStyleClass("custom-tree");
-   root->setImagePack("resources/");
-   root->setLoadPolicy(Wt::WTreeNode::LazyLoading);
+   //root->setImagePack("resources/");
+   root->setLoadPolicy(Wt::ContentLoading::Lazy);
    root->expand();
 
-   addWidget(tree);
+   addWidget(std::unique_ptr<Wt::WTree>(tree));
 }

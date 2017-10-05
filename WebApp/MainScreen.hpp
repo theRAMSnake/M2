@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Wt/WContainerWidget>
+#include <Wt/WContainerWidget.h>
 
 class MainScreen : public Wt::WContainerWidget
 {

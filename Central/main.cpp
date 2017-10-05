@@ -5,6 +5,7 @@
 #include <zmq.hpp>
 #include <cstdlib>
 #include <iomanip>
+#include <chrono>
 
 #include "AdminServiceImpl.hpp"
 
@@ -56,6 +57,8 @@ public:
         memcpy(&rawIdentity.front(), id.data(), id.size());
         mClientInfos[stream.str()] = rawIdentity;
 
+        mPerformanceTimers.insert(std::make_pair(m_request_id_counter, std::chrono::high_resolution_clock::now()));
+        materiaMsg.set_request_id(m_request_id_counter++);
 
         doRouting(materiaMsg);
     }
@@ -101,7 +104,7 @@ public:
 private:
     void doRouting(const common::MateriaMessage& materiaMsg)
     {
-        std::cout << "Routing: " << materiaMsg.ShortDebugString() << std::endl;
+        std::cout << "Routing: " << materiaMsg.ShortDebugString() ;
 
         if(materiaMsg.to() == "AdminService")
         {
@@ -138,6 +141,12 @@ private:
                     zmq::message_t msgToSend (materiaMsg.ByteSizeLong());
                     materiaMsg.SerializeToArray(msgToSend.data (), msgToSend.size());
                     mClientSocket.send (msgToSend);
+
+                    auto perfIter = mPerformanceTimers.find(materiaMsg.request_id());
+                    auto time_D_msec = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - perfIter->second);
+                    mPerformanceTimers.erase(perfIter);
+
+                    std::cout << " (" << time_D_msec.count() << " ms)" << std::endl;
                 }
                 else
                 {
@@ -152,6 +161,8 @@ private:
     materia::ServiceWrapper<materia::AdminServiceImpl> mAdminServiceProvider;
     std::map<std::string, std::shared_ptr<zmq::socket_t>> mSockets;
     std::map<std::string, std::vector<char>> mClientInfos;
+    std::map<int, std::chrono::time_point<std::chrono::high_resolution_clock>> mPerformanceTimers;
+    int m_request_id_counter = 0;
 };
 
 int main()

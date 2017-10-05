@@ -1,5 +1,5 @@
 #pragma once
-#include <Wt/WApplication>
+#include <Wt/WApplication.h>
 
 class WebApp : public Wt::WApplication
 {

@@ -1,10 +1,10 @@
 #include "CommonDialogManager.hpp"
-#include <Wt/WDialog>
-#include <Wt/WLineEdit>
-#include <Wt/WLabel>
-#include <Wt/WPushButton>
-#include <Wt/WMessageBox>
-#include <Wt/WTextArea>
+#include <Wt/WDialog.h>
+#include <Wt/WLineEdit.h>
+#include <Wt/WLabel.h>
+#include <Wt/WPushButton.h>
+#include <Wt/WMessageBox.h>
+#include <Wt/WTextArea.h>
 #include <boost/range/algorithm/find.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -30,10 +30,25 @@ void CommonDialogManager::showConfirmationDialog(const std::string & text, std::
     Wt::WMessageBox *messageBox = new Wt::WMessageBox
         ("Confirm",
             "<p>" + text + "</p>",
-            Wt::Question, Wt::Yes | Wt::No);
+            Wt::Icon::Question, Wt::StandardButton::Yes | Wt::StandardButton::No);
 
     messageBox->buttonClicked().connect(std::bind([=]() {
-        if(messageBox->buttonResult() == Wt::Yes)callback();
+        if(messageBox->buttonResult() == Wt::StandardButton::Yes)callback();
+        delete messageBox;
+    }));
+
+    messageBox->show();
+    messageBox->setWidth(750);
+}
+
+void CommonDialogManager::showMessage(const std::string & text)
+{
+    Wt::WMessageBox *messageBox = new Wt::WMessageBox
+        ("Confirm",
+            "<p>" + text + "</p>",
+            Wt::Icon::Critical, Wt::StandardButton::Ok);
+
+    messageBox->buttonClicked().connect(std::bind([=]() {
         delete messageBox;
     }));
 
@@ -60,18 +75,22 @@ Wt::WDialog* CommonDialogManager::createDialog(const std::string& caption, const
 
     for (auto item : fields)
     {
-        Wt::WLabel* labelName = new Wt::WLabel(item.name, dialog->contents());
-        Wt::WLineEdit* editName = new Wt::WLineEdit(Wt::WString::fromUTF8(item.initialValue), dialog->contents());
+        Wt::WLabel* labelName = new Wt::WLabel(item.name);
+        dialog->contents()->addWidget(std::unique_ptr<Wt::WLabel>(labelName));
+        Wt::WLineEdit* editName = new Wt::WLineEdit(Wt::WString::fromUTF8(item.initialValue));
+        dialog->contents()->addWidget(std::unique_ptr<Wt::WLineEdit>(editName));
         labelName->setBuddy(editName);
 
         labels.push_back(labelName);
         edits.push_back(editName);
     }
 
-    Wt::WPushButton *ok = new Wt::WPushButton("OK", dialog->footer());
+    Wt::WPushButton *ok = new Wt::WPushButton("OK");
+    dialog->footer()->addWidget(std::unique_ptr<Wt::WPushButton>(ok));
     ok->setDefault(true);
 
-    Wt::WPushButton *cancel = new Wt::WPushButton("Cancel", dialog->footer());
+    Wt::WPushButton *cancel = new Wt::WPushButton("Cancel");
+    dialog->footer()->addWidget(std::unique_ptr<Wt::WPushButton>(cancel));
     dialog->rejectWhenEscapePressed();
 
     ok->clicked().connect(std::bind([=]() {
@@ -81,7 +100,7 @@ Wt::WDialog* CommonDialogManager::createDialog(const std::string& caption, const
     cancel->clicked().connect(dialog, &Wt::WDialog::reject);
 
     dialog->finished().connect(std::bind([=]() {
-        if (dialog->result() == Wt::WDialog::Accepted)
+        if (dialog->result() == Wt::DialogCode::Accepted)
         {
             std::vector<std::string> result;
             for (auto ctrl : edits)
@@ -103,16 +122,18 @@ void CommonDialogManager::showLinesDialog(const std::vector<Wt::WString>& lines,
     Wt::WDialog* dialog = new Wt::WDialog();
     
     Wt::WTextArea* linesArea = new Wt::WTextArea;
-    dialog->contents()->addWidget(linesArea);
+    dialog->contents()->addWidget(std::unique_ptr<Wt::WTextArea>(linesArea));
     
     for(auto i : lines)
     {
        linesArea->setText(linesArea->text() + "\n" + i); 
     }
    
-    Wt::WPushButton *ok = new Wt::WPushButton("OK", dialog->footer());
+    Wt::WPushButton *ok = new Wt::WPushButton("OK");
+    dialog->footer()->addWidget(std::unique_ptr<Wt::WPushButton>(ok));
 
-    Wt::WPushButton *cancel = new Wt::WPushButton("Cancel", dialog->footer());
+    Wt::WPushButton *cancel = new Wt::WPushButton("Cancel");
+    dialog->footer()->addWidget(std::unique_ptr<Wt::WPushButton>(cancel));
     dialog->rejectWhenEscapePressed();
 
     ok->clicked().connect(std::bind([=]() {
@@ -122,7 +143,7 @@ void CommonDialogManager::showLinesDialog(const std::vector<Wt::WString>& lines,
     cancel->clicked().connect(dialog, &Wt::WDialog::reject);
 
     dialog->finished().connect(std::bind([=]() {
-        if (dialog->result() == Wt::WDialog::Accepted)
+        if (dialog->result() == Wt::DialogCode::Accepted)
         {
             std::vector<std::string> result;
             

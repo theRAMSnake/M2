@@ -140,6 +140,8 @@
       "strstream": "cpp",
       "complex": "cpp",
       "numeric": "cpp",
-      "wabstracttogglebutton": "cpp"
+      "wabstracttogglebutton": "cpp",
+      "wcheckbox": "cpp",
+      "any": "cpp"
    }
 }

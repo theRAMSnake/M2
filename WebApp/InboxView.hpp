@@ -1,7 +1,7 @@
 #pragma once
-#include <Wt/WContainerWidget>
-#include <Wt/WTable>
-#include <Wt/WEvent>
+#include <Wt/WContainerWidget.h>
+#include <Wt/WTable.h>
+#include <Wt/WEvent.h>
 #include <messages/inbox.pb.h>
 #include "Common/MateriaServiceProxy.hpp"
 

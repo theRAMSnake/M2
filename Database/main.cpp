@@ -73,15 +73,22 @@ public:
       }
       json_filter += "}";
 
-      bsoncxx::document::value body = bsoncxx::from_json(json_filter);
-      
-      for(auto x : mDb[request->category()].find(bsoncxx::types::b_document{body.view()}.view()))
-      {
-         auto doc = response->add_result();
-         doc->set_body(bsoncxx::to_json(x["body"].get_document().view()));
-         doc->mutable_header()->set_key(x["key"].get_utf8().value.to_string());
-         doc->mutable_header()->set_category(request->category());
-      }
+       try
+       {
+            bsoncxx::document::value body = bsoncxx::from_json(json_filter);
+            
+            for(auto x : mDb[request->category()].find(bsoncxx::types::b_document{body.view()}.view()))
+            {
+                auto doc = response->add_result();
+                doc->set_body(bsoncxx::to_json(x["body"].get_document().view()));
+                doc->mutable_header()->set_key(x["key"].get_utf8().value.to_string());
+                doc->mutable_header()->set_category(request->category());
+            }
+        }
+       catch(...)
+       {
+
+       }
    }
 
    void AddDocument(::google::protobuf::RpcController* controller,

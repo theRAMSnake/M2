@@ -13,13 +13,15 @@ MainScreen.cpp
 InboxView.cpp
 ActionsView.cpp
 CommonDialogManager.cpp
+DatabaseView.cpp
 )
 
 find_package(Boost COMPONENTS system REQUIRED)
 find_package(ZeroMQ REQUIRED)
 find_package(Wt REQUIRED)
 
-target_link_libraries(WebApp m2common ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} ${Wt_LIBRARIES} pthread)
+link_directories(/usr/lib64)
+target_link_libraries(WebApp m2common ${Wt_LIBRARIES}  ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread wt wthttp) #
 
 add_custom_command(
         TARGET WebApp POST_BUILD

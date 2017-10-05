@@ -8,6 +8,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <boost/algorithm/string/replace.hpp>
 
 namespace materia
 {
@@ -24,13 +25,16 @@ std::string remove_spaces(std::string src)
 std::string from_simple_json(const std::string& json)
 {
    std::string trimmedJson = remove_spaces(json);
+   boost::replace_all(trimmedJson, "\\\"", "\"");
    std::size_t pos = trimmedJson.find(":\"") + 2;
    return trimmedJson.substr(pos, (trimmedJson.find("}") - 1) - pos);
 }
 
 std::string to_simple_json(const std::string& content)
 {
-   return "{\"content\":\"" + content + "\"}";
+   std::string newContent = content;
+   boost::replace_all(newContent, "\"", "\\\"");
+   return "{\"content\":\"" + newContent + "\"}";
 }
 
 class InboxServiceImpl : public inbox::InboxService

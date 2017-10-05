@@ -33,6 +33,7 @@ public:
          result.set_from(mProvider.descriptor()->name());
          result.set_to(msg.from());
          result.set_operationname(msg.operationname());
+         result.set_request_id(msg.request_id());
          
          try
          {

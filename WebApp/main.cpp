@@ -1,9 +1,9 @@
-#include <Wt/WServer>
+#include <Wt/WServer.h>
 #include "WebApp.hpp"
 
-Wt::WApplication *createApplication(const Wt::WEnvironment& env)
+std::unique_ptr<Wt::WApplication> createApplication(const Wt::WEnvironment& env)
 {
-   return new WebApp(env);
+   return std::unique_ptr<Wt::WApplication>(new WebApp(env));
 }
 
 int main(int argc, char *argv[])

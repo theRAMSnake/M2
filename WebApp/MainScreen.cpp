@@ -1,24 +1,25 @@
 #include "MainScreen.hpp"
 #include "InboxView.hpp"
 #include "ActionsView.hpp"
+#include "DatabaseView.hpp"
 
-#include <Wt/WNavigationBar>
-#include <Wt/WText>
-#include <Wt/WStackedWidget>
-#include <Wt/WMenu>
+#include <Wt/WNavigationBar.h>
+#include <Wt/WText.h>
+#include <Wt/WStackedWidget.h>
+#include <Wt/WMenu.h>
 
 MainScreen::MainScreen()
 {
-    Wt::WNavigationBar *navigation = new Wt::WNavigationBar(this);
+    auto navigation = addWidget(Wt::cpp14::make_unique<Wt::WNavigationBar>());
     navigation->setTitle("Materia");
 
-    Wt::WStackedWidget *contentsStack = new Wt::WStackedWidget(this);
+    auto contentsStack = addWidget(Wt::cpp14::make_unique<Wt::WStackedWidget>());
     contentsStack->addStyleClass("contents");
     
-    Wt::WMenu *leftMenu = new Wt::WMenu(contentsStack, this);
+    auto menu = Wt::cpp14::make_unique<Wt::WMenu>(contentsStack);
+    auto menu_ = navigation->addMenu(std::move(menu));
 
-    leftMenu->addItem("Inbox", new InboxView());
-    leftMenu->addItem("Actions", new ActionsView());
-    
-    navigation->addMenu(leftMenu);
+    menu_->addItem("Inbox", Wt::cpp14::make_unique<InboxView>());
+    menu_->addItem("Actions", Wt::cpp14::make_unique<ActionsView>());
+    menu_->addItem("Database", Wt::cpp14::make_unique<DatabaseView>());
 }

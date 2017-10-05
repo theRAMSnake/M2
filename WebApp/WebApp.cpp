@@ -1,21 +1,21 @@
 #include "WebApp.hpp"
 #include "MainScreen.hpp"
 
-#include <Wt/WBootstrapTheme>
-#include <Wt/WOverlayLoadingIndicator>
-#include <Wt/WText>
-#include <Wt/WLineEdit>
-#include <Wt/WPushButton>
+#include <Wt/WBootstrapTheme.h>
+#include <Wt/WOverlayLoadingIndicator.h>
+#include <Wt/WText.h>
+#include <Wt/WLineEdit.h>
+#include <Wt/WPushButton.h>
 
 WebApp::WebApp(const Wt::WEnvironment & env)
     : Wt::WApplication(env)
 {
-    setLoadingIndicator(new Wt::WOverlayLoadingIndicator());
+    setLoadingIndicator(std::unique_ptr<Wt::WOverlayLoadingIndicator>(new Wt::WOverlayLoadingIndicator()));
 
     setTitle("Materia");
 
-    Wt::WBootstrapTheme* theme = new Wt::WBootstrapTheme;
-    theme->setVersion(Wt::WBootstrapTheme::Version3);
+    std::shared_ptr<Wt::WBootstrapTheme> theme(new Wt::WBootstrapTheme);
+    theme->setVersion(Wt::BootstrapVersion::v3);
     setTheme(theme);
     useStyleSheet("resources/bootstrap.css");
     useStyleSheet("custom.css");
@@ -27,19 +27,19 @@ void WebApp::showLogin()
 {
    mLoginScreen = new Wt::WContainerWidget();
 
-   auto text = new Wt::WText("<p>Password required.</p>");
+   auto text(new Wt::WText("<p>Password required.</p>"));
    text->addStyleClass("text-center h3");
-   mLoginScreen->addWidget(text);
+   mLoginScreen->addWidget(std::unique_ptr<Wt::WText>(text));
 
    Wt::WLineEdit *edit = new Wt::WLineEdit();
-   edit->setEchoMode(Wt::WLineEdit::EchoMode::Password);
+   edit->setEchoMode(Wt::EchoMode::Password);
    edit->setFocus();
    edit->enterPressed().connect(std::bind([=] () {
       onPasswordSent(edit->text());
    }));
-   mLoginScreen->addWidget(edit);
+   mLoginScreen->addWidget(std::unique_ptr<Wt::WLineEdit>(edit));
 
-   root()->addWidget(mLoginScreen);
+   root()->addWidget(std::unique_ptr<Wt::WContainerWidget>(mLoginScreen));
 }
 
 void WebApp::onPasswordSent(const Wt::WString& text)
@@ -53,5 +53,5 @@ void WebApp::onPasswordSent(const Wt::WString& text)
 
 void WebApp::showMainScreen()
 {
-   root()->addWidget(new MainScreen());
+   root()->addWidget(std::unique_ptr<Wt::WContainerWidget>(new MainScreen()));
 }

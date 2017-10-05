@@ -1,5 +1,5 @@
 #pragma once
-#include <Wt/WContainerWidget>
+#include <Wt/WContainerWidget.h>
 #include <messages/actions.pb.h>
 #include "Common/MateriaServiceProxy.hpp"
 

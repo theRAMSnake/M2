@@ -10,6 +10,8 @@ message MateriaMessage
    string error = 4;
    
    bytes payload = 5;
+
+   int32 request_id = 6;
 }
 
 message EmptyMessage

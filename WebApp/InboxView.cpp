@@ -2,19 +2,19 @@
 #include "CommonDialogManager.hpp"
 #include <Common/ZmqPbChannel.hpp>
 #include <Common/PortLayout.hpp>
-#include <Wt/WText>
-#include <Wt/WCssDecorationStyle>
-#include <Wt/WPushButton>
-#include <Wt/WGroupBox>
+#include <Wt/WText.h>
+#include <Wt/WCssDecorationStyle.h>
+#include <Wt/WPushButton.h>
+#include <Wt/WGroupBox.h>
 
 InboxView::InboxView()
 {
    Wt::WPushButton* addButton = new Wt::WPushButton("Add");
    addButton->clicked().connect(std::bind(&InboxView::onAddClick, this));
    addButton->addStyleClass("btn-primary");
-   addWidget(addButton);
-   Wt::WGroupBox* gb = new Wt::WGroupBox();
-   addWidget(gb);
+   addWidget(std::unique_ptr<Wt::WPushButton>(addButton));
+   auto gb = new Wt::WGroupBox();
+   addWidget(std::unique_ptr<Wt::WGroupBox>(gb));
    
    mTable = new Wt::WTable();
    mTable->setWidth(Wt::WLength("100%"));
@@ -22,7 +22,7 @@ InboxView::InboxView()
    mTable->addStyleClass("table-hover");
    mTable->addStyleClass("table-striped");
    mTable->decorationStyle().font().setSize(Wt::WFont::Size::XXLarge);
-   gb->addWidget(mTable);
+   gb->addWidget(std::unique_ptr<Wt::WTable>(mTable));
 
    mService.reset(new MateriaServiceProxy<inbox::InboxService>("WebApp"));
    mInbox = &mService->getService();
@@ -48,10 +48,10 @@ void InboxView::onItemDoubleClick(Wt::WTableCell* cell, const std::string& itemI
 
 void InboxView::onClick(Wt::WMouseEvent ev, Wt::WTableCell* cell, const std::string& itemId)
 {
-   if(ev.modifiers() & Wt::KeyboardModifier::ControlModifier)
+   if(ev.modifiers().test(Wt::KeyboardModifier::Control))
    {
       std::function<void()> elementDeletedFunc = [=] () {
-         mTable->deleteRow(cell->row());
+         mTable->removeRow(cell->row());
          commitItemDelete(itemId);
          };
 
@@ -114,7 +114,7 @@ void InboxView::createCellAtRow(const int row)
    auto cell = mTable->elementAt(row, 0);
    auto text = new Wt::WText(mItems.items(row).text());
    text->setMargin(Wt::WLength(50));
-   cell->addWidget(text);
+   cell->addWidget(std::unique_ptr<Wt::WText>(text));
 
    cell->clicked().connect(std::bind(&InboxView::onClick, this, std::placeholders::_1, cell, mItems.items(row).id().guid()));
    cell->doubleClicked().connect(std::bind(&InboxView::onItemDoubleClick, this, cell, mItems.items(row).id().guid()));
