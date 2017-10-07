@@ -69,7 +69,7 @@ void fetchChildren(legacyActionItem& src, std::vector<legacyActionItem>& items)
       if(info.parentid().guid() == src.info.id().guid())
       {
          legacyActionItem item = {info};
-         fetchChildren(item, items);
+         fetchChildren(item, item.children);
       }
    }
 
