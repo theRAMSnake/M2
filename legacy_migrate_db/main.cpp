@@ -55,7 +55,7 @@ void addItem(const std::string& parentId, legacyActionItem& item, actions::Actio
    }
 }
 
-void fetchChildren(legacyActionItem& src, std::vector<legacyActionItem>& items)
+void fetchChildren(legacyActionItem& src)
 {
    for (boost::filesystem::directory_iterator iter(g_dir); iter != boost::filesystem::directory_iterator(); ++iter)
    {
@@ -69,11 +69,11 @@ void fetchChildren(legacyActionItem& src, std::vector<legacyActionItem>& items)
       if(info.parentid().guid() == src.info.id().guid())
       {
          legacyActionItem item = {info};
-         fetchChildren(item, item.children);
+         fetchChildren(item);
+
+         src.children.push_back(item);
       }
    }
-
-   items.push_back(src);
 }
 
 int main(int argc,  char** argv)
@@ -121,7 +121,9 @@ int main(int argc,  char** argv)
          {
             legacyActionItem item = {info};
 
-            fetchChildren(item, items);
+            fetchChildren(item);
+
+            items.push_back(item);
          }
       }
 
