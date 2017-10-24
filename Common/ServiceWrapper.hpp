@@ -21,6 +21,12 @@ public:
    
    common::MateriaMessage sendMessage(const common::MateriaMessage& msg)
    {
+      common::MateriaMessage result;
+      result.set_from(mProvider.descriptor()->name());
+      result.set_to(msg.from());
+      result.set_operationname(msg.operationname());
+      result.set_request_id(msg.request_id());
+
       auto method = mProvider.descriptor()->FindMethodByName(msg.operationname());
       if(method != nullptr)
       {
@@ -28,12 +34,6 @@ public:
          request->ParseFromString(msg.payload());
          
          std::unique_ptr<google::protobuf::Message> responce(mProvider.GetResponsePrototype(method).New());
-         
-         common::MateriaMessage result;
-         result.set_from(mProvider.descriptor()->name());
-         result.set_to(msg.from());
-         result.set_operationname(msg.operationname());
-         result.set_request_id(msg.request_id());
          
          try
          {
@@ -49,7 +49,8 @@ public:
       }
       else
       {
-         throw CannotProvideServiceException();
+         result.set_error("Method not implemented");
+         return result;
       }
    }
    

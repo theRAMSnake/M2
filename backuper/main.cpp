@@ -46,10 +46,14 @@ int main(int argc,  char** argv)
 
    std::ofstream stream(pt::to_iso_string(pt::second_clock::local_time()));
 
+   int entriesFetched = 0;
    for(auto x : result.result())
    {
-      stream << x.DebugString() << std::endl;;
+      stream << x.DebugString() << std::endl;
+      entriesFetched++;
    }
 
    stream.close();
+
+   printf("Entries fetched: %d\n", entriesFetched);
 }

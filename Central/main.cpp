@@ -6,8 +6,37 @@
 #include <cstdlib>
 #include <iomanip>
 #include <chrono>
+#include <fstream>
 
 #include "AdminServiceImpl.hpp"
+
+class DoubleLogger
+{
+public:
+    DoubleLogger(const std::string& fileName)
+    : mFile(fileName.c_str())
+    {
+    }
+
+    ~DoubleLogger()
+    {
+        mFile.close();
+    }
+
+    template<class T>
+    DoubleLogger& operator << (const T& val)
+    {
+        std::cout << val;
+        mFile << val;
+
+        return *this;
+    }
+
+private:
+    std::ofstream mFile;
+};
+
+DoubleLogger log("Central.log");
 
 class ConnectionManager : public materia::IComponentInfoProvider
 {
@@ -104,7 +133,7 @@ public:
 private:
     void doRouting(const common::MateriaMessage& materiaMsg)
     {
-        std::cout << "Routing: " << materiaMsg.ShortDebugString() ;
+        log << "Routing: " << materiaMsg.ShortDebugString() ;
 
         if(materiaMsg.to() == "AdminService")
         {
@@ -146,11 +175,11 @@ private:
                     auto time_D_msec = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - perfIter->second);
                     mPerformanceTimers.erase(perfIter);
 
-                    std::cout << " (" << time_D_msec.count() << " ms)" << std::endl;
+                    log << " (" << time_D_msec.count() << " ms)\n";
                 }
                 else
                 {
-                    std::cout << "Routing error: unknown destination" << std::endl;
+                    log << "Routing error: unknown destination\n";
                 }
             }
         }
