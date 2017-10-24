@@ -41,4 +41,6 @@ service DatabaseService
    rpc AddDocument (Document) returns (common.UniqueId);
    rpc ModifyDocument (Document) returns (common.OperationResultMessage);
    rpc DeleteDocument (DocumentHeader) returns (common.OperationResultMessage);
+
+   rpc Fetch(common.EmptyMessage) returns (Documents);
 }

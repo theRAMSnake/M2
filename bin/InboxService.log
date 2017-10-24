@@ -1,2 +1,26 @@
-Received: from: "06bffffff8b456c" to: "InboxService" operationName: "GetInbox"
-Sent: from: "InboxService" to: "06bffffff8b456c" operationName: "GetInbox" payload: "\n/\n&\n$46a5e117-a25d-4b88-8dbe-3df914f08152\022\005bdfgd"
+Received: from: "06bffffff8b456a" to: "InboxService" operationName: "AddItem" payload: "\022\004text" request_id: 1
+Sent: from: "InboxService" to: "06bffffff8b456a" operationName: "AddItem" payload: "\n$ff052b8c-145b-4bc4-b1bc-6236c4fcbff8" request_id: 1
+Received: from: "06bffffff8b456a" to: "InboxService" operationName: "GetInbox" request_id: 3
+Sent: from: "InboxService" to: "06bffffff8b456a" operationName: "GetInbox" payload: "\n.\n&\n$ff052b8c-145b-4bc4-b1bc-6236c4fcbff8\022\004text" request_id: 3
+Received: from: "06bffffff8b456a" to: "InboxService" operationName: "DeleteItem" payload: "\n$ff052b8c-145b-4bc4-b1bc-6236c4fcbff8" request_id: 5
+Sent: from: "InboxService" to: "06bffffff8b456a" operationName: "DeleteItem" payload: "\010\001" request_id: 5
+Received: from: "06bffffff8b456a" to: "InboxService" operationName: "GetInbox" request_id: 7
+Sent: from: "InboxService" to: "06bffffff8b456a" operationName: "GetInbox" request_id: 7
+Received: from: "06bffffff8b456b" to: "InboxService" operationName: "DeleteItem" payload: "\n\00250" request_id: 9
+Sent: from: "InboxService" to: "06bffffff8b456b" operationName: "DeleteItem" request_id: 9
+Received: from: "06bffffff8b456b" to: "InboxService" operationName: "GetInbox" request_id: 11
+Sent: from: "InboxService" to: "06bffffff8b456b" operationName: "GetInbox" request_id: 11
+Received: from: "06bffffff8b456c" to: "InboxService" operationName: "EditItem" payload: "\n\004\n\00250\022\004text" request_id: 13
+Sent: from: "InboxService" to: "06bffffff8b456c" operationName: "EditItem" request_id: 13
+Received: from: "06bffffff8b456c" to: "InboxService" operationName: "GetInbox" request_id: 15
+Sent: from: "InboxService" to: "06bffffff8b456c" operationName: "GetInbox" request_id: 15
+Received: from: "06bffffff8b456d" to: "InboxService" operationName: "AddItem" payload: "\022\004text" request_id: 17
+Sent: from: "InboxService" to: "06bffffff8b456d" operationName: "AddItem" payload: "\n$00f05c38-be1e-4db9-9eb0-4be19331bae6" request_id: 17
+Received: from: "06bffffff8b456d" to: "InboxService" operationName: "EditItem" payload: "\n&\n$00f05c38-be1e-4db9-9eb0-4be19331bae6\022\nother_text" request_id: 19
+Sent: from: "InboxService" to: "06bffffff8b456d" operationName: "EditItem" payload: "\010\001" request_id: 19
+Received: from: "06bffffff8b456d" to: "InboxService" operationName: "GetInbox" request_id: 21
+Sent: from: "InboxService" to: "06bffffff8b456d" operationName: "GetInbox" payload: "\n4\n&\n$00f05c38-be1e-4db9-9eb0-4be19331bae6\022\nother_text" request_id: 21
+Received: from: "06bffffff8b456d" to: "InboxService" operationName: "DeleteItem" payload: "\n$00f05c38-be1e-4db9-9eb0-4be19331bae6" request_id: 23
+Sent: from: "InboxService" to: "06bffffff8b456d" operationName: "DeleteItem" payload: "\010\001" request_id: 23
+Received: from: "06bffffff8b456d" to: "InboxService" operationName: "GetInbox" request_id: 25
+Sent: from: "InboxService" to: "06bffffff8b456d" operationName: "GetInbox" request_id: 25

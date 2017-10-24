@@ -1,46 +1,406 @@
-Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "SearchDocuments" payload: "\022\005INBOX" request_id: 1
-Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "SearchDocuments" payload: "\nH\n-\n$46a5e117-a25d-4b88-8dbe-3df914f08152\022\005INBOX\022\027{ \"content\" : \"bdfgd\" }" request_id: 1
-Received: from: "06bffffff8b4568" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\017\n\tparent_id\022\002\"\"\022\007ACTIONS" request_id: 3
-Sent: from: "DatabaseService" to: "06bffffff8b4568" operationName: "SearchDocuments" request_id: 3
-Received: from: "06bffffff8b456e" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\014\n\007content\022\0015\022\004test" request_id: 4
-Sent: from: "DatabaseService" to: "06bffffff8b456e" operationName: "SearchDocuments" request_id: 4
-Received: from: "06bffffff8b456e" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\014\n\007content\022\0015\022\004test" request_id: 5
-Sent: from: "DatabaseService" to: "06bffffff8b456e" operationName: "SearchDocuments" request_id: 5
-Received: from: "06bffffff8b456e" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\r\n\007content\022\002ff\022\004test" request_id: 6
-Sent: from: "DatabaseService" to: "06bffffff8b456e" operationName: "SearchDocuments" request_id: 6
-Received: from: "06bffffff8b456e" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\017\n\007content\022\004\"ff\"\022\004test" request_id: 7
-Sent: from: "DatabaseService" to: "06bffffff8b456e" operationName: "SearchDocuments" request_id: 7
-Received: from: "06bffffff8b456e" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\020\n\007content\022\005\"ff \"\022\004test" request_id: 8
-Sent: from: "DatabaseService" to: "06bffffff8b456e" operationName: "SearchDocuments" request_id: 8
-Received: from: "06bffffff8b456e" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\020\n\007content\022\005\"fff\"\022\004test" request_id: 9
-Sent: from: "DatabaseService" to: "06bffffff8b456e" operationName: "SearchDocuments" payload: "\nE\n,\n$264008f8-be3f-4b03-bbe6-05b681abcd48\022\004test\022\025{ \"content\" : \"fff\" }" request_id: 9
-Received: from: "06bffffff8b456e" to: "DatabaseService" operationName: "ModifyDocument" payload: "\n,\n$264008f8-be3f-4b03-bbe6-05b681abcd48\022\004test\022 { \"content\" : \"fff\", \"val\" : 2 }" request_id: 10
-Sent: from: "DatabaseService" to: "06bffffff8b456e" operationName: "ModifyDocument" payload: "\010\001" request_id: 10
-Received: from: "06bffffff8b456e" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\020\n\007content\022\005\"fff\"\022\004test" request_id: 11
-Sent: from: "DatabaseService" to: "06bffffff8b456e" operationName: "SearchDocuments" payload: "\nP\n,\n$264008f8-be3f-4b03-bbe6-05b681abcd48\022\004test\022 { \"content\" : \"fff\", \"val\" : 2 }" request_id: 11
-Received: from: "06bffffff8b456e" to: "DatabaseService" operationName: "AddDocument" payload: "\n\006\022\004test\022\027{\n   \"content\" : \" \" \n}" request_id: 12
-Sent: from: "DatabaseService" to: "06bffffff8b456e" operationName: "AddDocument" payload: "\n$7c5bfe75-a88f-4a9c-aca8-7d9e6e79b1ea" request_id: 12
-Received: from: "06bffffff8b456e" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\020\n\007content\022\005\"fff\"\022\004test" request_id: 13
-Sent: from: "DatabaseService" to: "06bffffff8b456e" operationName: "SearchDocuments" payload: "\nP\n,\n$264008f8-be3f-4b03-bbe6-05b681abcd48\022\004test\022 { \"content\" : \"fff\", \"val\" : 2 }" request_id: 13
-Received: from: "06bffffff8b456e" to: "DatabaseService" operationName: "AddDocument" payload: "\n\006\022\004test\022\027{\n   \"content\" : \" \" \n}" request_id: 14
-Sent: from: "DatabaseService" to: "06bffffff8b456e" operationName: "AddDocument" payload: "\n$073b4e6c-3ae9-4192-abd1-d5e797cf331b" request_id: 14
-Received: from: "06bffffff8b456e" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\020\n\007content\022\005\"fff\"\022\004test" request_id: 15
-Sent: from: "DatabaseService" to: "06bffffff8b456e" operationName: "SearchDocuments" payload: "\nP\n,\n$264008f8-be3f-4b03-bbe6-05b681abcd48\022\004test\022 { \"content\" : \"fff\", \"val\" : 2 }" request_id: 15
-Received: from: "06bffffff8b456e" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\016\n\007content\022\003\" \"\022\004test" request_id: 16
-Sent: from: "DatabaseService" to: "06bffffff8b456e" operationName: "SearchDocuments" payload: "\nC\n,\n$556d06dd-ce52-4bfa-b830-5d105a13dc9f\022\004test\022\023{ \"content\" : \" \" }\nC\n,\n$7a52fde0-34d4-415c-810a-f97836987c91\022\004test\022\023{ \"content\" : \" \" }\nC\n,\n$37bc9d1e-aaeb-47ae-bbcc-07680c62ab0a\022\004test\022\023{ \"content\" : \" \" }\nC\n,\n$7c5bfe75-a88f-4a9c-aca8-7d9e6e79b1ea\022\004test\022\023{ \"content\" : \" \" }\nC\n,\n$073b4e6c-3ae9-4192-abd1-d5e797cf331b\022\004test\022\023{ \"content\" : \" \" }" request_id: 16
-Received: from: "06bffffff8b456e" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\020\n\007content\022\005\"fff\"\022\004test" request_id: 17
-Sent: from: "DatabaseService" to: "06bffffff8b456e" operationName: "SearchDocuments" payload: "\nP\n,\n$264008f8-be3f-4b03-bbe6-05b681abcd48\022\004test\022 { \"content\" : \"fff\", \"val\" : 2 }" request_id: 17
-Received: from: "06bffffff8b456e" to: "DatabaseService" operationName: "AddDocument" payload: "\n\006\022\004test\022\027{\n   \"content\" : \" \" \n}" request_id: 18
-Sent: from: "DatabaseService" to: "06bffffff8b456e" operationName: "AddDocument" payload: "\n$c577ec6b-5fe6-49fb-b31f-0a6aae3c10d4" request_id: 18
-Received: from: "06bffffff8b456e" to: "DatabaseService" operationName: "GetDocument" payload: "\n$c577ec6b-5fe6-49fb-b31f-0a6aae3c10d4\022\004test" request_id: 19
-Sent: from: "DatabaseService" to: "06bffffff8b456e" operationName: "GetDocument" payload: "\nC\n,\n$c577ec6b-5fe6-49fb-b31f-0a6aae3c10d4\022\004test\022\023{ \"content\" : \" \" }" request_id: 19
-Received: from: "06bffffff8b456e" to: "DatabaseService" operationName: "ModifyDocument" payload: "\n,\n$c577ec6b-5fe6-49fb-b31f-0a6aae3c10d4\022\004test\022\025{ \"content\" : \"fff\" }" request_id: 20
-Sent: from: "DatabaseService" to: "06bffffff8b456e" operationName: "ModifyDocument" payload: "\010\001" request_id: 20
-Received: from: "06bffffff8b456e" to: "DatabaseService" operationName: "GetDocument" payload: "\n$c577ec6b-5fe6-49fb-b31f-0a6aae3c10d4\022\004test" request_id: 21
-Sent: from: "DatabaseService" to: "06bffffff8b456e" operationName: "GetDocument" payload: "\nE\n,\n$c577ec6b-5fe6-49fb-b31f-0a6aae3c10d4\022\004test\022\025{ \"content\" : \"fff\" }" request_id: 21
-Received: from: "06bffffff8b456e" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\020\n\007content\022\005\"fff\"\022\004test" request_id: 22
-Sent: from: "DatabaseService" to: "06bffffff8b456e" operationName: "SearchDocuments" payload: "\nP\n,\n$264008f8-be3f-4b03-bbe6-05b681abcd48\022\004test\022 { \"content\" : \"fff\", \"val\" : 2 }\nE\n,\n$c577ec6b-5fe6-49fb-b31f-0a6aae3c10d4\022\004test\022\025{ \"content\" : \"fff\" }" request_id: 22
-Received: from: "06bffffff8b456e" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\020\n\007content\022\005\"fff\"\022\004test" request_id: 23
-Sent: from: "DatabaseService" to: "06bffffff8b456e" operationName: "SearchDocuments" payload: "\nP\n,\n$264008f8-be3f-4b03-bbe6-05b681abcd48\022\004test\022 { \"content\" : \"fff\", \"val\" : 2 }\nE\n,\n$c577ec6b-5fe6-49fb-b31f-0a6aae3c10d4\022\004test\022\025{ \"content\" : \"fff\" }" request_id: 23
-Received: from: "06bffffff8b456e" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\020\n\007content\022\005\"fff\"\n\010\n\003val\022\0012\022\004test" request_id: 24
-Sent: from: "DatabaseService" to: "06bffffff8b456e" operationName: "SearchDocuments" payload: "\nP\n,\n$264008f8-be3f-4b03-bbe6-05b681abcd48\022\004test\022 { \"content\" : \"fff\", \"val\" : 2 }" request_id: 24
+Received: from: "06bffffff8b4568" to: "DatabaseService" operationName: "AddDocument" payload: "\n-\n$ff052b8c-145b-4bc4-b1bc-6236c4fcbff8\022\005INBOX\022\022{\"content\":\"text\"}" request_id: 2
+Sent: from: "DatabaseService" to: "06bffffff8b4568" operationName: "AddDocument" payload: "\n$ff052b8c-145b-4bc4-b1bc-6236c4fcbff8" request_id: 2
+Received: from: "06bffffff8b4568" to: "DatabaseService" operationName: "SearchDocuments" payload: "\022\005INBOX" request_id: 4
+Sent: from: "DatabaseService" to: "06bffffff8b4568" operationName: "SearchDocuments" payload: "\nG\n-\n$ff052b8c-145b-4bc4-b1bc-6236c4fcbff8\022\005INBOX\022\026{ \"content\" : \"text\" }" request_id: 4
+Received: from: "06bffffff8b4568" to: "DatabaseService" operationName: "DeleteDocument" payload: "\n$ff052b8c-145b-4bc4-b1bc-6236c4fcbff8\022\005INBOX" request_id: 6
+Sent: from: "DatabaseService" to: "06bffffff8b4568" operationName: "DeleteDocument" payload: "\010\001" request_id: 6
+Received: from: "06bffffff8b4568" to: "DatabaseService" operationName: "SearchDocuments" payload: "\022\005INBOX" request_id: 8
+Sent: from: "DatabaseService" to: "06bffffff8b4568" operationName: "SearchDocuments" request_id: 8
+Received: from: "06bffffff8b4568" to: "DatabaseService" operationName: "DeleteDocument" payload: "\n\00250\022\005INBOX" request_id: 10
+Sent: from: "DatabaseService" to: "06bffffff8b4568" operationName: "DeleteDocument" request_id: 10
+Received: from: "06bffffff8b4568" to: "DatabaseService" operationName: "SearchDocuments" payload: "\022\005INBOX" request_id: 12
+Sent: from: "DatabaseService" to: "06bffffff8b4568" operationName: "SearchDocuments" request_id: 12
+Received: from: "06bffffff8b4568" to: "DatabaseService" operationName: "ModifyDocument" payload: "\n\013\n\00250\022\005INBOX\022\022{\"content\":\"text\"}" request_id: 14
+Sent: from: "DatabaseService" to: "06bffffff8b4568" operationName: "ModifyDocument" request_id: 14
+Received: from: "06bffffff8b4568" to: "DatabaseService" operationName: "SearchDocuments" payload: "\022\005INBOX" request_id: 16
+Sent: from: "DatabaseService" to: "06bffffff8b4568" operationName: "SearchDocuments" request_id: 16
+Received: from: "06bffffff8b4568" to: "DatabaseService" operationName: "AddDocument" payload: "\n-\n$00f05c38-be1e-4db9-9eb0-4be19331bae6\022\005INBOX\022\022{\"content\":\"text\"}" request_id: 18
+Sent: from: "DatabaseService" to: "06bffffff8b4568" operationName: "AddDocument" payload: "\n$00f05c38-be1e-4db9-9eb0-4be19331bae6" request_id: 18
+Received: from: "06bffffff8b4568" to: "DatabaseService" operationName: "ModifyDocument" payload: "\n-\n$00f05c38-be1e-4db9-9eb0-4be19331bae6\022\005INBOX\022\030{\"content\":\"other_text\"}" request_id: 20
+Sent: from: "DatabaseService" to: "06bffffff8b4568" operationName: "ModifyDocument" payload: "\010\001" request_id: 20
+Received: from: "06bffffff8b4568" to: "DatabaseService" operationName: "SearchDocuments" payload: "\022\005INBOX" request_id: 22
+Sent: from: "DatabaseService" to: "06bffffff8b4568" operationName: "SearchDocuments" payload: "\nM\n-\n$00f05c38-be1e-4db9-9eb0-4be19331bae6\022\005INBOX\022\034{ \"content\" : \"other_text\" }" request_id: 22
+Received: from: "06bffffff8b4568" to: "DatabaseService" operationName: "DeleteDocument" payload: "\n$00f05c38-be1e-4db9-9eb0-4be19331bae6\022\005INBOX" request_id: 24
+Sent: from: "DatabaseService" to: "06bffffff8b4568" operationName: "DeleteDocument" payload: "\010\001" request_id: 24
+Received: from: "06bffffff8b4568" to: "DatabaseService" operationName: "SearchDocuments" payload: "\022\005INBOX" request_id: 26
+Sent: from: "DatabaseService" to: "06bffffff8b4568" operationName: "SearchDocuments" request_id: 26
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "AddDocument" payload: "\n/\n$08a2427a-63a0-4a69-880d-859d13432297\022\007ACTIONS\022s{\"id\":\"08a2427a-63a0-4a69-880d-859d13432297\",\"parent_id\":\"\",\"title\":\"text\",\"description\":\"description\",\"type\":\"0\"}\n" request_id: 28
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "AddDocument" payload: "\n$08a2427a-63a0-4a69-880d-859d13432297" request_id: 28
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "AddDocument" payload: "\n/\n$061d2d56-aace-4ada-8a30-b598fa5dc33d\022\007ACTIONS\022u{\"id\":\"061d2d56-aace-4ada-8a30-b598fa5dc33d\",\"parent_id\":\"\",\"title\":\"text2\",\"description\":\"description2\",\"type\":\"1\"}\n" request_id: 30
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "AddDocument" payload: "\n$061d2d56-aace-4ada-8a30-b598fa5dc33d" request_id: 30
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\017\n\tparent_id\022\002\"\"\022\007ACTIONS" request_id: 32
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "SearchDocuments" payload: "\n\266\001\n/\n$08a2427a-63a0-4a69-880d-859d13432297\022\007ACTIONS\022\202\001{ \"id\" : \"08a2427a-63a0-4a69-880d-859d13432297\", \"parent_id\" : \"\", \"title\" : \"text\", \"description\" : \"description\", \"type\" : \"0\" }\n\270\001\n/\n$061d2d56-aace-4ada-8a30-b598fa5dc33d\022\007ACTIONS\022\204\001{ \"id\" : \"061d2d56-aace-4ada-8a30-b598fa5dc33d\", \"parent_id\" : \"\", \"title\" : \"text2\", \"description\" : \"description2\", \"type\" : \"1\" }" request_id: 32
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "DeleteDocument" payload: "\n$08a2427a-63a0-4a69-880d-859d13432297\022\007ACTIONS" request_id: 34
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "DeleteDocument" payload: "\010\001" request_id: 34
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n3\n\tparent_id\022&\"08a2427a-63a0-4a69-880d-859d13432297\"\022\007ACTIONS" request_id: 35
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "SearchDocuments" request_id: 35
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\017\n\tparent_id\022\002\"\"\022\007ACTIONS" request_id: 37
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "SearchDocuments" payload: "\n\270\001\n/\n$061d2d56-aace-4ada-8a30-b598fa5dc33d\022\007ACTIONS\022\204\001{ \"id\" : \"061d2d56-aace-4ada-8a30-b598fa5dc33d\", \"parent_id\" : \"\", \"title\" : \"text2\", \"description\" : \"description2\", \"type\" : \"1\" }" request_id: 37
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "DeleteDocument" payload: "\n$061d2d56-aace-4ada-8a30-b598fa5dc33d\022\007ACTIONS" request_id: 39
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "DeleteDocument" payload: "\010\001" request_id: 39
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n3\n\tparent_id\022&\"061d2d56-aace-4ada-8a30-b598fa5dc33d\"\022\007ACTIONS" request_id: 40
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "SearchDocuments" request_id: 40
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\017\n\tparent_id\022\002\"\"\022\007ACTIONS" request_id: 42
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "SearchDocuments" request_id: 42
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "AddDocument" payload: "\n/\n$c7f66a84-feea-4478-8a79-bf8f675ca11b\022\007ACTIONS\022s{\"id\":\"c7f66a84-feea-4478-8a79-bf8f675ca11b\",\"parent_id\":\"\",\"title\":\"text\",\"description\":\"description\",\"type\":\"1\"}\n" request_id: 44
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "AddDocument" payload: "\n$c7f66a84-feea-4478-8a79-bf8f675ca11b" request_id: 44
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "GetDocument" payload: "\n$c7f66a84-feea-4478-8a79-bf8f675ca11b\022\007ACTIONS" request_id: 46
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "GetDocument" payload: "\n\266\001\n/\n$c7f66a84-feea-4478-8a79-bf8f675ca11b\022\007ACTIONS\022\202\001{ \"id\" : \"c7f66a84-feea-4478-8a79-bf8f675ca11b\", \"parent_id\" : \"\", \"title\" : \"text\", \"description\" : \"description\", \"type\" : \"1\" }" request_id: 46
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "AddDocument" payload: "\n/\n$958b5145-c508-464b-8b2e-10b3870a826f\022\007ACTIONS\022\231\001{\"id\":\"958b5145-c508-464b-8b2e-10b3870a826f\",\"parent_id\":\"c7f66a84-feea-4478-8a79-bf8f675ca11b\",\"title\":\"text2\",\"description\":\"description2\",\"type\":\"0\"}\n" request_id: 47
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "AddDocument" payload: "\n$958b5145-c508-464b-8b2e-10b3870a826f" request_id: 47
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "GetDocument" payload: "\n$c7f66a84-feea-4478-8a79-bf8f675ca11b\022\007ACTIONS" request_id: 49
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "GetDocument" payload: "\n\266\001\n/\n$c7f66a84-feea-4478-8a79-bf8f675ca11b\022\007ACTIONS\022\202\001{ \"id\" : \"c7f66a84-feea-4478-8a79-bf8f675ca11b\", \"parent_id\" : \"\", \"title\" : \"text\", \"description\" : \"description\", \"type\" : \"1\" }" request_id: 49
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "AddDocument" payload: "\n/\n$09185dd6-b3d7-4d00-b899-0774ea72069c\022\007ACTIONS\022\231\001{\"id\":\"09185dd6-b3d7-4d00-b899-0774ea72069c\",\"parent_id\":\"c7f66a84-feea-4478-8a79-bf8f675ca11b\",\"title\":\"text2\",\"description\":\"description2\",\"type\":\"0\"}\n" request_id: 50
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "AddDocument" payload: "\n$09185dd6-b3d7-4d00-b899-0774ea72069c" request_id: 50
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "AddDocument" payload: "\n/\n$b4b84536-0343-4b5d-8d15-d201b0050a23\022\007ACTIONS\022u{\"id\":\"b4b84536-0343-4b5d-8d15-d201b0050a23\",\"parent_id\":\"\",\"title\":\"text3\",\"description\":\"description3\",\"type\":\"0\"}\n" request_id: 52
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "AddDocument" payload: "\n$b4b84536-0343-4b5d-8d15-d201b0050a23" request_id: 52
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\017\n\tparent_id\022\002\"\"\022\007ACTIONS" request_id: 54
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "SearchDocuments" payload: "\n\266\001\n/\n$c7f66a84-feea-4478-8a79-bf8f675ca11b\022\007ACTIONS\022\202\001{ \"id\" : \"c7f66a84-feea-4478-8a79-bf8f675ca11b\", \"parent_id\" : \"\", \"title\" : \"text\", \"description\" : \"description\", \"type\" : \"1\" }\n\270\001\n/\n$b4b84536-0343-4b5d-8d15-d201b0050a23\022\007ACTIONS\022\204\001{ \"id\" : \"b4b84536-0343-4b5d-8d15-d201b0050a23\", \"parent_id\" : \"\", \"title\" : \"text3\", \"description\" : \"description3\", \"type\" : \"0\" }" request_id: 54
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n3\n\tparent_id\022&\"c7f66a84-feea-4478-8a79-bf8f675ca11b\"\022\007ACTIONS" request_id: 56
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "SearchDocuments" payload: "\n\334\001\n/\n$958b5145-c508-464b-8b2e-10b3870a826f\022\007ACTIONS\022\250\001{ \"id\" : \"958b5145-c508-464b-8b2e-10b3870a826f\", \"parent_id\" : \"c7f66a84-feea-4478-8a79-bf8f675ca11b\", \"title\" : \"text2\", \"description\" : \"description2\", \"type\" : \"0\" }\n\334\001\n/\n$09185dd6-b3d7-4d00-b899-0774ea72069c\022\007ACTIONS\022\250\001{ \"id\" : \"09185dd6-b3d7-4d00-b899-0774ea72069c\", \"parent_id\" : \"c7f66a84-feea-4478-8a79-bf8f675ca11b\", \"title\" : \"text2\", \"description\" : \"description2\", \"type\" : \"0\" }" request_id: 56
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "DeleteDocument" payload: "\n$c7f66a84-feea-4478-8a79-bf8f675ca11b\022\007ACTIONS" request_id: 58
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "DeleteDocument" payload: "\010\001" request_id: 58
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n3\n\tparent_id\022&\"c7f66a84-feea-4478-8a79-bf8f675ca11b\"\022\007ACTIONS" request_id: 59
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "SearchDocuments" payload: "\n\334\001\n/\n$958b5145-c508-464b-8b2e-10b3870a826f\022\007ACTIONS\022\250\001{ \"id\" : \"958b5145-c508-464b-8b2e-10b3870a826f\", \"parent_id\" : \"c7f66a84-feea-4478-8a79-bf8f675ca11b\", \"title\" : \"text2\", \"description\" : \"description2\", \"type\" : \"0\" }\n\334\001\n/\n$09185dd6-b3d7-4d00-b899-0774ea72069c\022\007ACTIONS\022\250\001{ \"id\" : \"09185dd6-b3d7-4d00-b899-0774ea72069c\", \"parent_id\" : \"c7f66a84-feea-4478-8a79-bf8f675ca11b\", \"title\" : \"text2\", \"description\" : \"description2\", \"type\" : \"0\" }" request_id: 59
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "DeleteDocument" payload: "\n$958b5145-c508-464b-8b2e-10b3870a826f\022\007ACTIONS" request_id: 60
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "DeleteDocument" payload: "\010\001" request_id: 60
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n3\n\tparent_id\022&\"958b5145-c508-464b-8b2e-10b3870a826f\"\022\007ACTIONS" request_id: 61
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "SearchDocuments" request_id: 61
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "DeleteDocument" payload: "\n$09185dd6-b3d7-4d00-b899-0774ea72069c\022\007ACTIONS" request_id: 62
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "DeleteDocument" payload: "\010\001" request_id: 62
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n3\n\tparent_id\022&\"09185dd6-b3d7-4d00-b899-0774ea72069c\"\022\007ACTIONS" request_id: 63
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "SearchDocuments" request_id: 63
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\017\n\tparent_id\022\002\"\"\022\007ACTIONS" request_id: 65
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "SearchDocuments" payload: "\n\270\001\n/\n$b4b84536-0343-4b5d-8d15-d201b0050a23\022\007ACTIONS\022\204\001{ \"id\" : \"b4b84536-0343-4b5d-8d15-d201b0050a23\", \"parent_id\" : \"\", \"title\" : \"text3\", \"description\" : \"description3\", \"type\" : \"0\" }" request_id: 65
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n3\n\tparent_id\022&\"c7f66a84-feea-4478-8a79-bf8f675ca11b\"\022\007ACTIONS" request_id: 67
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "SearchDocuments" request_id: 67
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "DeleteDocument" payload: "\n$b4b84536-0343-4b5d-8d15-d201b0050a23\022\007ACTIONS" request_id: 69
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "DeleteDocument" payload: "\010\001" request_id: 69
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n3\n\tparent_id\022&\"b4b84536-0343-4b5d-8d15-d201b0050a23\"\022\007ACTIONS" request_id: 70
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "SearchDocuments" request_id: 70
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\017\n\tparent_id\022\002\"\"\022\007ACTIONS" request_id: 72
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "SearchDocuments" request_id: 72
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "DeleteDocument" payload: "\n\00250\022\007ACTIONS" request_id: 74
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "DeleteDocument" request_id: 74
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "GetDocument" payload: "\n\nfhdjskghdf\022\007ACTIONS" request_id: 76
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "GetDocument" request_id: 76
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "AddDocument" payload: "\n/\n$551414d5-46d1-4d4a-a7ec-b551f8e940ea\022\007ACTIONS\022s{\"id\":\"551414d5-46d1-4d4a-a7ec-b551f8e940ea\",\"parent_id\":\"\",\"title\":\"text\",\"description\":\"description\",\"type\":\"1\"}\n" request_id: 78
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "AddDocument" payload: "\n$551414d5-46d1-4d4a-a7ec-b551f8e940ea" request_id: 78
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "ModifyDocument" payload: "\n/\n$551414d5-46d1-4d4a-a7ec-b551f8e940ea\022\007ACTIONS\022\200\001{\"id\":\"551414d5-46d1-4d4a-a7ec-b551f8e940ea\",\"parent_id\":\"\",\"title\":\"other_title\",\"description\":\"other_description\",\"type\":\"0\"}\n" request_id: 80
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "ModifyDocument" payload: "\010\001" request_id: 80
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\017\n\tparent_id\022\002\"\"\022\007ACTIONS" request_id: 82
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "SearchDocuments" payload: "\n\303\001\n/\n$551414d5-46d1-4d4a-a7ec-b551f8e940ea\022\007ACTIONS\022\217\001{ \"id\" : \"551414d5-46d1-4d4a-a7ec-b551f8e940ea\", \"parent_id\" : \"\", \"title\" : \"other_title\", \"description\" : \"other_description\", \"type\" : \"0\" }" request_id: 82
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "AddDocument" payload: "\n/\n$886fefb1-7b90-453e-9fb8-91c976351338\022\007ACTIONS\022s{\"id\":\"886fefb1-7b90-453e-9fb8-91c976351338\",\"parent_id\":\"\",\"title\":\"text\",\"description\":\"description\",\"type\":\"1\"}\n" request_id: 84
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "AddDocument" payload: "\n$886fefb1-7b90-453e-9fb8-91c976351338" request_id: 84
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "AddDocument" payload: "\n/\n$7041fb3a-1246-4829-bc2e-dfad8ad801ae\022\007ACTIONS\022s{\"id\":\"7041fb3a-1246-4829-bc2e-dfad8ad801ae\",\"parent_id\":\"\",\"title\":\"text\",\"description\":\"description\",\"type\":\"1\"}\n" request_id: 86
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "AddDocument" payload: "\n$7041fb3a-1246-4829-bc2e-dfad8ad801ae" request_id: 86
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "GetDocument" payload: "\n$886fefb1-7b90-453e-9fb8-91c976351338\022\007ACTIONS" request_id: 88
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "GetDocument" payload: "\n\266\001\n/\n$886fefb1-7b90-453e-9fb8-91c976351338\022\007ACTIONS\022\202\001{ \"id\" : \"886fefb1-7b90-453e-9fb8-91c976351338\", \"parent_id\" : \"\", \"title\" : \"text\", \"description\" : \"description\", \"type\" : \"1\" }" request_id: 88
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "AddDocument" payload: "\n/\n$86a4a07c-f056-4a42-8d00-f9c72b272b6d\022\007ACTIONS\022\231\001{\"id\":\"86a4a07c-f056-4a42-8d00-f9c72b272b6d\",\"parent_id\":\"886fefb1-7b90-453e-9fb8-91c976351338\",\"title\":\"text2\",\"description\":\"description2\",\"type\":\"0\"}\n" request_id: 89
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "AddDocument" payload: "\n$86a4a07c-f056-4a42-8d00-f9c72b272b6d" request_id: 89
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "GetDocument" payload: "\n$7041fb3a-1246-4829-bc2e-dfad8ad801ae\022\007ACTIONS" request_id: 91
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "GetDocument" payload: "\n\266\001\n/\n$7041fb3a-1246-4829-bc2e-dfad8ad801ae\022\007ACTIONS\022\202\001{ \"id\" : \"7041fb3a-1246-4829-bc2e-dfad8ad801ae\", \"parent_id\" : \"\", \"title\" : \"text\", \"description\" : \"description\", \"type\" : \"1\" }" request_id: 91
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "ModifyDocument" payload: "\n/\n$86a4a07c-f056-4a42-8d00-f9c72b272b6d\022\007ACTIONS\022\244\001{\"id\":\"86a4a07c-f056-4a42-8d00-f9c72b272b6d\",\"parent_id\":\"7041fb3a-1246-4829-bc2e-dfad8ad801ae\",\"title\":\"other_title\",\"description\":\"other_description\",\"type\":\"0\"}\n" request_id: 92
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "ModifyDocument" payload: "\010\001" request_id: 92
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n3\n\tparent_id\022&\"886fefb1-7b90-453e-9fb8-91c976351338\"\022\007ACTIONS" request_id: 94
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "SearchDocuments" request_id: 94
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n3\n\tparent_id\022&\"7041fb3a-1246-4829-bc2e-dfad8ad801ae\"\022\007ACTIONS" request_id: 96
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "SearchDocuments" payload: "\n\347\001\n/\n$86a4a07c-f056-4a42-8d00-f9c72b272b6d\022\007ACTIONS\022\263\001{ \"id\" : \"86a4a07c-f056-4a42-8d00-f9c72b272b6d\", \"parent_id\" : \"7041fb3a-1246-4829-bc2e-dfad8ad801ae\", \"title\" : \"other_title\", \"description\" : \"other_description\", \"type\" : \"0\" }" request_id: 96
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "AddDocument" payload: "\n/\n$339329c5-467a-416c-8e6e-9577efaca14a\022\007ACTIONS\022s{\"id\":\"339329c5-467a-416c-8e6e-9577efaca14a\",\"parent_id\":\"\",\"title\":\"text\",\"description\":\"description\",\"type\":\"1\"}\n" request_id: 98
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "AddDocument" payload: "\n$339329c5-467a-416c-8e6e-9577efaca14a" request_id: 98
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "GetDocument" payload: "\n$339329c5-467a-416c-8e6e-9577efaca14a\022\007ACTIONS" request_id: 100
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "GetDocument" payload: "\n\266\001\n/\n$339329c5-467a-416c-8e6e-9577efaca14a\022\007ACTIONS\022\202\001{ \"id\" : \"339329c5-467a-416c-8e6e-9577efaca14a\", \"parent_id\" : \"\", \"title\" : \"text\", \"description\" : \"description\", \"type\" : \"1\" }" request_id: 100
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "AddDocument" payload: "\n/\n$1e4bf077-a974-405a-a8e1-fa0975cdf788\022\007ACTIONS\022\231\001{\"id\":\"1e4bf077-a974-405a-a8e1-fa0975cdf788\",\"parent_id\":\"339329c5-467a-416c-8e6e-9577efaca14a\",\"title\":\"text2\",\"description\":\"description2\",\"type\":\"0\"}\n" request_id: 101
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "AddDocument" payload: "\n$1e4bf077-a974-405a-a8e1-fa0975cdf788" request_id: 101
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "ModifyDocument" payload: "\n/\n$1e4bf077-a974-405a-a8e1-fa0975cdf788\022\007ACTIONS\022\200\001{\"id\":\"1e4bf077-a974-405a-a8e1-fa0975cdf788\",\"parent_id\":\"\",\"title\":\"other_title\",\"description\":\"other_description\",\"type\":\"0\"}\n" request_id: 103
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "ModifyDocument" payload: "\010\001" request_id: 103
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n3\n\tparent_id\022&\"339329c5-467a-416c-8e6e-9577efaca14a\"\022\007ACTIONS" request_id: 105
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "SearchDocuments" request_id: 105
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\017\n\tparent_id\022\002\"\"\022\007ACTIONS" request_id: 107
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "SearchDocuments" payload: "\n\266\001\n/\n$339329c5-467a-416c-8e6e-9577efaca14a\022\007ACTIONS\022\202\001{ \"id\" : \"339329c5-467a-416c-8e6e-9577efaca14a\", \"parent_id\" : \"\", \"title\" : \"text\", \"description\" : \"description\", \"type\" : \"1\" }\n\303\001\n/\n$1e4bf077-a974-405a-a8e1-fa0975cdf788\022\007ACTIONS\022\217\001{ \"id\" : \"1e4bf077-a974-405a-a8e1-fa0975cdf788\", \"parent_id\" : \"\", \"title\" : \"other_title\", \"description\" : \"other_description\", \"type\" : \"0\" }" request_id: 107
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "AddDocument" payload: "\n/\n$45372dd6-7e92-4034-9811-b1ffa50b6bd9\022\007ACTIONS\022s{\"id\":\"45372dd6-7e92-4034-9811-b1ffa50b6bd9\",\"parent_id\":\"\",\"title\":\"text\",\"description\":\"description\",\"type\":\"1\"}\n" request_id: 109
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "AddDocument" payload: "\n$45372dd6-7e92-4034-9811-b1ffa50b6bd9" request_id: 109
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "GetDocument" payload: "\n\013random shit\022\007ACTIONS" request_id: 111
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "GetDocument" request_id: 111
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\017\n\tparent_id\022\002\"\"\022\007ACTIONS" request_id: 113
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "SearchDocuments" payload: "\n\266\001\n/\n$45372dd6-7e92-4034-9811-b1ffa50b6bd9\022\007ACTIONS\022\202\001{ \"id\" : \"45372dd6-7e92-4034-9811-b1ffa50b6bd9\", \"parent_id\" : \"\", \"title\" : \"text\", \"description\" : \"description\", \"type\" : \"1\" }" request_id: 113
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\017\n\tparent_id\022\002\"\"\022\007ACTIONS" request_id: 116
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "SearchDocuments" payload: "\n\266\001\n/\n$45372dd6-7e92-4034-9811-b1ffa50b6bd9\022\007ACTIONS\022\202\001{ \"id\" : \"45372dd6-7e92-4034-9811-b1ffa50b6bd9\", \"parent_id\" : \"\", \"title\" : \"text\", \"description\" : \"description\", \"type\" : \"1\" }" request_id: 116
+Received: from: "06bffffff8b4567" to: "DatabaseService" operationName: "GetDocument" payload: "\n\013random shit\022\007ACTIONS" request_id: 118
+Sent: from: "DatabaseService" to: "06bffffff8b4567" operationName: "GetDocument" request_id: 118
+Received: from: "06bffffff8b4577" to: "DatabaseService" operationName: "AddDocument" payload: "\022\014invalid body" request_id: 119
+Sent: from: "DatabaseService" to: "06bffffff8b4577" operationName: "AddDocument" request_id: 119
+Received: from: "06bffffff8b4577" to: "DatabaseService" operationName: "AddDocument" payload: "\n\016\n\003key\022\007somecat\022\017{\"somevalue\":5}" request_id: 120
+Sent: from: "DatabaseService" to: "06bffffff8b4577" operationName: "AddDocument" payload: "\n\003key" request_id: 120
+Received: from: "06bffffff8b4577" to: "DatabaseService" operationName: "GetDocument" payload: "\n\003key\022\007somecat" request_id: 121
+Sent: from: "DatabaseService" to: "06bffffff8b4577" operationName: "GetDocument" payload: "\n%\n\016\n\003key\022\007somecat\022\023{ \"somevalue\" : 5 }" request_id: 121
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":0, \"someval\":0}" request_id: 122
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "AddDocument" payload: "\n$e91e992a-66e8-4a42-a0f0-a3e79216c34f" request_id: 122
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":1, \"someval\":0}" request_id: 123
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "AddDocument" payload: "\n$88f41987-7653-4a67-8b2e-f43b69c4a13b" request_id: 123
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":2, \"someval\":0}" request_id: 124
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "AddDocument" payload: "\n$3c100853-a55b-4603-b737-a7ac6a1a8630" request_id: 124
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":3, \"someval\":0}" request_id: 125
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "AddDocument" payload: "\n$f0961de6-c2cc-4410-98e4-d54669814a7d" request_id: 125
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":4, \"someval\":0}" request_id: 126
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "AddDocument" payload: "\n$14c44ebc-e2ea-44d8-9fa4-df23a85f42c6" request_id: 126
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":5, \"someval\":0}" request_id: 127
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "AddDocument" payload: "\n$280ca0ab-a31a-4c16-9f62-e44fe909d647" request_id: 127
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":6, \"someval\":0}" request_id: 128
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "AddDocument" payload: "\n$14497fa6-55c4-49a3-bc16-b9ecf9656467" request_id: 128
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":7, \"someval\":0}" request_id: 129
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "AddDocument" payload: "\n$b146207c-e1e1-4d50-8232-c3a713171265" request_id: 129
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":8, \"someval\":0}" request_id: 130
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "AddDocument" payload: "\n$3a50d29a-6b12-4a31-96b8-a6ae2cf7bf37" request_id: 130
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":9, \"someval\":0}" request_id: 131
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "AddDocument" payload: "\n$91eff193-91be-4f6b-8a1c-bd10d02f15ef" request_id: 131
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "DeleteDocument" payload: "\n\007sdfdfdf" request_id: 132
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "DeleteDocument" request_id: 132
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$e91e992a-66e8-4a42-a0f0-a3e79216c34f\022\007somecat" request_id: 133
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" payload: "\nO\n/\n$e91e992a-66e8-4a42-a0f0-a3e79216c34f\022\007somecat\022\034{ \"doc\" : 0, \"someval\" : 0 }" request_id: 133
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$88f41987-7653-4a67-8b2e-f43b69c4a13b\022\007somecat" request_id: 134
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" payload: "\nO\n/\n$88f41987-7653-4a67-8b2e-f43b69c4a13b\022\007somecat\022\034{ \"doc\" : 1, \"someval\" : 0 }" request_id: 134
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$3c100853-a55b-4603-b737-a7ac6a1a8630\022\007somecat" request_id: 135
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" payload: "\nO\n/\n$3c100853-a55b-4603-b737-a7ac6a1a8630\022\007somecat\022\034{ \"doc\" : 2, \"someval\" : 0 }" request_id: 135
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$f0961de6-c2cc-4410-98e4-d54669814a7d\022\007somecat" request_id: 136
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" payload: "\nO\n/\n$f0961de6-c2cc-4410-98e4-d54669814a7d\022\007somecat\022\034{ \"doc\" : 3, \"someval\" : 0 }" request_id: 136
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$14c44ebc-e2ea-44d8-9fa4-df23a85f42c6\022\007somecat" request_id: 137
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" payload: "\nO\n/\n$14c44ebc-e2ea-44d8-9fa4-df23a85f42c6\022\007somecat\022\034{ \"doc\" : 4, \"someval\" : 0 }" request_id: 137
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$280ca0ab-a31a-4c16-9f62-e44fe909d647\022\007somecat" request_id: 138
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" payload: "\nO\n/\n$280ca0ab-a31a-4c16-9f62-e44fe909d647\022\007somecat\022\034{ \"doc\" : 5, \"someval\" : 0 }" request_id: 138
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$14497fa6-55c4-49a3-bc16-b9ecf9656467\022\007somecat" request_id: 139
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" payload: "\nO\n/\n$14497fa6-55c4-49a3-bc16-b9ecf9656467\022\007somecat\022\034{ \"doc\" : 6, \"someval\" : 0 }" request_id: 139
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$b146207c-e1e1-4d50-8232-c3a713171265\022\007somecat" request_id: 140
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" payload: "\nO\n/\n$b146207c-e1e1-4d50-8232-c3a713171265\022\007somecat\022\034{ \"doc\" : 7, \"someval\" : 0 }" request_id: 140
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$3a50d29a-6b12-4a31-96b8-a6ae2cf7bf37\022\007somecat" request_id: 141
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" payload: "\nO\n/\n$3a50d29a-6b12-4a31-96b8-a6ae2cf7bf37\022\007somecat\022\034{ \"doc\" : 8, \"someval\" : 0 }" request_id: 141
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$91eff193-91be-4f6b-8a1c-bd10d02f15ef\022\007somecat" request_id: 142
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" payload: "\nO\n/\n$91eff193-91be-4f6b-8a1c-bd10d02f15ef\022\007somecat\022\034{ \"doc\" : 9, \"someval\" : 0 }" request_id: 142
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "DeleteDocument" payload: "\n$3c100853-a55b-4603-b737-a7ac6a1a8630\022\007somecat" request_id: 143
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "DeleteDocument" payload: "\010\001" request_id: 143
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$e91e992a-66e8-4a42-a0f0-a3e79216c34f\022\007somecat" request_id: 144
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" payload: "\nO\n/\n$e91e992a-66e8-4a42-a0f0-a3e79216c34f\022\007somecat\022\034{ \"doc\" : 0, \"someval\" : 0 }" request_id: 144
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$88f41987-7653-4a67-8b2e-f43b69c4a13b\022\007somecat" request_id: 145
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" payload: "\nO\n/\n$88f41987-7653-4a67-8b2e-f43b69c4a13b\022\007somecat\022\034{ \"doc\" : 1, \"someval\" : 0 }" request_id: 145
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$3c100853-a55b-4603-b737-a7ac6a1a8630\022\007somecat" request_id: 146
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" request_id: 146
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$f0961de6-c2cc-4410-98e4-d54669814a7d\022\007somecat" request_id: 147
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" payload: "\nO\n/\n$f0961de6-c2cc-4410-98e4-d54669814a7d\022\007somecat\022\034{ \"doc\" : 3, \"someval\" : 0 }" request_id: 147
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$14c44ebc-e2ea-44d8-9fa4-df23a85f42c6\022\007somecat" request_id: 148
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" payload: "\nO\n/\n$14c44ebc-e2ea-44d8-9fa4-df23a85f42c6\022\007somecat\022\034{ \"doc\" : 4, \"someval\" : 0 }" request_id: 148
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$280ca0ab-a31a-4c16-9f62-e44fe909d647\022\007somecat" request_id: 149
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" payload: "\nO\n/\n$280ca0ab-a31a-4c16-9f62-e44fe909d647\022\007somecat\022\034{ \"doc\" : 5, \"someval\" : 0 }" request_id: 149
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$14497fa6-55c4-49a3-bc16-b9ecf9656467\022\007somecat" request_id: 150
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" payload: "\nO\n/\n$14497fa6-55c4-49a3-bc16-b9ecf9656467\022\007somecat\022\034{ \"doc\" : 6, \"someval\" : 0 }" request_id: 150
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$b146207c-e1e1-4d50-8232-c3a713171265\022\007somecat" request_id: 151
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" payload: "\nO\n/\n$b146207c-e1e1-4d50-8232-c3a713171265\022\007somecat\022\034{ \"doc\" : 7, \"someval\" : 0 }" request_id: 151
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$3a50d29a-6b12-4a31-96b8-a6ae2cf7bf37\022\007somecat" request_id: 152
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" payload: "\nO\n/\n$3a50d29a-6b12-4a31-96b8-a6ae2cf7bf37\022\007somecat\022\034{ \"doc\" : 8, \"someval\" : 0 }" request_id: 152
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$91eff193-91be-4f6b-8a1c-bd10d02f15ef\022\007somecat" request_id: 153
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" payload: "\nO\n/\n$91eff193-91be-4f6b-8a1c-bd10d02f15ef\022\007somecat\022\034{ \"doc\" : 9, \"someval\" : 0 }" request_id: 153
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "DeleteDocument" payload: "\n$e91e992a-66e8-4a42-a0f0-a3e79216c34f\022\007somecat" request_id: 154
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "DeleteDocument" payload: "\010\001" request_id: 154
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "DeleteDocument" payload: "\n$88f41987-7653-4a67-8b2e-f43b69c4a13b\022\007somecat" request_id: 155
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "DeleteDocument" payload: "\010\001" request_id: 155
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "DeleteDocument" payload: "\n$3c100853-a55b-4603-b737-a7ac6a1a8630\022\007somecat" request_id: 156
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "DeleteDocument" request_id: 156
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "DeleteDocument" payload: "\n$f0961de6-c2cc-4410-98e4-d54669814a7d\022\007somecat" request_id: 157
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "DeleteDocument" payload: "\010\001" request_id: 157
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "DeleteDocument" payload: "\n$14c44ebc-e2ea-44d8-9fa4-df23a85f42c6\022\007somecat" request_id: 158
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "DeleteDocument" payload: "\010\001" request_id: 158
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "DeleteDocument" payload: "\n$280ca0ab-a31a-4c16-9f62-e44fe909d647\022\007somecat" request_id: 159
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "DeleteDocument" payload: "\010\001" request_id: 159
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "DeleteDocument" payload: "\n$14497fa6-55c4-49a3-bc16-b9ecf9656467\022\007somecat" request_id: 160
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "DeleteDocument" payload: "\010\001" request_id: 160
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "DeleteDocument" payload: "\n$b146207c-e1e1-4d50-8232-c3a713171265\022\007somecat" request_id: 161
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "DeleteDocument" payload: "\010\001" request_id: 161
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "DeleteDocument" payload: "\n$3a50d29a-6b12-4a31-96b8-a6ae2cf7bf37\022\007somecat" request_id: 162
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "DeleteDocument" payload: "\010\001" request_id: 162
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "DeleteDocument" payload: "\n$91eff193-91be-4f6b-8a1c-bd10d02f15ef\022\007somecat" request_id: 163
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "DeleteDocument" payload: "\010\001" request_id: 163
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$e91e992a-66e8-4a42-a0f0-a3e79216c34f\022\007somecat" request_id: 164
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" request_id: 164
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$88f41987-7653-4a67-8b2e-f43b69c4a13b\022\007somecat" request_id: 165
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" request_id: 165
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$3c100853-a55b-4603-b737-a7ac6a1a8630\022\007somecat" request_id: 166
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" request_id: 166
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$f0961de6-c2cc-4410-98e4-d54669814a7d\022\007somecat" request_id: 167
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" request_id: 167
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$14c44ebc-e2ea-44d8-9fa4-df23a85f42c6\022\007somecat" request_id: 168
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" request_id: 168
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$280ca0ab-a31a-4c16-9f62-e44fe909d647\022\007somecat" request_id: 169
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" request_id: 169
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$14497fa6-55c4-49a3-bc16-b9ecf9656467\022\007somecat" request_id: 170
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" request_id: 170
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$b146207c-e1e1-4d50-8232-c3a713171265\022\007somecat" request_id: 171
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" request_id: 171
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$3a50d29a-6b12-4a31-96b8-a6ae2cf7bf37\022\007somecat" request_id: 172
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" request_id: 172
+Received: from: "06bffffff8b4578" to: "DatabaseService" operationName: "GetDocument" payload: "\n$91eff193-91be-4f6b-8a1c-bd10d02f15ef\022\007somecat" request_id: 173
+Sent: from: "DatabaseService" to: "06bffffff8b4578" operationName: "GetDocument" request_id: 173
+Received: from: "06bffffff8b4579" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":0, \"someval\":0}" request_id: 174
+Sent: from: "DatabaseService" to: "06bffffff8b4579" operationName: "AddDocument" payload: "\n$8e9a0e9e-18f3-483b-8d2a-5add49e61d7d" request_id: 174
+Received: from: "06bffffff8b4579" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":1, \"someval\":0}" request_id: 175
+Sent: from: "DatabaseService" to: "06bffffff8b4579" operationName: "AddDocument" payload: "\n$db4392ac-bf1f-46b9-be58-b56c8e6bedf5" request_id: 175
+Received: from: "06bffffff8b4579" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":2, \"someval\":0}" request_id: 176
+Sent: from: "DatabaseService" to: "06bffffff8b4579" operationName: "AddDocument" payload: "\n$e4f54157-ea56-4790-a591-f3f34b9be0f2" request_id: 176
+Received: from: "06bffffff8b4579" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":3, \"someval\":0}" request_id: 177
+Sent: from: "DatabaseService" to: "06bffffff8b4579" operationName: "AddDocument" payload: "\n$a550838a-7120-4a9a-9098-9e9dd398c85c" request_id: 177
+Received: from: "06bffffff8b4579" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":4, \"someval\":0}" request_id: 178
+Sent: from: "DatabaseService" to: "06bffffff8b4579" operationName: "AddDocument" payload: "\n$afd810e5-0380-43ea-b106-87443967b79d" request_id: 178
+Received: from: "06bffffff8b4579" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":5, \"someval\":0}" request_id: 179
+Sent: from: "DatabaseService" to: "06bffffff8b4579" operationName: "AddDocument" payload: "\n$b76e08b6-24ac-4521-bb14-3ec9520f64e9" request_id: 179
+Received: from: "06bffffff8b4579" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":6, \"someval\":0}" request_id: 180
+Sent: from: "DatabaseService" to: "06bffffff8b4579" operationName: "AddDocument" payload: "\n$c2a997ee-5a04-4fec-9294-b063cfe5a34e" request_id: 180
+Received: from: "06bffffff8b4579" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":7, \"someval\":0}" request_id: 181
+Sent: from: "DatabaseService" to: "06bffffff8b4579" operationName: "AddDocument" payload: "\n$890b7715-0eb5-4cf9-93cd-432fa4f4242a" request_id: 181
+Received: from: "06bffffff8b4579" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":8, \"someval\":0}" request_id: 182
+Sent: from: "DatabaseService" to: "06bffffff8b4579" operationName: "AddDocument" payload: "\n$ce3650ff-ac74-4f53-8845-138b571007bf" request_id: 182
+Received: from: "06bffffff8b4579" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":9, \"someval\":0}" request_id: 183
+Sent: from: "DatabaseService" to: "06bffffff8b4579" operationName: "AddDocument" payload: "\n$8d318924-fef7-457d-96d4-c2150c34a22b" request_id: 183
+Received: from: "06bffffff8b4579" to: "DatabaseService" operationName: "GetDocument" payload: "\n$8e9a0e9e-18f3-483b-8d2a-5add49e61d7d\022\007somecat" request_id: 184
+Sent: from: "DatabaseService" to: "06bffffff8b4579" operationName: "GetDocument" payload: "\nO\n/\n$8e9a0e9e-18f3-483b-8d2a-5add49e61d7d\022\007somecat\022\034{ \"doc\" : 0, \"someval\" : 0 }" request_id: 184
+Received: from: "06bffffff8b4579" to: "DatabaseService" operationName: "GetDocument" payload: "\n$db4392ac-bf1f-46b9-be58-b56c8e6bedf5\022\007somecat" request_id: 185
+Sent: from: "DatabaseService" to: "06bffffff8b4579" operationName: "GetDocument" payload: "\nO\n/\n$db4392ac-bf1f-46b9-be58-b56c8e6bedf5\022\007somecat\022\034{ \"doc\" : 1, \"someval\" : 0 }" request_id: 185
+Received: from: "06bffffff8b4579" to: "DatabaseService" operationName: "GetDocument" payload: "\n$e4f54157-ea56-4790-a591-f3f34b9be0f2\022\007somecat" request_id: 186
+Sent: from: "DatabaseService" to: "06bffffff8b4579" operationName: "GetDocument" payload: "\nO\n/\n$e4f54157-ea56-4790-a591-f3f34b9be0f2\022\007somecat\022\034{ \"doc\" : 2, \"someval\" : 0 }" request_id: 186
+Received: from: "06bffffff8b4579" to: "DatabaseService" operationName: "GetDocument" payload: "\n$a550838a-7120-4a9a-9098-9e9dd398c85c\022\007somecat" request_id: 187
+Sent: from: "DatabaseService" to: "06bffffff8b4579" operationName: "GetDocument" payload: "\nO\n/\n$a550838a-7120-4a9a-9098-9e9dd398c85c\022\007somecat\022\034{ \"doc\" : 3, \"someval\" : 0 }" request_id: 187
+Received: from: "06bffffff8b4579" to: "DatabaseService" operationName: "GetDocument" payload: "\n$afd810e5-0380-43ea-b106-87443967b79d\022\007somecat" request_id: 188
+Sent: from: "DatabaseService" to: "06bffffff8b4579" operationName: "GetDocument" payload: "\nO\n/\n$afd810e5-0380-43ea-b106-87443967b79d\022\007somecat\022\034{ \"doc\" : 4, \"someval\" : 0 }" request_id: 188
+Received: from: "06bffffff8b4579" to: "DatabaseService" operationName: "GetDocument" payload: "\n$b76e08b6-24ac-4521-bb14-3ec9520f64e9\022\007somecat" request_id: 189
+Sent: from: "DatabaseService" to: "06bffffff8b4579" operationName: "GetDocument" payload: "\nO\n/\n$b76e08b6-24ac-4521-bb14-3ec9520f64e9\022\007somecat\022\034{ \"doc\" : 5, \"someval\" : 0 }" request_id: 189
+Received: from: "06bffffff8b4579" to: "DatabaseService" operationName: "GetDocument" payload: "\n$c2a997ee-5a04-4fec-9294-b063cfe5a34e\022\007somecat" request_id: 190
+Sent: from: "DatabaseService" to: "06bffffff8b4579" operationName: "GetDocument" payload: "\nO\n/\n$c2a997ee-5a04-4fec-9294-b063cfe5a34e\022\007somecat\022\034{ \"doc\" : 6, \"someval\" : 0 }" request_id: 190
+Received: from: "06bffffff8b4579" to: "DatabaseService" operationName: "GetDocument" payload: "\n$890b7715-0eb5-4cf9-93cd-432fa4f4242a\022\007somecat" request_id: 191
+Sent: from: "DatabaseService" to: "06bffffff8b4579" operationName: "GetDocument" payload: "\nO\n/\n$890b7715-0eb5-4cf9-93cd-432fa4f4242a\022\007somecat\022\034{ \"doc\" : 7, \"someval\" : 0 }" request_id: 191
+Received: from: "06bffffff8b4579" to: "DatabaseService" operationName: "GetDocument" payload: "\n$ce3650ff-ac74-4f53-8845-138b571007bf\022\007somecat" request_id: 192
+Sent: from: "DatabaseService" to: "06bffffff8b4579" operationName: "GetDocument" payload: "\nO\n/\n$ce3650ff-ac74-4f53-8845-138b571007bf\022\007somecat\022\034{ \"doc\" : 8, \"someval\" : 0 }" request_id: 192
+Received: from: "06bffffff8b4579" to: "DatabaseService" operationName: "GetDocument" payload: "\n$8d318924-fef7-457d-96d4-c2150c34a22b\022\007somecat" request_id: 193
+Sent: from: "DatabaseService" to: "06bffffff8b4579" operationName: "GetDocument" payload: "\nO\n/\n$8d318924-fef7-457d-96d4-c2150c34a22b\022\007somecat\022\034{ \"doc\" : 9, \"someval\" : 0 }" request_id: 193
+Received: from: "06bffffff8b4579" to: "DatabaseService" operationName: "GetDocument" payload: "\n\tasdfklsdf\022\007somecat" request_id: 194
+Sent: from: "DatabaseService" to: "06bffffff8b4579" operationName: "GetDocument" request_id: 194
+Received: from: "06bffffff8b457a" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":0, \"someval\":0}" request_id: 195
+Sent: from: "DatabaseService" to: "06bffffff8b457a" operationName: "AddDocument" payload: "\n$b19d47da-e951-40aa-b0ff-2f220a95351b" request_id: 195
+Received: from: "06bffffff8b457a" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":1, \"someval\":0}" request_id: 196
+Sent: from: "DatabaseService" to: "06bffffff8b457a" operationName: "AddDocument" payload: "\n$be2d7a29-80e9-4990-b146-d789d123a254" request_id: 196
+Received: from: "06bffffff8b457a" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":2, \"someval\":0}" request_id: 197
+Sent: from: "DatabaseService" to: "06bffffff8b457a" operationName: "AddDocument" payload: "\n$4acefb9b-a3fc-4f26-b9f1-829e60a6b865" request_id: 197
+Received: from: "06bffffff8b457a" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":3, \"someval\":0}" request_id: 198
+Sent: from: "DatabaseService" to: "06bffffff8b457a" operationName: "AddDocument" payload: "\n$f4f36701-e8b6-4278-a351-7d6875489b6b" request_id: 198
+Received: from: "06bffffff8b457a" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":4, \"someval\":0}" request_id: 199
+Sent: from: "DatabaseService" to: "06bffffff8b457a" operationName: "AddDocument" payload: "\n$037572b8-eef0-47fd-8f45-2a27f4a6e19c" request_id: 199
+Received: from: "06bffffff8b457a" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":5, \"someval\":0}" request_id: 200
+Sent: from: "DatabaseService" to: "06bffffff8b457a" operationName: "AddDocument" payload: "\n$eabe7a60-9806-47bb-b834-001e67112531" request_id: 200
+Received: from: "06bffffff8b457a" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":6, \"someval\":0}" request_id: 201
+Sent: from: "DatabaseService" to: "06bffffff8b457a" operationName: "AddDocument" payload: "\n$3a28e24b-e261-47af-9819-4312871babab" request_id: 201
+Received: from: "06bffffff8b457a" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":7, \"someval\":0}" request_id: 202
+Sent: from: "DatabaseService" to: "06bffffff8b457a" operationName: "AddDocument" payload: "\n$9b353b4a-0228-4cf8-b1d0-7aeebc510aed" request_id: 202
+Received: from: "06bffffff8b457a" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":8, \"someval\":0}" request_id: 203
+Sent: from: "DatabaseService" to: "06bffffff8b457a" operationName: "AddDocument" payload: "\n$03c29f12-9d8c-4e23-bec7-632fad6e1622" request_id: 203
+Received: from: "06bffffff8b457a" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":9, \"someval\":0}" request_id: 204
+Sent: from: "DatabaseService" to: "06bffffff8b457a" operationName: "AddDocument" payload: "\n$058a9198-c1e0-4ea2-89c6-8056b4d7af4c" request_id: 204
+Received: from: "06bffffff8b457a" to: "DatabaseService" operationName: "ModifyDocument" payload: "\n\023\n\010dgkljsdg\022\007somecat\022\010{\"doc\":5" request_id: 205
+Sent: from: "DatabaseService" to: "06bffffff8b457a" operationName: "ModifyDocument" request_id: 205
+Received: from: "06bffffff8b457a" to: "DatabaseService" operationName: "ModifyDocument" payload: "\n/\n$b19d47da-e951-40aa-b0ff-2f220a95351b\022\007somecat\022\007{\"doc\"5" request_id: 206
+Sent: from: "DatabaseService" to: "06bffffff8b457a" operationName: "ModifyDocument" request_id: 206
+Received: from: "06bffffff8b457a" to: "DatabaseService" operationName: "ModifyDocument" payload: "\n/\n$b19d47da-e951-40aa-b0ff-2f220a95351b\022\007somecat\022\013{\"doc\":100}" request_id: 207
+Sent: from: "DatabaseService" to: "06bffffff8b457a" operationName: "ModifyDocument" payload: "\010\001" request_id: 207
+Received: from: "06bffffff8b457a" to: "DatabaseService" operationName: "GetDocument" payload: "\n$b19d47da-e951-40aa-b0ff-2f220a95351b\022\007somecat" request_id: 208
+Sent: from: "DatabaseService" to: "06bffffff8b457a" operationName: "GetDocument" payload: "\nB\n/\n$b19d47da-e951-40aa-b0ff-2f220a95351b\022\007somecat\022\017{ \"doc\" : 100 }" request_id: 208
+Received: from: "06bffffff8b457a" to: "DatabaseService" operationName: "GetDocument" payload: "\n$be2d7a29-80e9-4990-b146-d789d123a254\022\007somecat" request_id: 209
+Sent: from: "DatabaseService" to: "06bffffff8b457a" operationName: "GetDocument" payload: "\nO\n/\n$be2d7a29-80e9-4990-b146-d789d123a254\022\007somecat\022\034{ \"doc\" : 1, \"someval\" : 0 }" request_id: 209
+Received: from: "06bffffff8b457a" to: "DatabaseService" operationName: "GetDocument" payload: "\n$4acefb9b-a3fc-4f26-b9f1-829e60a6b865\022\007somecat" request_id: 210
+Sent: from: "DatabaseService" to: "06bffffff8b457a" operationName: "GetDocument" payload: "\nO\n/\n$4acefb9b-a3fc-4f26-b9f1-829e60a6b865\022\007somecat\022\034{ \"doc\" : 2, \"someval\" : 0 }" request_id: 210
+Received: from: "06bffffff8b457a" to: "DatabaseService" operationName: "GetDocument" payload: "\n$f4f36701-e8b6-4278-a351-7d6875489b6b\022\007somecat" request_id: 211
+Sent: from: "DatabaseService" to: "06bffffff8b457a" operationName: "GetDocument" payload: "\nO\n/\n$f4f36701-e8b6-4278-a351-7d6875489b6b\022\007somecat\022\034{ \"doc\" : 3, \"someval\" : 0 }" request_id: 211
+Received: from: "06bffffff8b457a" to: "DatabaseService" operationName: "GetDocument" payload: "\n$037572b8-eef0-47fd-8f45-2a27f4a6e19c\022\007somecat" request_id: 212
+Sent: from: "DatabaseService" to: "06bffffff8b457a" operationName: "GetDocument" payload: "\nO\n/\n$037572b8-eef0-47fd-8f45-2a27f4a6e19c\022\007somecat\022\034{ \"doc\" : 4, \"someval\" : 0 }" request_id: 212
+Received: from: "06bffffff8b457a" to: "DatabaseService" operationName: "GetDocument" payload: "\n$eabe7a60-9806-47bb-b834-001e67112531\022\007somecat" request_id: 213
+Sent: from: "DatabaseService" to: "06bffffff8b457a" operationName: "GetDocument" payload: "\nO\n/\n$eabe7a60-9806-47bb-b834-001e67112531\022\007somecat\022\034{ \"doc\" : 5, \"someval\" : 0 }" request_id: 213
+Received: from: "06bffffff8b457a" to: "DatabaseService" operationName: "GetDocument" payload: "\n$3a28e24b-e261-47af-9819-4312871babab\022\007somecat" request_id: 214
+Sent: from: "DatabaseService" to: "06bffffff8b457a" operationName: "GetDocument" payload: "\nO\n/\n$3a28e24b-e261-47af-9819-4312871babab\022\007somecat\022\034{ \"doc\" : 6, \"someval\" : 0 }" request_id: 214
+Received: from: "06bffffff8b457a" to: "DatabaseService" operationName: "GetDocument" payload: "\n$9b353b4a-0228-4cf8-b1d0-7aeebc510aed\022\007somecat" request_id: 215
+Sent: from: "DatabaseService" to: "06bffffff8b457a" operationName: "GetDocument" payload: "\nO\n/\n$9b353b4a-0228-4cf8-b1d0-7aeebc510aed\022\007somecat\022\034{ \"doc\" : 7, \"someval\" : 0 }" request_id: 215
+Received: from: "06bffffff8b457a" to: "DatabaseService" operationName: "GetDocument" payload: "\n$03c29f12-9d8c-4e23-bec7-632fad6e1622\022\007somecat" request_id: 216
+Sent: from: "DatabaseService" to: "06bffffff8b457a" operationName: "GetDocument" payload: "\nO\n/\n$03c29f12-9d8c-4e23-bec7-632fad6e1622\022\007somecat\022\034{ \"doc\" : 8, \"someval\" : 0 }" request_id: 216
+Received: from: "06bffffff8b457a" to: "DatabaseService" operationName: "GetDocument" payload: "\n$058a9198-c1e0-4ea2-89c6-8056b4d7af4c\022\007somecat" request_id: 217
+Sent: from: "DatabaseService" to: "06bffffff8b457a" operationName: "GetDocument" payload: "\nO\n/\n$058a9198-c1e0-4ea2-89c6-8056b4d7af4c\022\007somecat\022\034{ \"doc\" : 9, \"someval\" : 0 }" request_id: 217
+Received: from: "06bffffff8b457b" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":0, \"someval\":0}" request_id: 218
+Sent: from: "DatabaseService" to: "06bffffff8b457b" operationName: "AddDocument" payload: "\n$3c74b515-727a-4abe-bc47-2e9cb65fe8a7" request_id: 218
+Received: from: "06bffffff8b457b" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":1, \"someval\":0}" request_id: 219
+Sent: from: "DatabaseService" to: "06bffffff8b457b" operationName: "AddDocument" payload: "\n$ce712ee2-8e23-47e6-a1f0-2ca121ea7b6d" request_id: 219
+Received: from: "06bffffff8b457b" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":2, \"someval\":0}" request_id: 220
+Sent: from: "DatabaseService" to: "06bffffff8b457b" operationName: "AddDocument" payload: "\n$9afe8a9a-42a2-46fa-82f1-eb5d33967b51" request_id: 220
+Received: from: "06bffffff8b457b" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":3, \"someval\":0}" request_id: 221
+Sent: from: "DatabaseService" to: "06bffffff8b457b" operationName: "AddDocument" payload: "\n$88ee566f-8c78-4fc3-b2f7-2d27c3787518" request_id: 221
+Received: from: "06bffffff8b457b" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":4, \"someval\":0}" request_id: 222
+Sent: from: "DatabaseService" to: "06bffffff8b457b" operationName: "AddDocument" payload: "\n$1c4f784b-5a32-45f9-b411-67bb7e257715" request_id: 222
+Received: from: "06bffffff8b457b" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":5, \"someval\":0}" request_id: 223
+Sent: from: "DatabaseService" to: "06bffffff8b457b" operationName: "AddDocument" payload: "\n$58891ba8-0851-419a-8c9b-951c56be39ed" request_id: 223
+Received: from: "06bffffff8b457b" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":6, \"someval\":0}" request_id: 224
+Sent: from: "DatabaseService" to: "06bffffff8b457b" operationName: "AddDocument" payload: "\n$b85f82f6-8679-4cd8-8ecc-476da3283f8d" request_id: 224
+Received: from: "06bffffff8b457b" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":7, \"someval\":0}" request_id: 225
+Sent: from: "DatabaseService" to: "06bffffff8b457b" operationName: "AddDocument" payload: "\n$7efb488e-71f9-457c-a792-0f23a76e90db" request_id: 225
+Received: from: "06bffffff8b457b" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":8, \"someval\":0}" request_id: 226
+Sent: from: "DatabaseService" to: "06bffffff8b457b" operationName: "AddDocument" payload: "\n$ef38806f-22f6-4d25-aa0c-32700ae07d79" request_id: 226
+Received: from: "06bffffff8b457b" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":9, \"someval\":0}" request_id: 227
+Sent: from: "DatabaseService" to: "06bffffff8b457b" operationName: "AddDocument" payload: "\n$ca0e7ff4-a2aa-4137-b133-dea3a3863a50" request_id: 227
+Received: from: "06bffffff8b457b" to: "DatabaseService" operationName: "SearchDocuments" payload: "\022\007somecat" request_id: 228
+Sent: from: "DatabaseService" to: "06bffffff8b457b" operationName: "SearchDocuments" payload: "\nO\n/\n$3c74b515-727a-4abe-bc47-2e9cb65fe8a7\022\007somecat\022\034{ \"doc\" : 0, \"someval\" : 0 }\nO\n/\n$ce712ee2-8e23-47e6-a1f0-2ca121ea7b6d\022\007somecat\022\034{ \"doc\" : 1, \"someval\" : 0 }\nO\n/\n$9afe8a9a-42a2-46fa-82f1-eb5d33967b51\022\007somecat\022\034{ \"doc\" : 2, \"someval\" : 0 }\nO\n/\n$88ee566f-8c78-4fc3-b2f7-2d27c3787518\022\007somecat\022\034{ \"doc\" : 3, \"someval\" : 0 }\nO\n/\n$1c4f784b-5a32-45f9-b411-67bb7e257715\022\007somecat\022\034{ \"doc\" : 4, \"someval\" : 0 }\nO\n/\n$58891ba8-0851-419a-8c9b-951c56be39ed\022\007somecat\022\034{ \"doc\" : 5, \"someval\" : 0 }\nO\n/\n$b85f82f6-8679-4cd8-8ecc-476da3283f8d\022\007somecat\022\034{ \"doc\" : 6, \"someval\" : 0 }\nO\n/\n$7efb488e-71f9-457c-a792-0f23a76e90db\022\007somecat\022\034{ \"doc\" : 7, \"someval\" : 0 }\nO\n/\n$ef38806f-22f6-4d25-aa0c-32700ae07d79\022\007somecat\022\034{ \"doc\" : 8, \"someval\" : 0 }\nO\n/\n$ca0e7ff4-a2aa-4137-b133-dea3a3863a50\022\007somecat\022\034{ \"doc\" : 9, \"someval\" : 0 }" request_id: 228
+Received: from: "06bffffff8b457b" to: "DatabaseService" operationName: "SearchDocuments" payload: "\022\010somecat1" request_id: 229
+Sent: from: "DatabaseService" to: "06bffffff8b457b" operationName: "SearchDocuments" request_id: 229
+Received: from: "06bffffff8b457c" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":0, \"someval\":0}" request_id: 230
+Sent: from: "DatabaseService" to: "06bffffff8b457c" operationName: "AddDocument" payload: "\n$41c20ce2-2322-4a41-9eb4-b83dcc1ee8d2" request_id: 230
+Received: from: "06bffffff8b457c" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":1, \"someval\":0}" request_id: 231
+Sent: from: "DatabaseService" to: "06bffffff8b457c" operationName: "AddDocument" payload: "\n$247aa2c7-af00-4052-bd37-50f6d99b10c0" request_id: 231
+Received: from: "06bffffff8b457c" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":2, \"someval\":0}" request_id: 232
+Sent: from: "DatabaseService" to: "06bffffff8b457c" operationName: "AddDocument" payload: "\n$62b739dd-8f5e-431d-b8be-bd88508fc6e7" request_id: 232
+Received: from: "06bffffff8b457c" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":3, \"someval\":0}" request_id: 233
+Sent: from: "DatabaseService" to: "06bffffff8b457c" operationName: "AddDocument" payload: "\n$db0a35e0-1105-4f35-b1f0-7028a8ae75f5" request_id: 233
+Received: from: "06bffffff8b457c" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":4, \"someval\":0}" request_id: 234
+Sent: from: "DatabaseService" to: "06bffffff8b457c" operationName: "AddDocument" payload: "\n$fed2fd64-d46b-411a-97eb-0c7dc10c950c" request_id: 234
+Received: from: "06bffffff8b457c" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":5, \"someval\":0}" request_id: 235
+Sent: from: "DatabaseService" to: "06bffffff8b457c" operationName: "AddDocument" payload: "\n$f80661e3-82ad-4548-b223-f2debd0f285f" request_id: 235
+Received: from: "06bffffff8b457c" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":6, \"someval\":0}" request_id: 236
+Sent: from: "DatabaseService" to: "06bffffff8b457c" operationName: "AddDocument" payload: "\n$e3e87046-084a-4f21-a446-35a1b073be9b" request_id: 236
+Received: from: "06bffffff8b457c" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":7, \"someval\":0}" request_id: 237
+Sent: from: "DatabaseService" to: "06bffffff8b457c" operationName: "AddDocument" payload: "\n$31029d5c-060c-4df1-bf58-f17649943562" request_id: 237
+Received: from: "06bffffff8b457c" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":8, \"someval\":0}" request_id: 238
+Sent: from: "DatabaseService" to: "06bffffff8b457c" operationName: "AddDocument" payload: "\n$51a3a68f-1958-4bd9-a838-7c05caf3c91a" request_id: 238
+Received: from: "06bffffff8b457c" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":9, \"someval\":0}" request_id: 239
+Sent: from: "DatabaseService" to: "06bffffff8b457c" operationName: "AddDocument" payload: "\n$5180aa9c-21e2-4ac2-98ec-5bf87a6f72eb" request_id: 239
+Received: from: "06bffffff8b457c" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\010\n\003doc\022\0013\022\007somecat" request_id: 240
+Sent: from: "DatabaseService" to: "06bffffff8b457c" operationName: "SearchDocuments" payload: "\nO\n/\n$db0a35e0-1105-4f35-b1f0-7028a8ae75f5\022\007somecat\022\034{ \"doc\" : 3, \"someval\" : 0 }" request_id: 240
+Received: from: "06bffffff8b457c" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\007\n\005error" request_id: 241
+Sent: from: "DatabaseService" to: "06bffffff8b457c" operationName: "SearchDocuments" request_id: 241
+Received: from: "06bffffff8b457c" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\t\n\003doc\022\00211\022\007somecat" request_id: 242
+Sent: from: "DatabaseService" to: "06bffffff8b457c" operationName: "SearchDocuments" request_id: 242
+Received: from: "06bffffff8b457c" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\010\n\003doc\022\0014\n\014\n\007someval\022\0010\022\007somecat" request_id: 243
+Sent: from: "DatabaseService" to: "06bffffff8b457c" operationName: "SearchDocuments" payload: "\nO\n/\n$fed2fd64-d46b-411a-97eb-0c7dc10c950c\022\007somecat\022\034{ \"doc\" : 4, \"someval\" : 0 }" request_id: 243
+Received: from: "06bffffff8b457c" to: "DatabaseService" operationName: "SearchDocuments" payload: "\n\014\n\007someval\022\0010\022\007somecat" request_id: 244
+Sent: from: "DatabaseService" to: "06bffffff8b457c" operationName: "SearchDocuments" payload: "\nO\n/\n$41c20ce2-2322-4a41-9eb4-b83dcc1ee8d2\022\007somecat\022\034{ \"doc\" : 0, \"someval\" : 0 }\nO\n/\n$247aa2c7-af00-4052-bd37-50f6d99b10c0\022\007somecat\022\034{ \"doc\" : 1, \"someval\" : 0 }\nO\n/\n$62b739dd-8f5e-431d-b8be-bd88508fc6e7\022\007somecat\022\034{ \"doc\" : 2, \"someval\" : 0 }\nO\n/\n$db0a35e0-1105-4f35-b1f0-7028a8ae75f5\022\007somecat\022\034{ \"doc\" : 3, \"someval\" : 0 }\nO\n/\n$fed2fd64-d46b-411a-97eb-0c7dc10c950c\022\007somecat\022\034{ \"doc\" : 4, \"someval\" : 0 }\nO\n/\n$f80661e3-82ad-4548-b223-f2debd0f285f\022\007somecat\022\034{ \"doc\" : 5, \"someval\" : 0 }\nO\n/\n$e3e87046-084a-4f21-a446-35a1b073be9b\022\007somecat\022\034{ \"doc\" : 6, \"someval\" : 0 }\nO\n/\n$31029d5c-060c-4df1-bf58-f17649943562\022\007somecat\022\034{ \"doc\" : 7, \"someval\" : 0 }\nO\n/\n$51a3a68f-1958-4bd9-a838-7c05caf3c91a\022\007somecat\022\034{ \"doc\" : 8, \"someval\" : 0 }\nO\n/\n$5180aa9c-21e2-4ac2-98ec-5bf87a6f72eb\022\007somecat\022\034{ \"doc\" : 9, \"someval\" : 0 }" request_id: 244
+Received: from: "06bffffff8b457d" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":0, \"someval\":0}" request_id: 245
+Sent: from: "DatabaseService" to: "06bffffff8b457d" operationName: "AddDocument" payload: "\n$22367c45-19b6-497a-929e-a19124cd24a8" request_id: 245
+Received: from: "06bffffff8b457d" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":1, \"someval\":0}" request_id: 246
+Sent: from: "DatabaseService" to: "06bffffff8b457d" operationName: "AddDocument" payload: "\n$908e8022-53b1-43ca-b81b-ba33b38a99ff" request_id: 246
+Received: from: "06bffffff8b457d" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":2, \"someval\":0}" request_id: 247
+Sent: from: "DatabaseService" to: "06bffffff8b457d" operationName: "AddDocument" payload: "\n$aa8b61b3-18f2-40ae-89c0-2ff59305663b" request_id: 247
+Received: from: "06bffffff8b457d" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":3, \"someval\":0}" request_id: 248
+Sent: from: "DatabaseService" to: "06bffffff8b457d" operationName: "AddDocument" payload: "\n$7474ca0f-cd74-411e-a085-cfb000811a9e" request_id: 248
+Received: from: "06bffffff8b457d" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":4, \"someval\":0}" request_id: 249
+Sent: from: "DatabaseService" to: "06bffffff8b457d" operationName: "AddDocument" payload: "\n$0fb192e6-fe8b-4047-9334-38782a443b28" request_id: 249
+Received: from: "06bffffff8b457d" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":5, \"someval\":0}" request_id: 250
+Sent: from: "DatabaseService" to: "06bffffff8b457d" operationName: "AddDocument" payload: "\n$66ca6161-4395-4798-9b47-3144a547194d" request_id: 250
+Received: from: "06bffffff8b457d" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":6, \"someval\":0}" request_id: 251
+Sent: from: "DatabaseService" to: "06bffffff8b457d" operationName: "AddDocument" payload: "\n$72ccd268-ce5e-4bbe-b3ce-d535738b327c" request_id: 251
+Received: from: "06bffffff8b457d" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":7, \"someval\":0}" request_id: 252
+Sent: from: "DatabaseService" to: "06bffffff8b457d" operationName: "AddDocument" payload: "\n$7ac376e0-0cb9-4dd5-8d8c-3145c7fa34da" request_id: 252
+Received: from: "06bffffff8b457d" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":8, \"someval\":0}" request_id: 253
+Sent: from: "DatabaseService" to: "06bffffff8b457d" operationName: "AddDocument" payload: "\n$1cf8a766-7fb4-4953-bc1d-5140085710d8" request_id: 253
+Received: from: "06bffffff8b457d" to: "DatabaseService" operationName: "AddDocument" payload: "\n\t\022\007somecat\022\026{\"doc\":9, \"someval\":0}" request_id: 254
+Sent: from: "DatabaseService" to: "06bffffff8b457d" operationName: "AddDocument" payload: "\n$55ef242b-082e-4b38-b0ce-613ef86ae681" request_id: 254
+Received: from: "06bffffff8b457d" to: "DatabaseService" operationName: "AddDocument" payload: "\n\023\n\003key\022\014someothercat\022\017{\"somevalue\":5}" request_id: 255
+Sent: from: "DatabaseService" to: "06bffffff8b457d" operationName: "AddDocument" payload: "\n\003key" request_id: 255
+Received: from: "06bffffff8b457d" to: "DatabaseService" operationName: "Fetch" request_id: 256
+Sent: from: "DatabaseService" to: "06bffffff8b457d" operationName: "Fetch" payload: "\nO\n/\n$22367c45-19b6-497a-929e-a19124cd24a8\022\007somecat\022\034{ \"doc\" : 0, \"someval\" : 0 }\nO\n/\n$908e8022-53b1-43ca-b81b-ba33b38a99ff\022\007somecat\022\034{ \"doc\" : 1, \"someval\" : 0 }\nO\n/\n$aa8b61b3-18f2-40ae-89c0-2ff59305663b\022\007somecat\022\034{ \"doc\" : 2, \"someval\" : 0 }\nO\n/\n$7474ca0f-cd74-411e-a085-cfb000811a9e\022\007somecat\022\034{ \"doc\" : 3, \"someval\" : 0 }\nO\n/\n$0fb192e6-fe8b-4047-9334-38782a443b28\022\007somecat\022\034{ \"doc\" : 4, \"someval\" : 0 }\nO\n/\n$66ca6161-4395-4798-9b47-3144a547194d\022\007somecat\022\034{ \"doc\" : 5, \"someval\" : 0 }\nO\n/\n$72ccd268-ce5e-4bbe-b3ce-d535738b327c\022\007somecat\022\034{ \"doc\" : 6, \"someval\" : 0 }\nO\n/\n$7ac376e0-0cb9-4dd5-8d8c-3145c7fa34da\022\007somecat\022\034{ \"doc\" : 7, \"someval\" : 0 }\nO\n/\n$1cf8a766-7fb4-4953-bc1d-5140085710d8\022\007somecat\022\034{ \"doc\" : 8, \"someval\" : 0 }\nO\n/\n$55ef242b-082e-4b38-b0ce-613ef86ae681\022\007somecat\022\034{ \"doc\" : 9, \"someval\" : 0 }\n*\n\023\n\003key\022\014someothercat\022\023{ \"somevalue\" : 5 }" request_id: 256

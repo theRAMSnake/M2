@@ -149,7 +149,6 @@ private:
             mActionsService.DeleteElement(nullptr, &mActionInfo.id(), &dummy, nullptr);
 
             parentNode()->removeChildNode(this);
-            delete this;
             };
 
           CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);

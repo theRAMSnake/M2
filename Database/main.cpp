@@ -178,6 +178,21 @@ public:
       response->set_success(false);
    }
 
+   virtual void Fetch(::google::protobuf::RpcController* controller,
+                        const ::common::EmptyMessage* request,
+                        ::database::Documents* response,
+                        ::google::protobuf::Closure* done)
+   {
+      for(auto x : mDb.list_collections())
+      {
+         std::string name = x["name"].get_utf8().value.to_string();
+         database::DocumentQuery query;
+         query.set_category(name);
+
+         SearchDocuments(nullptr, &query, response, nullptr);
+      }
+   }
+
 private:
 
    bool checkDocument(const ::database::Document& doc)

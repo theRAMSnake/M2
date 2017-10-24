@@ -385,3 +385,39 @@ BOOST_AUTO_TEST_CASE( Database_Find_Text )
       BOOST_CHECK_EQUAL(queryResult.result_size(), 10);
    }
 } 
+
+BOOST_AUTO_TEST_CASE( Database_Fetch ) 
+{
+   TestServiceProvider<database::DatabaseService> serviceProvider;
+   auto& service = serviceProvider.getService();
+
+   std::vector<std::string> guids = fillSampleDocuments(service);
+
+   common::UniqueId id;
+   database::Document doc;
+   doc.set_body("{\"somevalue\":5}");
+   doc.mutable_header()->set_key("key");
+   doc.mutable_header()->set_category("someothercat");
+
+   //valid doc creation
+   {
+      service.AddDocument(nullptr, &doc, &id, nullptr);
+   }
+
+   {
+      common::EmptyMessage emptyMsg;
+
+      database::Documents fetchResult;
+      service.Fetch(nullptr, &emptyMsg, &fetchResult, nullptr);
+
+      BOOST_CHECK_EQUAL(fetchResult.result_size(), 11);
+
+      for(auto x : fetchResult.result())
+      {
+         bool keyFound = std::find_if(guids.begin(), guids.end(), [&](auto y)->bool{return y == x.header().key();})
+            != guids.end();
+
+         BOOST_CHECK(keyFound || x.header().key() == id.guid());
+      }
+   }
+}
