@@ -11,6 +11,7 @@ AdminServiceHighLevelTest.cpp
 InboxServiceHighLevelTest.cpp
 ActionServiceHighLevelTest.cpp
 DatabaseServiceHighLevelTest.cpp
+CalendarServiceHighLevelTest.cpp
 )
 
 find_package(Boost COMPONENTS unit_test_framework filesystem REQUIRED)

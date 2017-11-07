@@ -81,7 +81,8 @@ std::vector<std::string> fillSampleDocuments(database::DatabaseService& service)
    for(int i = 0; i < 10; ++i)
    {
       database::Document doc;
-      doc.set_body("{\"doc\":" + boost::lexical_cast<std::string>(i) + ", \"someval\":0}");
+      doc.set_body("{\"doc\":" + boost::lexical_cast<std::string>(i) + ", \"someval\":"
+      + boost::lexical_cast<std::string>(i) + "}");
       doc.mutable_header()->set_category("somecat");
 
       common::UniqueId id;
@@ -275,7 +276,9 @@ BOOST_AUTO_TEST_CASE( Database_Edit )
 
          if(i != 0)
          {
-            BOOST_CHECK_EQUAL("{\"doc\":" + boost::lexical_cast<std::string>(i) + ",\"someval\":0}",
+            BOOST_CHECK_EQUAL("{\"doc\":" + boost::lexical_cast<std::string>(i) + ",\"someval\":"
+            + boost::lexical_cast<std::string>(i) +
+             "}",
              remove_spaces(queryResult.result(0).body()));
          }
          else
@@ -325,19 +328,21 @@ BOOST_AUTO_TEST_CASE( Database_Find_Text )
       auto kval = query.add_query();
       kval->set_key("doc");
       kval->set_value("3");
+      kval->set_type(database::QueryElementType::Equals);
       query.set_category("somecat");
 
       database::Documents queryResult;
       service.SearchDocuments(nullptr, &query, &queryResult, nullptr);
 
       BOOST_CHECK_EQUAL(queryResult.result_size(), 1);
-      BOOST_CHECK_EQUAL("{\"doc\":3,\"someval\":0}", remove_spaces(queryResult.result(0).body()));
+      BOOST_CHECK_EQUAL("{\"doc\":3,\"someval\":3}", remove_spaces(queryResult.result(0).body()));
    }
    {
       database::DocumentQuery query;
       auto kval = query.add_query();
       kval->set_key("error");
       kval->set_value("");
+      kval->set_type(database::QueryElementType::Equals);
 
       database::Documents queryResult;
       service.SearchDocuments(nullptr, &query, &queryResult, nullptr);
@@ -349,6 +354,7 @@ BOOST_AUTO_TEST_CASE( Database_Find_Text )
       auto kval = query.add_query();
       kval->set_key("doc");
       kval->set_value("11");
+      kval->set_type(database::QueryElementType::Equals);
       query.set_category("somecat");
 
       database::Documents queryResult;
@@ -361,30 +367,140 @@ BOOST_AUTO_TEST_CASE( Database_Find_Text )
       auto kval = query.add_query();
       kval->set_key("doc");
       kval->set_value("4");
+      kval->set_type(database::QueryElementType::Equals);
       kval = query.add_query();
       kval->set_key("someval");
-      kval->set_value("0");
+      kval->set_value("4");
+      kval->set_type(database::QueryElementType::Equals);
       query.set_category("somecat");
 
       database::Documents queryResult;
       service.SearchDocuments(nullptr, &query, &queryResult, nullptr);
 
       BOOST_CHECK_EQUAL(queryResult.result_size(), 1);
-      BOOST_CHECK_EQUAL("{\"doc\":4,\"someval\":0}", remove_spaces(queryResult.result(0).body()));
+      BOOST_CHECK_EQUAL("{\"doc\":4,\"someval\":4}", remove_spaces(queryResult.result(0).body()));
    }
    {
       database::DocumentQuery query;
       auto kval = query.add_query();
       kval->set_key("someval");
-      kval->set_value("0");
+      kval->set_value("3");
+      kval->set_type(database::QueryElementType::Equals);
       query.set_category("somecat");
 
       database::Documents queryResult;
       service.SearchDocuments(nullptr, &query, &queryResult, nullptr);
 
-      BOOST_CHECK_EQUAL(queryResult.result_size(), 10);
+      BOOST_CHECK_EQUAL(queryResult.result_size(), 1);
    }
 } 
+
+BOOST_AUTO_TEST_CASE( Database_Query_Less )
+{
+    TestServiceProvider<database::DatabaseService> serviceProvider;
+    auto& service = serviceProvider.getService();
+ 
+    std::vector<std::string> guids = fillSampleDocuments(service);
+
+    {
+        database::DocumentQuery query;
+        auto kval = query.add_query();
+        kval->set_key("someval");
+        kval->set_value("5");
+        kval->set_type(database::QueryElementType::Less);
+        query.set_category("somecat");
+  
+        database::Documents queryResult;
+        service.SearchDocuments(nullptr, &query, &queryResult, nullptr);
+  
+        BOOST_CHECK_EQUAL(queryResult.result_size(), 5);
+    }
+    {
+        database::DocumentQuery query;
+        auto kval = query.add_query();
+        kval->set_key("someval");
+        kval->set_value("1");
+        kval->set_type(database::QueryElementType::Less);
+        query.set_category("somecat");
+  
+        database::Documents queryResult;
+        service.SearchDocuments(nullptr, &query, &queryResult, nullptr);
+  
+        BOOST_CHECK_EQUAL(queryResult.result_size(), 1);
+    }
+}
+
+BOOST_AUTO_TEST_CASE( Database_Query_Greater )
+{
+    TestServiceProvider<database::DatabaseService> serviceProvider;
+    auto& service = serviceProvider.getService();
+ 
+    std::vector<std::string> guids = fillSampleDocuments(service);
+
+    {
+        database::DocumentQuery query;
+        auto kval = query.add_query();
+        kval->set_key("someval");
+        kval->set_value("1");
+        kval->set_type(database::QueryElementType::Greater);
+        query.set_category("somecat");
+  
+        database::Documents queryResult;
+        service.SearchDocuments(nullptr, &query, &queryResult, nullptr);
+  
+        BOOST_CHECK_EQUAL(queryResult.result_size(), 8);
+    }
+    {
+        database::DocumentQuery query;
+        auto kval = query.add_query();
+        kval->set_key("someval");
+        kval->set_value("5");
+        kval->set_type(database::QueryElementType::Greater);
+        query.set_category("somecat");
+  
+        database::Documents queryResult;
+        service.SearchDocuments(nullptr, &query, &queryResult, nullptr);
+  
+        BOOST_CHECK_EQUAL(queryResult.result_size(), 4);
+    }
+}
+
+BOOST_AUTO_TEST_CASE( Database_Query_Between )
+{
+    TestServiceProvider<database::DatabaseService> serviceProvider;
+    auto& service = serviceProvider.getService();
+ 
+    std::vector<std::string> guids = fillSampleDocuments(service);
+
+    {
+        database::DocumentQuery query;
+        auto kval = query.add_query();
+        kval->set_key("someval");
+        kval->set_value("1");
+        kval->set_value2("5");
+        kval->set_type(database::QueryElementType::Between);
+        query.set_category("somecat");
+  
+        database::Documents queryResult;
+        service.SearchDocuments(nullptr, &query, &queryResult, nullptr);
+  
+        BOOST_CHECK_EQUAL(queryResult.result_size(), 3);
+    }
+    {
+        database::DocumentQuery query;
+        auto kval = query.add_query();
+        kval->set_key("someval");
+        kval->set_value("5");
+        kval->set_value2("1");
+        kval->set_type(database::QueryElementType::Between);
+        query.set_category("somecat");
+  
+        database::Documents queryResult;
+        service.SearchDocuments(nullptr, &query, &queryResult, nullptr);
+  
+        BOOST_CHECK_EQUAL(queryResult.result_size(), 0);
+    }
+}
 
 BOOST_AUTO_TEST_CASE( Database_Fetch ) 
 {

@@ -30,9 +30,9 @@ public:
    }
 
    void GetDocument(::google::protobuf::RpcController* controller,
-                       const ::database::DocumentHeader* request,
-                       ::database::Documents* response,
-                       ::google::protobuf::Closure* done)
+                    const::database::DocumentHeader* request,
+                    ::database::Documents* response,
+                    ::google::protobuf::Closure* done)
    {
       if(request->category().empty())
       {
@@ -48,6 +48,27 @@ public:
          doc->set_body(bsoncxx::to_json(maybe_result->view()["body"].get_document().view()));
          doc->mutable_header()->set_key(request->key());
          doc->mutable_header()->set_category(request->category());
+      }
+   }
+
+   std::string composeMongoExpression(const database::QueryElementType type, const std::string& val, const std::string& val2)
+   {
+      switch(type)
+      {
+      case database::QueryElementType::Equals:
+         return val;
+
+      case database::QueryElementType::Less:
+         return "{\"$lt\": " + val + " }";
+
+      case database::QueryElementType::Greater:
+         return "{\"$gt\": " + val + " }";
+
+      case database::QueryElementType::Between:
+         return "{\"$gt\": " + val + " , \"$lt\": " + val2 + " }";
+
+      default:
+         return "";
       }
    }
 
@@ -69,25 +90,27 @@ public:
           {
               json_filter += ", ";
           }
-          json_filter += "\"body." + kval.key() + "\":" + kval.value();
+          json_filter += "\"body." + kval.key() + "\":" + composeMongoExpression(kval.type(), kval.value(), kval.value2());
       }
       json_filter += "}";
 
        try
        {
-            bsoncxx::document::value body = bsoncxx::from_json(json_filter);
-            
-            for(auto x : mDb[request->category()].find(bsoncxx::types::b_document{body.view()}.view()))
-            {
-                auto doc = response->add_result();
-                doc->set_body(bsoncxx::to_json(x["body"].get_document().view()));
-                doc->mutable_header()->set_key(x["key"].get_utf8().value.to_string());
-                doc->mutable_header()->set_category(request->category());
-            }
+         printf("\nJSON FILTER: %s\n", json_filter.c_str());
+         bsoncxx::document::value body = bsoncxx::from_json(json_filter);
+         
+         for(auto x : mDb[request->category()].find(bsoncxx::types::b_document{body.view()}.view()))
+         {
+               auto doc = response->add_result();
+               doc->set_body(bsoncxx::to_json(x["body"].get_document().view()));
+               doc->mutable_header()->set_key(x["key"].get_utf8().value.to_string());
+               doc->mutable_header()->set_category(request->category());
+         }
         }
        catch(...)
        {
-
+          //Compose with BSON instead
+          printf("\nGOTCHA\n");
        }
    }
 

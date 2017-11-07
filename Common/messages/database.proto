@@ -16,15 +16,25 @@ message Document
    string body = 2;
 }
 
-message KeyValue
+enum QueryElementType
+{
+   Equals = 0;
+   Less = 1;
+   Greater = 2;
+   Between = 3;
+}
+
+message QueryElement
 {
    string key = 1;
    string value = 2;
+   string value2 = 3;
+   QueryElementType type = 4;
 }
 
 message DocumentQuery
 {
-   repeated KeyValue query = 1;
+   repeated QueryElement query = 1;
    string category = 2;
 }
 

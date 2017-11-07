@@ -57,6 +57,10 @@ public:
         std::shared_ptr<zmq::socket_t> databaseSocket (new zmq::socket_t(context, ZMQ_DEALER));
         databaseSocket->connect("tcp://localhost:" + gDatabasePort);
         mSockets.insert(std::make_pair("DatabaseService", databaseSocket));
+
+        std::shared_ptr<zmq::socket_t> calendarSocket (new zmq::socket_t(context, ZMQ_DEALER));
+        calendarSocket->connect("tcp://localhost:" + gCalendarPort);
+        mSockets.insert(std::make_pair("CalendarService", calendarSocket));
     }
 
     void routeMessage(const zmq::message_t& msg)
