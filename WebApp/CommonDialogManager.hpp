@@ -6,7 +6,8 @@
 
 enum class FieldType
 {
-   String
+   String,
+   Time
 };
 
 struct FieldInfo
