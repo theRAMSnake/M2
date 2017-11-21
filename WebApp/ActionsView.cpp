@@ -30,6 +30,13 @@ public:
       mDesc = new Wt::WTextEdit();
       mDesc->setHeight(500);
       mDesc->setConfigurationSetting("branding", false);
+      mDesc->setConfigurationSetting("elementpath", false);
+      mDesc->setConfigurationSetting("Browser_spellcheck", true);
+      mDesc->setConfigurationSetting("statusbar", false);
+      mDesc->setConfigurationSetting("menubar", "edit format table");
+      
+      mDesc->setExtraPlugins("colorpicker, textcolor, searchreplace, table, lists");
+      mDesc->setToolBar(0, "bold italic | link | forecolor backcolor | fontsizeselect | numlist bullist");
       mDesc->setText(desc);
       
       contents()->addWidget(std::unique_ptr<Wt::WTextEdit>(mDesc));
