@@ -25,8 +25,7 @@ public class ActionsModel
         mItemsChanges = new Vector<>();
     }
 
-    public void sync()
-    {
+    public void sync() throws MateriaUnreachableException {
         try
         {
             Map<String, String> virtualToRealIdMap = new HashMap<>();
@@ -151,7 +150,7 @@ public class ActionsModel
         mLocalDb.put("ActionItemsStatus", bos.toByteArray());
     }
 
-    private Actions.ActionsList fetchRecursive(Common.UniqueId id) throws InvalidProtocolBufferException
+    private Actions.ActionsList fetchRecursive(Common.UniqueId id) throws InvalidProtocolBufferException, MateriaUnreachableException
     {
         Actions.ActionsList items = mProxy.getChildren(id);
         Actions.ActionsList result = Actions.ActionsList.newBuilder(items).build();

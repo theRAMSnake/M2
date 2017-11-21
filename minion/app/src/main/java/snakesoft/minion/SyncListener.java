@@ -7,4 +7,6 @@ package snakesoft.minion;
 public interface SyncListener
 {
     void onSyncComplete();
+
+    void onSyncError();
 }

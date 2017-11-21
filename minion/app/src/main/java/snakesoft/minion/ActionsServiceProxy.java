@@ -25,8 +25,7 @@ public class ActionsServiceProxy
         mMateriaConnection = materiaConnection;
     }
 
-    public Actions.ActionsList getChildren(Common.UniqueId id) throws InvalidProtocolBufferException
-    {
+    public Actions.ActionsList getChildren(Common.UniqueId id) throws InvalidProtocolBufferException, MateriaUnreachableException {
         return Actions.ActionsList.parseFrom(mMateriaConnection.sendMessage(
                 id.toByteString(),
                 "ActionsService",
@@ -34,8 +33,7 @@ public class ActionsServiceProxy
         ));
     }
 
-    public Actions.ActionsList getParentlessElements() throws InvalidProtocolBufferException
-    {
+    public Actions.ActionsList getParentlessElements() throws InvalidProtocolBufferException, MateriaUnreachableException {
         return Actions.ActionsList.parseFrom(mMateriaConnection.sendMessage(
                 Common.EmptyMessage.newBuilder().build().toByteString(),
                 "ActionsService",
@@ -43,8 +41,7 @@ public class ActionsServiceProxy
         ));
     }
 
-    public Common.UniqueId addElement(Actions.ActionInfo nfo) throws InvalidProtocolBufferException
-    {
+    public Common.UniqueId addElement(Actions.ActionInfo nfo) throws InvalidProtocolBufferException, MateriaUnreachableException {
         return Common.UniqueId.parseFrom(mMateriaConnection.sendMessage(
                 nfo.toByteString(),
                 "ActionsService",
@@ -52,8 +49,7 @@ public class ActionsServiceProxy
         ));
     }
 
-    public void deleteElement(Common.UniqueId id) throws InvalidProtocolBufferException
-    {
+    public void deleteElement(Common.UniqueId id) throws InvalidProtocolBufferException, MateriaUnreachableException {
         mMateriaConnection.sendMessage(
                 id.toByteString(),
                 "ActionsService",
@@ -61,8 +57,7 @@ public class ActionsServiceProxy
         );
     }
 
-    public void editElement(Actions.ActionInfo nfo) throws InvalidProtocolBufferException
-    {
+    public void editElement(Actions.ActionInfo nfo) throws InvalidProtocolBufferException, MateriaUnreachableException {
         mMateriaConnection.sendMessage(
                 nfo.toByteString(),
                 "ActionsService",

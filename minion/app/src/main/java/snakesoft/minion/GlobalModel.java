@@ -15,20 +15,38 @@ public class GlobalModel
     {
         protected SyncListener doInBackground(SyncListener... p)
         {
-            GlobalModel.doSync();
+            mSyncResult = GlobalModel.doSync();
             return p[0];
         }
 
         protected void onPostExecute(SyncListener listener)
         {
-            listener.onSyncComplete();
+            if(mSyncResult)
+            {
+                listener.onSyncComplete();
+            }
+            else
+            {
+                listener.onSyncError();
+            }
         }
+
+        private boolean mSyncResult;
     }
 
-    protected static void doSync()
+    protected static boolean doSync()
     {
-        mInboxModel.sync();
-        mActionsModel.sync();
+        try
+        {
+            mInboxModel.sync();
+            mActionsModel.sync();
+
+            return true;
+        }
+        catch(MateriaUnreachableException ex)
+        {
+            return false;
+        }
     }
 
     public static void init(Context context)

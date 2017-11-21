@@ -20,8 +20,7 @@ public class InboxServiceProxy
         mMateriaConnection = materiaConnection;
     }
 
-    public Inbox.InboxItems getInbox() throws InvalidProtocolBufferException
-    {
+    public Inbox.InboxItems getInbox() throws InvalidProtocolBufferException, MateriaUnreachableException {
         return Inbox.InboxItems.parseFrom(mMateriaConnection.sendMessage(
                 Common.EmptyMessage.newBuilder().build().toByteString(),
                 "InboxService",
@@ -29,8 +28,7 @@ public class InboxServiceProxy
         ));
     }
 
-    public void deleteItem(Common.UniqueId id) throws InvalidProtocolBufferException
-    {
+    public void deleteItem(Common.UniqueId id) throws InvalidProtocolBufferException, MateriaUnreachableException {
         mMateriaConnection.sendMessage(
                 id.toByteString(),
                 "InboxService",
@@ -38,8 +36,7 @@ public class InboxServiceProxy
         );
     }
 
-    public Common.UniqueId addItem(Inbox.InboxItemInfo item) throws InvalidProtocolBufferException
-    {
+    public Common.UniqueId addItem(Inbox.InboxItemInfo item) throws InvalidProtocolBufferException, MateriaUnreachableException {
         return Common.UniqueId.parseFrom(mMateriaConnection.sendMessage(
                 item.toByteString(),
                 "InboxService",
@@ -47,8 +44,7 @@ public class InboxServiceProxy
         ));
     }
 
-    public boolean editItem(Inbox.InboxItemInfo item) throws InvalidProtocolBufferException
-    {
+    public boolean editItem(Inbox.InboxItemInfo item) throws InvalidProtocolBufferException, MateriaUnreachableException {
         return Common.OperationResultMessage.parseFrom(mMateriaConnection.sendMessage(
                 item.toByteString(),
                 "InboxService",

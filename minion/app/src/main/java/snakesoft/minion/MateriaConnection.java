@@ -40,10 +40,11 @@ public class MateriaConnection
         mContext = ZMQ.context(1);
         mSocket = mContext.socket(ZMQ.REQ);
         mSocket.connect("tcp://" + mIp + ":5910");
+        mSocket.setReceiveTimeOut(30000);
         mConnected = true;
     }
 
-    com.google.protobuf.ByteString sendMessage(com.google.protobuf.ByteString payload, String serviceName, String operationName) throws InvalidProtocolBufferException
+    com.google.protobuf.ByteString sendMessage(com.google.protobuf.ByteString payload, String serviceName, String operationName) throws InvalidProtocolBufferException, MateriaUnreachableException
     {
         if(!mConnected)
         {
@@ -58,6 +59,11 @@ public class MateriaConnection
 
         mSocket.send(toSend.toByteArray());
         byte[] responce = mSocket.recv();
+
+        if(responce == null)
+        {
+            throw new MateriaUnreachableException();
+        }
 
         common.Common.MateriaMessage result = common.Common.MateriaMessage.parseFrom(responce);
         return result.getPayload();

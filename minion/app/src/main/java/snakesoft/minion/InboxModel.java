@@ -18,8 +18,7 @@ public class InboxModel
         mItemsChanges = new Vector<>();
     }
 
-    public void sync()
-    {
+    public void sync() throws MateriaUnreachableException {
         try
         {
             for(int i = 0; i < mItemsChanges.size(); ++i)
