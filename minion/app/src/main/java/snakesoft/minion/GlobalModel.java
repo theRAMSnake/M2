@@ -40,6 +40,7 @@ public class GlobalModel
         {
             mInboxModel.sync();
             mActionsModel.sync();
+            mCalendarModel.sync();
 
             return true;
         }
@@ -74,6 +75,8 @@ public class GlobalModel
 
         mInboxModel = new InboxModel(new InboxServiceProxy(mConnection));
         mActionsModel = new ActionsModel(new ActionsServiceProxy(mConnection));
+        mCalendarModel = new CalendarModel(
+                new CalendarServiceProxy(mConnection));
 
         loadState();
     }
@@ -82,6 +85,7 @@ public class GlobalModel
     {
         mInboxModel.loadState(mLocalDatabase);
         mActionsModel.loadState(mLocalDatabase);
+        mCalendarModel.loadState(mLocalDatabase);
     }
 
     public static void sync(SyncListener listener)
@@ -94,6 +98,7 @@ public class GlobalModel
         return mInboxModel;
     }
     public static ActionsModel getActionsModel() {return mActionsModel; }
+    public static CalendarModel getCalendarModel() {return mCalendarModel; }
 
     public static String getIp()
     {
@@ -108,6 +113,7 @@ public class GlobalModel
             mConnection.setNewIp(ip);
             mInboxModel.resetChanges();
             mActionsModel.resetChanges();
+            mCalendarModel.resetChanges();
         }
     }
 
@@ -115,4 +121,5 @@ public class GlobalModel
     static private LocalDatabase mLocalDatabase;
     static private InboxModel mInboxModel;
     static private ActionsModel mActionsModel;
+    static private CalendarModel mCalendarModel;
 }

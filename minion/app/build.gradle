@@ -14,6 +14,7 @@ dependencies {
     compile 'org.zeromq:jeromq:0.4.0'
     compile 'com.github.bmelnychuk:atv:1.2.+'
     compile 'com.github.johnkil.print:print:1.2.2'
+    compile 'com.applandeo:material-calendar-view:1.0.1'
     testCompile 'junit:junit:4.12'
 }
 

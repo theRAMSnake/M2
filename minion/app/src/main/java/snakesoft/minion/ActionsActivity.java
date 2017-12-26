@@ -17,22 +17,6 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 import actions.Actions;
 import common.Common;
 
-class TreeItemHolder extends TreeNode.BaseNodeViewHolder<Actions.ActionInfo> {
-    public TreeItemHolder(Context context) {
-        super(context);
-    }
-
-    public View createNodeView(TreeNode node, Actions.ActionInfo value)
-    {
-        final LayoutInflater inflater = LayoutInflater.from(context);
-        final View view = inflater.inflate(R.layout.layout_profile_node, null, false);
-        TextView tvValue = (TextView) view.findViewById(R.id.node_value);
-        tvValue.setText(value != null ? value.getTitle() : "New...");
-
-        return view;
-    }
-}
-
 public class ActionsActivity extends AppCompatActivity implements TreeNode.TreeNodeLongClickListener
 {
 

@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
 
     <application
         android:allowBackup="true"
@@ -25,7 +27,10 @@
         <activity android:name=".InboxItemViewActivity" />
         <activity android:name=".SettingsActivity" />
         <activity android:name=".ActionsActivity" />
-        <activity android:name=".ActionsItemViewActivity"></activity>
+        <activity android:name=".ActionsItemViewActivity" />
+        <activity android:name=".CalendarActivity" />
+        <activity android:name=".CalendarDayViewActivity" />
+        <activity android:name=".CalendarItemViewActivity"></activity>
     </application>
 
 </manifest>

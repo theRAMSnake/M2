@@ -34,6 +34,16 @@
             android:text="SYNC" />
 
         <Button
+            android:id="@+id/btnCalendar"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_column="1"
+            android:layout_row="1"
+            android:text="Calendar"
+            tools:layout_editor_absoluteX="175dp"
+            tools:layout_editor_absoluteY="278dp" />
+
+        <Button
             android:id="@+id/btnActions"
             android:layout_width="120dp"
             android:layout_height="120dp"

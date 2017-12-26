@@ -1,7 +1,10 @@
 package snakesoft.minion;
 
+import android.content.ContentUris;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.CalendarContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -31,6 +34,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mSettingsBtn = (Button) findViewById(R.id.btnSettings);
         mSettingsBtn.setOnClickListener(MainActivity.this);
 
+        mCalendarBtn = (Button) findViewById(R.id.btnCalendar);
+        mCalendarBtn.setOnClickListener(MainActivity.this);
+
         GlobalModel.init(getApplicationContext());
     }
 
@@ -57,10 +63,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Intent myIntent = new Intent(MainActivity.this, SettingsActivity.class);
             MainActivity.this.startActivity(myIntent);
         }
+        if(v == mCalendarBtn)
+        {
+            Intent myIntent = new Intent(MainActivity.this, CalendarActivity.class);
+            startActivity(myIntent);
+        }
     }
 
     private Button mSyncBtn;
     private Button mInboxBtn;
     private Button mActionsBtn;
     private Button mSettingsBtn;
+    private Button mCalendarBtn;
 }
