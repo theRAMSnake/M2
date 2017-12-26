@@ -142,6 +142,7 @@
       "numeric": "cpp",
       "wabstracttogglebutton": "cpp",
       "wcheckbox": "cpp",
-      "any": "cpp"
+      "any": "cpp",
+      "hash_set": "cpp"
    }
 }
