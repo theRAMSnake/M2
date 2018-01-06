@@ -2,6 +2,7 @@ package snakesoft.minion;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
 
@@ -78,14 +79,44 @@ public class GlobalModel
         mCalendarModel = new CalendarModel(
                 new CalendarServiceProxy(mConnection));
 
-        loadState();
+        loadState(context);
     }
 
-    private static void loadState()
+    private static void loadState(Context context)
     {
-        mInboxModel.loadState(mLocalDatabase);
-        mActionsModel.loadState(mLocalDatabase);
-        mCalendarModel.loadState(mLocalDatabase);
+        boolean dbok = true;
+        try
+        {
+            mInboxModel.loadState(mLocalDatabase);
+        } catch (Exception e)
+        {
+            dbok = false;
+        }
+        try
+        {
+            mActionsModel.loadState(mLocalDatabase);
+        } catch (Exception e)
+        {
+            dbok = false;
+        }
+        try
+        {
+            mCalendarModel.loadState(mLocalDatabase);
+        } catch (Exception e)
+        {
+            dbok = false;
+        }
+
+        if(!dbok)
+        {
+
+            CharSequence text = "Database is inconsistent please reset.";
+            int duration = Toast.LENGTH_LONG;
+
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
+            return;
+        }
     }
 
     public static void sync(SyncListener listener)
@@ -105,15 +136,20 @@ public class GlobalModel
         return mConnection.getIp();
     }
 
+    public static void reset()
+    {
+        mInboxModel.resetChanges();
+        mActionsModel.resetChanges();
+        mCalendarModel.resetChanges();
+    }
+
     public static void setNewIp(String ip)
     {
         if(!mConnection.getIp().equals(ip))
         {
             mLocalDatabase.put("Settings.IP", ip.getBytes());
             mConnection.setNewIp(ip);
-            mInboxModel.resetChanges();
-            mActionsModel.resetChanges();
-            mCalendarModel.resetChanges();
+            reset();
         }
     }
 

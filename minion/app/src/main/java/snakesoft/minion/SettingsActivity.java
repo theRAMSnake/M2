@@ -1,5 +1,7 @@
 package snakesoft.minion;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,6 +28,25 @@ public class SettingsActivity extends AppCompatActivity {
 
                 Intent myIntent = new Intent(SettingsActivity.this, SyncActivity.class);
                 SettingsActivity.this.startActivity(myIntent);
+            }
+        });
+
+        ((Button) findViewById(R.id.set_btnReset)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(SettingsActivity.this);
+                dlgAlert.setMessage("Are you sure?");
+                dlgAlert.setTitle("Caution");
+                dlgAlert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        GlobalModel.reset();
+
+                        Intent myIntent = new Intent(SettingsActivity.this, SyncActivity.class);
+                        SettingsActivity.this.startActivity(myIntent);
+                    }});
+
+                dlgAlert.setCancelable(true);
+                dlgAlert.create().show();
             }
         });
     }

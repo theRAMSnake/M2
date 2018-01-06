@@ -20,14 +20,14 @@ void stop()
    system("pkill m2ActionsServic");
    system("pkill m2Calendar");
    system("pkill m2central");
-   system("pkill WebApp.sh");
+   system("pkill WebApp");
 
    std::cout << "Done\n";
 }
 
 int main(int argc, char *argv[])
 {
-   if(argc != 2)
+   if(argc < 2)
    {
       std::cout << "Please specify command to run";
       return -1;

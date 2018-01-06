@@ -84,8 +84,7 @@ public class ActionsModel
         saveState();
     }
 
-    public void loadState(LocalDatabase localDb)
-    {
+    public void loadState(LocalDatabase localDb) throws Exception {
         mLocalDb = localDb;
         try
         {
@@ -134,6 +133,12 @@ public class ActionsModel
                     mItemsChanges.addElement(new StatusOfChange());
                 }
             }
+        }
+
+        //db check
+        if(mItems.getListCount() != mItemsChanges.size())
+        {
+            throw new Exception("Inconsistent DB!");
         }
     }
 
@@ -203,12 +208,26 @@ public class ActionsModel
                     }
                 }
 
-                if(curItem.getType() == Actions.ActionType.Group)
+                if(curItem.getType() == Actions.ActionType.Group || hasChildren(curItem.getId().getGuid()))
                 {
                     node.addChild(new TreeNode(null));
                 }
             }
         }
+    }
+
+    private boolean hasChildren(String guid)
+    {
+        for(int i = 0; i < mItems.getListCount(); ++i)
+        {
+            Actions.ActionInfo curItem = mItems.getList(i);
+            if(curItem.getParentId().getGuid().equals(guid))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void modifyItem(Actions.ActionInfo item)

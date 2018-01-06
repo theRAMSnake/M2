@@ -151,8 +151,7 @@ public class CalendarModel
         saveState();
     }
 
-    public void loadState(LocalDatabase localDb)
-    {
+    public void loadState(LocalDatabase localDb) throws Exception {
         mLocalDb = localDb;
         try
         {
@@ -201,6 +200,12 @@ public class CalendarModel
                     mItemsChanges.addElement(new StatusOfChange());
                 }
             }
+        }
+
+        //db check
+        if(mItems.getItemsCount() != mItemsChanges.size())
+        {
+            throw new Exception("Inconsistent DB!");
         }
     }
 
