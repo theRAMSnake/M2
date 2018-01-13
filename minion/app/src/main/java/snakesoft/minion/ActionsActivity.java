@@ -26,8 +26,11 @@ public class ActionsActivity extends AppCompatActivity implements TreeNode.TreeN
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_actions);
 
+        final String mode = getIntent().getStringExtra("Mode");
+
         TreeNode root = TreeNode.root();
-        GlobalModel.getActionsModel().fillTreeRoot(root);
+        GlobalModel.getActionsModel().fillTreeRoot(root, mode.equals("Normal")
+                ? ActionsTreeType.Normal : ActionsTreeType.Backlog);
 
         AndroidTreeView tView = new AndroidTreeView(this, root);
         tView.setDefaultViewHolder(TreeItemHolder.class);

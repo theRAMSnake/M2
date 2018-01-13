@@ -212,7 +212,13 @@ public:
 
       for(int i = 0; i < result.list_size(); ++i)
       {
-         addChildNode(Wt::cpp14::make_unique<ActionsTreeNode>(result.list(i), mActionsService));
+         auto node = addChildNode(Wt::cpp14::make_unique<ActionsTreeNode>(result.list(i), mActionsService));
+
+         if(result.list(i).title() == "Backlog")
+         {
+            mBackLogNode = node;
+            mBackLogNode->hide();
+         }
       }
    }
 
@@ -236,6 +242,21 @@ public:
       {
          ActionsTreeNode* node = static_cast<ActionsTreeNode*>(x);
          node->setMoveMode(moveMode);
+      }
+   }
+
+   void setShowBacklogMode(const bool isShowBacklog)
+   {
+      if(mBackLogNode != nullptr)
+      {
+         if(isShowBacklog)
+         {
+            mBackLogNode->show();
+         }
+         else
+         {
+            mBackLogNode->hide();
+         }
       }
    }
 
@@ -263,6 +284,7 @@ private:
       }
    }
 
+   Wt::WTreeNode* mBackLogNode = nullptr;
    actions::ActionsService_Stub& mActionsService;
 };
 
@@ -781,6 +803,11 @@ ActionsView::ActionsView()
    cbMoveMode->checked().connect(std::bind([=](){root->setMoveMode(true);}));
    cbMoveMode->unChecked().connect(std::bind([=](){root->setMoveMode(false);}));
    actionsGroup->addWidget(std::unique_ptr<Wt::WCheckBox>(cbMoveMode));
+
+   auto cbShowBl = new Wt::WCheckBox("Show backlog");
+   cbShowBl->checked().connect(std::bind([=](){root->setShowBacklogMode(true);}));
+   cbShowBl->unChecked().connect(std::bind([=](){root->setShowBacklogMode(false);}));
+   actionsGroup->addWidget(std::unique_ptr<Wt::WCheckBox>(cbShowBl));
    
    tree->setTreeRoot(std::unique_ptr<ActionsRootTreeNode>(root));
    tree->setStyleClass("custom-tree");

@@ -17,6 +17,12 @@ import common.Common;
  * Created by snake on 5/14/17.
  */
 
+enum ActionsTreeType
+{
+    Normal,
+    Backlog
+}
+
 public class ActionsModel
 {
     public ActionsModel(ActionsServiceProxy actionsServiceProxy)
@@ -175,7 +181,7 @@ public class ActionsModel
         return Actions.ActionsList.newBuilder(a).mergeFrom(b).build();
     }
 
-    public void fillTreeRoot(TreeNode root)
+    public void fillTreeRoot(TreeNode root, ActionsTreeType typeOfTree)
     {
         //Here we assume that children always has index greater that its parent.
         Map<String, TreeNode> idToIndexMap = new HashMap<>();
@@ -194,7 +200,18 @@ public class ActionsModel
 
                 if (curItem.getParentId().getGuid().isEmpty())
                 {
-                    root.addChild(node);
+                    if(typeOfTree == ActionsTreeType.Normal && !curItem.getTitle().equals("Backlog"))
+                    {
+                        root.addChild(node);
+                    }
+                    else if(typeOfTree == ActionsTreeType.Backlog && curItem.getTitle().equals("Backlog"))
+                    {
+                        root.addChild(node);
+                    }
+                    else
+                    {
+                        //Filter out
+                    }
                 }
                 else
                 {
@@ -204,7 +221,7 @@ public class ActionsModel
                     }
                     else
                     {
-                        //parent is deleted, but items will remain until next sync
+                        //parent is deleted or filtered out, but items will remain until next sync
                     }
                 }
 

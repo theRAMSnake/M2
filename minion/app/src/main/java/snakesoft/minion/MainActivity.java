@@ -37,6 +37,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mCalendarBtn = (Button) findViewById(R.id.btnCalendar);
         mCalendarBtn.setOnClickListener(MainActivity.this);
 
+        mBacklogBtn = (Button) findViewById(R.id.btnBacklog);
+        mBacklogBtn.setOnClickListener(MainActivity.this);
+
         GlobalModel.init(getApplicationContext());
     }
 
@@ -56,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(v == mActionsBtn)
         {
             Intent myIntent = new Intent(MainActivity.this, ActionsActivity.class);
+            myIntent.putExtra("Mode", "Normal");
             MainActivity.this.startActivity(myIntent);
         }
         if(v == mSettingsBtn)
@@ -68,6 +72,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Intent myIntent = new Intent(MainActivity.this, CalendarActivity.class);
             startActivity(myIntent);
         }
+        if(v == mBacklogBtn)
+        {
+            Intent myIntent = new Intent(MainActivity.this, ActionsActivity.class);
+            myIntent.putExtra("Mode", "Backlog");
+            MainActivity.this.startActivity(myIntent);
+        }
     }
 
     private Button mSyncBtn;
@@ -75,4 +85,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button mActionsBtn;
     private Button mSettingsBtn;
     private Button mCalendarBtn;
+    private Button mBacklogBtn;
 }

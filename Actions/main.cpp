@@ -64,21 +64,6 @@ public:
                        ::actions::ActionsList* response,
                        ::google::protobuf::Closure* done)
    {
-      ///Old style impl
-      /*for (boost::filesystem::directory_iterator iter(g_dir); iter != boost::filesystem::directory_iterator(); ++iter)
-      {
-         std::ifstream file(iter->path().string());
-
-         actions::ActionInfo info;
-         info.ParseFromIstream(&file);
-
-         if(info.parentid().guid() == request->guid())
-         {
-            response->mutable_list()->Add()->CopyFrom(info);
-         }
-
-         file.close();
-      }*/
       database::DocumentQuery query;
       query.set_category(mCategory);
       auto kvl = query.add_query();
@@ -100,21 +85,6 @@ public:
                        ::actions::ActionsList* response,
                        ::google::protobuf::Closure* done)
    {
-      ///Old style impl
-      /*for (boost::filesystem::directory_iterator iter(g_dir); iter != boost::filesystem::directory_iterator(); ++iter)
-      {
-         std::ifstream file(iter->path().string());
-
-         actions::ActionInfo info;
-         info.ParseFromIstream(&file);
-
-         if(info.parentid().guid().empty())
-         {
-            response->mutable_list()->Add()->CopyFrom(info);
-         }
-
-         file.close();
-      }*/
       database::DocumentQuery query;
       query.set_category(mCategory);
       auto kvl = query.add_query();
