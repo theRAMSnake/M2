@@ -12,6 +12,7 @@
 #include <mongocxx/client.hpp>
 #include <mongocxx/stdx.hpp>
 #include <mongocxx/uri.hpp>
+#include <mongocxx/exception/query_exception.hpp>
 
 using namespace bsoncxx::builder::stream;
 
@@ -121,22 +122,22 @@ public:
    {
       if(checkDocument(*request))
       {
-          try
-          {
-              std::string key = request->header().key().empty() ? to_string(generator()) : request->header().key();
-              bsoncxx::document::value body = bsoncxx::from_json(request->body());
-              mDb[request->header().category()].insert_one(
-                document{} << "key" << key
-                << "body" << bsoncxx::types::b_document{body.view()}
-                << finalize
-                );
+         try
+         {
+            std::string key = request->header().key().empty() ? to_string(generator()) : request->header().key();
+            bsoncxx::document::value body = bsoncxx::from_json(request->body());
+            mDb[request->header().category()].insert_one(
+               document{} << "key" << key
+               << "body" << bsoncxx::types::b_document{body.view()}
+               << finalize
+               );
 
-              response->set_guid(key);
-          }
-          catch(...)
-          {
+            response->set_guid(key);
+         }
+         catch(...)
+         {
 
-          }
+         }
       }
    }
 
@@ -213,6 +214,65 @@ public:
          query.set_category(name);
 
          SearchDocuments(nullptr, &query, response, nullptr);
+      }
+   }
+
+   virtual void FullTextSearch(::google::protobuf::RpcController* controller,
+                              const ::database::FullTextSearchParameters* request,
+                              ::database::FullTextSearchResult* response,
+                              ::google::protobuf::Closure* done)
+   {
+      ///Dont work with fucking mongodb again. Let's use stupid approach and refactor if needed later on.
+      std::vector<database::FullTextSearchResultEntry> result;
+
+      for(auto x : mDb.list_collections())
+      {
+         std::string name = x["name"].get_utf8().value.to_string();
+
+         mDb[name].create_index(
+            document{} << "body" << "text"
+               << finalize
+         );
+
+         //std::ofstream log("rrr.log");
+
+         try
+         {
+            auto query = document{} << "$text" << 
+               (document{} << "$search" << request->fulltext() << finalize)
+               /*<< "score"
+               << (document{} << "$meta" << "textScore" << finalize)*/
+               << finalize;
+
+            //log << "!!!" << bsoncxx::to_json(query.view());
+
+            auto find_result = mDb[name].find(query.view());
+
+            for(auto i : find_result)
+            {
+               database::FullTextSearchResultEntry result_item;
+               result_item.mutable_doc()->set_body(bsoncxx::to_json(i["body"].get_document().view()));
+               result_item.mutable_doc()->mutable_header()->set_key(i["key"].get_utf8().value.to_string());
+               result_item.mutable_doc()->mutable_header()->set_category(name);
+               //result_item.set_match(i["score"].get_double().value);
+
+               result.push_back(result_item);
+            }
+         }
+         catch(mongocxx::query_exception ex)
+         {
+            //log << "!!!" << bsoncxx::to_json(ex.raw_server_error()->view());
+         }
+      }
+
+      std::sort(result.begin(), result.end(), [](const database::FullTextSearchResultEntry & a, const database::FullTextSearchResultEntry & b) -> bool
+      { 
+         return a.match() > b.match(); 
+      });
+
+      for(auto x : result)
+      {
+         response->add_result()->CopyFrom(x);
       }
    }
 

@@ -537,3 +537,70 @@ BOOST_AUTO_TEST_CASE( Database_Fetch )
       }
    }
 }
+
+void addTestDoc(database::DatabaseService::Stub& service, const std::string& category, const std::string& body)
+{
+   database::Document doc;
+   doc.set_body(body);
+   doc.mutable_header()->set_category(category);
+   common::UniqueId id;
+   service.AddDocument(nullptr, &doc, &id, nullptr);
+}
+
+BOOST_AUTO_TEST_CASE( Database_FullTextSearch ) 
+{
+   TestServiceProvider<database::DatabaseService> serviceProvider;
+   auto& service = serviceProvider.getService();
+
+   addTestDoc(service, "animals", "{\"name\":\"snake\", \"type\":\"animal\"}");
+   addTestDoc(service, "animals", "{\"name\":\"elephant\", \"type\":\"animal\"}");
+   addTestDoc(service, "animals", "{\"name\":\"chicken\", \"type\":\"animal\"}");
+   addTestDoc(service, "food", "{\"name\":\"apple\", \"type\":\"food\"}");
+   addTestDoc(service, "food", "{\"name\":\"fries\", \"type\":\"food\"}");
+   addTestDoc(service, "food", "{\"name\":\"chicken\", \"type\":\"food\"}");
+
+   {
+      database::FullTextSearchParameters in;
+      in.set_fulltext("food");
+
+      database::FullTextSearchResult out;
+      service.FullTextSearch(nullptr, &in, &out, nullptr);
+
+      BOOST_CHECK_EQUAL(out.result_size(), 3);
+      for(auto x : out.result())
+      {
+         BOOST_CHECK(x.doc().body().find("food") != std::string::npos);
+      }
+   }
+   {
+      database::FullTextSearchParameters in;
+      in.set_fulltext("name");
+
+      database::FullTextSearchResult out;
+      service.FullTextSearch(nullptr, &in, &out, nullptr);
+
+      BOOST_CHECK_EQUAL(out.result_size(), 6);
+   }
+   {
+      database::FullTextSearchParameters in;
+      in.set_fulltext("chicken");
+
+      database::FullTextSearchResult out;
+      service.FullTextSearch(nullptr, &in, &out, nullptr);
+
+      BOOST_CHECK_EQUAL(out.result_size(), 2);
+      for(auto x : out.result())
+      {
+         BOOST_CHECK(x.doc().body().find("chicken") != std::string::npos);
+      }
+   }
+   {
+      database::FullTextSearchParameters in;
+      in.set_fulltext("bullshit");
+
+      database::FullTextSearchResult out;
+      service.FullTextSearch(nullptr, &in, &out, nullptr);
+
+      BOOST_CHECK_EQUAL(out.result_size(), 0);
+   }
+}

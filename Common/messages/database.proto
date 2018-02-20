@@ -43,10 +43,27 @@ message Documents
    repeated Document result = 1;
 }
 
+message FullTextSearchResultEntry
+{
+   Document doc = 1;
+   double match = 2;
+}
+
+message FullTextSearchResult
+{
+   repeated FullTextSearchResultEntry result = 1;
+}
+
+message FullTextSearchParameters
+{
+   string fulltext = 1;
+}
+
 service DatabaseService 
 {
    rpc GetDocument (DocumentHeader) returns (Documents);
    rpc SearchDocuments (DocumentQuery) returns (Documents);
+   rpc FullTextSearch (FullTextSearchParameters) returns (FullTextSearchResult);
 
    rpc AddDocument (Document) returns (common.UniqueId);
    rpc ModifyDocument (Document) returns (common.OperationResultMessage);
