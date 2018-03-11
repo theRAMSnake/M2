@@ -1,0 +1,66 @@
+syntax = "proto3";
+option cc_generic_services = true;
+option java_generic_services = true;
+
+import "common.proto";
+
+package journal; 
+
+message JournalItem
+{
+   common.UniqueId id = 1;
+   common.UniqueId folderId = 2;
+   string title = 3;
+}
+
+message IndexItem
+{
+   JournalItem journalItem = 1;
+   int64 modifiedTimestamp = 2;
+}
+
+message Page
+{
+   JournalItem journalItem = 1;
+   string content = 2;
+}
+
+message SearchResult
+{
+   repeated common.UniqueId pageId = 1;
+   repeated int64 position = 2;
+}
+
+message InsertFolderParams
+{
+   common.UniqueId folderId = 1;
+   string title = 2;
+}
+
+message InsertPageParams
+{
+   common.UniqueId folderId = 1;
+   string title = 2;
+   string content = 3;
+}
+
+message Index
+{
+   repeated IndexItem items = 1;
+}
+
+service JournalService 
+{
+   rpc InsertFolder (InsertFolderParams) returns (common.UniqueId);
+   rpc InsertPage (InsertPageParams) returns (common.UniqueId);
+
+   rpc DeleteFolder (common.UniqueId) returns (common.OperationResultMessage);
+   rpc DeletePage (common.UniqueId) returns (common.OperationResultMessage);
+
+   rpc UpdateFolder (JournalItem) returns (common.OperationResultMessage);
+   rpc UpdatePage (Page) returns (common.OperationResultMessage); //Don't forget to test timestamp
+
+   rpc GetIndex (common.EmptyMessage) returns (Index);
+   rpc Search (common.StringMessage) returns (SearchResult);
+   rpc GetPage (common.UniqueId) returns (Page);
+}

@@ -12,6 +12,7 @@ add_subdirectory(messages)
 add_library(m2common STATIC 
    ZmqPbChannel.hpp
    ZmqPbChannel.cpp
+   Id.cpp
 )
 
 target_link_libraries(m2common m2commonMessages)

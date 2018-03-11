@@ -28,3 +28,8 @@ message OperationResultMessage
 {
    bool success = 1;
 }
+
+message StringMessage
+{
+   string content = 1;
+}

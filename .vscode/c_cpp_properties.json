@@ -30,7 +30,11 @@
                 "/usr/include/c++/7.1.1",
                 "/usr/include/c++/7.1.1/x86_64-pc-linux-gnu",
                 "/usr/local/include",
-                "/usr/include"
+                "/usr/include",
+                "/usr/include/c++/7.3.0",
+                "/usr/include/c++/7.3.0/x86_64-pc-linux-gnu",
+                "/usr/include/linux",
+                "${workspaceRoot}/build/Common"
             ],
             "defines": [],
             "intelliSenseMode": "clang-x64",
