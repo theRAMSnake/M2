@@ -1,8 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <Common/InterprocessService.hpp>
-#include <Common/MateriaServiceProxy.hpp>
 #include <Common/PortLayout.hpp>
+#include <Client/MateriaClient.hpp>
 #include <messages/inbox.pb.h>
 #include <messages/database.pb.h>
 #include <boost/filesystem.hpp>
@@ -57,9 +57,10 @@ class InboxServiceImpl : public inbox::InboxService
 {
 public:
    InboxServiceImpl()
+   : mClient("InboxService")
+   , mDbProxy(mClient.getDatabase())
    {
-      mService.reset(new MateriaServiceProxy<database::DatabaseService>("InboxService"));
-      mDatabase = &mService->getService();
+      mDbProxy.setCategory(mCategory);
    }
 
    virtual void GetInbox(::google::protobuf::RpcController* controller,
@@ -67,33 +68,11 @@ public:
                        ::inbox::InboxItems* response,
                        ::google::protobuf::Closure* done)
    {
-      ///Old style impl
-      /*for (boost::filesystem::directory_iterator iter(g_dir); iter != boost::filesystem::directory_iterator(); ++iter)
-      {
-         std::string content;
-
-         std::ifstream file(iter->path().string());
-
-         content = std::string((std::istreambuf_iterator<char>(file)),
-                 std::istreambuf_iterator<char>());
-
-         file.close();
-
-         auto item = response->add_items();
-         item->mutable_id()->set_guid(iter->path().filename().string());
-         item->set_text(content);
-      }*/
-      database::DocumentQuery query;
-      query.set_category(mCategory);
-
-      database::Documents result;
-      mDatabase->SearchDocuments(nullptr, &query, &result, nullptr);
-
-      for(auto x : result.result())
+      for(auto x : mDbProxy.getDocuments())
       {
          auto item = response->add_items();
-         item->mutable_id()->set_guid(x.header().key());
-         item->set_text(from_simple_json(x.body()));
+         *item->mutable_id() = x.id.toProtoId();
+         item->set_text(from_simple_json(x.body));
       }
    }
 
@@ -102,13 +81,7 @@ public:
                        ::common::OperationResultMessage* response,
                        ::google::protobuf::Closure* done)
    {
-      database::DocumentHeader head;
-      head.set_key(request->guid());
-      head.set_category(mCategory);
-      common::OperationResultMessage result;
-
-      mDatabase->DeleteDocument(nullptr, &head, &result, nullptr);
-      response->set_success(result.success());
+      response->set_success(mDbProxy.deleteDocument(*request));
    }
 
    virtual void EditItem(::google::protobuf::RpcController* controller,
@@ -116,15 +89,8 @@ public:
                        ::common::OperationResultMessage* response,
                        ::google::protobuf::Closure* done)
    {
-      database::Document doc;
-      doc.set_body(to_simple_json(request->text()));
-      doc.mutable_header()->set_category(mCategory);
-      doc.mutable_header()->set_key(request->id().guid());
-
-      common::OperationResultMessage result;
-      mDatabase->ModifyDocument(nullptr, &doc, &result, nullptr);
-
-      response->set_success(result.success());
+      materia::Document doc { request->id(), to_simple_json(request->text()) };
+      response->set_success(mDbProxy.replaceDocument(doc));
    }
 
    virtual void AddItem(::google::protobuf::RpcController* controller,
@@ -134,19 +100,13 @@ public:
    {
       std::string id = to_string(generator());
 
-      common::UniqueId result;
-      database::Document doc;
-      doc.set_body(to_simple_json(request->text()));
-      doc.mutable_header()->set_key(id);
-      doc.mutable_header()->set_category(mCategory);
-   
-      mDatabase->AddDocument(nullptr, &doc, &result, nullptr);
-      response->set_guid(result.guid());
+      materia::Document doc { id, to_simple_json(request->text()) };
+      *response = mDbProxy.insertDocument(doc, materia::IdMode::Provided).toProtoId();
    }
 
 private:
-   std::unique_ptr<MateriaServiceProxy<database::DatabaseService>> mService;
-   database::DatabaseService_Stub* mDatabase;
+   materia::MateriaClient mClient;
+   materia::Database& mDbProxy;
    const std::string mCategory = "INBOX";
 };
 

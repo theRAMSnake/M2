@@ -7,12 +7,9 @@ include_directories("../build/Common")
 find_package(Boost COMPONENTS system REQUIRED)
 find_package(Protobuf REQUIRED)
 
-add_subdirectory(messages)
-
 add_library(m2common STATIC 
-   ZmqPbChannel.hpp
-   ZmqPbChannel.cpp
-   Id.cpp
 )
+
+add_subdirectory(messages)
 
 target_link_libraries(m2common m2commonMessages)

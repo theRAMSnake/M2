@@ -116,17 +116,18 @@ public:
    }
 
    void AddDocument(::google::protobuf::RpcController* controller,
-                        const ::database::Document* request,
+                        const ::database::AddDocumentRequest* request,
                         ::common::UniqueId* response,
                         ::google::protobuf::Closure* done)
    {
-      if(checkDocument(*request))
+      if(checkDocument(request->doc()))
       {
          try
          {
-            std::string key = request->header().key().empty() ? to_string(generator()) : request->header().key();
-            bsoncxx::document::value body = bsoncxx::from_json(request->body());
-            mDb[request->header().category()].insert_one(
+            const bool useProvidedId = request->useprovidedid() && !request->doc().header().key().empty();
+            std::string key = useProvidedId ? request->doc().header().key() : to_string(generator());
+            bsoncxx::document::value body = bsoncxx::from_json(request->doc().body());
+            mDb[request->doc().header().category()].insert_one(
                document{} << "key" << key
                << "body" << bsoncxx::types::b_document{body.view()}
                << finalize

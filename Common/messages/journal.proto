@@ -54,8 +54,7 @@ service JournalService
    rpc InsertFolder (InsertFolderParams) returns (common.UniqueId);
    rpc InsertPage (InsertPageParams) returns (common.UniqueId);
 
-   rpc DeleteFolder (common.UniqueId) returns (common.OperationResultMessage);
-   rpc DeletePage (common.UniqueId) returns (common.OperationResultMessage);
+   rpc DeleteItem (common.UniqueId) returns (common.OperationResultMessage);
 
    rpc UpdateFolder (JournalItem) returns (common.OperationResultMessage);
    rpc UpdatePage (Page) returns (common.OperationResultMessage); //Don't forget to test timestamp

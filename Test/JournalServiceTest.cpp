@@ -10,7 +10,7 @@
 #include <mongocxx/uri.hpp>
 
 #include <boost/optional.hpp>
-#include <Common/Id.hpp>
+#include <Client/Id.hpp>
 
 namespace std
 {
@@ -58,8 +58,9 @@ protected:
          mItems.push_back(addPage("insects", animalsId, "<li>ant</li><li>bug</li><li>spider</li>"));
 
       mItems.push_back(addPage("colors", materia::Id::Invalid, "<li>red</li><li>green</li><li>blue</li>"));
+      mItems.push_back(addFolder("emptyFolder", materia::Id::Invalid));
 
-      mNumItemsInDatabase = 6;
+      mNumItemsInDatabase = 7;
 
       return mItems;
    }
@@ -217,6 +218,25 @@ BOOST_FIXTURE_TEST_CASE( InsertPage, JournalTest )
       auto page = getPage(id);
       BOOST_CHECK(!page);
    }
+}
+
+BOOST_FIXTURE_TEST_CASE( DeleteItem, JournalTest ) 
+{
+   //1. delete empty folder
+   {
+      /*auto iter = std::find_if(mItems.begin(), mItems.end(), [] (auto a) -> bool {return a.title == "emptyFolder";});
+      auto id = iter->id;
+      BOOST_REQUIRE(iter != mItems.end());
+
+      BOOST_CHECK(deleteItem(id));
+
+      BOOST_CHECK_EQUAL(mNumItemsInDatabase - 1, getNumItemsInDatabase());
+      BOOST_CHECK(getItemFromIndex(id));*/
+   }
+
+   //2. delete empty page
+   //3. delete contained folder
+   //4. delete all
 }
 
 }

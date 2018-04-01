@@ -2,505 +2,222 @@
 #include <boost/test/unit_test.hpp>
 #include <messages/actions.pb.h>
 #include <boost/filesystem.hpp>
-#include "TestServiceProvider.hpp"
 
 #include <mongocxx/instance.hpp>
 #include <mongocxx/client.hpp>
 #include <mongocxx/stdx.hpp>
 #include <mongocxx/uri.hpp>
 
-namespace 
-{
-   void cleanUp()
-   {   
-      boost::filesystem::remove_all("actions_service_data");
-      boost::filesystem::create_directory("actions_service_data");
+#include <Client//MateriaClient.hpp>
 
+#include "TestHelpers.hpp"
+
+class ActionsTest
+{
+public:
+   ActionsTest()
+   : mClient("test")
+   , mService(mClient.getActions())
+   {
       mongocxx::instance instance{}; 
       mongocxx::client client{mongocxx::uri{}};
 
       client["materia"].drop();
    }
-}
 
-BOOST_AUTO_TEST_CASE( Actions_AddDeleteAction_Parentless ) 
+protected:
+
+   materia::MateriaClient mClient;
+   materia::Actions& mService;
+};
+
+namespace std
 {
-   cleanUp();
-   TestServiceProvider<actions::ActionsService> serviceProvider;
-   auto& service = serviceProvider.getService();
-
-   common::UniqueId id1;
-   common::UniqueId id2;
-   
+   std::ostream& operator << (std::ostream& str, const materia::ActionType& actionType)
    {
-      actions::ActionInfo request;
-      request.set_title("text");
-      request.set_description("description");
-      request.set_type(actions::ActionType::Task);
-      
-      service.AddElement(nullptr, &request, &id1, nullptr);
+      std::string result;
+
+      switch(actionType)
+      {
+         case materia::ActionType::Task:
+            result = "task";
+            break;
+
+         case materia::ActionType::Group:
+            result = "group";
+            break;
+
+         default:
+            result = "???";
+            break;
+      }
+
+      str << result;
+
+      return str;
    }
-   {
-      actions::ActionInfo request;
-      request.set_title("text2");
-      request.set_description("description2");
-      request.set_type(actions::ActionType::Group);
-      
-      service.AddElement(nullptr, &request, &id2, nullptr);
-   }
-   BOOST_CHECK(id1.guid() != id2.guid());
 
+   std::ostream& operator << (std::ostream& str, const materia::ActionItem& actionItem)
    {
-      common::EmptyMessage emptyMsg;
-      actions::ActionsList responce;
-      
-      service.GetParentlessElements(nullptr, &emptyMsg, &responce, nullptr);
-      
-      BOOST_CHECK_EQUAL(2, responce.list_size());
-      
-      {
-         auto pos = std::find_if(responce.list().begin(), responce.list().end(), 
-            [&](auto x){return x.id().guid() == id1.guid();});
-         BOOST_REQUIRE(pos != responce.list().end());
-      }
-      {
-         auto pos = std::find_if(responce.list().begin(), responce.list().end(), 
-            [&](auto x){return x.id().guid() == id2.guid();});
-         BOOST_REQUIRE(pos != responce.list().end());
-      }
-      
-      {
-         common::UniqueId request;
-         request.set_guid(id1.guid());
-         
-         common::OperationResultMessage opResult;
-         service.DeleteElement(nullptr, &request, &opResult, nullptr);
-         
-         BOOST_CHECK(opResult.success());
-      }
-      {
-         common::EmptyMessage emptyMsg;
-         actions::ActionsList responce;
-         
-         service.GetParentlessElements(nullptr, &emptyMsg, &responce, nullptr);
-         
-         BOOST_CHECK_EQUAL(1, responce.list_size());
-
-         auto pos = std::find_if(responce.list().begin(), responce.list().end(), 
-            [&](auto x){return x.id().guid() == id2.guid();});
-         BOOST_REQUIRE(pos != responce.list().end());
-      }
-      {
-         common::UniqueId request;
-         request.set_guid(id2.guid());
-         
-         common::OperationResultMessage opResult;
-         service.DeleteElement(nullptr, &request, &opResult, nullptr);
-         
-         BOOST_CHECK(opResult.success());
-      }
-      {
-         common::EmptyMessage emptyMsg;
-         actions::ActionsList responce;
-         
-         service.GetParentlessElements(nullptr, &emptyMsg, &responce, nullptr);
-         
-         BOOST_CHECK_EQUAL(0, responce.list_size());
-      }
+      str << "[" << actionItem.id << ", " << actionItem.parentId << ", " << actionItem.title << ", " 
+       << actionItem.description << ", " << actionItem.type << "]";
+      return str;
    }
 }
 
-BOOST_AUTO_TEST_CASE( Actions_AddDeleteAction_Parented ) 
+template<class T>
+int CompareById (const T& a, const T& b)
 {
-   cleanUp();
-
-   TestServiceProvider<actions::ActionsService> serviceProvider;
-   auto& service = serviceProvider.getService();
-
-   common::UniqueId parentId;
-   common::UniqueId childId1;
-   common::UniqueId childId2;
-   common::UniqueId nonChildId;
-   
-   {
-      actions::ActionInfo request;
-      request.set_title("text");
-      request.set_description("description");
-      request.set_type(actions::ActionType::Group);
-      
-      service.AddElement(nullptr, &request, &parentId, nullptr);
-   }
-   {
-      actions::ActionInfo request;
-      request.set_title("text2");
-      request.set_description("description2");
-      request.set_type(actions::ActionType::Task);
-      request.mutable_parentid()->set_guid(parentId.guid());
-      
-      service.AddElement(nullptr, &request, &childId1, nullptr);
-      service.AddElement(nullptr, &request, &childId2, nullptr);
-   }
-   {
-      actions::ActionInfo request;
-      request.set_title("text3");
-      request.set_description("description3");
-      request.set_type(actions::ActionType::Task);
-      
-      service.AddElement(nullptr, &request, &nonChildId, nullptr);
-   }
-
-   {
-      common::EmptyMessage emptyMsg;
-      actions::ActionsList responce;
-      
-      service.GetParentlessElements(nullptr, &emptyMsg, &responce, nullptr);
-      
-      BOOST_CHECK_EQUAL(2, responce.list_size());
-      
-      {
-         auto pos = std::find_if(responce.list().begin(), responce.list().end(), 
-            [&](auto x){return x.id().guid() == parentId.guid();});
-         BOOST_REQUIRE(pos != responce.list().end());
-      }
-      {
-         auto pos = std::find_if(responce.list().begin(), responce.list().end(), 
-            [&](auto x){return x.id().guid() == nonChildId.guid();});
-         BOOST_REQUIRE(pos != responce.list().end());
-      }
-   }
-
-   {
-      actions::ActionsList responce;
-      
-      service.GetChildren(nullptr, &parentId, &responce, nullptr);
-      
-      BOOST_CHECK_EQUAL(2, responce.list_size());
-      
-      {
-         auto pos = std::find_if(responce.list().begin(), responce.list().end(), 
-            [&](auto x){return x.id().guid() == childId1.guid();});
-         BOOST_REQUIRE(pos != responce.list().end());
-      }
-      {
-         auto pos = std::find_if(responce.list().begin(), responce.list().end(), 
-            [&](auto x){return x.id().guid() == childId2.guid();});
-         BOOST_REQUIRE(pos != responce.list().end());
-      }
-   }
-      
-   {
-      common::OperationResultMessage opResult;
-      service.DeleteElement(nullptr, &parentId, &opResult, nullptr);
-      
-      BOOST_CHECK(opResult.success());
-   }
-
-   {
-      common::EmptyMessage emptyMsg;
-      actions::ActionsList responce;
-      
-      service.GetParentlessElements(nullptr, &emptyMsg, &responce, nullptr);
-      
-      BOOST_CHECK_EQUAL(1, responce.list_size());
-      
-      {
-         auto pos = std::find_if(responce.list().begin(), responce.list().end(), 
-            [&](auto x){return x.id().guid() == nonChildId.guid();});
-         BOOST_REQUIRE(pos != responce.list().end());
-      }
-   }
-
-   {
-      actions::ActionsList responce;
-      service.GetChildren(nullptr, &parentId, &responce, nullptr);
-      BOOST_CHECK_EQUAL(0, responce.list_size());
-   }
-
-   {
-      common::OperationResultMessage opResult;
-      service.DeleteElement(nullptr, &nonChildId, &opResult, nullptr);
-      
-      BOOST_CHECK(opResult.success());
-   }
-
-   {
-      common::EmptyMessage emptyMsg;
-      actions::ActionsList responce;
-      
-      service.GetParentlessElements(nullptr, &emptyMsg, &responce, nullptr);
-      
-      BOOST_CHECK_EQUAL(0, responce.list_size());
-   }
+   return a.id.getGuid().compare(b.id.getGuid());
 }
 
-BOOST_AUTO_TEST_CASE( Actions_DeleteWrongAction ) 
+template<class T>
+void testSortAndCompare(const std::vector<T>& a, const std::vector<T>& b)
 {
-   cleanUp();
-   TestServiceProvider<actions::ActionsService> serviceProvider;
-   auto& service = serviceProvider.getService();
-   
-   common::UniqueId request;
-   request.set_guid("50");
-   
-   common::OperationResultMessage opResult;
-   service.DeleteElement(nullptr, &request, &opResult, nullptr);
-   
-   BOOST_CHECK(!opResult.success());
+   auto sortedA = a;
+   auto sortedB = b;
+
+   std::sort(sortedA.begin(), sortedA.end(), CompareById<T>);
+   std::sort(sortedB.begin(), sortedB.end(), CompareById<T>);
+
+   BOOST_CHECK_EQUAL_COLLECTIONS(sortedA.begin(), sortedA.end(), 
+      sortedB.begin(), sortedB.end());
 }
 
-BOOST_AUTO_TEST_CASE( Actions_EditWrongAction ) 
+BOOST_FIXTURE_TEST_CASE( AddDeleteAction_Parentless, ActionsTest ) 
 {
-   cleanUp();
-   TestServiceProvider<actions::ActionsService> serviceProvider;
-   auto& service = serviceProvider.getService();
-   
-   actions::ActionInfo request;
-   request.set_title("text2");
-   request.set_description("description2");
-   request.set_type(actions::ActionType::Task);
-   request.mutable_parentid()->set_guid("fhdjskghdf");
-   
-   common::OperationResultMessage opResult;
-   service.EditElement(nullptr, &request, &opResult, nullptr);
-   
-   BOOST_CHECK(!opResult.success());
+   auto id1 = mService.insertItem({materia::Id::Invalid, materia::Id::Invalid, "text", "description", materia::ActionType::Task});
+   auto id2 = mService.insertItem({materia::Id::Invalid, materia::Id::Invalid, "text2", "description2", materia::ActionType::Task});
+
+   BOOST_CHECK(id1 != materia::Id::Invalid);
+   BOOST_CHECK(id2 != materia::Id::Invalid);
+   BOOST_CHECK(id1 != id2);
+
+   auto rootItems = mService.getRootItems();
+   BOOST_CHECK_EQUAL(2, rootItems.size());
+
+   testSortAndCompare(rootItems, {
+      {id1, materia::Id::Invalid, "text", "description", materia::ActionType::Task}, 
+      {id2, materia::Id::Invalid, "text2", "description2", materia::ActionType::Task}});
+
+   BOOST_CHECK(mService.deleteItem(id1));
+
+   rootItems = mService.getRootItems();
+   BOOST_CHECK_EQUAL(1, rootItems.size());
+
+   BOOST_CHECK_EQUAL(rootItems[0].id, id2);
+
+   BOOST_CHECK(mService.deleteItem(id2));
+
+   rootItems = mService.getRootItems();
+   BOOST_CHECK(rootItems.empty());
 }
 
-BOOST_AUTO_TEST_CASE( Actions_EditAction_NoReparent ) 
+BOOST_FIXTURE_TEST_CASE( AddDeleteAction_Parented, ActionsTest ) 
 {
-   cleanUp();
-   TestServiceProvider<actions::ActionsService> serviceProvider;
-   auto& service = serviceProvider.getService();
-   
-   common::UniqueId id;
+   auto parentId1 = mService.insertItem({materia::Id::Invalid, materia::Id::Invalid, "text", "description", materia::ActionType::Group});
+   auto childId1 = mService.insertItem({materia::Id::Invalid, parentId1, "text2", "description2", materia::ActionType::Task});
+   auto childId2 = mService.insertItem({materia::Id::Invalid, parentId1, "text2", "description2", materia::ActionType::Task});
+   auto nonChildId = mService.insertItem({materia::Id::Invalid, materia::Id::Invalid, "text3", "description3", materia::ActionType::Task});
 
-   actions::ActionInfo request;
-   request.set_title("text");
-   request.set_description("description");
-   request.set_type(actions::ActionType::Group);
-   
-   service.AddElement(nullptr, &request, &id, nullptr);
-   
-   common::OperationResultMessage opResult;
-   request.set_title("other_title");
-   request.set_description("other_description");
-   request.set_type(actions::ActionType::Task);
-   request.mutable_id()->set_guid(id.guid());
+   auto rootItems = mService.getRootItems();
+   BOOST_CHECK_EQUAL(2, rootItems.size());
+   testSortAndCompare(rootItems, {
+      {parentId1, materia::Id::Invalid, "text", "description", materia::ActionType::Group}, 
+      {nonChildId, materia::Id::Invalid, "text3", "description3", materia::ActionType::Task}});
 
-   service.EditElement(nullptr, &request, &opResult, nullptr);
-   
-   BOOST_CHECK(opResult.success());
-
-   {
-      common::EmptyMessage emptyMsg;
-      actions::ActionsList responce;
+   auto children = mService.getChildren(parentId1);
+   BOOST_CHECK_EQUAL(2, children.size());
+   testSortAndCompare(children, {
+      {childId1, parentId1, "text2", "description2", materia::ActionType::Task},
+      {childId2, parentId1, "text2", "description2", materia::ActionType::Task}});
       
-      service.GetParentlessElements(nullptr, &emptyMsg, &responce, nullptr);
-      
-      BOOST_CHECK_EQUAL(1, responce.list_size());
-      BOOST_CHECK(responce.list(0).title() == "other_title");
-      BOOST_CHECK(responce.list(0).description() == "other_description");
-      BOOST_CHECK(responce.list(0).type() == actions::ActionType::Task);
-      BOOST_CHECK(responce.list(0).id().guid() == id.guid());
-   }
+   BOOST_CHECK(mService.deleteItem(parentId1));
+
+   rootItems = mService.getRootItems();
+   BOOST_CHECK_EQUAL(1, rootItems.size());
+   BOOST_CHECK_EQUAL(rootItems[0].id, nonChildId);
+
+   children = mService.getChildren(parentId1);
+   BOOST_CHECK(children.empty());
+
+   BOOST_CHECK(mService.deleteItem(nonChildId));
+
+   rootItems = mService.getRootItems();
+   BOOST_CHECK(rootItems.empty());
 }
 
-BOOST_AUTO_TEST_CASE( Actions_EditAction_Reparent ) 
+BOOST_FIXTURE_TEST_CASE( DeleteWrongAction, ActionsTest ) 
 {
-   cleanUp();
-   TestServiceProvider<actions::ActionsService> serviceProvider;
-   auto& service = serviceProvider.getService();
-   
-   common::UniqueId parentId1;
-   common::UniqueId parentId2;
-   common::UniqueId childId;
-   
-   {
-      actions::ActionInfo request;
-      request.set_title("text");
-      request.set_description("description");
-      request.set_type(actions::ActionType::Group);
-      
-      service.AddElement(nullptr, &request, &parentId1, nullptr);
-      service.AddElement(nullptr, &request, &parentId2, nullptr);
-   }
-   {
-      actions::ActionInfo request;
-      request.set_title("text2");
-      request.set_description("description2");
-      request.set_type(actions::ActionType::Task);
-      request.mutable_parentid()->set_guid(parentId1.guid());
-      
-      service.AddElement(nullptr, &request, &childId, nullptr);
-   }
-   
-   actions::ActionInfo request;
-   common::OperationResultMessage opResult;
-   request.set_title("other_title");
-   request.set_description("other_description");
-   request.set_type(actions::ActionType::Task);
-   request.mutable_id()->set_guid(childId.guid());
-   request.mutable_parentid()->set_guid(parentId2.guid());
-
-   service.EditElement(nullptr, &request, &opResult, nullptr);
-   
-   BOOST_CHECK(opResult.success());
-
-   {
-      actions::ActionsList responce;
-      service.GetChildren(nullptr, &parentId1, &responce, nullptr);
-      BOOST_CHECK_EQUAL(0, responce.list_size());
-   }
-   {
-      actions::ActionsList responce;
-      service.GetChildren(nullptr, &parentId2, &responce, nullptr);
-      BOOST_CHECK_EQUAL(1, responce.list_size());
-
-      BOOST_CHECK(responce.list(0).title() == "other_title");
-      BOOST_CHECK(responce.list(0).description() == "other_description");
-      BOOST_CHECK(responce.list(0).type() == actions::ActionType::Task);
-      BOOST_CHECK(responce.list(0).id().guid() == childId.guid());
-   }
+   BOOST_CHECK(!mService.deleteItem(materia::Id("dhjfhksd")));
 }
 
-BOOST_AUTO_TEST_CASE( Actions_EditAction_Deparent ) 
+BOOST_FIXTURE_TEST_CASE( EditWrongAction, ActionsTest ) 
 {
-   cleanUp();
-   TestServiceProvider<actions::ActionsService> serviceProvider;
-   auto& service = serviceProvider.getService();
-   
-   common::UniqueId parentId;
-   common::UniqueId childId;
-   
-   {
-      actions::ActionInfo request;
-      request.set_title("text");
-      request.set_description("description");
-      request.set_type(actions::ActionType::Group);
-      
-      service.AddElement(nullptr, &request, &parentId, nullptr);
-   }
-   {
-      actions::ActionInfo request;
-      request.set_title("text2");
-      request.set_description("description2");
-      request.set_type(actions::ActionType::Task);
-      request.mutable_parentid()->set_guid(parentId.guid());
-      
-      service.AddElement(nullptr, &request, &childId, nullptr);
-   }
-   
-   actions::ActionInfo request;
-   common::OperationResultMessage opResult;
-   request.set_title("other_title");
-   request.set_description("other_description");
-   request.set_type(actions::ActionType::Task);
-   request.mutable_id()->set_guid(childId.guid());
-
-   service.EditElement(nullptr, &request, &opResult, nullptr);
-   
-   BOOST_CHECK(opResult.success());
-
-   {
-      actions::ActionsList responce;
-      service.GetChildren(nullptr, &parentId, &responce, nullptr);
-      BOOST_CHECK_EQUAL(0, responce.list_size());
-   }
-   {
-      common::EmptyMessage dummy;
-      actions::ActionsList responce;
-      service.GetParentlessElements(nullptr, &dummy, &responce, nullptr);
-      BOOST_CHECK_EQUAL(2, responce.list_size());
-
-      for(int i = 0; i < responce.list_size(); ++i)
-      {
-         if(responce.list(i).id().guid() == childId.guid())
-         {
-            BOOST_CHECK(responce.list(i).title() == "other_title");
-            BOOST_CHECK(responce.list(i).description() == "other_description");
-            BOOST_CHECK(responce.list(i).type() == actions::ActionType::Task);
-         }
-      }
-   }
+   BOOST_CHECK(!mService.replaceItem({materia::Id::Invalid, materia::Id("dfsdfs"), "text2", "description2", materia::ActionType::Task}));
 }
 
-BOOST_AUTO_TEST_CASE( Actions_EditAction_WrongParent ) 
+BOOST_FIXTURE_TEST_CASE( EditAction_NoReparent, ActionsTest ) 
 {
-   cleanUp();
-   TestServiceProvider<actions::ActionsService> serviceProvider;
-   auto& service = serviceProvider.getService();
-   
-   common::UniqueId id;
+   auto parentId = mService.insertItem({materia::Id::Invalid, materia::Id::Invalid, "text", "description", materia::ActionType::Group});
+   BOOST_CHECK(mService.replaceItem({parentId, materia::Id::Invalid, "other_title", "other_description", materia::ActionType::Task}));
 
-   actions::ActionInfo request;
-   request.set_title("text");
-   request.set_description("description");
-   request.set_type(actions::ActionType::Group);
-   
-   service.AddElement(nullptr, &request, &id, nullptr);
-   
-   {
-      common::OperationResultMessage opResult;
-      request.set_title("other_title");
-      request.set_description("other_description");
-      request.set_type(actions::ActionType::Task);
-      request.mutable_id()->set_guid(id.guid());
-      request.mutable_parentid()->set_guid("random shit");
-
-      service.EditElement(nullptr, &request, &opResult, nullptr);
-      
-      BOOST_CHECK(!opResult.success());
-      {
-         common::EmptyMessage dummy;
-         actions::ActionsList responce;
-         service.GetParentlessElements(nullptr, &dummy, &responce, nullptr);
-         BOOST_CHECK_EQUAL(1, responce.list_size());
-
-         BOOST_CHECK(responce.list(0).title() == "text");
-         BOOST_CHECK(responce.list(0).description() == "description");
-         BOOST_CHECK(responce.list(0).type() == actions::ActionType::Group);
-         BOOST_CHECK(responce.list(0).id().guid() == id.guid());
-      }
-   }
-   {
-      common::OperationResultMessage opResult;
-      request.set_title("other_title");
-      request.set_description("other_description");
-      request.set_type(actions::ActionType::Task);
-      request.mutable_id()->set_guid(id.guid());
-      request.mutable_parentid()->set_guid(id.guid());
-
-      service.EditElement(nullptr, &request, &opResult, nullptr);
-      
-      BOOST_CHECK(!opResult.success());
-      {
-         common::EmptyMessage dummy;
-         actions::ActionsList responce;
-         service.GetParentlessElements(nullptr, &dummy, &responce, nullptr);
-         BOOST_CHECK_EQUAL(1, responce.list_size());
-
-         BOOST_CHECK(responce.list(0).title() == "text");
-         BOOST_CHECK(responce.list(0).description() == "description");
-         BOOST_CHECK(responce.list(0).type() == actions::ActionType::Group);
-         BOOST_CHECK(responce.list(0).id().guid() == id.guid());
-      }
-   }
+   auto rootItems = mService.getRootItems();
+   BOOST_CHECK_EQUAL(1, rootItems.size());
+   BOOST_CHECK_EQUAL(rootItems[0], materia::ActionItem({parentId, materia::Id::Invalid, "other_title", "other_description", materia::ActionType::Task}));
 }
 
-BOOST_AUTO_TEST_CASE( Actions_AddAction_WrongParent ) 
-{
-   cleanUp();
-   TestServiceProvider<actions::ActionsService> serviceProvider;
-   auto& service = serviceProvider.getService();
+BOOST_FIXTURE_TEST_CASE( EditAction_Reparent, ActionsTest ) 
+{  
+   auto parentId1 = mService.insertItem({materia::Id::Invalid, materia::Id::Invalid, "text", "description", materia::ActionType::Group});
+   auto parentId2 = mService.insertItem({materia::Id::Invalid, materia::Id::Invalid, "text", "description", materia::ActionType::Group});
+   auto childId = mService.insertItem({materia::Id::Invalid, parentId1, "text2", "description2", materia::ActionType::Task});
    
-   common::UniqueId id;
+   BOOST_CHECK(mService.replaceItem({childId, parentId2, "other_title", "other_description", materia::ActionType::Task}));
 
-   actions::ActionInfo request;
-   request.set_title("text");
-   request.set_description("description");
-   request.set_type(actions::ActionType::Group);
-   request.mutable_parentid()->set_guid("random shit");
+   auto children = mService.getChildren(parentId1);
+   BOOST_CHECK(children.empty());
+
+   children = mService.getChildren(parentId2);
+   BOOST_CHECK_EQUAL(1, children.size());
+   BOOST_CHECK_EQUAL(children[0], materia::ActionItem({childId, parentId2, "other_title", "other_description", materia::ActionType::Task}));
+}
+
+BOOST_FIXTURE_TEST_CASE( EditAction_Deparent, ActionsTest ) 
+{
+   auto parentId = mService.insertItem({materia::Id::Invalid, materia::Id::Invalid, "text", "description", materia::ActionType::Group});
+   auto childId = mService.insertItem({materia::Id::Invalid, parentId, "text2", "description2", materia::ActionType::Task});
    
-   service.AddElement(nullptr, &request, &id, nullptr);
-   BOOST_CHECK(id.guid().empty());
+   BOOST_CHECK(mService.replaceItem({childId, materia::Id::Invalid, "other_title", "other_description", materia::ActionType::Task}));
+
+   auto children = mService.getChildren(parentId);
+   BOOST_CHECK(children.empty());
+
+   auto rootItems = mService.getRootItems();
+   BOOST_CHECK_EQUAL(2, rootItems.size());
+   testSortAndCompare(rootItems, 
+      {{parentId, materia::Id::Invalid, "text", "description", materia::ActionType::Group},
+       {childId, materia::Id::Invalid, "other_title", "other_description", materia::ActionType::Task}});
+}
+
+BOOST_FIXTURE_TEST_CASE( EditAction_WrongParent, ActionsTest ) 
+{
+   auto parentId = mService.insertItem({materia::Id::Invalid, materia::Id::Invalid, "text", "description", materia::ActionType::Group});
+   materia::ActionItem item {parentId, materia::Id("sfdfd"), "other_title", "other_description", materia::ActionType::Task};
+   BOOST_CHECK(!mService.replaceItem(item));
+
+   auto rootItems = mService.getRootItems();
+   BOOST_CHECK_EQUAL(1, rootItems.size());
+   BOOST_CHECK_EQUAL(rootItems[0], materia::ActionItem({parentId, materia::Id::Invalid, "text", "description", materia::ActionType::Group}));
+
+   BOOST_CHECK(!mService.replaceItem(materia::ActionItem({parentId, parentId, "other_title", "other_description", materia::ActionType::Task})));
+   rootItems = mService.getRootItems();
+   BOOST_CHECK_EQUAL(1, rootItems.size());
+   BOOST_CHECK_EQUAL(rootItems[0], materia::ActionItem({parentId, materia::Id::Invalid, "text", "description", materia::ActionType::Group}));
+}
+
+BOOST_FIXTURE_TEST_CASE( AddAction_WrongParent, ActionsTest ) 
+{  
+   materia::ActionItem item = {materia::Id::Invalid, materia::Id("sdgdgdgs"), "text", "description", materia::ActionType::Group};
+   BOOST_CHECK(materia::Id::Invalid == mService.insertItem(item));
 }

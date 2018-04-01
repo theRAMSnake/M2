@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <Common/ZmqPbChannel.hpp>
+#include <Client/MateriaClient.hpp>
 #include <Common/PortLayout.hpp>
 
 #include <messages/database.pb.h>

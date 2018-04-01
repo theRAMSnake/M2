@@ -8,8 +8,8 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
-#include <Common/MateriaServiceProxy.hpp>
 #include <messages/database.pb.h>
+#include <Client/MateriaClient.hpp>
 
 namespace materia
 {
@@ -54,9 +54,10 @@ class ActionsServiceImpl : public actions::ActionsService
 {
 public:
    ActionsServiceImpl()
+   : mClient("ActionsService")
+   , mDbProxy(mClient.getDatabase())
    {
-      mService.reset(new MateriaServiceProxy<database::DatabaseService>("InboxService"));
-      mDatabase = &mService->getService();
+      mDbProxy.setCategory(mCategory);
    }
 
    void GetChildren(::google::protobuf::RpcController* controller,
@@ -64,20 +65,16 @@ public:
                        ::actions::ActionsList* response,
                        ::google::protobuf::Closure* done)
    {
-      database::DocumentQuery query;
+      /*database::DocumentQuery query;
       query.set_category(mCategory);
       auto kvl = query.add_query();
       kvl->set_key("parent_id");
       kvl->set_value(make_string_query_value(request->guid()));
 
       database::Documents result;
-      mDatabase->SearchDocuments(nullptr, &query, &result, nullptr);
+      mDatabase->SearchDocuments(nullptr, &query, &result, nullptr);*/
 
-      for(auto x : result.result())
-      {
-         auto item = response->add_list();
-         from_json(x.body(), *item);
-      }
+      getElementsWithParentIdEqualsTo(request->guid(), response);
    }
 
    void GetParentlessElements(::google::protobuf::RpcController* controller,
@@ -85,7 +82,7 @@ public:
                        ::actions::ActionsList* response,
                        ::google::protobuf::Closure* done)
    {
-      database::DocumentQuery query;
+      /*database::DocumentQuery query;
       query.set_category(mCategory);
       auto kvl = query.add_query();
       kvl->set_key("parent_id");
@@ -98,7 +95,16 @@ public:
       {
          auto item = response->add_list();
          from_json(x.body(), *item);
-      }
+      }*/
+
+      /*auto documents = mDbProxy.queryDocuments({QueryElement{"parent_id", make_string_query_value(""), "", QueryElementType::Equals}});
+      for(auto x : documents)
+      {
+         auto item = response->add_list();
+         from_json(x.body, *item);
+      }*/
+
+      getElementsWithParentIdEqualsTo(materia::Id::Invalid, response);
    }
 
    void AddElement(::google::protobuf::RpcController* controller,
@@ -106,9 +112,10 @@ public:
                        ::common::UniqueId* response,
                        ::google::protobuf::Closure* done)
    {
-      if(request->parentid().guid().empty() || is_item_exist(request->parentid().guid()))
+      materia::Id parentId = request->parentid();
+      if(parentId == materia::Id::Invalid || is_item_exist(parentId))
       {
-         std::string id = to_string(generator());
+         /*std::string id = to_string(generator());
          
          actions::ActionInfo newItem(*request);
          newItem.mutable_id()->set_guid(id);
@@ -120,20 +127,22 @@ public:
          doc.mutable_header()->set_category(mCategory);
       
          mDatabase->AddDocument(nullptr, &doc, &result, nullptr);
-         response->set_guid(result.guid());
+         response->set_guid(result.guid());*/
+         std::string id = to_string(generator());
+
+         actions::ActionInfo newItem(*request);
+         newItem.mutable_id()->set_guid(id);
+
+         materia::Document doc { id, to_json(newItem) };
+         mDbProxy.insertDocument(doc, materia::IdMode::Provided);
+
+         response->set_guid(id);
       }
    }
 
-   bool is_item_exist(const std::string& guid)
+   bool is_item_exist(const materia::Id& id)
    {
-      database::DocumentHeader head;
-      head.set_category(mCategory);
-      head.set_key(guid);
-
-      database::Documents result;
-      mDatabase->GetDocument(nullptr, &head, &result, nullptr);
-
-      return result.result_size() > 0;
+      return static_cast<bool>(mDbProxy.getDocument(id));
    }
 
    void DeleteElement(::google::protobuf::RpcController* controller,
@@ -141,15 +150,15 @@ public:
                        ::common::OperationResultMessage* response,
                        ::google::protobuf::Closure* done)
    {
-      auto id = request->guid();
+      /*auto id = request->guid();
 
       database::DocumentHeader head;
       head.set_key(id);
       head.set_category(mCategory);
       common::OperationResultMessage result;
 
-      mDatabase->DeleteDocument(nullptr, &head, &result, nullptr);
-      if(result.success())
+      mDatabase->DeleteDocument(nullptr, &head, &result, nullptr);*/
+      if(mDbProxy.deleteDocument(materia::Id(*request)))
       {
          actions::ActionsList children;
          GetChildren(0, request, &children, 0);
@@ -165,6 +174,23 @@ public:
       {
          response->set_success(false);
       }
+
+      /*if(result.success())
+      {
+         actions::ActionsList children;
+         GetChildren(0, request, &children, 0);
+         for(int i = 0; i < children.list_size(); ++i)
+         {
+            common::OperationResultMessage dummy;
+            DeleteElement(0, &children.list(i).id(), &dummy, 0);
+         }
+
+         response->set_success(true);
+      }
+      else
+      {
+         response->set_success(false);
+      }*/
    }
 
    void EditElement(::google::protobuf::RpcController* controller,
@@ -172,14 +198,14 @@ public:
                        ::common::OperationResultMessage* response,
                        ::google::protobuf::Closure* done)
    {
-      auto id = request->id().guid();
-      auto parent_id = request->parentid().guid();
+      materia::Id id = request->id().guid();
+      materia::Id parent_id = request->parentid().guid();
 
       if(id != parent_id)
       {
-         if(parent_id.empty() || is_item_exist(parent_id))
+         if(parent_id == materia::Id::Invalid || is_item_exist(parent_id))
          {
-            database::Document doc;
+            /*database::Document doc;
             doc.set_body(to_json(*request));
             doc.mutable_header()->set_category(mCategory);
             doc.mutable_header()->set_key(id);
@@ -187,7 +213,10 @@ public:
             common::OperationResultMessage result;
             mDatabase->ModifyDocument(nullptr, &doc, &result, nullptr);
       
-            response->set_success(result.success());
+            response->set_success(result.success());*/
+
+            materia::Document doc { id, to_json(*request) };
+            response->set_success(mDbProxy.replaceDocument(doc));
             return;
          }
       }
@@ -196,8 +225,18 @@ public:
    }
 
 private:
-   std::unique_ptr<MateriaServiceProxy<database::DatabaseService>> mService;
-   database::DatabaseService_Stub* mDatabase;
+   void getElementsWithParentIdEqualsTo(materia::Id id, ::actions::ActionsList* response)
+   {
+      auto documents = mDbProxy.queryDocuments({QueryElement{"parent_id", make_string_query_value(id.getGuid()), "", QueryElementType::Equals}});
+      for(auto x : documents)
+      {
+         auto item = response->add_list();
+         from_json(x.body, *item);
+      }
+   }
+
+   materia::MateriaClient mClient;
+   materia::Database& mDbProxy;
    const std::string mCategory = "ACTIONS";
 };
 

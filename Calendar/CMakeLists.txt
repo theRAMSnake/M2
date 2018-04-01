@@ -13,7 +13,7 @@ LIST(APPEND CMAKE_MODULE_PATH "..")
 find_package(ZeroMQ REQUIRED)
 find_package(Boost COMPONENTS system filesystem REQUIRED)
 
-target_link_libraries(m2Calendar m2common ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread)
+target_link_libraries(m2Calendar m2client m2common ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread)
 
 add_custom_command(
         TARGET m2Calendar POST_BUILD

@@ -4,6 +4,11 @@ namespace materia
 {
    const Id Id::Invalid = Id("");
 
+   Id::Id()
+   {
+      *this = Invalid;
+   }
+
    Id::Id(const common::UniqueId& protoId)
    : mGuid(protoId.guid())
    {
@@ -28,6 +33,11 @@ namespace materia
    bool Id::operator == (const Id& other) const
    {
       return mGuid == other.mGuid;
+   }
+
+   bool Id::operator != (const Id& other) const
+   {
+      return !operator==(other);
    }
    
    const std::string& Id::getGuid() const

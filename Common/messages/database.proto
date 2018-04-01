@@ -59,13 +59,19 @@ message FullTextSearchParameters
    string fulltext = 1;
 }
 
+message AddDocumentRequest
+{
+   Document doc = 1;
+   bool useProvidedId = 2;
+}
+
 service DatabaseService 
 {
    rpc GetDocument (DocumentHeader) returns (Documents);
    rpc SearchDocuments (DocumentQuery) returns (Documents);
    rpc FullTextSearch (FullTextSearchParameters) returns (FullTextSearchResult);
 
-   rpc AddDocument (Document) returns (common.UniqueId);
+   rpc AddDocument (AddDocumentRequest) returns (common.UniqueId);
    rpc ModifyDocument (Document) returns (common.OperationResultMessage);
    rpc DeleteDocument (DocumentHeader) returns (common.OperationResultMessage);
 

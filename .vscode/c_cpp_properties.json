@@ -34,7 +34,9 @@
                 "/usr/include/c++/7.3.0",
                 "/usr/include/c++/7.3.0/x86_64-pc-linux-gnu",
                 "/usr/include/linux",
-                "${workspaceRoot}/build/Common"
+                "${workspaceRoot}/build/Common",
+                "/usr/local/include/bsoncxx/v_noabi",
+                "/usr/local/include/mongocxx/v_noabi"
             ],
             "defines": [],
             "intelliSenseMode": "clang-x64",
@@ -48,7 +50,10 @@
                 ],
                 "limitSymbolsToIncludedHeaders": true,
                 "databaseFilename": ""
-            }
+            },
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
         },
         {
             "name": "Win32",

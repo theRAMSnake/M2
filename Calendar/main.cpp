@@ -1,7 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <Common/InterprocessService.hpp>
-#include <Common/MateriaServiceProxy.hpp>
 #include <Common/PortLayout.hpp>
 #include <messages/calendar.pb.h>
 #include <messages/database.pb.h>
@@ -10,6 +9,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/lexical_cast.hpp>
+#include <Client/MateriaClient.hpp>
 
 namespace materia
 {
@@ -44,35 +44,21 @@ class CalendarServiceImpl : public calendar::CalendarService
 {
 public:
    CalendarServiceImpl()
+   : mClient("CalendarService")
+   , mDbProxy(mClient.getDatabase())
    {
-      mDbProxy.reset(new MateriaServiceProxy<database::DatabaseService>("CalendarService"));
-      mDatabase = &mDbProxy->getService();
+      mDbProxy.setCategory(mCategory);
    }
 
    virtual void Query(::google::protobuf::RpcController* controller,
         const ::calendar::TimeRange* request,
         ::calendar::CalendarItems* response,
         ::google::protobuf::Closure* done)
-   {
-      database::DocumentQuery query;
-      query.set_category(mCategory);
-      {
-         /*auto kvl = query.add_query();
-         kvl->set_key("timestamp");
-         kvl->set_type(database::QueryElementType::Between);
-         kvl->set_value(boost::lexical_cast<std::string>(request->timestampfrom()));
-         kvl->set_value2(boost::lexical_cast<std::string>(request->timestampto()));*/
-         //Known Issue: Database doesn't work with with conditional query of CalendarItems
-         //Fix if performance issue
-      }
-
-      database::Documents result;
-      mDatabase->SearchDocuments(nullptr, &query, &result, nullptr);
-
-      for(auto x : result.result())
+   {     
+      for(auto x : mDbProxy.getDocuments())
       {
          calendar::CalendarItem item;
-         from_json(x.body(), item);
+         from_json(x.body, item);
          if(item.timestamp() > request->timestampfrom() && item.timestamp() < request->timestampto())
          {
             auto newItem = response->add_items();
@@ -91,25 +77,11 @@ public:
          return;
       }
 
-      database::DocumentQuery query;
-      query.set_category(mCategory);
-      {
-         /*auto kvl = query.add_query();
-         kvl->set_key("timestamp");
-         kvl->set_type(database::QueryElementType::Greater);
-         kvl->set_value(boost::lexical_cast<std::string>(request->timestampfrom()));*/
-         //Known Issue: Database doesn't work with conditional query of CalendarItems
-         //Fix if performance issue
-      }
-
-      database::Documents result;
-      mDatabase->SearchDocuments(nullptr, &query, &result, nullptr);
-
       std::vector<calendar::CalendarItem> fetchedItems;
-      for(auto x : result.result())
+      for(auto x : mDbProxy.getDocuments())
       {
          calendar::CalendarItem item;
-         from_json(x.body(), item);
+         from_json(x.body, item);
          if(item.timestamp() > request->timestampfrom())
          {
             fetchedItems.push_back(item);
@@ -137,13 +109,7 @@ public:
          ::common::OperationResultMessage* response,
          ::google::protobuf::Closure* done)
    {
-      database::DocumentHeader head;
-      head.set_key(request->guid());
-      head.set_category(mCategory);
-      common::OperationResultMessage result;
-
-      mDatabase->DeleteDocument(nullptr, &head, &result, nullptr);
-      response->set_success(result.success());
+      response->set_success(mDbProxy.deleteDocument(*request));
    }
 
    virtual void EditItem(::google::protobuf::RpcController* controller,
@@ -151,16 +117,8 @@ public:
          ::common::OperationResultMessage* response,
          ::google::protobuf::Closure* done)
    {
-      database::Document doc;
-      doc.set_body(to_json(*request));
-      doc.mutable_header()->set_category(mCategory);
-      doc.mutable_header()->set_key(request->id().guid());
-
-      common::OperationResultMessage result;
-      mDatabase->ModifyDocument(nullptr, &doc, &result, nullptr);
-
-      response->set_success(result.success());
-      return;
+      materia::Document doc { request->id(), to_json(*request) };
+      response->set_success(mDbProxy.replaceDocument(doc));
    }
 
    virtual void AddItem(::google::protobuf::RpcController* controller,
@@ -173,19 +131,13 @@ public:
       calendar::CalendarItem newItem(*request);
       newItem.mutable_id()->set_guid(id);
 
-      common::UniqueId result;
-      database::Document doc;
-      doc.set_body(to_json(newItem));
-      doc.mutable_header()->set_key(id);
-      doc.mutable_header()->set_category(mCategory);
-   
-      mDatabase->AddDocument(nullptr, &doc, &result, nullptr);
-      response->set_guid(result.guid());
+      materia::Document doc { materia::Id::Invalid, to_json(newItem) };
+      *response = mDbProxy.insertDocument(doc, materia::IdMode::Generate).toProtoId();
    }
 
 private:
-   std::unique_ptr<MateriaServiceProxy<database::DatabaseService>> mDbProxy;
-   database::DatabaseService_Stub* mDatabase;
+   materia::MateriaClient mClient;
+   materia::Database& mDbProxy;
    const std::string mCategory = "CAL";
 };
 

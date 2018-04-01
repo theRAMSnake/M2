@@ -3,8 +3,7 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/lexical_cast.hpp>
 #include <algorithm>
-#include <messages/database.pb.h>
-#include "TestServiceProvider.hpp"
+#include <Client/MateriaClient.hpp>
 
 #include <bsoncxx/json.hpp>
 #include <bsoncxx/builder/stream/document.hpp>
@@ -13,198 +12,117 @@
 #include <mongocxx/stdx.hpp>
 #include <mongocxx/uri.hpp>
 
-const int GUID_STRING_SIZE = 32 + 4; //4 of '-'
+#include "TestHelpers.hpp"
 
-namespace 
+class DatabaseTest
 {
-   void cleanUp()
-   {   
+public:
+   DatabaseTest()
+   : mClient("test")
+   , mService(mClient.getDatabase())
+   {
       mongocxx::instance instance{}; 
       mongocxx::client client{mongocxx::uri{}};
 
       client["materia"].drop();
-   }
-}
 
-BOOST_AUTO_TEST_CASE( Database_Add ) 
-{
-   cleanUp();
-   TestServiceProvider<database::DatabaseService> serviceProvider;
-   auto& service = serviceProvider.getService();
+      mService.setCategory("somecat");
 
-   //invalid doc creation
-   {
-      database::Document request;
-      request.set_body("invalid body");
-      
-      common::UniqueId responce;
-      
-      service.AddDocument(nullptr, &request, &responce, nullptr);
-      BOOST_CHECK(responce.guid().empty());
-   }
-
-   common::UniqueId id;
-   database::Document doc;
-   doc.set_body("{\"somevalue\":5}");
-   doc.mutable_header()->set_key("key");
-   doc.mutable_header()->set_category("somecat");
-
-   //valid doc creation
-   {
-      service.AddDocument(nullptr, &doc, &id, nullptr);
-      BOOST_CHECK(id.guid() == "key");
-   }
-
-   //check if we can get it
-   {
-      database::Documents result;
-
-      doc.mutable_header()->set_key(id.guid());
-      service.GetDocument(nullptr, &doc.header(), &result, nullptr);
-
-      BOOST_CHECK(result.result_size() == 1);
-      BOOST_CHECK(result.result(0).header().key() == id.guid());
-
-      std::string result_body = result.result(0).body();
-      result_body.erase( std::remove_if( result_body.begin(), result_body.end(), ::isspace ), result_body.end() );
-      BOOST_CHECK_EQUAL(doc.body(), result_body);
-      BOOST_CHECK(doc.header().category() == result.result(0).header().category());
-   }
-}
-
-std::vector<std::string> fillSampleDocuments(database::DatabaseService& service)
-{
-   cleanUp();
-   
-   std::vector<std::string> result;
-
-   for(int i = 0; i < 10; ++i)
-   {
-      database::Document doc;
-      doc.set_body("{\"doc\":" + boost::lexical_cast<std::string>(i) + ", \"someval\":"
-      + boost::lexical_cast<std::string>(i) + "}");
-      doc.mutable_header()->set_category("somecat");
-
-      common::UniqueId id;
-       
-      service.AddDocument(nullptr, &doc, &id, nullptr);
-      result.push_back(id.guid());
-   }
-
-   return result;
-}
-
-BOOST_AUTO_TEST_CASE( Database_Delete ) 
-{
-   TestServiceProvider<database::DatabaseService> serviceProvider;
-   auto& service = serviceProvider.getService();
-
-   std::vector<std::string> guids = fillSampleDocuments(service);
-
-   //delete unexist doc
-   {
-      database::DocumentHeader head;
-      head.set_key("sdfdfdf");
-      common::OperationResultMessage result;
-
-      service.DeleteDocument(nullptr, &head, &result, nullptr);
-      BOOST_CHECK(!result.success());
-
-      //check that all documents are there
-      for(auto x : guids)
+      for(int i = 0; i < 10; ++i)
       {
-         database::DocumentHeader head;
-         head.set_key(x);
-         head.set_category("somecat");
+         std::string body = "{\"doc\":" + boost::lexical_cast<std::string>(i) + ", \"someval\":"
+            + boost::lexical_cast<std::string>(i) + "}";
 
-         database::Documents queryResult;
-         service.GetDocument(nullptr, &head, &queryResult, nullptr);
-
-         BOOST_CHECK(queryResult.result_size() == 1);
+         mSampleIds.push_back(mService.insertDocument({materia::Id::Invalid, body}, materia::IdMode::Generate));
       }
    }
+
+protected:
+
+   void addTestDoc(const std::string& category, const std::string& body)
+   {
+      mService.setCategory(category);
+      mService.insertDocument({materia::Id::Invalid, body}, materia::IdMode::Generate);
+   }
+
+   materia::MateriaClient mClient;
+   materia::Database& mService;
+   std::vector<materia::Id> mSampleIds;
+};
+
+bool spacelessEquals(const std::string& a, const std::string& b)
+{
+   auto a_ = a;
+   auto b_ = b;
+   a_.erase( std::remove_if( a_.begin(), a_.end(), ::isspace ), a_.end() );
+   b_.erase( std::remove_if( b_.begin(), b_.end(), ::isspace ), b_.end() );
+
+   return a_ == b_;
+}
+
+BOOST_FIXTURE_TEST_CASE( Add, DatabaseTest )  
+{
+   //invalid doc creation
+   BOOST_CHECK_EQUAL(mService.insertDocument({materia::Id::Invalid, "invalid body"}, materia::IdMode::Generate), materia::Id::Invalid);
+
+   //valid doc creation
+   auto id = materia::Id("key");
+   auto body = "{\"somevalue\":5}";
+   BOOST_CHECK_EQUAL(mService.insertDocument({id, body}, materia::IdMode::Provided), id);
+
+   auto id2 = materia::Id("key2");
+   BOOST_CHECK_NE(mService.insertDocument({id2, body}, materia::IdMode::Generate), id2);
+
+
+   //check if we can get it
+   auto doc = mService.getDocument(id);
+   BOOST_CHECK(doc);
+   BOOST_CHECK_EQUAL(doc->id, id);
+
+   
+
+   BOOST_CHECK(spacelessEquals(doc->body, body));
+}
+
+BOOST_FIXTURE_TEST_CASE( Delete, DatabaseTest )  
+{
+   //delete unexist doc
+   BOOST_CHECK(!mService.deleteDocument(materia::Id("dfsdgfdfg")));
+   BOOST_CHECK_EQUAL(mSampleIds.size(), mService.getDocuments().size());
 
    //delete exist doc
    {
       const int sampleDocIndex = 2;
-      database::DocumentHeader head;
-      head.set_key(guids[sampleDocIndex]);
-      head.set_category("somecat");
-      common::OperationResultMessage result;
-
-      service.DeleteDocument(nullptr, &head, &result, nullptr);
-      BOOST_CHECK(result.success());
+      BOOST_CHECK(mService.deleteDocument(mSampleIds[sampleDocIndex]));
 
       //check that all, but deleted documents are there
-      for(std::size_t i = 0; i < guids.size(); ++i)
-      {
-         database::DocumentHeader head;
-         head.set_key(guids[i]);
-         head.set_category("somecat");
+      auto docs = mService.getDocuments();
+      BOOST_CHECK_EQUAL(mSampleIds.size() - 1, mService.getDocuments().size());
 
-         database::Documents queryResult;
-         service.GetDocument(nullptr, &head, &queryResult, nullptr);
-
-         BOOST_CHECK(queryResult.result_size() == (i == sampleDocIndex ? 0 : 1));
-      }
+      BOOST_CHECK(std::find_if(docs.begin(), docs.end(), [&] (auto d)->bool {return d.id == mSampleIds[sampleDocIndex];})
+         == docs.end());
    }
 
    //delete all
-   for(auto x : guids)
+   for(auto x : mSampleIds)
    {
-      database::DocumentHeader head;
-      head.set_key(x);
-      head.set_category("somecat");
-
-      common::OperationResultMessage result;
-      service.DeleteDocument(nullptr, &head, &result, nullptr);      
+      mService.deleteDocument(x);
    }
 
    //nothing can be obtained anymore
-   {
-      for(std::size_t i = 0; i < guids.size(); ++i)
-      {
-         database::DocumentHeader head;
-         head.set_key(guids[i]);
-         head.set_category("somecat");
-
-         database::Documents queryResult;
-         service.GetDocument(nullptr, &head, &queryResult, nullptr);
-
-         BOOST_CHECK(queryResult.result_size() == 0);
-      }
-   }
+   BOOST_CHECK(mService.getDocuments().empty());
 }
 
-BOOST_AUTO_TEST_CASE( Database_Get ) 
+BOOST_FIXTURE_TEST_CASE( Get, DatabaseTest )
 {
-   TestServiceProvider<database::DatabaseService> serviceProvider;
-   auto& service = serviceProvider.getService();
-
-   std::vector<std::string> guids = fillSampleDocuments(service);
-
    //get exist
-   for(auto x : guids)
+   for(auto x : mSampleIds)
    {
-      database::DocumentHeader head;
-      head.set_key(x);
-      head.set_category("somecat");
-
-      database::Documents queryResult;
-      service.GetDocument(nullptr, &head, &queryResult, nullptr);
-
-      BOOST_CHECK(queryResult.result_size() == 1);
+      BOOST_CHECK(mService.getDocument(x));
    }
 
    //get non exist
-   database::DocumentHeader head;
-   head.set_key("asdfklsdf");
-   head.set_category("somecat");
-   
-   database::Documents queryResult;
-   service.GetDocument(nullptr, &head, &queryResult, nullptr);
-
-   BOOST_CHECK(queryResult.result_size() == 0);
+   BOOST_CHECK(!mService.getDocument(materia::Id("jdkflsdf")));
 }
 
 std::string remove_spaces(std::string src)
@@ -213,394 +131,186 @@ std::string remove_spaces(std::string src)
    return src;
 }
 
-BOOST_AUTO_TEST_CASE( Database_Edit ) 
+BOOST_FIXTURE_TEST_CASE( Edit, DatabaseTest )
 {
-   TestServiceProvider<database::DatabaseService> serviceProvider;
-   auto& service = serviceProvider.getService();
-
-   std::vector<std::string> guids = fillSampleDocuments(service);
-
    //edit non exist
    {
-      database::Document doc;
-      doc.set_body("{\"doc\":5");
-      doc.mutable_header()->set_category("somecat");
-      doc.mutable_header()->set_key("dgkljsdg");
-
-      common::OperationResultMessage result;
-      service.ModifyDocument(nullptr, &doc, &result, nullptr);
-
-      BOOST_CHECK(!result.success());
+      BOOST_CHECK(!mService.replaceDocument({materia::Id("dgkljsdg"), "{\"doc\":5"}));
    }
 
    //edit invalid json
    {
-      database::Document doc;
-      doc.set_body("{\"doc\"5");
-      doc.mutable_header()->set_category("somecat");
-      doc.mutable_header()->set_key(guids[0]);
-
-      common::OperationResultMessage result;
-      service.ModifyDocument(nullptr, &doc, &result, nullptr);
-
-      BOOST_CHECK(!result.success());
+      BOOST_CHECK(!mService.replaceDocument({mSampleIds[0], "{\"doc\"5"}));
    }
 
    //edit valid
    {
-      database::Document doc;
-      doc.set_body("{\"doc\":100}");
-      doc.mutable_header()->set_category("somecat");
-      doc.mutable_header()->set_key(guids[0]);
-
-      common::OperationResultMessage result;
-      service.ModifyDocument(nullptr, &doc, &result, nullptr);
-
-      BOOST_CHECK(result.success());
+      BOOST_CHECK(mService.replaceDocument({mSampleIds[0], "{\"doc\":100}"}));
    }
 
    //check validness of documents
    {
-      for(std::size_t i = 0; i < guids.size(); ++i)
+      for(std::size_t i = 0; i < mSampleIds.size(); ++i)
       {
-         database::DocumentHeader head;
-         head.set_key(guids[i]);
-         head.set_category("somecat");
+         auto doc = mService.getDocument(mSampleIds[i]);
 
-         database::Documents queryResult;
-         service.GetDocument(nullptr, &head, &queryResult, nullptr);
-
-         BOOST_CHECK(queryResult.result_size() == 1);
-         BOOST_CHECK(queryResult.result(0).header().key() == head.key());  
-         BOOST_CHECK("somecat" == queryResult.result(0).header().category());
+         BOOST_CHECK_EQUAL(doc->id, mSampleIds[i]);
 
          if(i != 0)
          {
             BOOST_CHECK_EQUAL("{\"doc\":" + boost::lexical_cast<std::string>(i) + ",\"someval\":"
             + boost::lexical_cast<std::string>(i) +
              "}",
-             remove_spaces(queryResult.result(0).body()));
+             remove_spaces(doc->body));
          }
          else
          {
-            BOOST_CHECK_EQUAL("{\"doc\":100}", remove_spaces(queryResult.result(0).body()));
+            BOOST_CHECK_EQUAL("{\"doc\":100}", remove_spaces(doc->body));
          }
       }
    }
 }
 
-BOOST_AUTO_TEST_CASE( Database_Find_Category )
+BOOST_FIXTURE_TEST_CASE( Find_Category, DatabaseTest )
 {
-   TestServiceProvider<database::DatabaseService> serviceProvider;
-   auto& service = serviceProvider.getService();
-
-   std::vector<std::string> guids = fillSampleDocuments(service);
-
    {
-      database::DocumentQuery query;
-      query.set_category("somecat");
-
-      database::Documents queryResult;
-      service.SearchDocuments(nullptr, &query, &queryResult, nullptr);
-
-      BOOST_CHECK(queryResult.result_size() == 10);
+      BOOST_CHECK_EQUAL(mSampleIds.size(), mService.getDocuments().size());
    }
    {
-      database::DocumentQuery query;
-      query.set_category("somecat1");
-
-      database::Documents queryResult;
-      service.SearchDocuments(nullptr, &query, &queryResult, nullptr);
-
-      BOOST_CHECK(queryResult.result_size() == 0);
+      mService.setCategory("somecat1");
+      BOOST_CHECK_EQUAL(0, mService.getDocuments().size());
    }
 } 
 
-BOOST_AUTO_TEST_CASE( Database_Find_Text )
+BOOST_FIXTURE_TEST_CASE( Find_Text, DatabaseTest )
 {
-   TestServiceProvider<database::DatabaseService> serviceProvider;
-   auto& service = serviceProvider.getService();
-
-   std::vector<std::string> guids = fillSampleDocuments(service);
-
    {
-      database::DocumentQuery query;
-      auto kval = query.add_query();
-      kval->set_key("doc");
-      kval->set_value("3");
-      kval->set_type(database::QueryElementType::Equals);
-      query.set_category("somecat");
-
-      database::Documents queryResult;
-      service.SearchDocuments(nullptr, &query, &queryResult, nullptr);
-
-      BOOST_CHECK_EQUAL(queryResult.result_size(), 1);
-      BOOST_CHECK_EQUAL("{\"doc\":3,\"someval\":3}", remove_spaces(queryResult.result(0).body()));
+      auto result = mService.queryDocuments({{"doc", "3", "", materia::QueryElementType::Equals}});
+      
+      BOOST_CHECK_EQUAL(result.size(), 1);
+      BOOST_CHECK_EQUAL("{\"doc\":3,\"someval\":3}", remove_spaces(result[0].body));
    }
    {
-      database::DocumentQuery query;
-      auto kval = query.add_query();
-      kval->set_key("error");
-      kval->set_value("");
-      kval->set_type(database::QueryElementType::Equals);
-
-      database::Documents queryResult;
-      service.SearchDocuments(nullptr, &query, &queryResult, nullptr);
-
-      BOOST_CHECK(queryResult.result_size() == 0);
+      auto result = mService.queryDocuments({{"error", "", "", materia::QueryElementType::Equals}});
+      BOOST_CHECK_EQUAL(result.size(), 0);
    }
    {
-      database::DocumentQuery query;
-      auto kval = query.add_query();
-      kval->set_key("doc");
-      kval->set_value("11");
-      kval->set_type(database::QueryElementType::Equals);
-      query.set_category("somecat");
-
-      database::Documents queryResult;
-      service.SearchDocuments(nullptr, &query, &queryResult, nullptr);
-
-      BOOST_CHECK(queryResult.result_size() == 0);
+      auto result = mService.queryDocuments({{"doc", "11", "", materia::QueryElementType::Equals}});
+      BOOST_CHECK_EQUAL(result.size(), 0);
    }
    {
-      database::DocumentQuery query;
-      auto kval = query.add_query();
-      kval->set_key("doc");
-      kval->set_value("4");
-      kval->set_type(database::QueryElementType::Equals);
-      kval = query.add_query();
-      kval->set_key("someval");
-      kval->set_value("4");
-      kval->set_type(database::QueryElementType::Equals);
-      query.set_category("somecat");
-
-      database::Documents queryResult;
-      service.SearchDocuments(nullptr, &query, &queryResult, nullptr);
-
-      BOOST_CHECK_EQUAL(queryResult.result_size(), 1);
-      BOOST_CHECK_EQUAL("{\"doc\":4,\"someval\":4}", remove_spaces(queryResult.result(0).body()));
+      auto result = mService.queryDocuments({
+         {"doc", "4", "", materia::QueryElementType::Equals},
+         {"someval", "4", "", materia::QueryElementType::Equals}
+         });
+      
+      BOOST_CHECK_EQUAL(result.size(), 1);
+      BOOST_CHECK_EQUAL("{\"doc\":4,\"someval\":4}", remove_spaces(result[0].body));
    }
    {
-      database::DocumentQuery query;
-      auto kval = query.add_query();
-      kval->set_key("someval");
-      kval->set_value("3");
-      kval->set_type(database::QueryElementType::Equals);
-      query.set_category("somecat");
-
-      database::Documents queryResult;
-      service.SearchDocuments(nullptr, &query, &queryResult, nullptr);
-
-      BOOST_CHECK_EQUAL(queryResult.result_size(), 1);
+      auto result = mService.queryDocuments({{"someval", "3", "", materia::QueryElementType::Equals}});
+      
+      BOOST_CHECK_EQUAL(result.size(), 1);
+      BOOST_CHECK_EQUAL("{\"doc\":3,\"someval\":3}", remove_spaces(result[0].body));
    }
 } 
 
-BOOST_AUTO_TEST_CASE( Database_Query_Less )
+BOOST_FIXTURE_TEST_CASE( Query_Less, DatabaseTest )
 {
-    TestServiceProvider<database::DatabaseService> serviceProvider;
-    auto& service = serviceProvider.getService();
- 
-    std::vector<std::string> guids = fillSampleDocuments(service);
-
-    {
-        database::DocumentQuery query;
-        auto kval = query.add_query();
-        kval->set_key("someval");
-        kval->set_value("5");
-        kval->set_type(database::QueryElementType::Less);
-        query.set_category("somecat");
-  
-        database::Documents queryResult;
-        service.SearchDocuments(nullptr, &query, &queryResult, nullptr);
-  
-        BOOST_CHECK_EQUAL(queryResult.result_size(), 5);
-    }
-    {
-        database::DocumentQuery query;
-        auto kval = query.add_query();
-        kval->set_key("someval");
-        kval->set_value("1");
-        kval->set_type(database::QueryElementType::Less);
-        query.set_category("somecat");
-  
-        database::Documents queryResult;
-        service.SearchDocuments(nullptr, &query, &queryResult, nullptr);
-  
-        BOOST_CHECK_EQUAL(queryResult.result_size(), 1);
-    }
-}
-
-BOOST_AUTO_TEST_CASE( Database_Query_Greater )
-{
-    TestServiceProvider<database::DatabaseService> serviceProvider;
-    auto& service = serviceProvider.getService();
- 
-    std::vector<std::string> guids = fillSampleDocuments(service);
-
-    {
-        database::DocumentQuery query;
-        auto kval = query.add_query();
-        kval->set_key("someval");
-        kval->set_value("1");
-        kval->set_type(database::QueryElementType::Greater);
-        query.set_category("somecat");
-  
-        database::Documents queryResult;
-        service.SearchDocuments(nullptr, &query, &queryResult, nullptr);
-  
-        BOOST_CHECK_EQUAL(queryResult.result_size(), 8);
-    }
-    {
-        database::DocumentQuery query;
-        auto kval = query.add_query();
-        kval->set_key("someval");
-        kval->set_value("5");
-        kval->set_type(database::QueryElementType::Greater);
-        query.set_category("somecat");
-  
-        database::Documents queryResult;
-        service.SearchDocuments(nullptr, &query, &queryResult, nullptr);
-  
-        BOOST_CHECK_EQUAL(queryResult.result_size(), 4);
-    }
-}
-
-BOOST_AUTO_TEST_CASE( Database_Query_Between )
-{
-    TestServiceProvider<database::DatabaseService> serviceProvider;
-    auto& service = serviceProvider.getService();
- 
-    std::vector<std::string> guids = fillSampleDocuments(service);
-
-    {
-        database::DocumentQuery query;
-        auto kval = query.add_query();
-        kval->set_key("someval");
-        kval->set_value("1");
-        kval->set_value2("5");
-        kval->set_type(database::QueryElementType::Between);
-        query.set_category("somecat");
-  
-        database::Documents queryResult;
-        service.SearchDocuments(nullptr, &query, &queryResult, nullptr);
-  
-        BOOST_CHECK_EQUAL(queryResult.result_size(), 3);
-    }
-    {
-        database::DocumentQuery query;
-        auto kval = query.add_query();
-        kval->set_key("someval");
-        kval->set_value("5");
-        kval->set_value2("1");
-        kval->set_type(database::QueryElementType::Between);
-        query.set_category("somecat");
-  
-        database::Documents queryResult;
-        service.SearchDocuments(nullptr, &query, &queryResult, nullptr);
-  
-        BOOST_CHECK_EQUAL(queryResult.result_size(), 0);
-    }
-}
-
-BOOST_AUTO_TEST_CASE( Database_Fetch ) 
-{
-   TestServiceProvider<database::DatabaseService> serviceProvider;
-   auto& service = serviceProvider.getService();
-
-   std::vector<std::string> guids = fillSampleDocuments(service);
-
-   common::UniqueId id;
-   database::Document doc;
-   doc.set_body("{\"somevalue\":5}");
-   doc.mutable_header()->set_key("key");
-   doc.mutable_header()->set_category("someothercat");
-
-   //valid doc creation
    {
-      service.AddDocument(nullptr, &doc, &id, nullptr);
+      auto result = mService.queryDocuments({{"someval", "5", "", materia::QueryElementType::Less}});
+      
+      BOOST_CHECK_EQUAL(result.size(), 5);
    }
+   {
+      auto result = mService.queryDocuments({{"someval", "1", "", materia::QueryElementType::Less}});
+      
+      BOOST_CHECK_EQUAL(result.size(), 1);
+   }
+}
+
+BOOST_FIXTURE_TEST_CASE( Query_Greater, DatabaseTest )
+{
+   {
+      auto result = mService.queryDocuments({{"someval", "1", "", materia::QueryElementType::Greater}});
+      
+      BOOST_CHECK_EQUAL(result.size(), 8);
+   }
+   {
+      auto result = mService.queryDocuments({{"someval", "5", "", materia::QueryElementType::Greater}});
+      
+      BOOST_CHECK_EQUAL(result.size(), 4);
+   }
+}
+
+BOOST_FIXTURE_TEST_CASE( Query_Between, DatabaseTest )
+{
+   {
+      auto result = mService.queryDocuments({{"someval", "1", "5", materia::QueryElementType::Between}});
+      
+      BOOST_CHECK_EQUAL(result.size(), 3);
+   }
+   {
+      auto result = mService.queryDocuments({{"someval", "5", "1", materia::QueryElementType::Between}});
+      
+      BOOST_CHECK_EQUAL(result.size(), 0);
+   }
+}
+
+BOOST_FIXTURE_TEST_CASE( Fetch, DatabaseTest )
+{
+   mService.setCategory("someothercat");
+   mSampleIds.push_back(mService.insertDocument({materia::Id("key"), "{\"somevalue\":5}"}, materia::IdMode::Generate));
 
    {
-      common::EmptyMessage emptyMsg;
+      auto docs = mService.fetch();
+      BOOST_CHECK_EQUAL(mSampleIds.size(), docs.size());
 
-      database::Documents fetchResult;
-      service.Fetch(nullptr, &emptyMsg, &fetchResult, nullptr);
-
-      BOOST_CHECK_EQUAL(fetchResult.result_size(), 11);
-
-      for(auto x : fetchResult.result())
+      for(auto x : docs)
       {
-         bool keyFound = std::find_if(guids.begin(), guids.end(), [&](auto y)->bool{return y == x.header().key();})
-            != guids.end();
+         bool keyFound = std::find_if(mSampleIds .begin(), mSampleIds.end(), [&](auto y)->bool{return y == x.id;})
+            != mSampleIds.end();
 
-         BOOST_CHECK(keyFound || x.header().key() == id.guid());
+         BOOST_CHECK(keyFound);
       }
    }
 }
 
-void addTestDoc(database::DatabaseService::Stub& service, const std::string& category, const std::string& body)
+BOOST_FIXTURE_TEST_CASE( FullTextSearch, DatabaseTest )
 {
-   database::Document doc;
-   doc.set_body(body);
-   doc.mutable_header()->set_category(category);
-   common::UniqueId id;
-   service.AddDocument(nullptr, &doc, &id, nullptr);
-}
-
-BOOST_AUTO_TEST_CASE( Database_FullTextSearch ) 
-{
-   TestServiceProvider<database::DatabaseService> serviceProvider;
-   auto& service = serviceProvider.getService();
-
-   addTestDoc(service, "animals", "{\"name\":\"snake\", \"type\":\"animal\"}");
-   addTestDoc(service, "animals", "{\"name\":\"elephant\", \"type\":\"animal\"}");
-   addTestDoc(service, "animals", "{\"name\":\"chicken\", \"type\":\"animal\"}");
-   addTestDoc(service, "food", "{\"name\":\"apple\", \"type\":\"food\"}");
-   addTestDoc(service, "food", "{\"name\":\"fries\", \"type\":\"food\"}");
-   addTestDoc(service, "food", "{\"name\":\"chicken\", \"type\":\"food\"}");
+   addTestDoc("animals", "{\"name\":\"snake\", \"type\":\"animal\"}");
+   addTestDoc("animals", "{\"name\":\"elephant\", \"type\":\"animal\"}");
+   addTestDoc("animals", "{\"name\":\"chicken\", \"type\":\"animal\"}");
+   addTestDoc("food", "{\"name\":\"apple\", \"type\":\"food\"}");
+   addTestDoc("food", "{\"name\":\"fries\", \"type\":\"food\"}");
+   addTestDoc("food", "{\"name\":\"chicken\", \"type\":\"food\"}");
 
    {
-      database::FullTextSearchParameters in;
-      in.set_fulltext("food");
+      auto result = mService.fts("food");
 
-      database::FullTextSearchResult out;
-      service.FullTextSearch(nullptr, &in, &out, nullptr);
-
-      BOOST_CHECK_EQUAL(out.result_size(), 3);
-      for(auto x : out.result())
+      BOOST_CHECK_EQUAL(result.size(), 3);
+      for(auto x : result)
       {
-         BOOST_CHECK(x.doc().body().find("food") != std::string::npos);
+         BOOST_CHECK(x.body.find("food") != std::string::npos);
       }
    }
    {
-      database::FullTextSearchParameters in;
-      in.set_fulltext("name");
+      auto result = mService.fts("name");
 
-      database::FullTextSearchResult out;
-      service.FullTextSearch(nullptr, &in, &out, nullptr);
-
-      BOOST_CHECK_EQUAL(out.result_size(), 6);
+      BOOST_CHECK_EQUAL(result.size(), 6);
    }
    {
-      database::FullTextSearchParameters in;
-      in.set_fulltext("chicken");
+      auto result = mService.fts("chicken");
 
-      database::FullTextSearchResult out;
-      service.FullTextSearch(nullptr, &in, &out, nullptr);
-
-      BOOST_CHECK_EQUAL(out.result_size(), 2);
-      for(auto x : out.result())
+      BOOST_CHECK_EQUAL(result.size(), 2);
+      for(auto x : result)
       {
-         BOOST_CHECK(x.doc().body().find("chicken") != std::string::npos);
+         BOOST_CHECK(x.body.find("chicken") != std::string::npos);
       }
    }
    {
-      database::FullTextSearchParameters in;
-      in.set_fulltext("bullshit");
+      auto result = mService.fts("bullshit");
 
-      database::FullTextSearchResult out;
-      service.FullTextSearch(nullptr, &in, &out, nullptr);
-
-      BOOST_CHECK_EQUAL(out.result_size(), 0);
+      BOOST_CHECK_EQUAL(result.size(), 0);
    }
 }

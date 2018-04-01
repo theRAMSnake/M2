@@ -1,164 +1,75 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 #include <messages/inbox.pb.h>
-#include "TestServiceProvider.hpp"
+#include <Client/MateriaClient.hpp>
 #include <boost/filesystem.hpp>
 
 #include <mongocxx/instance.hpp>
 #include <mongocxx/client.hpp>
 #include <mongocxx/stdx.hpp>
 #include <mongocxx/uri.hpp>
+#include "TestHelpers.hpp"
 
-namespace 
+
+class InboxTest
 {
-   void cleanUp()
-   {   
-      boost::filesystem::remove_all("inbox_service_data");
-      boost::filesystem::create_directory("inbox_service_data");
-
+public:
+   InboxTest()
+   : mClient("test")
+   , mService(mClient.getInbox())
+   {
       mongocxx::instance instance{}; 
       mongocxx::client client{mongocxx::uri{}};
 
       client["materia"].drop();
    }
-}
 
-bool isItemsConsistent(inbox::InboxService& service)
-{
-   common::EmptyMessage emptyMsg;
-   inbox::InboxItems responce;
-   
-   service.GetInbox(nullptr, &emptyMsg, &responce, nullptr);
-   
-   return 0 == responce.items_size();
-}
-
-const int GUID_STRING_SIZE = 32 + 4; //4 of '-'
-
-BOOST_AUTO_TEST_CASE( Inbox_AddDeleteInbox ) 
-{
-   cleanUp();
-
-   TestServiceProvider<inbox::InboxService> serviceProvider;
-   auto& service = serviceProvider.getService();
-   
-   inbox::InboxItemInfo request;
-   request.set_text("text");
-   
-   common::UniqueId responce;
-   
-   service.AddItem(nullptr, &request, &responce, nullptr);
-   BOOST_CHECK(responce.guid().size() == GUID_STRING_SIZE);
-   
+protected:
+   bool isItemsConsistent()
    {
-      common::EmptyMessage emptyMsg;
-      inbox::InboxItems responce;
-      
-      service.GetInbox(nullptr, &emptyMsg, &responce, nullptr);
-      
-      BOOST_CHECK_EQUAL(1, responce.items_size());
-
-      //printf("%s", responce.items().begin()->text().c_str());
-      
-      auto pos = std::find_if(responce.items().begin(), responce.items().end(), 
-         [](auto x){return x.text() == "text";});
-      BOOST_REQUIRE(pos != responce.items().end());
-      
-      {
-         common::UniqueId request;
-         request.set_guid(pos->id().guid());
-         
-         common::OperationResultMessage opResult;
-         service.DeleteItem(nullptr, &request, &opResult, nullptr);
-         
-         BOOST_CHECK(opResult.success());
-         BOOST_CHECK(isItemsConsistent(service));
-      }
+      return mService.getItems().empty();
    }
+
+   materia::MateriaClient mClient;
+   materia::Inbox& mService;
+};
+
+BOOST_FIXTURE_TEST_CASE( AddDeleteInbox, InboxTest ) 
+{  
+   BOOST_CHECK(mService.insertItem({materia::Id::Invalid, "text"}) != materia::Id::Invalid);
+
+   auto items = mService.getItems();
+   BOOST_CHECK_EQUAL(1, items.size());
+   BOOST_CHECK_EQUAL("text", items[0].text);
+
+   BOOST_CHECK(mService.deleteItem(items[0].id));
+   BOOST_CHECK(isItemsConsistent());
 }
 
-BOOST_AUTO_TEST_CASE( Inbox_DeleteWrongInbox ) 
+BOOST_FIXTURE_TEST_CASE( DeleteWrongInbox, InboxTest ) 
 {
-   cleanUp();
-
-   TestServiceProvider<inbox::InboxService> serviceProvider;
-   auto& service = serviceProvider.getService();
-   
-   common::UniqueId request;
-   request.set_guid("50");
-   
-   common::OperationResultMessage opResult;
-   service.DeleteItem(nullptr, &request, &opResult, nullptr);
-   
-   BOOST_CHECK(!opResult.success());
-   BOOST_CHECK(isItemsConsistent(service));
+   BOOST_CHECK(!mService.deleteItem(materia::Id("wrong")));
+   BOOST_CHECK(isItemsConsistent());
 }
 
-BOOST_AUTO_TEST_CASE( Inbox_EditWrongInbox ) 
-{
-   cleanUp();
-
-   TestServiceProvider<inbox::InboxService> serviceProvider;
-   auto& service = serviceProvider.getService();
-   
-   inbox::InboxItemInfo request;
-   request.set_text("text");
-   request.mutable_id()->set_guid("50");
-   
-   common::OperationResultMessage opResult;
-   
-   service.EditItem(nullptr, &request, &opResult, nullptr);
-   
-   BOOST_CHECK(!opResult.success());
-   BOOST_CHECK(isItemsConsistent(service));
+BOOST_FIXTURE_TEST_CASE( EditWrongInbox, InboxTest ) 
+{  
+   BOOST_CHECK(!mService.replaceItem({materia::Id("wrong"), "text"}));
+   BOOST_CHECK(isItemsConsistent());
 }
 
-BOOST_AUTO_TEST_CASE( Inbox_EditInbox ) 
+BOOST_FIXTURE_TEST_CASE( EditInbox, InboxTest ) 
 {
-   cleanUp(); 
+   materia::Id newId = mService.insertItem({materia::Id::Invalid, "text"});
+   BOOST_CHECK(newId != materia::Id::Invalid);
 
-   TestServiceProvider<inbox::InboxService> serviceProvider;
-   auto& service = serviceProvider.getService();
-   
-   inbox::InboxItemInfo request;
-   request.set_text("text");
-   
-   common::UniqueId responce;
-   
-   service.AddItem(nullptr, &request, &responce, nullptr);
-   
-   BOOST_CHECK(responce.guid().size() == GUID_STRING_SIZE);
-   
-   request.mutable_id()->set_guid(responce.guid());
-   request.set_text("other_text");
-   
-   common::OperationResultMessage opResult;
-   service.EditItem(nullptr, &request, &opResult, nullptr);
-   
-   BOOST_CHECK(opResult.success());
-   
-   {
-      common::EmptyMessage emptyMsg;
-      inbox::InboxItems responce;
-      
-      service.GetInbox(nullptr, &emptyMsg, &responce, nullptr);
-      
-      BOOST_CHECK_EQUAL(1, responce.items_size());
-      
-      auto pos = std::find_if(responce.items().begin(), responce.items().end(), 
-         [](auto x){return x.text() == "other_text";});
-      BOOST_REQUIRE(pos != responce.items().end());
-      BOOST_CHECK(pos->id().guid() == request.id().guid());
-      
-      {
-         common::UniqueId request;
-         request.set_guid(pos->id().guid());
-         
-         common::OperationResultMessage opResult;
-         service.DeleteItem(nullptr, &request, &opResult, nullptr);
-         
-         BOOST_CHECK(opResult.success());
-         BOOST_CHECK(isItemsConsistent(service));
-      }
-   }
+   BOOST_CHECK(mService.replaceItem({newId, "other_text"}));
+
+   auto items = mService.getItems();
+   BOOST_CHECK_EQUAL(1, items.size());
+   BOOST_CHECK_EQUAL("other_text", items[0].text);
+   BOOST_CHECK_EQUAL(newId, items[0].id);
+
+   BOOST_CHECK(mService.deleteItem(items[0].id));
+   BOOST_CHECK(isItemsConsistent());
 }

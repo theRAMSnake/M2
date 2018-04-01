@@ -12,7 +12,8 @@ InboxServiceHighLevelTest.cpp
 ActionServiceHighLevelTest.cpp
 DatabaseServiceHighLevelTest.cpp
 CalendarServiceHighLevelTest.cpp
-JournalServiceTest.cpp
+TestHelpers.cpp
+#JournalServiceTest.cpp
 )
 
 find_package(Boost COMPONENTS unit_test_framework filesystem REQUIRED)
@@ -23,7 +24,7 @@ find_package(LIBMONGOCXX REQUIRED)
 include_directories(${LIBMONGOCXX_INCLUDE_DIRS})
 include_directories(${LIBBSONCXX_INCLUDE_DIRS})
 
-target_link_libraries(Test m2common ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} ${LIBMONGOCXX_LIBRARIES} ${LIBBSONCXX_LIBRARIES} pthread)
+target_link_libraries(Test m2common m2client ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} ${LIBMONGOCXX_LIBRARIES} ${LIBBSONCXX_LIBRARIES} pthread)
 
 add_custom_command(
         TARGET Test POST_BUILD
