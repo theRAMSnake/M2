@@ -143,6 +143,7 @@
       "wabstracttogglebutton": "cpp",
       "wcheckbox": "cpp",
       "any": "cpp",
-      "hash_set": "cpp"
+      "hash_set": "cpp",
+      "variant": "cpp"
    }
 }

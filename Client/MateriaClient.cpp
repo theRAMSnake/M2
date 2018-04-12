@@ -13,6 +13,7 @@ MateriaClient::MateriaClient(const std::string& clientName, const std::string& i
 , mActions(mChannel)
 , mCalendar(mChannel)
 , mJournal(mChannel)
+, mContainer(mChannel)
 {
    mSocket.connect("tcp://" + ip + ":" + gCentralPort);
 }
@@ -41,6 +42,10 @@ Admin& MateriaClient::getAdmin()
 Inbox& MateriaClient::getInbox()
 {
    return mInbox;
+}
+Container& MateriaClient::getContainer()
+{
+   return mContainer;
 }
 
 }

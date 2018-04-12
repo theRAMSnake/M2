@@ -1,0 +1,3 @@
+[submodule "Container/sqlite_modern_cpp"]
+	path = Container/sqlite_modern_cpp
+	url = https://github.com/SqliteModernCpp/sqlite_modern_cpp.git

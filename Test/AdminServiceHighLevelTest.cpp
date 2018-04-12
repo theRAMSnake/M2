@@ -34,6 +34,7 @@ BOOST_AUTO_TEST_CASE( Admin_GetComponentInfo )
       {"ActionsService", true},
       {"AdminService", true},
       {"CalendarService", true},
+      {"ContainerService", true},
       {"DatabaseService", true},
       {"InboxService", true}
    };

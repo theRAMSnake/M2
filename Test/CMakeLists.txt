@@ -13,6 +13,7 @@ ActionServiceHighLevelTest.cpp
 DatabaseServiceHighLevelTest.cpp
 CalendarServiceHighLevelTest.cpp
 TestHelpers.cpp
+ContainerTest.cpp
 #JournalServiceTest.cpp
 )
 
@@ -24,7 +25,7 @@ find_package(LIBMONGOCXX REQUIRED)
 include_directories(${LIBMONGOCXX_INCLUDE_DIRS})
 include_directories(${LIBBSONCXX_INCLUDE_DIRS})
 
-target_link_libraries(Test m2common m2client ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} ${LIBMONGOCXX_LIBRARIES} ${LIBBSONCXX_LIBRARIES} pthread)
+target_link_libraries(Test m2common m2client sqlite3 ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} ${LIBMONGOCXX_LIBRARIES} ${LIBBSONCXX_LIBRARIES} pthread)
 
 add_custom_command(
         TARGET Test POST_BUILD

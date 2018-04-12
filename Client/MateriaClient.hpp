@@ -6,6 +6,7 @@
 #include "Inbox.hpp"
 #include "Actions.hpp"
 #include "Calendar.hpp"
+#include "Container.hpp"
 #include "Journal.hpp"
 #include <Common/PortLayout.hpp>
 
@@ -23,6 +24,7 @@ public:
    Actions& getActions();
    Calendar& getCalendar();
    Journal& getJournal();
+   Container& getContainer();
 
 private:
    zmq::context_t mContext;
@@ -35,6 +37,7 @@ private:
    Actions mActions;
    Calendar mCalendar;
    Journal mJournal;
+   Container mContainer;
 };
 
 }

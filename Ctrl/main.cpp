@@ -3,6 +3,7 @@
 
 void start()
 {
+   system("nohup ./m2Container &");
    system("nohup ./m2DatabaseService &");
    system("nohup ./m2InboxService &");
    system("nohup ./m2ActionsService &");
@@ -15,6 +16,7 @@ void start()
 
 void stop()
 {
+   system("pkill m2Container");
    system("pkill m2DatabaseServi");
    system("pkill m2InboxService");
    system("pkill m2ActionsServic");

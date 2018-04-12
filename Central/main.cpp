@@ -61,6 +61,10 @@ public:
         std::shared_ptr<zmq::socket_t> calendarSocket (new zmq::socket_t(context, ZMQ_DEALER));
         calendarSocket->connect("tcp://localhost:" + gCalendarPort);
         mSockets.insert(std::make_pair("CalendarService", calendarSocket));
+
+        std::shared_ptr<zmq::socket_t> containerSocket (new zmq::socket_t(context, ZMQ_DEALER));
+        containerSocket->connect("tcp://localhost:" + gContainerPort);
+        mSockets.insert(std::make_pair("ContainerService", containerSocket));
     }
 
     void routeMessage(const zmq::message_t& msg)

@@ -24,6 +24,11 @@ message UniqueId
    string guid = 1;
 }
 
+message IdSet
+{
+   repeated UniqueId idset = 1;
+}
+
 message OperationResultMessage
 {
    bool success = 1;

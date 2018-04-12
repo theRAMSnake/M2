@@ -18,6 +18,7 @@ add_library(m2client STATIC
    Journal.cpp
    Calendar.cpp
    Actions.cpp
+   Container.cpp
 )
 
 target_link_libraries(m2client m2common)

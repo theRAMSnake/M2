@@ -1,0 +1,60 @@
+syntax = "proto3";
+option cc_generic_services = true;
+import "common.proto";
+
+package container; 
+
+message Container
+{
+   string name = 1;
+   bool is_public = 2;
+   common.UniqueId icon_id = 3;
+}
+
+message Containers
+{
+   repeated Container containers = 1;
+}
+
+message Item
+{
+   common.UniqueId id = 1;
+   string content = 2;
+   bytes blob = 3;
+}
+
+message Items
+{
+   repeated Item items = 1;
+}
+
+message ItemsOfContainer
+{
+   string container_name = 1;
+   Items items = 2;
+}
+
+message DeleteItemsRequest
+{
+   string container_name = 1;
+   common.IdSet id_set = 2;
+}
+
+message Backup
+{
+   bytes blob = 1;
+}
+
+service ContainerService 
+{
+   rpc AddContainer (Container) returns (common.OperationResultMessage);
+   rpc GetPublicContainers (common.EmptyMessage) returns (Containers);
+   rpc DeleteContainer (common.StringMessage) returns (common.OperationResultMessage);
+
+   rpc GetItems(common.StringMessage) returns (Items);
+   rpc InsertItems (ItemsOfContainer) returns (common.IdSet);
+   rpc ReplaceItems (ItemsOfContainer) returns (common.OperationResultMessage);
+   rpc DeleteItems (DeleteItemsRequest) returns (common.OperationResultMessage);
+
+   rpc Fetch(common.EmptyMessage) returns (Backup);
+}

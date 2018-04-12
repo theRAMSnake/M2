@@ -276,7 +276,7 @@ BOOST_FIXTURE_TEST_CASE( Fetch, DatabaseTest )
    }
 }
 
-BOOST_FIXTURE_TEST_CASE( FullTextSearch, DatabaseTest )
+/*BOOST_FIXTURE_TEST_CASE( FullTextSearch, DatabaseTest )
 {
    addTestDoc("animals", "{\"name\":\"snake\", \"type\":\"animal\"}");
    addTestDoc("animals", "{\"name\":\"elephant\", \"type\":\"animal\"}");
@@ -313,4 +313,4 @@ BOOST_FIXTURE_TEST_CASE( FullTextSearch, DatabaseTest )
 
       BOOST_CHECK_EQUAL(result.size(), 0);
    }
-}
+}*/
