@@ -18,10 +18,8 @@ public:
    : mClient("test")
    , mService(mClient.getInbox())
    {
-      mongocxx::instance instance{}; 
-      mongocxx::client client{mongocxx::uri{}};
-
-      client["materia"].drop();
+      mClient.getContainer().deleteContainer("inbox");
+      mClient.getContainer().addContainer({"inbox"});
    }
 
 protected:
@@ -48,13 +46,7 @@ BOOST_FIXTURE_TEST_CASE( AddDeleteInbox, InboxTest )
 
 BOOST_FIXTURE_TEST_CASE( DeleteWrongInbox, InboxTest ) 
 {
-   BOOST_CHECK(!mService.deleteItem(materia::Id("wrong")));
-   BOOST_CHECK(isItemsConsistent());
-}
-
-BOOST_FIXTURE_TEST_CASE( EditWrongInbox, InboxTest ) 
-{  
-   BOOST_CHECK(!mService.replaceItem({materia::Id("wrong"), "text"}));
+   mService.deleteItem(materia::Id("wrong"));
    BOOST_CHECK(isItemsConsistent());
 }
 
