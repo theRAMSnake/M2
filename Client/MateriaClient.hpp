@@ -8,6 +8,7 @@
 #include "Calendar.hpp"
 #include "Container.hpp"
 #include "Journal.hpp"
+#include "Events.hpp"
 #include <Common/PortLayout.hpp>
 
 namespace materia
@@ -25,6 +26,7 @@ public:
    Calendar& getCalendar();
    Journal& getJournal();
    Container& getContainer();
+   Events& getEvents();
 
 private:
    zmq::context_t mContext;
@@ -38,6 +40,7 @@ private:
    Calendar mCalendar;
    Journal mJournal;
    Container mContainer;
+   Events mEvents;
 };
 
 }

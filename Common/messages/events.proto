@@ -1,0 +1,39 @@
+syntax = "proto3";
+option cc_generic_services = true;
+option java_generic_services = true;
+
+import "common.proto";
+
+package events; 
+
+enum EventType
+{
+   HistoryStarted = 0;
+   ActionsUpdated = 1;
+   ContainerUpdated = 2;
+   CalendarUpdated = 3;
+}
+
+message EventInfo
+{
+   EventType type = 1;
+   int64 timestamp = 2;
+   string container_name = 3;
+}
+
+message Events
+{
+   repeated EventInfo items = 1;
+}
+
+message GetEventsRequest
+{
+   int64 timestampFrom = 1;
+}
+
+service EventsService 
+{
+   rpc GetEvents (GetEventsRequest) returns (Events);
+   rpc PutEvent (EventInfo) returns (common.OperationResultMessage);
+}
+
