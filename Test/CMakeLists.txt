@@ -14,6 +14,7 @@ DatabaseServiceHighLevelTest.cpp
 CalendarServiceHighLevelTest.cpp
 TestHelpers.cpp
 ContainerTest.cpp
+EventsTest.cpp
 #JournalServiceTest.cpp
 )
 

@@ -8,6 +8,7 @@ void start()
    system("nohup ./m2InboxService &");
    system("nohup ./m2ActionsService &");
    system("nohup ./m2Calendar &");
+   system("nohup ./m2Events &");
    system("nohup ./m2central &");
    system("nohup ./run_wa.sh &");
 
@@ -21,6 +22,7 @@ void stop()
    system("pkill m2InboxService");
    system("pkill m2ActionsServic");
    system("pkill m2Calendar");
+   system("pkill m2Events");
    system("pkill m2central");
    system("pkill WebApp");
 

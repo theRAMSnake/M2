@@ -45,6 +45,19 @@ message Backup
    bytes blob = 1;
 }
 
+enum FuncType
+{
+   Average = 0;
+   Sum = 1;
+   Count = 2;
+}
+
+message Func
+{
+   FuncType func_type = 1;
+   string container_name = 2;
+}
+
 service ContainerService 
 {
    rpc AddContainer (Container) returns (common.OperationResultMessage);

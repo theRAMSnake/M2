@@ -65,6 +65,10 @@ public:
         std::shared_ptr<zmq::socket_t> containerSocket (new zmq::socket_t(context, ZMQ_DEALER));
         containerSocket->connect("tcp://localhost:" + gContainerPort);
         mSockets.insert(std::make_pair("ContainerService", containerSocket));
+
+        std::shared_ptr<zmq::socket_t> eventsSocket (new zmq::socket_t(context, ZMQ_DEALER));
+        eventsSocket->connect("tcp://localhost:" + gEventsPort);
+        mSockets.insert(std::make_pair("EventsService", eventsSocket));
     }
 
     void routeMessage(const zmq::message_t& msg)

@@ -1,0 +1,85 @@
+syntax = "proto3";
+option cc_generic_services = true;
+option java_generic_services = true;
+
+import "common.proto";
+import "container.proto";
+
+package strategy; 
+
+/*
+
+Goal : Item {affinities, focused, achieved} => add/delete/modify (changing of focused -> add/delete corresponding action/calendar items)
+
+Objective : Item {reached, measId.value}} => add/delete/modify
+
+Task : Item {done, actionReference, calendarItemReference, count} => add/delete/modify (if parent goal is focused -> add/delete/modify corresponding action/calendar items)
+
+ 
+
+Measurement : {id, name, iconId, value | Func(containerId)} => add/delete/modify (modify -> recalculate all related objectives) + (container changed event (listen every 5 min) -> recalculate)
+
+Events
+*/
+
+message CommonItemProperties
+{
+   common.UniqueId id = 1;
+   common.UniqueId parent_goal_id = 2;
+   repeated common.UniqueId requrements_item_id = 3;
+   string name = 4;
+   string notes = 5;
+   common.UniqueId icon_id = 6;
+}
+
+message Goal
+{
+   CommonItemProperties common_props = 1;
+   repeated string affinities = 2;
+   bool focused = 3;
+   bool achieved = 4;
+}
+
+message Objective
+{
+   CommonItemProperties common_props = 1;
+   bool reached = 2;
+   common.UniqueId meas_id = 3;
+}
+
+message Task
+{
+   CommonItemProperties common_props = 1;
+   bool done = 2;
+   common.UniqueId action_ref = 3;
+   common.UniqueId calendar_ref = 4;
+   int32 count = 5;
+}
+
+message Measurement
+{
+   common.UniqueId id = 1;
+   string name = 2;
+   common.UniqueId icon_id = 3;
+   int32 value = 4;
+   container.Func func = 5;
+}
+
+service StrategyService 
+{
+   rpc AddGoal (Goal) returns (common.UniqueId);
+   rpc ModifyGoal (Goal) returns (common.OperationResultMessage);
+   rpc DeleteGoal (common.UniqueId) returns (common.OperationResultMessage);
+
+   rpc AddObjective (Objective) returns (common.UniqueId);
+   rpc ModifyObjective (Objective) returns (common.OperationResultMessage);
+   rpc DeleteObjective (common.UniqueId) returns (common.OperationResultMessage);
+
+   rpc AddTask (Task) returns (common.UniqueId);
+   rpc ModifyTask (Task) returns (common.OperationResultMessage);
+   rpc DeleteTask (common.UniqueId) returns (common.OperationResultMessage);
+
+   rpc AddMeasurement (Measurement) returns (common.UniqueId);
+   rpc ModifyMeasurement (Measurement) returns (common.OperationResultMessage);
+   rpc DeleteMeasurement (common.UniqueId) returns (common.OperationResultMessage);
+}
