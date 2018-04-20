@@ -9,6 +9,7 @@
 #include "Container.hpp"
 #include "Journal.hpp"
 #include "Events.hpp"
+#include "Strategy.hpp"
 #include <Common/PortLayout.hpp>
 
 namespace materia
@@ -26,6 +27,7 @@ public:
    Calendar& getCalendar();
    Journal& getJournal();
    Container& getContainer();
+   Strategy& getStrategy();
    Events& getEvents();
 
 private:
@@ -41,6 +43,7 @@ private:
    Journal mJournal;
    Container mContainer;
    Events mEvents;
+   Strategy mStrategy;
 };
 
 }

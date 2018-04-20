@@ -20,6 +20,7 @@ add_library(m2client STATIC
    Actions.cpp
    Container.cpp
    Events.cpp
+   Strategy.cpp
 )
 
 target_link_libraries(m2client m2common)
