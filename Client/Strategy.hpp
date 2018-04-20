@@ -2,6 +2,7 @@
 
 #include "MateriaServiceProxy.hpp"
 #include "Id.hpp"
+#include "Container.hpp"
 
 #include "messages/strategy.pb.h"
 
@@ -45,8 +46,8 @@ struct Measurement
    std::string name;
    Id iconId;
    int value;
-   container.Func func;//replace with materia type
-}
+   Func func;
+};
 
 struct Affinity
 {
@@ -54,7 +55,7 @@ struct Affinity
    std::string name;
    Id iconId;
    std::string colorName;
-}
+};
 
 class Strategy
 {
@@ -83,7 +84,7 @@ public:
    Id addAffinity(const Affinity& aff);
    bool modifyAffinity(const Affinity& aff);
    bool deleteAffinity(const Id& id);
-   Affinity getAffinity(const Id& id);
+   std::vector<Affinity> getAffinities();
 
 private:
    MateriaServiceProxy<strategy::StrategyService> mProxy;

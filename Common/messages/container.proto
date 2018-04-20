@@ -47,9 +47,8 @@ message Backup
 
 enum FuncType
 {
-   Average = 0;
-   Sum = 1;
-   Count = 2;
+   Sum = 0;
+   Count = 1;
 }
 
 message Func
@@ -58,11 +57,19 @@ message Func
    string container_name = 2;
 }
 
+message FuncResult
+{
+   common.OperationResultMessage op_result = 1;
+   double value = 2;
+}
+
 service ContainerService 
 {
    rpc AddContainer (Container) returns (common.OperationResultMessage);
    rpc GetPublicContainers (common.EmptyMessage) returns (Containers);
    rpc DeleteContainer (common.StringMessage) returns (common.OperationResultMessage);
+
+   rpc ExecFunc(Func) returns (FuncResult);
 
    rpc GetItems(common.StringMessage) returns (Items);
    rpc InsertItems (ItemsOfContainer) returns (common.IdSet);

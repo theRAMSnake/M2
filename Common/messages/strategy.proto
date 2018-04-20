@@ -86,7 +86,7 @@ message Affinity
 
 message Affinities
 {
-   repeated Affinities items = 1;
+   repeated Affinity items = 1;
 }
 
 service StrategyService 

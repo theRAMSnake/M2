@@ -225,3 +225,19 @@ BOOST_FIXTURE_TEST_CASE( Fetch_ContainerTest, ContainerTest )
    sqlite3* psqlite;
    BOOST_CHECK_EQUAL(SQLITE_OK, sqlite3_open("Fetch_ContainerTest", &psqlite));
 }
+
+BOOST_FIXTURE_TEST_CASE( ExecFunc, ContainerTest )  
+{
+   std::vector<materia::ContainerItem> items;
+   items.push_back({materia::Id::Invalid, "5"});
+   items.push_back({materia::Id::Invalid, "6"});
+   items.push_back({materia::Id::Invalid, "7"});  
+
+   mService.insertItems("con4", items);
+
+   BOOST_CHECK_EQUAL(18, *mService.execFunc({materia::FuncType::Sum, "con4"}));
+   BOOST_CHECK_EQUAL(3, *mService.execFunc({materia::FuncType::Count, "con4"}));
+
+   BOOST_CHECK_EQUAL(0, *mService.execFunc({materia::FuncType::Sum, "con3"}));
+   BOOST_CHECK_EQUAL(10, *mService.execFunc({materia::FuncType::Count, "con3"}));
+}

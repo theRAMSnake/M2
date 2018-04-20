@@ -6,6 +6,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <boost/lexical_cast.hpp>
 #include "sqlite_modern_cpp/hdr/sqlite_modern_cpp.h"
 
 namespace materia
@@ -189,6 +190,59 @@ public:
       {
          std::ifstream f("db.blob", std::ios::binary);
          response->mutable_blob()->insert(response->mutable_blob()->begin(), std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>());
+      }
+
+   void ExecFunc(
+     ::google::protobuf::RpcController* controller,
+      const ::container::Func* request,
+      ::container::FuncResult* response,
+      ::google::protobuf::Closure* done)
+      {
+         if(hasContainer(request->container_name()))
+         {
+            common::StringMessage msg;
+            msg.set_content(request->container_name());
+
+            container::Items items;
+
+            GetItems(nullptr, &msg, &items, nullptr);
+
+            switch(request->func_type())
+            {
+               case container::Sum:
+               {
+                  int sum = 0;
+                  for(auto x : items.items())
+                  {
+                     try
+                     {
+                        sum += boost::lexical_cast<int>(x.content());
+                     }
+                     catch(...)
+                     {
+
+                     }
+                  }
+                  response->set_value(sum);
+                  response->mutable_op_result()->set_success(true);
+                  break;
+               }
+
+               case container::Count:
+               {
+                  response->set_value(items.items_size());
+                  response->mutable_op_result()->set_success(true);
+                  break;
+               }
+
+               default:
+                  response->mutable_op_result()->set_success(false);
+            }
+         }
+         else
+         {
+            response->mutable_op_result()->set_success(false);
+         }
       }
 
 private:

@@ -96,6 +96,43 @@ container::Item toProto(const materia::ContainerItem& x)
    return result;
 }
 
+namespace
+{
+
+container::FuncType toProto(const FuncType src)
+{
+   switch(src)
+   {
+      case FuncType::Sum:
+         return container::Sum;
+
+      case FuncType::Count:
+         return container::Count;
+
+      default:
+         throw -1;
+   }
+}
+
+}
+
+boost::optional<int> Container::execFunc(const Func& func)
+{
+   container::Func f;
+   f.set_func_type(toProto(func.funcType));
+   f.set_container_name(func.containerName);
+
+   container::FuncResult r;
+   mProxy.getService().ExecFunc(nullptr, &f, &r, nullptr);
+
+   if(r.op_result().success())
+   {
+      return r.value();
+   }
+
+   return boost::optional<int>();
+}
+
 std::vector<Id> Container::insertItems(const std::string& containerName, const std::vector<ContainerItem>& items)
 {
    container::ItemsOfContainer in;

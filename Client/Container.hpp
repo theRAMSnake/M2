@@ -5,6 +5,8 @@
 
 #include "messages/container.pb.h"
 
+#include <boost/optional.hpp>
+
 namespace materia
 {
 
@@ -27,6 +29,19 @@ struct ContainerItem
    bool operator != (const ContainerItem& other) const;
 };
 
+enum class FuncType
+{
+   Average,
+   Sum,
+   Count
+};
+
+struct Func
+{
+    FuncType funcType;
+    std::string containerName;
+};
+
 class Container
 {
 public:
@@ -35,6 +50,8 @@ public:
    bool addContainer(const ContainerDefinition& def);
    std::vector<ContainerDefinition> getPublicContainers();
    bool deleteContainer(const std::string& name);
+
+   boost::optional<int> execFunc(const Func& func);
 
    std::vector<ContainerItem> getItems(const std::string& containerName);
    std::vector<Id> insertItems(const std::string& containerName, const std::vector<ContainerItem>& items);

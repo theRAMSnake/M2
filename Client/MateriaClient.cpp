@@ -15,6 +15,7 @@ MateriaClient::MateriaClient(const std::string& clientName, const std::string& i
 , mJournal(mChannel)
 , mContainer(mChannel)
 , mEvents(mChannel)
+, mStrategy(mChannel)
 {
    mSocket.connect("tcp://" + ip + ":" + gCentralPort);
 }
