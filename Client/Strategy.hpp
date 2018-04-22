@@ -46,6 +46,7 @@ struct Measurement
    std::string name;
    Id iconId;
    int value;
+   int of;
    Func func;
 };
 

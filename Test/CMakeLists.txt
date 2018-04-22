@@ -15,6 +15,7 @@ CalendarServiceHighLevelTest.cpp
 TestHelpers.cpp
 ContainerTest.cpp
 EventsTest.cpp
+StrategyTest.cpp
 #JournalServiceTest.cpp
 )
 

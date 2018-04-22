@@ -73,6 +73,7 @@ message Measurement
    string name = 2;
    common.UniqueId icon_id = 3;
    int32 value = 4;
+   int32 of = 5;
    container.Func func = 5;
 }
 

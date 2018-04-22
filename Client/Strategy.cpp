@@ -139,6 +139,7 @@ strategy::Measurement toProto(const materia::Measurement& x)
    result.mutable_id()->CopyFrom(x.id.toProtoId());
    result.set_value(x.value);
    result.set_name(x.name);
+   result.set_of(x.of);
    result.mutable_icon_id()->CopyFrom(x.iconId.toProtoId());
    result.mutable_func()->set_func_type(toProto(x.func.funcType));
    result.mutable_func()->set_container_name(x.func.containerName);
@@ -168,6 +169,7 @@ materia::Measurement fromProto(const strategy::Measurement& x)
    result.id = x.id();
    result.name = x.name();
    result.value = x.value();
+   result.of = x.value();
    result.iconId = x.icon_id();
    result.func.funcType = fromProto(x.func().func_type());
    result.func.containerName = x.func().container_name();
