@@ -80,11 +80,9 @@ public:
    Id addMeasurement(const Measurement& meas);
    bool modifyMeasurement(const Measurement& meas);
    bool deleteMeasurement(const Id& id);
-   Measurement getMeasurement(const Id& id);
+   std::vector<Measurement> getMeasurements();
 
-   Id addAffinity(const Affinity& aff);
-   bool modifyAffinity(const Affinity& aff);
-   bool deleteAffinity(const Id& id);
+   void configureAffinities(const std::vector<Affinity>& affinites);
    std::vector<Affinity> getAffinities();
 
 private:

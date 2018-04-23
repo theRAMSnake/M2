@@ -360,6 +360,19 @@ Measurement Strategy::getMeasurement(const Id& id)
    return fromProto(result);
 }
 
+std::vector<Measurement> Strategy::getMeasurements()
+{
+   common::EmptyMessage r;
+   strategy::Measurements responce;
+
+   mProxy.getService().getMeasurements(nullptr, &r, &responce, nullptr);
+
+   std::vector<Measurement> result(responce.items_size());
+   std::transform(responce.items().begin(), responce.items().end(), result.begin(), [] (auto x)-> auto { return fromProto(x); });
+
+   return result;
+}
+
 Id Strategy::addAffinity(const Affinity& aff)
 {
    common::UniqueId id;
@@ -370,24 +383,17 @@ Id Strategy::addAffinity(const Affinity& aff)
    return Id(id);
 }
 
-bool Strategy::modifyAffinity(const Affinity& aff)
+void Strategy::configureAffinities(const std::vector<Affinity>& affinites)
 {
-   auto request = toProto(aff);
-   
+   strategy::Affinities req;
    common::OperationResultMessage opResult;
-   mProxy.getService().ModifyAffinity(nullptr, &request, &opResult, nullptr);
-   
-   return opResult.success();
-}
 
-bool Strategy::deleteAffinity(const Id& id)
-{
-   auto protoId = id.toProtoId();
-   
-   common::OperationResultMessage opResult;
-   mProxy.getService().DeleteAffinity(nullptr, &protoId, &opResult, nullptr);
-   
-   return opResult.success();
+   for(auto x : affinities)
+   {
+      req->addItem()->CopyFrom(toProto(x));
+   }
+
+   mProxy.getService().configureAffinities(nullptr, &req, &opResult, nullptr);
 }
 
 std::vector<Affinity> Strategy::getAffinities()

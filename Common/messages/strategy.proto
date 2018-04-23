@@ -26,7 +26,6 @@ message CommonItemProperties
 {
    common.UniqueId id = 1;
    common.UniqueId parent_goal_id = 2;
-   repeated common.UniqueId requrements_item_id = 3;
    string name = 4;
    string notes = 5;
    common.UniqueId icon_id = 6;
@@ -38,6 +37,7 @@ message Goal
    common.UniqueId affinityId = 2;
    bool focused = 3;
    bool achieved = 4;
+   repeated common.UniqueId required_goals = 5;
 }
 
 message Goals
@@ -50,15 +50,14 @@ message Objective
    CommonItemProperties common_props = 1;
    bool reached = 2;
    common.UniqueId meas_id = 3;
+   int32 expectedThreshold = 4;
 }
 
 message Task
 {
    CommonItemProperties common_props = 1;
    bool done = 2;
-   common.UniqueId action_ref = 3;
-   common.UniqueId calendar_ref = 4;
-   int32 count = 5;
+   repeated common.UniqueId required_tasks = 4;
 }
 
 message GoalItems
@@ -73,8 +72,11 @@ message Measurement
    string name = 2;
    common.UniqueId icon_id = 3;
    int32 value = 4;
-   int32 of = 5;
-   container.Func func = 5;
+}
+
+message Measurements
+{
+   repeated Measurement items = 1;
 }
 
 message Affinity
@@ -111,10 +113,8 @@ service StrategyService
    rpc AddMeasurement (Measurement) returns (common.UniqueId);
    rpc ModifyMeasurement (Measurement) returns (common.OperationResultMessage);
    rpc DeleteMeasurement (common.UniqueId) returns (common.OperationResultMessage);
-   rpc GetMeasurement (common.UniqueId) returns (Measurement);
+   rpc GetMeasurements (common.EmptyMessage) returns (Measurements);
 
-   rpc AddAffinity (Affinity) returns (common.UniqueId);
-   rpc ModifyAffinity (Affinity) returns (common.OperationResultMessage);
-   rpc DeleteAffinity (common.UniqueId) returns (common.OperationResultMessage);
+   rpc ConfigureAffinities (Affinities) returns (common.OperationResultMessage);
    rpc GetAffinities (common.EmptyMessage) returns (Affinities);
 }

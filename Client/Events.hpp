@@ -12,7 +12,10 @@ enum class EventType
    HistoryStarted,
    ActionsUpdated,
    ContainerUpdated,
-   CalendarUpdated
+   CalendarUpdated,
+   GoalUpdated,
+   AffinitiesUpdated,
+   MeasurementUpdated
 };
 
 struct Event
@@ -26,11 +29,17 @@ struct ContainerUpdatedEvent : public Event
    string containerName;
 };
 
+struct IdEvent : public Event
+{
+   materia::id id;
+}
+
 class IEventHandler
 {
 public:
    virtual void onGenericEvent(const Event& event) = 0;
    virtual void onContainerUpdated(const ContainerUpdatedEvent& event) = 0;
+   virtual void onIdEvent(const IdEvent& event) = 0;
 
    virtual ~IEventHandler() {}
 };
@@ -53,6 +62,7 @@ public:
 private:
    events::EventInfo createRawEvent(const Event& ev);
    events::EventInfo createRawEvent(const ContainerUpdatedEvent& ev);
+   events::EventInfo createRawEvent(const IdEvent& ev);
 
    MateriaServiceProxy<events::EventsService> mProxy;
 };
