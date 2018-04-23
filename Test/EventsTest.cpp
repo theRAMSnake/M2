@@ -45,6 +45,13 @@ BOOST_FIXTURE_TEST_CASE( AddGetEvents, EventsTest )
 
    mClient.getEvents().putEvent<materia::ContainerUpdatedEvent>(ev);
 
+   materia::IdEvent idEv;
+   idEv.type = materia::EventType::GoalUpdated;
+   idEv.timestamp = ts;
+   idEv.id = materia::Id("id");
+
+   mClient.getEvents().putEvent<materia::IdEvent>(idEv);
+
    struct : public materia::IEventHandler
    {
       virtual void onGenericEvent(const materia::Event& event)
@@ -59,6 +66,12 @@ BOOST_FIXTURE_TEST_CASE( AddGetEvents, EventsTest )
          BOOST_CHECK_EQUAL(mTs, event.timestamp);
          mNumItems++;
       }
+      virtual void onIdEvent(const materia::IdEvent& event)
+      {
+         BOOST_CHECK_EQUAL(materia::EventType::GoalUpdated, event.type);
+         BOOST_CHECK_EQUAL(mTs, event.timestamp);
+         mNumItems++;
+      }
 
       decltype(ts) mTs;
       int mNumItems = 0;
@@ -67,5 +80,5 @@ BOOST_FIXTURE_TEST_CASE( AddGetEvents, EventsTest )
    evHdr.mTs = ts;
 
    mClient.getEvents().getEvents(ts - pt::seconds(1), evHdr);
-   BOOST_CHECK_EQUAL(3, evHdr.mNumItems);
+   BOOST_CHECK_EQUAL(4, evHdr.mNumItems);
 }

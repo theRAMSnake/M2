@@ -8,6 +8,22 @@
 #include <fstream>
 #include <sqlite3.h>
 
+namespace std
+{
+   bool operator < (const materia::Id& a, const materia::Id& b)
+   {
+      return a.getGuid() < b.getGuid();
+   }
+
+   std::ostream& operator << (std::ostream& str, const materia::Goal& g)
+   {
+      str << "[" << g.id << ", " << g.parentGoalId << ", " 
+         << g.name << ", " << g.notes << ", " << g.iconId << ", " << g.focused << ", " << g.achieved  << 
+         ", " << g.affinityId << ", " << g.requiredGoals.size() << "]";
+      return str;
+   }
+}
+
 materia::Goal createGoal(const int suffix, const materia::Id& parentGoalId = materia::Id::Invalid)
 {
    materia::Goal g;
@@ -15,7 +31,7 @@ materia::Goal createGoal(const int suffix, const materia::Id& parentGoalId = mat
    g.notes = "notes of goal";
    g.iconId = materia::Id("some-icon-id");
    g.focused = true;
-   g.achiieved = false;
+   g.achieved = false;
    g.affinityId = materia::Id("some-affinity-id");
    g.parentGoalId = parentGoalId;
 
@@ -88,10 +104,10 @@ public:
 
       for(int i = 0; i < 3; ++i)
       {
-         materia::Affinity aff = {materia::Id::Invalid}, "aff" + boost::lexical_cast<std::string>(i), materia::Id::Invalid, "someColor"};
-         aff.id = mService.addAffinity(aff);
+         materia::Affinity aff = {materia::Id::Invalid, "aff" + boost::lexical_cast<std::string>(i), materia::Id::Invalid, "someColor"};   
          mAffinities.push_back(aff);
       }
+      mService.configureAffinities(mAffinities);
    }
 
 protected:
@@ -105,7 +121,7 @@ protected:
          materia::Task t = createTask(i, goalId);
          if(i != 0)
          {
-            t.requirementsIds.push_back(tasks[0].id);
+            t.requiredTasks.push_back(tasks[0].id);
          }
          t.id = mService.addTask(t);
          tasks.push_back(t);
@@ -142,23 +158,23 @@ protected:
       return o;
    }
 
-   boost::optional<materia::Goal> getGoal(const materia::Id& id)
+   std::optional<materia::Goal> getGoal(const materia::Id& id)
    {
       auto goals = mService.getGoals();
-      auto iter = std::find_if(goals.begin(), goals.end(), [](auto x)->bool {return id == x.id;});
+      auto iter = std::find_if(goals.begin(), goals.end(), [&](auto x)->bool {return id == x.id;});
       if(iter != goals.end())
       {
          return *iter;
       }
 
-      return boost::optional<materia::Goal>();
+      return std::optional<materia::Goal>();
    }
 
    void cleanUp()
    {
-      mService.deleteContainer("goals");
-      mService.deleteContainer("measurements");
-      mService.deleteContainer("affinities");
+      mClient.getContainer().deleteContainer("goals");
+      mClient.getContainer().deleteContainer("measurements");
+      mClient.getContainer().deleteContainer("affinities");
    }
 
    bool hasEvent(const materia::EventType evType, const materia::Id& id)
@@ -176,13 +192,15 @@ protected:
          virtual void onIdEvent(const materia::IdEvent& event)
          {
             //To be added to events service
-            found = id == event.id;
+            found = mId == event.id;
          }
 
+         materia::Id mId;
          bool found = false;
       } evHdr;
 
-      mClient.getEvents().getEvents(0, evHdr);
+      evHdr.mId = id;
+      mClient.getEvents().getEvents(boost::posix_time::from_time_t(0), evHdr);
       return evHdr.found;
    }
 
@@ -205,22 +223,22 @@ BOOST_FIXTURE_TEST_CASE( ModifyGoal_Unchangable_Id, StrategyTest )
 BOOST_FIXTURE_TEST_CASE( ModifyGoal_Success, StrategyTest )  
 {
    auto g = mGoals[0];
-   g.parentId = materia::Id::Invalid;
+   g.parentGoalId = materia::Id::Invalid;
    g.name = "other_name";
    g.notes = "other_notes";
    g.iconId = materia::Id("other_id");
-   g.requirementsIds.push_back(mGoals[1].id);
+   g.requiredGoals.push_back(mGoals[1].id);
    g.focused = false;
    g.affinityId = materia::Id("affinity_id");
 
    BOOST_CHECK(mService.modifyGoal(g));
-   BOOST_CHECK_EQUAL(g, getGoal(g.id));
+   BOOST_CHECK_EQUAL(g, *getGoal(g.id));
 }
 
 BOOST_FIXTURE_TEST_CASE( ModifyGoal_Req_Id_Must_Not_Be_Subgoal_Id, StrategyTest )  
 {
    auto g = mGoals[0];
-   g.requirementsIds.push_back(mGoals[2].id);
+   g.requiredGoals.push_back(mGoals[2].id);
    BOOST_CHECK(!mService.modifyGoal(g));
 }
 
@@ -236,8 +254,8 @@ BOOST_FIXTURE_TEST_CASE( ModifyGoal_Unfocus_Modifies_Subgoals, StrategyTest )
    auto g = mGoals[0];
    g.focused = false;
    BOOST_CHECK(mService.modifyGoal(g));
-   BOOST_CHECK(!getGoal(mGoals[2]).focused);
-   BOOST_CHECK(!getGoal(mGoals[3]).focused);
+   BOOST_CHECK(!getGoal(mGoals[2].id)->focused);
+   BOOST_CHECK(!getGoal(mGoals[3].id)->focused);
 
    BOOST_CHECK(hasEvent(materia::EventType::GoalUpdated, mGoals[0].id));
    BOOST_CHECK(hasEvent(materia::EventType::GoalUpdated, mGoals[2].id));
@@ -255,7 +273,7 @@ BOOST_FIXTURE_TEST_CASE( ModifyGoal_Change_Parent_To_Unfocused_Makes_Unfocused, 
    g.parentGoalId = mGoals[1].id;
    BOOST_CHECK(mService.modifyGoal(g));
 
-   BOOST_CHECK(!getGoal(g.id).focused);
+   BOOST_CHECK(!getGoal(g.id)->focused);
 }
 
 BOOST_FIXTURE_TEST_CASE( ModifyGoal_Cannot_Set_Children_As_Parent, StrategyTest )  
@@ -271,11 +289,11 @@ BOOST_FIXTURE_TEST_CASE( ModifyGoal_Cannot_Set_Children_As_Parent, StrategyTest 
 BOOST_FIXTURE_TEST_CASE( ModifyGoal_Check_Reqs_Are_Not_Cyclyc, StrategyTest )  
 {
    auto g = mGoals[0];
-   g.requirementsIds.push_back(mGoals[1].id);
+   g.requiredGoals.push_back(mGoals[1].id);
    BOOST_CHECK(mService.modifyGoal(g));
 
    g = mGoals[1];
-   g.requirementsIds.push_back(mGoals[0].id);
+   g.requiredGoals.push_back(mGoals[0].id);
    BOOST_CHECK(!mService.modifyGoal(g));
 }
 

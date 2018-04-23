@@ -53,5 +53,9 @@ Events& MateriaClient::getEvents()
 {
    return mEvents;
 }
+Strategy& MateriaClient::getStrategy()
+{
+   return mStrategy;
+}
 
 }

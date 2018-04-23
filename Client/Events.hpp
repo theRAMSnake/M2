@@ -3,6 +3,7 @@
 #include "MateriaServiceProxy.hpp"
 #include "messages/events.pb.h"
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include "Id.hpp"
 
 namespace materia
 {
@@ -31,8 +32,8 @@ struct ContainerUpdatedEvent : public Event
 
 struct IdEvent : public Event
 {
-   materia::id id;
-}
+   materia::Id id;
+};
 
 class IEventHandler
 {

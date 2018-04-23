@@ -13,7 +13,7 @@ struct StrategyItem
 {
    Id id;
    Id parentGoalId;
-   std::vector<Id> requirementsIds;
+   
    std::string name;
    std::string notes;
    Id iconId;
@@ -23,7 +23,10 @@ struct Goal : public StrategyItem
 {
    bool focused;
    bool achieved;
+   std::vector<Id> requiredGoals;
    Id affinityId;
+
+   bool operator == (const Goal& other) const;
 };
 
 struct Objective : public StrategyItem
@@ -38,6 +41,7 @@ struct Task : public StrategyItem
    Id actionReference;
    Id calendarReference;
    int count;
+   std::vector<Id> requiredTasks;
 };
 
 struct Measurement
@@ -46,8 +50,6 @@ struct Measurement
    std::string name;
    Id iconId;
    int value;
-   int of;
-   Func func;
 };
 
 struct Affinity
