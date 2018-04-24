@@ -106,6 +106,7 @@ strategy::Objective toProto(const materia::Objective& x)
    result.mutable_common_props()->CopyFrom(toProto(static_cast<const materia::StrategyItem&>(x)));
    result.mutable_meas_id()->CopyFrom(x.measurementId.toProtoId());
    result.set_reached(x.reached);
+   result.set_expected_treshold(x.expected);
 
    return result;
 }
@@ -116,6 +117,7 @@ materia::Objective fromProto(const strategy::Objective& x)
 
    result.measurementId = x.meas_id();
    result.reached = x.reached();
+   result.expected = x.expected_treshold();
 
    return result;
 }

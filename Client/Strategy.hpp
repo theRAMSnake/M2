@@ -33,6 +33,7 @@ struct Objective : public StrategyItem
 {
    bool reached;
    Id measurementId;
+   int expected;
 };
 
 struct Task : public StrategyItem

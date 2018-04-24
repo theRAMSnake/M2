@@ -25,6 +25,15 @@ EventType fromProto(const events::EventType src)
       case events::ContainerUpdated:
          return EventType::ContainerUpdated;
 
+      case events::GoalUpdated:
+         return EventType::GoalUpdated;
+
+      case events::AffinitiesUpdated:
+         return EventType::AffinitiesUpdated;
+
+      case events::MeasurementUpdated:
+         return EventType::MeasurementUpdated;
+
       default: 
          throw -1;
    }
@@ -52,6 +61,16 @@ void Events::getEvents(const boost::posix_time::ptime from, IEventHandler& handl
 
          handler.onContainerUpdated(ev);
       }
+      else if(x.type() == events::GoalUpdated ||
+         x.type() == events::MeasurementUpdated)
+      {
+         materia::IdEvent ev;
+         ev.type = EventType::ContainerUpdated;
+         ev.timestamp = time;
+         ev.id = x.id();
+
+         handler.onIdEvent(ev);
+      }
       else
       {
          auto evType = fromProto(x.type());
@@ -76,6 +95,15 @@ events::EventType toProto(const EventType src)
       case EventType::ContainerUpdated:
          return events::ContainerUpdated;
 
+      case EventType::GoalUpdated:
+         return events::GoalUpdated;
+
+      case EventType::AffinitiesUpdated:
+         return events::AffinitiesUpdated;
+
+      case EventType::MeasurementUpdated:
+         return events::MeasurementUpdated;
+
       default:
          throw -1;
    }
@@ -98,6 +126,17 @@ events::EventInfo createRawEvent(const ContainerUpdatedEvent& ev)
    nfo.set_type(toProto(ev.type));
    nfo.set_timestamp(boost::posix_time:: to_time_t(ev.timestamp));
    nfo.set_container_name(ev.containerName);
+
+   return nfo;
+}
+
+events::EventInfo createRawEvent(const IdEvent& ev)
+{
+   events::EventInfo nfo;
+
+   nfo.set_type(toProto(ev.type));
+   nfo.set_timestamp(boost::posix_time:: to_time_t(ev.timestamp));
+   nfo.set_id(ev.id.toProtoId());
 
    return nfo;
 }
