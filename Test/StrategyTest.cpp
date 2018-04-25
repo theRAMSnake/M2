@@ -449,7 +449,7 @@ BOOST_FIXTURE_TEST_CASE( ModifyObjective_Measurements_NotAchieved_After_Change, 
 
    mService.modifyObjective(o);
 
-   auto g = *getGoal(g);
+   auto g = *getGoal(mGoals[0]);
    BOOST_CHECK(!g.achieved);
 
    BOOST_CHECK(!findObjectiveInGoalItems(id)->reached);
@@ -466,39 +466,106 @@ BOOST_FIXTURE_TEST_CASE( ModifyObjective_Measurements_NotAchieved_After_Change, 
 
 BOOST_FIXTURE_TEST_CASE( ModifyObjective_n_minus_1_objectives_reached, StrategyTest )  
 {
-   
+   auto g = *getGoal(mGoals[2]);
+   BOOST_CHECK(!g.achieved);
+
+   for(auto o : mObjectivesOfGoals[g.id])
+   {
+      g = *getGoal(g);
+      BOOST_CHECK(!g.achieved);
+
+      o.reached = true;
+
+      mService.modifyObjective(o);
+   }
+
+   g = *getGoal(g);
+   BOOST_CHECK(g.achieved);
 }
 
-//check parent_goal.achieved changed based on all objective.reached
-//goals react to parent change
+BOOST_FIXTURE_TEST_CASE( ModifyObjective_objective_parent_change, StrategyTest )  
+{
+   materia::Objective o = mObjectivesOfGoals[mGoals[0]][0];
+   
+   o.parentGoalId = mGoals[1].id;
+
+   mService.modifyObjective(o);
+
+   BOOST_CHECK(hasEvent(materia::EventType::GoalUpdated, mGoals[0].id));
+   BOOST_CHECK(hasEvent(materia::EventType::GoalUpdated, mGoals[1].id));
+
+   BOOST_CHECK(!findObjectiveInGoalItems(o.id, mGoals[0].id));
+   BOOST_CHECK(findObjectiveInGoalItems(o.id, mGoals[1].id));
+}
 
 BOOST_FIXTURE_TEST_CASE( DeleteObjective, StrategyTest )  
 {
-   //valid case
-   //check goal_changed_event
-   //check parent_goal.achieved changed based on all objective.reached
+   mService.deleteObjective(mObjectivesOfGoals[mGoals[0]][0].id);
+   BOOST_CHECK(!findObjectiveInGoalItems(o.id, mGoals[0].id));
+   BOOST_CHECK(hasEvent(materia::EventType::GoalUpdated, mGoals[0].id));
 }
 
 BOOST_FIXTURE_TEST_CASE( AddTask, StrategyTest )  
 {
-   //invalid parent
-   //valid case
-   //check goal_changed_event
+   BOOST_CHECK_EQUAL(materia::Id::Invalid, mService.addTask(materia::Task{}));
+
+   auto id = mService.addTask(materia::Task{materia::Id::Invalid, mGoals[0].id});
+   BOOST_CHECK(id != materia::Id::Invalid);
+   BOOST_CHECK(hasEvent(materia::EventType::GoalUpdated, mGoals[0].id));
+   BOOST_CHECK(findObjectiveInGoalItems(id, mGoals[0].id));
+}
+
+BOOST_FIXTURE_TEST_CASE( ModifyTask_invalid_parent, StrategyTest )  
+{
+   auto t = mTasksOfGoals[mGoals[0]][0];
+   t.parentGoalId = materia::Id::Invalid;
+   BOOST_CHECK(!mService.modifyTask(t));
+}
+
+BOOST_FIXTURE_TEST_CASE( ModifyTask_invalid_prereq, StrategyTest )  
+{
+   auto t = mTasksOfGoals[mGoals[0]][0];
+   t.requiredTasks.push_back(t.id);
+   BOOST_CHECK(!mService.modifyTask(t));
+
+   t = mTasksOfGoals[mGoals[0]][0];
+   t.requiredTasks.push_back(mTasksOfGoals[mGoals[0]][1].id);
+   BOOST_CHECK(!mService.modifyTask(t));
 }
 
 BOOST_FIXTURE_TEST_CASE( ModifyTask, StrategyTest )  
 {
-   //invalid parent
-   //invalid prereq
-   //valid case
-   //check goal_changed_event
-   //goals react to parent change
+   auto t = mTasksOfGoals[mGoals[0]][0];
+   t.name = "toher";
+   t.notes = "other";
+   t.iconId = materia::Id("other");
+   t.done = true;
+
+   BOOST_CHECK(mService.modifyTask(t));
+   BOOST_CHECK(hasEvent(materia::EventType::GoalUpdated, mGoals[0].id));
+}
+
+BOOST_FIXTURE_TEST_CASE( ModifyTask_reparent, StrategyTest )  
+{
+   materia::Task t = mTasksOfGoals[mGoals[0]][0];
+   
+   t.parentGoalId = mGoals[1].id;
+
+   BOOST_CHECK(mService.modifyTask(t));
+
+   BOOST_CHECK(hasEvent(materia::EventType::GoalUpdated, mGoals[0].id));
+   BOOST_CHECK(hasEvent(materia::EventType::GoalUpdated, mGoals[1].id));
+
+   BOOST_CHECK(!findTaskInGoalItems(t.id, mGoals[0].id));
+   BOOST_CHECK(findTaskInGoalItems(t.id, mGoals[1].id));
 }
 
 BOOST_FIXTURE_TEST_CASE( DeleteTask, StrategyTest )  
 {
-   //valid case
-   //check goal_changed_event
+   materia::Task t = mTasksOfGoals[mGoals[0]][0];
+   BOOST_CHECK(mService.modifyTask(t));
+   BOOST_CHECK(hasEvent(materia::EventType::GoalUpdated, mGoals[0].id));
+   BOOST_CHECK(!findTaskInGoalItems(t.id, mGoals[0].id));
 }
 
 BOOST_FIXTURE_TEST_CASE( GetGoalItems, StrategyTest )  
@@ -540,3 +607,6 @@ BOOST_FIXTURE_TEST_CASE( ConfigureAffinities, StrategyTest )
    //valid case
    //check affinities_changed_event
 }
+
+//Goal with 2 subgoals and objective - make achieved step by step
+//Goals without objectives/subgoals - not achieved
