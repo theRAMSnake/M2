@@ -570,43 +570,106 @@ BOOST_FIXTURE_TEST_CASE( DeleteTask, StrategyTest )
 
 BOOST_FIXTURE_TEST_CASE( GetGoalItems, StrategyTest )  
 {
-   
+   for(auto x : mGoals)
+   {
+      auto goalItems = mService.getGoalItems(x.id);
+
+      auto tasksGot = std::get<0>(goalItems);
+      auto taskExpected = mTasksOfGoals[x.id];
+
+      BOOST_CHECK_EQUAL_COLLECTIONS(tasksGot.begin(), tasksGot.end(), 
+         taskExpected.begin(), taskExpected.end());
+
+      auto objectivesGot = std::get<1>(goalItems);
+      auto objectivesExpected = mObjectivseOfGoals[x.id];
+
+      BOOST_CHECK_EQUAL_COLLECTIONS(objectivesGot.begin(), objectivesGot.end(), 
+         objectivesExpected.begin(), objectivesExpected.end());
+   }
 }
 
 BOOST_FIXTURE_TEST_CASE( AddMeasurement, StrategyTest )  
 {
-   //check measurement_changed_event
+   materia::Measurement meas = {
+      materia::Id::Invalid, 
+      "meas_value_inside", 
+      materia::Id("some icon id"), 
+      0};
+
+   meas.id = mService.addMeasurement(meas);
+   BOOST_CHECK(materia::Id::Invalid != meas.id);
+
+   BOOST_CHECK(hasEvent(materia::EventType::MeasurementUpdated, meas.id));
 }
 
 BOOST_FIXTURE_TEST_CASE( ModifyMeasurement, StrategyTest )  
 {
-   //valid case
-   //Check objectives -> goals reaction
-   //check measurement_changed_event
+   auto meas = mMeasurements[0];
+   meas.name = "other_name";
+   meas.iconId = materia::Id("some_other_id");
+   meas.value = 54;
+
+   BOOST_CHECK(mService.modifyMeasurement(meas));
+   BOOST_CHECK(hasEvent(materia::EventType::MeasurementUpdated, meas.id));
 }
 
 BOOST_FIXTURE_TEST_CASE( DeleteMeasurement, StrategyTest )  
 {
-   //valid case
-   //Check objectives -> goals reaction
-   //check measurement_changed_event
+   BOOST_CHECK(mService.deleteMeasurement(mMeasurements[0]));
+   BOOST_CHECK(hasEvent(materia::EventType::MeasurementUpdated, mMeasurements[0].id));
 }
 
 BOOST_FIXTURE_TEST_CASE( GetMeasurements, StrategyTest )  
 {
-   //valid case
+   auto expected = mMeasurements;
+   auto got = mService.getMeasurements();
+
+   BOOST_CHECK_EQUAL_COLLECTIONS(got.begin(), got.end(), 
+         expected.begin(), expected.end());
 }
 
 BOOST_FIXTURE_TEST_CASE( GetAffinities, StrategyTest )  
 {
-   //valid case
+   auto expected = mAffinites;
+   auto got = mService.getAffinites();
+
+   BOOST_CHECK_EQUAL_COLLECTIONS(got.begin(), got.end(), 
+         expected.begin(), expected.end());
 }
 
 BOOST_FIXTURE_TEST_CASE( ConfigureAffinities, StrategyTest )  
 {
-   //valid case
-   //check affinities_changed_event
+   for(auto x : mAffinites)
+   {
+      x.name += "ddd";
+   }
+
+   mService.configureAffinities(mAffinities);
+
+   auto expected = mAffinites;
+   auto got = mService.getAffinites();
+
+   BOOST_CHECK_EQUAL_COLLECTIONS(got.begin(), got.end(), 
+         expected.begin(), expected.end());
+   
+   BOOST_CHECK(hasEvent(materia::EventType::AffinitiesUpdated));
+}
+
+BOOST_FIXTURE_TEST_CASE( EmptyGoalNotAchieved, StrategyTest )  
+{
+   materia::Goal g;
+   g.achieved = true;
+
+   g.id = mService.addGoal(g);
+
+   g = getGoal(g.id);
+
+   BOOST_CHECK(!g.achieved);
+}
+
+BOOST_FIXTURE_TEST_CASE( Goal_Make_achieved_step_by_step, StrategyTest )  
+{
+
 }
 
 //Goal with 2 subgoals and objective - make achieved step by step
-//Goals without objectives/subgoals - not achieved
