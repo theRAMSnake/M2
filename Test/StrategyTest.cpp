@@ -2,6 +2,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <Client/MateriaClient.hpp>
 #include <Client/Strategy.hpp>
 #include "TestHelpers.hpp"
@@ -109,7 +110,7 @@ public:
       }
       mService.configureAffinities(mAffinities);
 
-      mTestStartTime = boost::posix_time::millisec_clock::local_time();
+      mTestStartTime = boost::posix_time::microsec_clock::local_time();
    }
 
 protected:
@@ -176,6 +177,11 @@ protected:
       mClient.getContainer().deleteContainer("goals");
       mClient.getContainer().deleteContainer("measurements");
       mClient.getContainer().deleteContainer("affinities");
+   }
+
+   materia::Objective findObjectiveInGoalItems()
+   {
+
    }
 
    bool hasEvent(const materia::EventType evType, const materia::Id& id)
@@ -311,7 +317,8 @@ BOOST_FIXTURE_TEST_CASE( DeleteGoal, StrategyTest )
 {
    BOOST_CHECK(mGoals[0].id);
 
-   BOOST_CHECK(mService.getGoalItems().empty());
+   BOOST_CHECK(std::get<0>(mService.getGoalItems(mGoals[0].id)).empty());
+   BOOST_CHECK(std::get<1>(mService.getGoalItems(mGoals[0].id)).empty());
    auto remainingGoals = mService.getGoals();
    BOOST_CHECK_EQUAL(1, remainingGoals.size());
    BOOST_CHECK_EQUAL(remainingGoals[0].id, mGoals[1].id);
@@ -329,10 +336,10 @@ BOOST_FIXTURE_TEST_CASE( GetGoals, StrategyTest )
 
 BOOST_FIXTURE_TEST_CASE( AddGoal_Invalid_Parent, StrategyTest )  
 {
-   materia::Goal g = {materia::Id::Invalid, materia::id("sadfjhsjkd")};
+   materia::Goal g = {materia::Id::Invalid, materia::Id("sadfjhsjkd")};
    BOOST_CHECK_EQUAL(materia::Id::Invalid, mService.addGoal(g));
 
-   BOOST_CHECK_EQUAL(4, remainingGoals.size());
+   BOOST_CHECK_EQUAL(4, mService.getGoals().size());
 }
 
 BOOST_FIXTURE_TEST_CASE( AddGoal, StrategyTest )  
@@ -340,7 +347,7 @@ BOOST_FIXTURE_TEST_CASE( AddGoal, StrategyTest )
    auto id = mService.addGoal(materia::Goal{});
    BOOST_CHECK(materia::Id::Invalid != id);
 
-   BOOST_CHECK_EQUAL(5, remainingGoals.size());
+   BOOST_CHECK_EQUAL(5, mService.getGoals().size());
 
    BOOST_CHECK(hasEvent(materia::EventType::GoalUpdated, id));
 }
@@ -359,7 +366,7 @@ BOOST_FIXTURE_TEST_CASE( AddObjective, StrategyTest )
 
    BOOST_CHECK(hasEvent(materia::EventType::GoalUpdated, mGoals[0].id));
 
-   BOOST_CHECK(findObjectiveInGoalItems(id));
+   BOOST_CHECK(findObjectiveInGoalItems(mGoals[0].id, o.id));
 }
 
 BOOST_FIXTURE_TEST_CASE( AddObjective_Goal_Achieved_Reaction, StrategyTest )  
