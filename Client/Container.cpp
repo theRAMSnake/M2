@@ -54,6 +54,17 @@ bool Container::deleteContainer(const std::string& name)
    return opResult.success();
 }
 
+bool Container::clearContainer(const std::string& name)
+{
+   common::StringMessage s;
+   s.set_content(name);
+   
+   common::OperationResultMessage opResult;
+   mProxy.getService().ClearContainer(nullptr, &s, &opResult, nullptr);
+   
+   return opResult.success();
+}
+
 materia::ContainerItem fromProto(const container::Item& x)
 {
    materia::ContainerItem result;

@@ -67,6 +67,7 @@ service ContainerService
 {
    rpc AddContainer (Container) returns (common.OperationResultMessage);
    rpc GetPublicContainers (common.EmptyMessage) returns (Containers);
+   rpc ClearContainer (common.StringMessage) returns (common.OperationResultMessage);
    rpc DeleteContainer (common.StringMessage) returns (common.OperationResultMessage);
 
    rpc ExecFunc(Func) returns (FuncResult);

@@ -27,6 +27,7 @@ struct Goal : public StrategyItem
    Id affinityId;
 
    bool operator == (const Goal& other) const;
+   bool operator != (const Goal& other) const;
 };
 
 struct Objective : public StrategyItem
@@ -34,15 +35,18 @@ struct Objective : public StrategyItem
    bool reached;
    Id measurementId;
    int expected;
+
+   bool operator == (const Objective& other) const;
+   bool operator != (const Objective& other) const;
 };
 
 struct Task : public StrategyItem
 {
    bool done;
-   Id actionReference;
-   Id calendarReference;
-   int count;
    std::vector<Id> requiredTasks;
+
+   bool operator == (const Task& other) const;
+   bool operator != (const Task& other) const;
 };
 
 struct Measurement
@@ -51,6 +55,9 @@ struct Measurement
    std::string name;
    Id iconId;
    int value;
+
+   bool operator == (const Measurement& other) const;
+   bool operator != (const Measurement& other) const;
 };
 
 struct Affinity
@@ -59,6 +66,9 @@ struct Affinity
    std::string name;
    Id iconId;
    std::string colorName;
+
+   bool operator == (const Affinity& other) const;
+   bool operator != (const Affinity& other) const;
 };
 
 class Strategy

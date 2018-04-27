@@ -149,6 +149,12 @@ BOOST_FIXTURE_TEST_CASE( DeleteContainer, ContainerTest )
    BOOST_CHECK_EQUAL(0, mService.getPublicContainers().size());
 }
 
+BOOST_FIXTURE_TEST_CASE( ClearContainer, ContainerTest )  
+{
+   BOOST_CHECK(mService.clearContainer("con1"));
+   BOOST_CHECK(mService.getItems("con1").empty());
+}
+
 BOOST_FIXTURE_TEST_CASE( GetItems, ContainerTest )  
 {
    for(auto x : mInsertedItems)

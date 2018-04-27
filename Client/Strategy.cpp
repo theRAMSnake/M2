@@ -106,7 +106,7 @@ strategy::Objective toProto(const materia::Objective& x)
    result.mutable_common_props()->CopyFrom(toProto(static_cast<const materia::StrategyItem&>(x)));
    result.mutable_meas_id()->CopyFrom(x.measurementId.toProtoId());
    result.set_reached(x.reached);
-   result.set_expected_treshold(x.expected);
+   result.set_expectedtreshold(x.expected);
 
    return result;
 }
@@ -117,7 +117,7 @@ materia::Objective fromProto(const strategy::Objective& x)
 
    result.measurementId = x.meas_id();
    result.reached = x.reached();
-   result.expected = x.expected_treshold();
+   result.expected = x.expectedtreshold();
 
    return result;
 }
@@ -382,7 +382,69 @@ bool Goal::operator == (const Goal& other) const
       && requiredGoals == other.requiredGoals
       && affinityId == other.affinityId
       && achieved == other.achieved
+      && iconId == other.iconId
       && focused == other.focused;
+}
+
+bool Goal::operator != (const Goal& other) const
+{
+   return !operator==(other);
+}
+
+bool Task::operator == (const Task& other) const
+{
+   return id == other.id
+      && parentGoalId == other.parentGoalId
+      && name == other.name
+      && notes == other.notes
+      && requiredTasks == other.requiredTasks
+      && done == other.done;
+}
+
+bool Task::operator != (const Task& other) const
+{
+   return !operator==(other);
+}
+
+bool Objective::operator == (const Objective& other) const
+{
+   return id == other.id
+      && parentGoalId == other.parentGoalId
+      && name == other.name
+      && notes == other.notes
+      && reached == other.reached
+      && measurementId == other.measurementId
+      && expected == other.expected;
+}
+bool Objective::operator != (const Objective& other) const
+{
+   return !operator==(other);
+}
+
+bool Measurement::operator == (const Measurement& other) const
+{
+   return id == other.id
+      && iconId == other.iconId
+      && name == other.name
+      && value == other.value;
+}
+
+bool Measurement::operator != (const Measurement& other) const
+{
+   return !operator==(other);
+}
+
+bool Affinity::operator == (const Affinity& other) const
+{
+   return id == other.id
+      && iconId == other.iconId
+      && name == other.name
+      && colorName == other.colorName;
+}
+
+bool Affinity::operator != (const Affinity& other) const
+{
+   return !operator==(other);
 }
 
 }

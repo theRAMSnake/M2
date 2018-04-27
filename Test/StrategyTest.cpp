@@ -23,6 +23,35 @@ namespace std
          ", " << g.affinityId << ", " << g.requiredGoals.size() << "]";
       return str;
    }
+
+   std::ostream& operator << (std::ostream& str, const materia::Task& t)
+   {
+      str << "[" << t.id << ", " << t.parentGoalId << ", " 
+         << t.name << ", " << t.notes << ", " << t.iconId << ", " << t.done << ", " << t.requiredTasks.size() << "]";
+      return str;
+   }
+
+   std::ostream& operator << (std::ostream& str, const materia::Objective& o)
+   {
+      str << "[" << o.id << ", " << o.parentGoalId << ", " 
+         << o.name << ", " << o.notes << ", " << o.iconId << ", " << o.reached << ", " << o.measurementId <<
+         ", " << o.expected << "]";
+      return str;
+   }
+
+   std::ostream& operator << (std::ostream& str, const materia::Measurement& m)
+   {
+      str << "[" << m.id << ", " << m.value << ", " 
+         << m.name << ", " << m.iconId << "]";
+      return str;
+   }
+
+   std::ostream& operator << (std::ostream& str, const materia::Affinity& a)
+   {
+      str << "[" << a.id << ", " << a.colorName << ", " 
+         << a.name << ", " << a.iconId << "]";
+      return str;
+   }
 }
 
 materia::Goal createGoal(const int suffix, const materia::Id& parentGoalId = materia::Id::Invalid)
@@ -43,9 +72,6 @@ materia::Task createTask(const int suffix, const materia::Id& parentGoalId = mat
 {
    materia::Task t;
    t.done = true;
-   t.count = 1;
-   t.actionReference = materia::Id("some-action-id");
-   t.calendarReference = materia::Id("some-calendar-id");
    t.name = "task" + boost::lexical_cast<std::string>(suffix);
    t.notes = "notes of task";
    t.parentGoalId = parentGoalId;
@@ -174,14 +200,37 @@ protected:
 
    void cleanUp()
    {
-      mClient.getContainer().deleteContainer("goals");
-      mClient.getContainer().deleteContainer("measurements");
-      mClient.getContainer().deleteContainer("affinities");
+      mClient.getContainer().clearContainer("goals");
+      mClient.getContainer().clearContainer("measurements");
+      mClient.getContainer().clearContainer("affinities");
    }
 
-   materia::Objective findObjectiveInGoalItems()
+   std::optional<materia::Objective> findObjectiveInGoalItems(const materia::Id& objId, const materia::Id& goalId)
    {
+      auto objs = std::get<1>(mService.getGoalItems(goalId));
+      auto iter = std::find_if(objs.begin(), objs.end(), [&] (auto x)->bool {return x.id == objId;});
+      if(iter != objs.end())
+      {
+         return *iter;
+      }
+      else
+      {
+         return std::optional<materia::Objective>();
+      }
+   }
 
+   std::optional<materia::Task> findTaskInGoalItems(const materia::Id& taskId, const materia::Id& goalId)
+   {
+      auto tasks = std::get<0>(mService.getGoalItems(goalId));
+      auto iter = std::find_if(tasks.begin(), tasks.end(), [&] (auto x)->bool {return x.id == taskId;});
+      if(iter != tasks.end())
+      {
+         return *iter;
+      }
+      else
+      {
+         return std::optional<materia::Task>();
+      }
    }
 
    bool hasEvent(const materia::EventType evType, const materia::Id& id)
@@ -190,7 +239,7 @@ protected:
       {
          virtual void onGenericEvent(const materia::Event& event)
          {
-            
+            found = mEvType == event.type;
          }
          virtual void onContainerUpdated(const materia::ContainerUpdatedEvent& event)
          {
@@ -198,14 +247,16 @@ protected:
          }
          virtual void onIdEvent(const materia::IdEvent& event)
          {
-            found = mId == event.id;
+            found = mId == event.id && mEvType == event.type;
          }
 
+         materia::EventType mEvType;
          materia::Id mId;
          bool found = false;
       } evHdr;
 
       evHdr.mId = id;
+      evHdr.mEvType = evType;
       mClient.getEvents().getEvents(mTestStartTime, evHdr);
       return evHdr.found;
    }
@@ -315,7 +366,7 @@ BOOST_FIXTURE_TEST_CASE( ModifyGoal_Raise_Event, StrategyTest )
 
 BOOST_FIXTURE_TEST_CASE( DeleteGoal, StrategyTest )  
 {
-   BOOST_CHECK(mGoals[0].id);
+   BOOST_CHECK(mService.deleteGoal(mGoals[0].id));
 
    BOOST_CHECK(std::get<0>(mService.getGoalItems(mGoals[0].id)).empty());
    BOOST_CHECK(std::get<1>(mService.getGoalItems(mGoals[0].id)).empty());
@@ -375,10 +426,10 @@ BOOST_FIXTURE_TEST_CASE( AddObjective_Goal_Achieved_Reaction, StrategyTest )
    auto g = getGoal(id);
 
    BOOST_CHECK(g);
-   BOOST_CHECK(g.achieved);
+   BOOST_CHECK(g->achieved);
 
    materia::Objective o;
-   o.parentGoal = id;
+   o.parentGoalId = id;
    o.reached = false;
 
    mService.addObjective(o);
@@ -386,19 +437,19 @@ BOOST_FIXTURE_TEST_CASE( AddObjective_Goal_Achieved_Reaction, StrategyTest )
    g = getGoal(id);
 
    BOOST_CHECK(g);
-   BOOST_CHECK(!g.achieved);
+   BOOST_CHECK(!g->achieved);
 }
 
 BOOST_FIXTURE_TEST_CASE( ModifyObjective_Invalid_Parent, StrategyTest )
 {
-   materia::Objective o = mObjectivesOfGoals[mGoals[0]][0];
+   materia::Objective o = mObjectivesOfGoals[mGoals[0].id][0];
    o.parentGoalId = materia::Id::Invalid;
    BOOST_CHECK(!mService.modifyObjective(o));
 }
 
 BOOST_FIXTURE_TEST_CASE( ModifyObjective, StrategyTest )  
 {
-   materia::Objective o = mObjectivesOfGoals[mGoals[0]][0];
+   materia::Objective o = mObjectivesOfGoals[mGoals[0].id][0];
    o.notes = "sdkfasdjkf";
    BOOST_CHECK(mService.modifyObjective(o));
 
@@ -407,7 +458,7 @@ BOOST_FIXTURE_TEST_CASE( ModifyObjective, StrategyTest )
 
 BOOST_FIXTURE_TEST_CASE( ModifyObjective_Measurements_Already_Achieved, StrategyTest )  
 {
-   materia::Objective o = mObjectivesOfGoals[mGoals[0]][0];
+   materia::Objective o = mObjectivesOfGoals[mGoals[0].id][0];
    mMeasurements[0].value = 5;
    mService.modifyMeasurement(mMeasurements[0]);
 
@@ -417,68 +468,68 @@ BOOST_FIXTURE_TEST_CASE( ModifyObjective_Measurements_Already_Achieved, Strategy
    mService.modifyObjective(o);
 
    BOOST_CHECK(hasEvent(materia::EventType::GoalUpdated, mGoals[0].id));
-   auto g = *getGoal(g);
+   auto g = *getGoal(mGoals[0].id);
    BOOST_CHECK(g.achieved);
 
-   BOOST_CHECK(findObjectiveInGoalItems(id)->reached);
+   BOOST_CHECK(findObjectiveInGoalItems(o.id, g.id)->reached);
 }
 
 BOOST_FIXTURE_TEST_CASE( ModifyObjective_Measurements_Achieved_After_Change, StrategyTest )  
 {
-   materia::Objective o = mObjectivesOfGoals[mGoals[0]][0];
+   materia::Objective o = mObjectivesOfGoals[mGoals[0].id][0];
    
    o.measurementId = mMeasurements[0].id;
    o.expected = 4;
 
    mService.modifyObjective(o);
 
-   auto g = *getGoal(g);
+   auto g = *getGoal(mGoals[0].id);
    BOOST_CHECK(!g.achieved);
 
-   BOOST_CHECK(!findObjectiveInGoalItems(id)->reached);
+   BOOST_CHECK(!findObjectiveInGoalItems(o.id, g.id)->reached);
 
    mMeasurements[0].value = 5;
    mService.modifyMeasurement(mMeasurements[0]);
 
    BOOST_CHECK(hasEvent(materia::EventType::GoalUpdated, mGoals[0].id));
-   g = *getGoal(g);
+   g = *getGoal(mGoals[0].id);
    BOOST_CHECK(g.achieved);
 
-   BOOST_CHECK(findObjectiveInGoalItems(id)->reached);
+   BOOST_CHECK(findObjectiveInGoalItems(o.id, g.id)->reached);
 }
 
 BOOST_FIXTURE_TEST_CASE( ModifyObjective_Measurements_NotAchieved_After_Change, StrategyTest )  
 {
-   materia::Objective o = mObjectivesOfGoals[mGoals[0]][0];
+   materia::Objective o = mObjectivesOfGoals[mGoals[0].id][0];
    
    o.measurementId = mMeasurements[0].id;
    o.expected = 4;
 
    mService.modifyObjective(o);
 
-   auto g = *getGoal(mGoals[0]);
+   auto g = *getGoal(mGoals[0].id);
    BOOST_CHECK(!g.achieved);
 
-   BOOST_CHECK(!findObjectiveInGoalItems(id)->reached);
+   BOOST_CHECK(!findObjectiveInGoalItems(o.id, g.id)->reached);
 
    mMeasurements[0].value = 3;
    mService.modifyMeasurement(mMeasurements[0]);
 
    BOOST_CHECK(!hasEvent(materia::EventType::GoalUpdated, mGoals[0].id));
-   g = *getGoal(g);
+   g = *getGoal(g.id);
    BOOST_CHECK(!g.achieved);
 
-   BOOST_CHECK(!findObjectiveInGoalItems(id)->reached);
+   BOOST_CHECK(!findObjectiveInGoalItems(o.id, g.id)->reached);
 }
 
 BOOST_FIXTURE_TEST_CASE( ModifyObjective_n_minus_1_objectives_reached, StrategyTest )  
 {
-   auto g = *getGoal(mGoals[2]);
+   auto g = *getGoal(mGoals[2].id);
    BOOST_CHECK(!g.achieved);
 
    for(auto o : mObjectivesOfGoals[g.id])
    {
-      g = *getGoal(g);
+      g = *getGoal(g.id);
       BOOST_CHECK(!g.achieved);
 
       o.reached = true;
@@ -486,13 +537,13 @@ BOOST_FIXTURE_TEST_CASE( ModifyObjective_n_minus_1_objectives_reached, StrategyT
       mService.modifyObjective(o);
    }
 
-   g = *getGoal(g);
+   g = *getGoal(g.id);
    BOOST_CHECK(g.achieved);
 }
 
 BOOST_FIXTURE_TEST_CASE( ModifyObjective_objective_parent_change, StrategyTest )  
 {
-   materia::Objective o = mObjectivesOfGoals[mGoals[0]][0];
+   materia::Objective o = mObjectivesOfGoals[mGoals[0].id][0];
    
    o.parentGoalId = mGoals[1].id;
 
@@ -507,8 +558,9 @@ BOOST_FIXTURE_TEST_CASE( ModifyObjective_objective_parent_change, StrategyTest )
 
 BOOST_FIXTURE_TEST_CASE( DeleteObjective, StrategyTest )  
 {
-   mService.deleteObjective(mObjectivesOfGoals[mGoals[0]][0].id);
-   BOOST_CHECK(!findObjectiveInGoalItems(o.id, mGoals[0].id));
+   auto id = mObjectivesOfGoals[mGoals[0].id][0].id;
+   mService.deleteObjective(id);
+   BOOST_CHECK(!findObjectiveInGoalItems(id, mGoals[0].id));
    BOOST_CHECK(hasEvent(materia::EventType::GoalUpdated, mGoals[0].id));
 }
 
@@ -524,25 +576,25 @@ BOOST_FIXTURE_TEST_CASE( AddTask, StrategyTest )
 
 BOOST_FIXTURE_TEST_CASE( ModifyTask_invalid_parent, StrategyTest )  
 {
-   auto t = mTasksOfGoals[mGoals[0]][0];
+   auto t = mTasksOfGoals[mGoals[0].id][0];
    t.parentGoalId = materia::Id::Invalid;
    BOOST_CHECK(!mService.modifyTask(t));
 }
 
 BOOST_FIXTURE_TEST_CASE( ModifyTask_invalid_prereq, StrategyTest )  
 {
-   auto t = mTasksOfGoals[mGoals[0]][0];
+   auto t = mTasksOfGoals[mGoals[0].id][0];
    t.requiredTasks.push_back(t.id);
    BOOST_CHECK(!mService.modifyTask(t));
 
-   t = mTasksOfGoals[mGoals[0]][0];
-   t.requiredTasks.push_back(mTasksOfGoals[mGoals[0]][1].id);
+   t = mTasksOfGoals[mGoals[0].id][0];
+   t.requiredTasks.push_back(mTasksOfGoals[mGoals[0].id][1].id);
    BOOST_CHECK(!mService.modifyTask(t));
 }
 
 BOOST_FIXTURE_TEST_CASE( ModifyTask, StrategyTest )  
 {
-   auto t = mTasksOfGoals[mGoals[0]][0];
+   auto t = mTasksOfGoals[mGoals[0].id][0];
    t.name = "toher";
    t.notes = "other";
    t.iconId = materia::Id("other");
@@ -554,7 +606,7 @@ BOOST_FIXTURE_TEST_CASE( ModifyTask, StrategyTest )
 
 BOOST_FIXTURE_TEST_CASE( ModifyTask_reparent, StrategyTest )  
 {
-   materia::Task t = mTasksOfGoals[mGoals[0]][0];
+   materia::Task t = mTasksOfGoals[mGoals[0].id][0];
    
    t.parentGoalId = mGoals[1].id;
 
@@ -569,7 +621,7 @@ BOOST_FIXTURE_TEST_CASE( ModifyTask_reparent, StrategyTest )
 
 BOOST_FIXTURE_TEST_CASE( DeleteTask, StrategyTest )  
 {
-   materia::Task t = mTasksOfGoals[mGoals[0]][0];
+   materia::Task t = mTasksOfGoals[mGoals[0].id][0];
    BOOST_CHECK(mService.modifyTask(t));
    BOOST_CHECK(hasEvent(materia::EventType::GoalUpdated, mGoals[0].id));
    BOOST_CHECK(!findTaskInGoalItems(t.id, mGoals[0].id));
@@ -588,7 +640,7 @@ BOOST_FIXTURE_TEST_CASE( GetGoalItems, StrategyTest )
          taskExpected.begin(), taskExpected.end());
 
       auto objectivesGot = std::get<1>(goalItems);
-      auto objectivesExpected = mObjectivseOfGoals[x.id];
+      auto objectivesExpected = mObjectivesOfGoals[x.id];
 
       BOOST_CHECK_EQUAL_COLLECTIONS(objectivesGot.begin(), objectivesGot.end(), 
          objectivesExpected.begin(), objectivesExpected.end());
@@ -622,7 +674,7 @@ BOOST_FIXTURE_TEST_CASE( ModifyMeasurement, StrategyTest )
 
 BOOST_FIXTURE_TEST_CASE( DeleteMeasurement, StrategyTest )  
 {
-   BOOST_CHECK(mService.deleteMeasurement(mMeasurements[0]));
+   BOOST_CHECK(mService.deleteMeasurement(mMeasurements[0].id));
    BOOST_CHECK(hasEvent(materia::EventType::MeasurementUpdated, mMeasurements[0].id));
 }
 
@@ -637,8 +689,8 @@ BOOST_FIXTURE_TEST_CASE( GetMeasurements, StrategyTest )
 
 BOOST_FIXTURE_TEST_CASE( GetAffinities, StrategyTest )  
 {
-   auto expected = mAffinites;
-   auto got = mService.getAffinites();
+   auto expected = mAffinities;
+   auto got = mService.getAffinities();
 
    BOOST_CHECK_EQUAL_COLLECTIONS(got.begin(), got.end(), 
          expected.begin(), expected.end());
@@ -646,20 +698,20 @@ BOOST_FIXTURE_TEST_CASE( GetAffinities, StrategyTest )
 
 BOOST_FIXTURE_TEST_CASE( ConfigureAffinities, StrategyTest )  
 {
-   for(auto x : mAffinites)
+   for(auto x : mAffinities)
    {
       x.name += "ddd";
    }
 
    mService.configureAffinities(mAffinities);
 
-   auto expected = mAffinites;
-   auto got = mService.getAffinites();
+   auto expected = mAffinities;
+   auto got = mService.getAffinities();
 
    BOOST_CHECK_EQUAL_COLLECTIONS(got.begin(), got.end(), 
          expected.begin(), expected.end());
    
-   BOOST_CHECK(hasEvent(materia::EventType::AffinitiesUpdated));
+   BOOST_CHECK(hasEvent(materia::EventType::AffinitiesUpdated, materia::Id::Invalid));
 }
 
 BOOST_FIXTURE_TEST_CASE( EmptyGoalNotAchieved, StrategyTest )  
@@ -669,14 +721,71 @@ BOOST_FIXTURE_TEST_CASE( EmptyGoalNotAchieved, StrategyTest )
 
    g.id = mService.addGoal(g);
 
-   g = getGoal(g.id);
+   g = *getGoal(g.id);
 
    BOOST_CHECK(!g.achieved);
 }
 
 BOOST_FIXTURE_TEST_CASE( Goal_Make_achieved_step_by_step, StrategyTest )  
 {
+   materia::Goal primaryGoal;
+   primaryGoal.id = mService.addGoal(primaryGoal);
 
+   materia::Goal secondaryGoalA;
+   secondaryGoalA.parentGoalId = primaryGoal.id;
+   secondaryGoalA.id = mService.addGoal(secondaryGoalA);
+
+   materia::Goal secondaryGoalB;
+   secondaryGoalB.parentGoalId = primaryGoal.id;
+   secondaryGoalB.id = mService.addGoal(secondaryGoalB);
+
+   materia::Objective oA1, oA2, oB1, oB2;
+
+   oA1.parentGoalId = secondaryGoalA.id;
+   oA1.reached = false;
+   oA1.id = mService.addObjective(oA1);  
+
+   oA2.parentGoalId = secondaryGoalA.id;
+   oA2.reached = false;
+   oA2.id = mService.addObjective(oA2);  
+
+   oB1.parentGoalId = secondaryGoalB.id;
+   oB1.reached = false;
+   oB1.id = mService.addObjective(oB1);  
+
+   oB2.parentGoalId = secondaryGoalB.id;
+   oB2.reached = false;
+   oB2.id = mService.addObjective(oB2);  
+
+   BOOST_CHECK(!getGoal(primaryGoal.id)->achieved);
+   BOOST_CHECK(!getGoal(secondaryGoalA.id)->achieved);
+   BOOST_CHECK(!getGoal(secondaryGoalB.id)->achieved);
+
+   oB1.reached = true;
+   BOOST_CHECK(mService.modifyObjective(oB1));
+
+   BOOST_CHECK(!getGoal(primaryGoal.id)->achieved);
+   BOOST_CHECK(!getGoal(secondaryGoalA.id)->achieved);
+   BOOST_CHECK(!getGoal(secondaryGoalB.id)->achieved);
+
+   oB2.reached = true;
+   BOOST_CHECK(mService.modifyObjective(oB2));
+
+   BOOST_CHECK(!getGoal(primaryGoal.id)->achieved);
+   BOOST_CHECK(!getGoal(secondaryGoalA.id)->achieved);
+   BOOST_CHECK(getGoal(secondaryGoalB.id)->achieved);
+
+   oA1.reached = true;
+   BOOST_CHECK(mService.modifyObjective(oA1));
+
+   BOOST_CHECK(!getGoal(primaryGoal.id)->achieved);
+   BOOST_CHECK(!getGoal(secondaryGoalA.id)->achieved);
+   BOOST_CHECK(getGoal(secondaryGoalB.id)->achieved);
+
+   oA2.reached = true;
+   BOOST_CHECK(mService.modifyObjective(oA2));
+
+   BOOST_CHECK(getGoal(primaryGoal.id)->achieved);
+   BOOST_CHECK(getGoal(secondaryGoalA.id)->achieved);
+   BOOST_CHECK(getGoal(secondaryGoalB.id)->achieved);
 }
-
-//Goal with 2 subgoals and objective - make achieved step by step

@@ -50,7 +50,7 @@ message Objective
    CommonItemProperties common_props = 1;
    bool reached = 2;
    common.UniqueId meas_id = 3;
-   int32 expectedThreshold = 4;
+   int32 expectedtreshold = 4;
 }
 
 message Task

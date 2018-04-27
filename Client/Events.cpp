@@ -136,7 +136,7 @@ events::EventInfo createRawEvent(const IdEvent& ev)
 
    nfo.set_type(toProto(ev.type));
    nfo.set_timestamp(boost::posix_time:: to_time_t(ev.timestamp));
-   nfo.set_id(ev.id.toProtoId());
+   nfo.mutable_id()->CopyFrom(ev.id.toProtoId());
 
    return nfo;
 }

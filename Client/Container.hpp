@@ -49,6 +49,7 @@ public:
 
    bool addContainer(const ContainerDefinition& def);
    std::vector<ContainerDefinition> getPublicContainers();
+   bool clearContainer(const std::string& name);
    bool deleteContainer(const std::string& name);
 
    boost::optional<int> execFunc(const Func& func);

@@ -61,7 +61,22 @@ public:
             };
       }
 
-  void DeleteContainer(
+   void ClearContainer(
+      ::google::protobuf::RpcController* controller,
+      const ::common::StringMessage* request,
+      ::common::OperationResultMessage* response,
+      ::google::protobuf::Closure* done)
+      {
+         response->set_success(false);
+         if(!request->content().empty() && hasContainer(request->content()))
+         {
+            mDb << "DELETE FROM " + request->content() + "Items";
+
+            response->set_success(true);
+         }
+      }
+
+   void DeleteContainer(
      ::google::protobuf::RpcController* controller,
       const ::common::StringMessage* request,
       ::common::OperationResultMessage* response,
