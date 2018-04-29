@@ -98,8 +98,25 @@ public:
    void configureAffinities(const std::vector<Affinity>& affinites);
    std::vector<Affinity> getAffinities();
 
+   void clear();
+
 private:
    MateriaServiceProxy<strategy::StrategyService> mProxy;
 };
+
+strategy::Goal toProto(const materia::Goal& x);
+materia::Goal fromProto(const strategy::Goal& x);
+
+strategy::Task toProto(const materia::Task& x);
+materia::Task fromProto(const strategy::Task& x);
+
+strategy::Objective toProto(const materia::Objective& x);
+materia::Objective fromProto(const strategy::Objective& x);
+
+strategy::Measurement toProto(const materia::Measurement& x);
+materia::Measurement fromProto(const strategy::Measurement& x);
+
+strategy::Affinity toProto(const materia::Affinity& x);
+materia::Affinity fromProto(const strategy::Affinity& x);
 
 }

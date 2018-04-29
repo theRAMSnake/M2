@@ -122,21 +122,6 @@ materia::Objective fromProto(const strategy::Objective& x)
    return result;
 }
 
-container::FuncType toProto(const FuncType src)
-{
-   switch(src)
-   {
-      case FuncType::Sum:
-         return container::Sum;
-
-      case FuncType::Count:
-         return container::Count;
-
-      default:
-         throw -1;
-   }
-}
-
 strategy::Measurement toProto(const materia::Measurement& x)
 {
    strategy::Measurement result;
@@ -445,6 +430,14 @@ bool Affinity::operator == (const Affinity& other) const
 bool Affinity::operator != (const Affinity& other) const
 {
    return !operator==(other);
+}
+
+void Strategy::clear()
+{
+   common::EmptyMessage r;
+   common::OperationResultMessage responce;
+
+   mProxy.getService().Clear(nullptr, &r, &responce, nullptr);
 }
 
 }

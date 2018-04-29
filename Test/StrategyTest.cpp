@@ -200,9 +200,7 @@ protected:
 
    void cleanUp()
    {
-      mClient.getContainer().clearContainer("goals");
-      mClient.getContainer().clearContainer("measurements");
-      mClient.getContainer().clearContainer("affinities");
+      mClient.getStrategy().clear();
    }
 
    std::optional<materia::Objective> findObjectiveInGoalItems(const materia::Id& objId, const materia::Id& goalId)

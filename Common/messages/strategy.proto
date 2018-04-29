@@ -117,4 +117,6 @@ service StrategyService
 
    rpc ConfigureAffinities (Affinities) returns (common.OperationResultMessage);
    rpc GetAffinities (common.EmptyMessage) returns (Affinities);
+
+   rpc Clear(common.EmptyMessage) returns (common.OperationResultMessage);
 }
