@@ -17,7 +17,7 @@ class StrategyServiceImpl : public strategy::StrategyService
 public:
    StrategyServiceImpl()
    {
-      
+      loadGoalTree();
    }
 
    void AddGoal(::google::protobuf::RpcController* controller,
@@ -29,14 +29,22 @@ public:
 
          Goal g = fromProto(*request);
          g.id = id;
+         g.achieved = false;
 
-         if((g.parentGoalId == Id::Invalid || isGoalExist(g.parentGoalId)) &&
-            checkPrereqGoals(g.requiredGoals))
+         auto parent = mGoalTree.find(g.parentGoalId);
+
+         if(parent && checkPrereqGoals(g))
          {
-            mContainer.createContainer(id, false);
-            mContainer.insertItems(id, {{ materia::Id::Invalid, toJson(g) }});
+            auto item = mGoalTree.addChild(parent, g); //raise event for parent, recalculate achieved
 
-            responce->set_guid(id);
+            mContainer.createContainer(id, false);
+            auto insertedIds = mContainer.insertItems("goals", {{ materia::Id::Invalid, toJson(g) }});
+            if(insertedIds.size() == 1)
+            {
+               mGoalToContainerItemMap.insert(std::make_pair(g.id, insertedIds[0]);
+               mEvents.add({g.id, EventType::GoalUpdated});
+               responce->set_guid(id);
+            }
          }
       }
 
@@ -45,7 +53,27 @@ public:
       ::common::OperationResultMessage* response,
       ::google::protobuf::Closure* done)
       {
-         
+         response->set_success(false);
+
+         Goal g = fromProto(*request);
+
+         auto item = mGoalTree.find(g.id);
+
+         if(item && checkPrereqGoals(g))
+         {
+            if(item->goal->parentGoalId != g.parentGoalId)
+            {
+               mGoalTree.move(g.id, g.parentGoalId); //raise event for parent (old and new), recalculate achieved
+            }
+
+            g.achieved = calculateAchieved(g.id);
+            *item = g;
+            if(mContainer.replaceItems("goals", {{ mGoalToContainerItemMap[g.id], toJson(g) }}))
+            {
+               mEvents.add({g.id, EventType::GoalUpdated});
+               response->set_success(true);
+            }
+         }
       }
 
    void DeleteGoal(::google::protobuf::RpcController* controller,
@@ -53,7 +81,25 @@ public:
       ::common::OperationResultMessage* response,
       ::google::protobuf::Closure* done)
       {
-         
+         response->set_success(false);
+
+         Goal g = fromProto(*request);
+
+         auto item = mGoalTree.find(g.id);
+         if(item)
+         {
+            mGoalTree.remove(g.id); //raise event for parent, recalculate achieved
+
+            if(mContainer.deleteItems("goals", {{ mGoalToContainerItemMap[g.id] }}))
+            {
+               removeTasksAndObjectives(g.id);
+               mContainer.deleteContainer(g.id);
+               mGoalToContainerItemMap.erase(mGoalToContainerItemMap.find(g.id));
+               
+               mEvents.add({g.id, EventType::GoalUpdated});
+               response->set_success(true);
+            }
+         }
       }
 
    void GetGoals(::google::protobuf::RpcController* controller,
