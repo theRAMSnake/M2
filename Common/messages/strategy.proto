@@ -37,7 +37,6 @@ message Goal
    common.UniqueId affinityId = 2;
    bool focused = 3;
    bool achieved = 4;
-   repeated common.UniqueId required_goals = 5;
 }
 
 message Goals

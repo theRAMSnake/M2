@@ -48,11 +48,6 @@ strategy::Goal toProto(const materia::Goal& x)
    result.set_focused(x.focused);
    result.set_achieved(x.achieved);
 
-   for(auto a : x.requiredGoals)
-   {
-      result.add_required_goals()->CopyFrom(a.toProtoId());
-   }
-
    return result;
 }
 
@@ -63,11 +58,6 @@ materia::Goal fromProto(const strategy::Goal& x)
    result.affinityId = x.affinityid();
    result.focused = x.focused();
    result.achieved = x.achieved();
-
-   for(auto a : x.required_goals())
-   {
-      result.requiredGoals.push_back(a);
-   }
 
    return result;
 }
@@ -364,7 +354,6 @@ bool Goal::operator == (const Goal& other) const
       && parentGoalId == other.parentGoalId
       && name == other.name
       && notes == other.notes
-      && requiredGoals == other.requiredGoals
       && affinityId == other.affinityId
       && achieved == other.achieved
       && iconId == other.iconId

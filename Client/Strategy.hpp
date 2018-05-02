@@ -23,7 +23,6 @@ struct Goal : public StrategyItem
 {
    bool focused;
    bool achieved;
-   std::vector<Id> requiredGoals;
    Id affinityId;
 
    bool operator == (const Goal& other) const;

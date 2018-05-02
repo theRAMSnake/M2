@@ -6,99 +6,262 @@
 #include <messages/strategy.pb.h>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include "tree.hh"
+
+//17
 
 namespace materia
 {
 
 boost::uuids::random_generator generator;
 
+typedef std::map<Id, std::vector<Objective>> TGoalToObjectivesMap;
+
+class EventRaiser
+{
+public:
+   EventRaiser(Events& events)
+   : mEvents(events)
+   {
+
+   }
+
+   void raiseGoalChangedEvent(const Id& id)
+   {
+      namespace pt = boost::posix_time;
+
+      IdEvent ev;
+      ev.type = EventType::GoalUpdated;
+      ev.id = id;
+      ev.timestamp = pt::second_clock::local_time();
+
+      mEvents.putEvent<IdEvent>(ev);
+   }
+
+private:
+   Events& mEvents;
+};
+
+class GoalStorage
+{
+public:
+   GoalStorage(Container& container)
+   : mContainer(container)
+   {
+
+   }
+
+   void create(const Goal& g)
+   {
+      mContainer.addContainer({g.id.getGuid(), false});
+      auto insertedIds = mContainer.insertItems("goals", {{ materia::Id::Invalid, toJson(g) }});
+      if(insertedIds.size() == 1)
+      {
+         mGoalToContainerItemMap.insert(std::make_pair(g.id, insertedIds[0]));
+      }
+   }
+
+   void update(const Goal& g)
+   {
+      mContainer.replaceItems("goals", {{ mGoalToContainerItemMap[g.id], toJson(g) }});
+   }
+
+   std::vector<Goal> restore();
+
+private:
+   std::string toJson(const Goal& g);
+
+   std::map<Id, Id> mGoalToContainerItemMap;
+   Container& mContainer;
+};
+
+class GoalTree
+{
+public:
+   GoalTree(
+      GoalStorage goalStorage, 
+      const TGoalToObjectivesMap& goalToObjectivesMap,
+      EventRaiser& eventRaiser
+      )
+   : mGoalStorage(goalStorage)
+   , mGoalToObjectivesMap(goalToObjectivesMap)
+   , mEventRaiser(eventRaiser)
+   {
+      mImpl.insert(mImpl.begin(), Goal());
+
+      for(auto x : mGoalStorage.restore())
+      {
+         mImpl.append_child(find(x.parentGoalId).mRawIter, x);
+      }
+   }
+
+   class Iterator
+   {
+      friend class GoalTree;
+
+   public:
+      bool operator == (const Iterator& other) const;
+      bool operator != (const Iterator& other) const;
+
+      const Goal* operator -> () const;
+
+   protected:
+      tree<Goal>::iterator_base mRawIter; 
+   };
+
+   Iterator begin() const;
+   Iterator end() const;
+   Iterator find(const Id& id) const;
+
+   void addChild(const Iterator& parentIter, const Goal& item)
+   {
+      auto parentItem = getItem(parentIter);
+      recalculateAchieved(item, parentItem);
+
+      mImpl.append_child(parentIter, item);
+
+      mEventRaiser.raiseGoalChangedEvent(parentIter->id);
+      mEventRaiser.raiseGoalChangedEvent(item.id);
+
+      mGoalStorage.create(item);
+   }
+
+   void setItem(const Iterator& pos, Goal& newItem)
+   {
+      auto oldItem = getItem(pos);
+
+      newItem.achieved = oldItem.achieved;
+
+      if(oldItem.parentGoalId != newItem.parentGoalId)
+      {
+         auto newParentIter = find(newItem.parentGoalId).mRawIter;
+
+         mEventRaiser.raiseGoalChangedEvent(oldItem.parentGoalId);
+         mEventRaiser.raiseGoalChangedEvent(newItem.parentGoalId);
+
+         auto subTree = mImpl.move_out(pos.mRawIter);
+         mImpl.move_in(mImpl.begin(newParentIter), subTree);
+
+         recalculateAchieved(newItem, *newParentIter);
+      }
+
+      oldItem = newItem;
+
+      mGoalStorage.update(oldItem);
+   }
+
+   void erase(const Iterator& pos)
+   {
+
+   }
+
+private:
+
+   Goal& getItem(const Iterator& iter)
+   {
+      return *(iter.mRawIter);
+   }
+
+   bool isSimple(const Goal& g)
+   {
+      return tree<Goal>::number_of_children(find(g.id).mRawIter) == 0 ||
+         mGoalToObjectivesMap.find(g.id) == mGoalToObjectivesMap.end();
+   }
+
+   void recalculateAchieved(const Goal& newChild, Goal& item)
+   {
+      bool oldAchieved = item.achieved;
+
+      if(isSimple(item))
+      {
+         item.achieved = newChild.achieved;
+      }
+      else
+      {
+         item.achieved = oldAchieved && newChild.achieved;
+      }
+
+      if(oldAchieved != item.achieved)
+      {
+         auto nextParentIter = find(item.parentGoalId);
+
+         if(nextParentIter != end())
+         {
+            recalculateAchieved(item, getItem(nextParentIter));
+            mEventRaiser.raiseGoalChangedEvent(item.id);
+            mGoalStorage.update(item);
+         }
+      }
+   }
+
+   GoalStorage mGoalStorage;
+   const TGoalToObjectivesMap& mGoalToObjectivesMap;
+   EventRaiser& mEventRaiser;
+   tree<Goal> mImpl;
+};
+
 class StrategyServiceImpl : public strategy::StrategyService
 {
 public:
-   StrategyServiceImpl()
+   StrategyServiceImpl(Container& container, Events& events)
+   : mEventRaiser(events)
+   , mGoalTree(GoalStorage(container), mGoalToObjectivesMap, mEventRaiser)
    {
-      loadGoalTree();
+      
    }
 
    void AddGoal(::google::protobuf::RpcController* controller,
       const ::strategy::Goal* request,
       ::common::UniqueId* response,
-      ::google::protobuf::Closure* done)
+      ::google::protobuf::Closure* done) //finished
       {
          std::string id = to_string(generator());
 
          Goal g = fromProto(*request);
          g.id = id;
          g.achieved = false;
-
+         
          auto parent = mGoalTree.find(g.parentGoalId);
 
-         if(parent && checkPrereqGoals(g))
+         if(parent != mGoalTree.end())
          {
-            auto item = mGoalTree.addChild(parent, g); //raise event for parent, recalculate achieved
-
-            mContainer.createContainer(id, false);
-            auto insertedIds = mContainer.insertItems("goals", {{ materia::Id::Invalid, toJson(g) }});
-            if(insertedIds.size() == 1)
-            {
-               mGoalToContainerItemMap.insert(std::make_pair(g.id, insertedIds[0]);
-               mEvents.add({g.id, EventType::GoalUpdated});
-               responce->set_guid(id);
-            }
+            mGoalTree.addChild(parent, g);
+            response->set_guid(id);
          }
       }
 
    void ModifyGoal(::google::protobuf::RpcController* controller,
       const ::strategy::Goal* request,
       ::common::OperationResultMessage* response,
-      ::google::protobuf::Closure* done)
+      ::google::protobuf::Closure* done) //finished
       {
          response->set_success(false);
 
          Goal g = fromProto(*request);
 
-         auto item = mGoalTree.find(g.id);
+         auto iter = mGoalTree.find(g.id);
 
-         if(item && checkPrereqGoals(g))
+         if(iter != mGoalTree.end())
          {
-            if(item->goal->parentGoalId != g.parentGoalId)
-            {
-               mGoalTree.move(g.id, g.parentGoalId); //raise event for parent (old and new), recalculate achieved
-            }
-
-            g.achieved = calculateAchieved(g.id);
-            *item = g;
-            if(mContainer.replaceItems("goals", {{ mGoalToContainerItemMap[g.id], toJson(g) }}))
-            {
-               mEvents.add({g.id, EventType::GoalUpdated});
-               response->set_success(true);
-            }
+            mGoalTree.setItem(iter, g);
+            response->set_success(true);
          }
       }
 
    void DeleteGoal(::google::protobuf::RpcController* controller,
       const ::common::UniqueId* request,
       ::common::OperationResultMessage* response,
-      ::google::protobuf::Closure* done)
+      ::google::protobuf::Closure* done) //finished
       {
          response->set_success(false);
 
-         Goal g = fromProto(*request);
+         Id id(*request);
 
-         auto item = mGoalTree.find(g.id);
-         if(item)
+         auto iter = mGoalTree.find(id);
+         if(iter != mGoalTree.end())
          {
-            mGoalTree.remove(g.id); //raise event for parent, recalculate achieved
-
-            if(mContainer.deleteItems("goals", {{ mGoalToContainerItemMap[g.id] }}))
-            {
-               removeTasksAndObjectives(g.id);
-               mContainer.deleteContainer(g.id);
-               mGoalToContainerItemMap.erase(mGoalToContainerItemMap.find(g.id));
-               
-               mEvents.add({g.id, EventType::GoalUpdated});
-               response->set_success(true);
-            }
+            mGoalTree.erase(iter); //raise event for parent, recalculate achieved
+            response->set_success(true);
          }
       }
 
@@ -223,7 +386,10 @@ public:
       }
 
 private:
-   
+
+   TGoalToObjectivesMap mGoalToObjectivesMap;
+   EventRaiser mEventRaiser;
+   GoalTree mGoalTree;
 };
 
 }
