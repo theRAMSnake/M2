@@ -79,6 +79,7 @@ public:
    bool modifyGoal(const Goal& goal);
    bool deleteGoal(const Id& id);
    std::vector<Goal> getGoals();
+   std::optional<Goal> getGoal(const Id& id);
    std::tuple<std::vector<Task>, std::vector<Objective>> getGoalItems(const Id& id);
 
    Id addObjective(const Objective& obj);

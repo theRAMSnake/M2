@@ -188,14 +188,7 @@ protected:
 
    std::optional<materia::Goal> getGoal(const materia::Id& id)
    {
-      auto goals = mService.getGoals();
-      auto iter = std::find_if(goals.begin(), goals.end(), [&](auto x)->bool {return id == x.id;});
-      if(iter != goals.end())
-      {
-         return *iter;
-      }
-
-      return std::optional<materia::Goal>();
+      return mService.getGoal(id);
    }
 
    void cleanUp()

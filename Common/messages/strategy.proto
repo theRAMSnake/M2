@@ -98,6 +98,7 @@ service StrategyService
    rpc DeleteGoal (common.UniqueId) returns (common.OperationResultMessage);
 
    rpc GetGoals (common.EmptyMessage) returns (Goals);
+   rpc GetGoal (common.UniqueId) returns (Goal);
 
    rpc AddObjective (Objective) returns (common.UniqueId);
    rpc ModifyObjective (Objective) returns (common.OperationResultMessage);

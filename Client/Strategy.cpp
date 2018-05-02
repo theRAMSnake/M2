@@ -203,6 +203,21 @@ std::vector<Goal> Strategy::getGoals()
    return result;
 }
 
+std::optional<Goal> getGoal(const Id& id)
+{
+   auto protoId = id.toProtoId();
+   strategy::Goal out;
+
+   mProxy.getService().GetGoal(nullptr, &protoId, &out, nullptr);
+
+   if(out.id() != Id::Invalid)
+   {
+      return fromProto(out);
+   }
+
+   return std::optional<Goal>();
+}
+
 std::tuple<std::vector<Task>, std::vector<Objective>> Strategy::getGoalItems(const Id& id)
 {
    auto protoId = id.toProtoId();

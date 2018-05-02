@@ -8,14 +8,10 @@
 #include <boost/uuid/uuid_io.hpp>
 #include "tree.hh"
 
-//17
-
 namespace materia
 {
 
 boost::uuids::random_generator generator;
-
-typedef std::map<Id, std::vector<Objective>> TGoalToObjectivesMap;
 
 class EventRaiser
 {
@@ -42,44 +38,117 @@ private:
    Events& mEvents;
 };
 
-class GoalStorage
+std::string toJson(const Goal& g)
+{
+   boost::property_tree::ptree pt;
+
+   pt.put ("id", g.id.getGuid());
+   pt.put ("parent_id", g.parentGoalId.getGuid());
+   pt.put ("name", g.name);
+   pt.put ("notes", g.notes);
+   pt.put ("icon_id", g.iconId.getGuid());
+   pt.put ("affinity_id", g.affinityId.getGuid());
+   pt.put ("achieved", g.achieved);
+   pt.put ("focused", g.focused);
+
+   std::ostringstream buf; 
+   write_json (buf, pt, false);
+   return buf.str();
+}
+
+Goal fromJson(const std::string& json)
+{
+   Goal result;
+
+   boost::property_tree::ptree pt;
+   std::istringstream is (json);
+   read_json (is, pt);
+   
+   result.id = pt.get<std::string> ("id");
+   result.parentGoalId = pt.get<std::string> ("parent_id");
+   result.name = pt.get<std::string> ("name");
+   result.notes = pt.get<std::string> ("notes");
+   result.iconId = pt.get<std::string> ("icon_id");
+   result.affinityId = pt.get<std::string> ("affinity_id");
+   result.achieved = pt.get<bool> ("achieved");
+   result.focused = pt.get<bool> ("focused");
+
+   return result;
+}
+
+template<class T>
+class RemoteCollection
 {
 public:
-   GoalStorage(Container& container)
-   : mContainer(container)
+   RemoteCollection(const std::string& name, Container& container)
+   : mName(name)
+   , mContainer(container)
    {
+      auto items = mContainer.getItems(mName);
 
+      mLocalCache.reserve(items.size());
+
+      for(auto x : items)
+      {
+         auto item = fromJson(x.content);
+         mLocalToRemoteIdMap.insert(std::make_pair(item.id, x.id));
+         mLocalCache.push_back(item);
+         result.push_back(item);
+      }
+
+      return result;
    }
 
-   void create(const Goal& g)
+   void insert(const T& item)
    {
-      mContainer.addContainer({g.id.getGuid(), false});
-      auto insertedIds = mContainer.insertItems("goals", {{ materia::Id::Invalid, toJson(g) }});
+      auto insertedIds = mContainer.insertItems(mName, {{ materia::Id::Invalid, toJson(item) }});
       if(insertedIds.size() == 1)
       {
-         mGoalToContainerItemMap.insert(std::make_pair(g.id, insertedIds[0]));
+         mLocalToRemoteIdMap.insert(std::make_pair(item.id, insertedIds[0]));
+         mLocalCache.push_back(item);
       }
    }
 
-   void update(const Goal& g)
+   void update(const T& item)
    {
-      mContainer.replaceItems("goals", {{ mGoalToContainerItemMap[g.id], toJson(g) }});
+      mContainer.replaceItems(mName, {{ mLocalToRemoteIdMap[item.id], toJson(g) }});
+      *find(mLocalCache, item.id) = item;
    }
 
-   std::vector<Goal> restore();
+   const std::vector<T>& getItems()
+   {  
+      return mLocalCache;
+   }
 
 private:
-   std::string toJson(const Goal& g);
 
-   std::map<Id, Id> mGoalToContainerItemMap;
+   std::vector<T> mLocalCache;
+   std::map<Id, Id> mLocalToRemoteIdMap;
+   std::string mName;
    Container& mContainer;
 };
+
+template<class T>
+std::vector<T> getGoalItems(const RemoteCollection<T>& collection, const Id& id)
+{
+   std::vector<T> result;
+
+   for(auto x : collection.getItems())
+   {
+      if(x.parentGoalId == id)
+      {
+         result.push_back(x);
+      }
+   }
+
+   return result;
+}
 
 class GoalTree
 {
 public:
    GoalTree(
-      GoalStorage goalStorage, 
+      RemoteCollection<Goal> goalStorage, 
       const TGoalToObjectivesMap& goalToObjectivesMap,
       EventRaiser& eventRaiser
       )
@@ -100,25 +169,53 @@ public:
       friend class GoalTree;
 
    public:
-      bool operator == (const Iterator& other) const;
-      bool operator != (const Iterator& other) const;
+      Iterator(tree<Goal>::iterator init)
+      : mRawIter(init)
+      {
 
-      const Goal* operator -> () const;
+      }
+
+      bool operator == (const Iterator& other) const
+      {
+         return mRawIter == other.mRawIter;
+      }
+
+      bool operator != (const Iterator& other) const
+      {
+         return !operator == (other);
+      }
+
+      const Goal* operator -> () const
+      {
+         return *mRawIter;
+      }
 
    protected:
-      tree<Goal>::iterator_base mRawIter; 
+      tree<Goal>::iterator mRawIter; 
    };
 
-   Iterator begin() const;
-   Iterator end() const;
-   Iterator find(const Id& id) const;
+   Iterator begin() const
+   {
+      return Iterator(mImpl.begin());
+   }
+
+   Iterator end() const
+   {
+      return Iterator(mImpl.end());
+   }
+
+   Iterator find(const Id& id) const
+   {
+      return Iterator(std::find_if(mImpl.begin(), mImpl.end(), [=](auto x)->bool{return x.id == id;}));
+   }
 
    void addChild(const Iterator& parentIter, const Goal& item)
    {
       auto parentItem = getItem(parentIter);
-      recalculateAchieved(item, parentItem);
 
       mImpl.append_child(parentIter, item);
+
+      recalculateAchieved(parentItem);
 
       mEventRaiser.raiseGoalChangedEvent(parentIter->id);
       mEventRaiser.raiseGoalChangedEvent(item.id);
@@ -134,15 +231,15 @@ public:
 
       if(oldItem.parentGoalId != newItem.parentGoalId)
       {
-         auto newParentIter = find(newItem.parentGoalId).mRawIter;
+         auto newParentIter = find(newItem.parentGoalId);
 
          mEventRaiser.raiseGoalChangedEvent(oldItem.parentGoalId);
          mEventRaiser.raiseGoalChangedEvent(newItem.parentGoalId);
 
          auto subTree = mImpl.move_out(pos.mRawIter);
-         mImpl.move_in(mImpl.begin(newParentIter), subTree);
+         mImpl.move_in(mImpl.begin(newParentIter.mRawIter), subTree);
 
-         recalculateAchieved(newItem, *newParentIter);
+         recalculateAchieved(newParentIter);
       }
 
       oldItem = newItem;
@@ -152,33 +249,64 @@ public:
 
    void erase(const Iterator& pos)
    {
+      auto item = getItem(pos);
 
+      //Can never be 'end' in correct tree
+      auto parent = find(item.parentGoalId);
+
+      auto subTree = mImpl.move_out(pos.mRawIter);
+
+      recalculateAchieved(parent);
+
+      for(auto x : subTree)
+      {
+         mGoalStorage.erase(x.id);
+         mEventRaiser.raiseGoalChangedEvent(x.id);
+      }
    }
 
-private:
-
-   Goal& getItem(const Iterator& iter)
+   void recalculateAchieved(const Iterator& iter)
    {
-      return *(iter.mRawIter);
-   }
+      auto item = getItem(iter);
 
-   bool isSimple(const Goal& g)
-   {
-      return tree<Goal>::number_of_children(find(g.id).mRawIter) == 0 ||
-         mGoalToObjectivesMap.find(g.id) == mGoalToObjectivesMap.end();
-   }
+      if(item.id == Id::Invalid)
+      {
+         return;
+      }
 
-   void recalculateAchieved(const Goal& newChild, Goal& item)
-   {
       bool oldAchieved = item.achieved;
 
-      if(isSimple(item))
+      auto childrenBegin = mImpl.begin(iter);
+      auto childrenEnd = mImpl.end(iter);
+
+      auto objectives = getGoalItems(mObjectives, item.id);
+      if(childrenBegin == childrenEnd && objectives.empty())
       {
-         item.achieved = newChild.achieved;
+         item.achieved = false;
       }
       else
       {
-         item.achieved = oldAchieved && newChild.achieved;
+         item.achieved = true;
+         for(auto it = childrenBegin; it != childrenEnd; ++it)
+         {
+            if(!it->achieved)
+            {
+               item.achieved = false;
+               break;
+            }
+         }
+
+         if(item.achieved)
+         {
+            for(auto x : objectives)
+            {
+               if(!x.reached)
+               {
+                  item.achieved = false;
+                  break;
+               }
+            }
+         }
       }
 
       if(oldAchieved != item.achieved)
@@ -187,15 +315,16 @@ private:
 
          if(nextParentIter != end())
          {
-            recalculateAchieved(item, getItem(nextParentIter));
+            recalculateAchieved(nextParentIter);
             mEventRaiser.raiseGoalChangedEvent(item.id);
             mGoalStorage.update(item);
          }
       }
    }
 
-   GoalStorage mGoalStorage;
-   const TGoalToObjectivesMap& mGoalToObjectivesMap;
+private:
+
+   RemoteCollection<Goal> mGoalStorage;
    EventRaiser& mEventRaiser;
    tree<Goal> mImpl;
 };
@@ -213,7 +342,7 @@ public:
    void AddGoal(::google::protobuf::RpcController* controller,
       const ::strategy::Goal* request,
       ::common::UniqueId* response,
-      ::google::protobuf::Closure* done) //finished
+      ::google::protobuf::Closure* done)
       {
          std::string id = to_string(generator());
 
@@ -233,7 +362,7 @@ public:
    void ModifyGoal(::google::protobuf::RpcController* controller,
       const ::strategy::Goal* request,
       ::common::OperationResultMessage* response,
-      ::google::protobuf::Closure* done) //finished
+      ::google::protobuf::Closure* done)
       {
          response->set_success(false);
 
@@ -251,7 +380,7 @@ public:
    void DeleteGoal(::google::protobuf::RpcController* controller,
       const ::common::UniqueId* request,
       ::common::OperationResultMessage* response,
-      ::google::protobuf::Closure* done) //finished
+      ::google::protobuf::Closure* done)
       {
          response->set_success(false);
 
@@ -260,8 +389,11 @@ public:
          auto iter = mGoalTree.find(id);
          if(iter != mGoalTree.end())
          {
-            mGoalTree.erase(iter); //raise event for parent, recalculate achieved
+            mGoalTree.erase(iter); 
             response->set_success(true);
+
+            mObjectives.erase(getGoalItems(mObjectives, id));
+            mTasks.erase(getGoalItems(mTasks, id));
          }
       }
 
@@ -270,7 +402,24 @@ public:
       ::strategy::Goals* response,
       ::google::protobuf::Closure* done)
       {
-         
+         for(auto x : mGoalTree)
+         {
+            response->add_items()->CopyFrom(toProto(x));
+         }
+      }
+
+   void GetGoal(::google::protobuf::RpcController* controller,
+      const ::common::UniqueId* request,
+      ::strategy::Goal* response,
+      ::google::protobuf::Closure* done)
+      {
+         Id id(*request);
+
+         auto iter = mGoalTree.find(id);
+         if(iter != mGoalTree.end())
+         {
+            response->CopyFrom(toProto(*iter));
+         }
       }
 
    void AddObjective(::google::protobuf::RpcController* controller,
@@ -278,7 +427,24 @@ public:
       ::common::UniqueId* response,
       ::google::protobuf::Closure* done)
       {
+         std::string id = to_string(generator());
+
+         Objective o = fromProto(*request);
+         o.id = id;
          
+         auto parent = mGoalTree.find(o.parentGoalId);
+
+         if(parent != mGoalTree.end())
+         {
+            if(o.measurementId != Id::Invalid)
+            {
+               o.reached = calculateReached(o.measurementId, o.expected);
+            }
+            mObjectives.add(o);
+            mEventRaiser.raiseGoalChangedEvent(o.parentGoalId);
+            mGoalTree.recalculateAchieved(parent);
+            response->set_guid(id);
+         }
       }
 
    void ModifyObjective(::google::protobuf::RpcController* controller,
@@ -286,7 +452,22 @@ public:
       ::common::OperationResultMessage* response,
       ::google::protobuf::Closure* done)
       {
+         response->set_success(false);
+         Objective o = fromProto(*request);
          
+         auto parent = mGoalTree.find(o.parentGoalId);
+
+         if(parent != mGoalTree.end())
+         {
+            if(o.measurementId != Id::Invalid)
+            {
+               o.reached = calculateReached(o.measurementId, o.expected);
+            }
+            mObjectives.update(o);
+            mEventRaiser.raiseGoalChangedEvent(o.parentGoalId);
+            mGoalTree.recalculateAchieved(parent);
+            response->set_success(true);
+         }
       }
 
    void DeleteObjective(::google::protobuf::RpcController* controller,
@@ -294,7 +475,18 @@ public:
       ::common::OperationResultMessage* response,
       ::google::protobuf::Closure* done)
       {
+         response->set_success(false);
+         Objective o = fromProto(*request);
          
+         auto parent = mGoalTree.find(o.parentGoalId);
+
+         if(parent != mGoalTree.end())
+         {
+            mObjectives.erase(o);
+            mEventRaiser.raiseGoalChangedEvent(o.parentGoalId);
+            mGoalTree.recalculateAchieved(parent);
+            response->set_success(true);
+         }
       }
 
    void AddTask(::google::protobuf::RpcController* controller,
@@ -302,7 +494,19 @@ public:
       ::common::UniqueId* response,
       ::google::protobuf::Closure* done)
       {
+         std::string id = to_string(generator());
 
+         Task t = fromProto(*request);
+         t.id = id;
+         
+         auto parent = mGoalTree.find(t.parentGoalId);
+
+         if(parent != mGoalTree.end())
+         {
+            mTasks.add(t);
+            mEventRaiser.raiseGoalChangedEvent(t.parentGoalId);
+            response->set_guid(id);
+         }
       }
 
    void ModifyTask(::google::protobuf::RpcController* controller,
@@ -310,7 +514,17 @@ public:
       ::common::OperationResultMessage* response,
       ::google::protobuf::Closure* done)
       {
+         response->set_success(false);
+         Task t = fromProto(*request);
          
+         auto parent = mGoalTree.find(t.parentGoalId);
+
+         if(parent != mGoalTree.end())
+         {
+            mTasks.update(t);
+            mEventRaiser.raiseGoalChangedEvent(t.parentGoalId);
+            response->set_success(true);
+         }
       }
 
    void DeleteTask(::google::protobuf::RpcController* controller,
@@ -318,7 +532,17 @@ public:
       ::common::OperationResultMessage* response,
       ::google::protobuf::Closure* done)
       {
+         response->set_success(false);
+         Task t = fromProto(*request);
          
+         auto parent = mGoalTree.find(t.parentGoalId);
+
+         if(parent != mGoalTree.end())
+         {
+            mTasks.erase(t);
+            mEventRaiser.raiseGoalChangedEvent(t.parentGoalId);
+            response->set_success(true);
+         }
       }
 
    void GetGoalItems(::google::protobuf::RpcController* controller,
@@ -326,7 +550,9 @@ public:
       ::strategy::GoalItems* response,
       ::google::protobuf::Closure* done)
       {
-         
+         Id id(*request);
+         auto obs = getGoalItems(mObjectives, id);
+         auto tasks = getGoalItems(mTasks, id);
       }
 
    void AddMeasurement(::google::protobuf::RpcController* controller,
@@ -387,7 +613,8 @@ public:
 
 private:
 
-   TGoalToObjectivesMap mGoalToObjectivesMap;
+   RemoteCollection<Objective> mObjectives;
+   RemoteCollection<Task> mTasks;
    EventRaiser mEventRaiser;
    GoalTree mGoalTree;
 };
