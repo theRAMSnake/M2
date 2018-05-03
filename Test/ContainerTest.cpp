@@ -5,6 +5,7 @@
 #include <Client/MateriaClient.hpp>
 #include <Client/Container.hpp>
 #include "TestHelpers.hpp"
+#include "TestEventListener.hpp"
 #include <fstream>
 #include <sqlite3.h>
 
@@ -23,6 +24,7 @@ class ContainerTest
 public:
    ContainerTest()
    : mClient("test")
+   , mEventListener(mClient.getEvents())
    , mService(mClient.getContainer())
    {
       cleanUp();
@@ -102,6 +104,7 @@ protected:
    }
 
    materia::MateriaClient mClient;
+   TestEventListener mEventListener;
    materia::Container& mService;
    std::map<std::string, std::vector<materia::ContainerItem>> mInsertedItems;
 };
@@ -115,6 +118,8 @@ BOOST_FIXTURE_TEST_CASE( AddContainer, ContainerTest )
    auto conts = mService.getPublicContainers();
    BOOST_CHECK(std::find(conts.begin(), conts.end(), materia::ContainerDefinition{"someCont", true}) != conts.end());
    BOOST_CHECK(std::find(conts.begin(), conts.end(), materia::ContainerDefinition{"", true}) == conts.end());
+
+   BOOST_CHECK(mEventListener.hasEvent<materia::EventType::ContainerUpdated>("someCont"));
 }
 
 BOOST_FIXTURE_TEST_CASE( GetContainers, ContainerTest )  
@@ -147,12 +152,19 @@ BOOST_FIXTURE_TEST_CASE( DeleteContainer, ContainerTest )
    BOOST_CHECK(mService.deleteContainer("con3"));
    BOOST_CHECK(mService.deleteContainer("con4"));
    BOOST_CHECK_EQUAL(0, mService.getPublicContainers().size());
+
+   BOOST_CHECK(mEventListener.hasEvent<materia::EventType::ContainerUpdated>("con1"));
+   BOOST_CHECK(mEventListener.hasEvent<materia::EventType::ContainerUpdated>("con2"));
+   BOOST_CHECK(mEventListener.hasEvent<materia::EventType::ContainerUpdated>("con3"));
+   BOOST_CHECK(mEventListener.hasEvent<materia::EventType::ContainerUpdated>("con4"));
 }
 
 BOOST_FIXTURE_TEST_CASE( ClearContainer, ContainerTest )  
 {
    BOOST_CHECK(mService.clearContainer("con1"));
    BOOST_CHECK(mService.getItems("con1").empty());
+
+   BOOST_CHECK(mEventListener.hasEvent<materia::EventType::ContainerUpdated>("con1"));
 }
 
 BOOST_FIXTURE_TEST_CASE( GetItems, ContainerTest )  
@@ -181,17 +193,22 @@ BOOST_FIXTURE_TEST_CASE( InsertItems, ContainerTest )
 
    BOOST_CHECK_EQUAL_COLLECTIONS(items.begin(), items.end(), 
          newItems.begin(), newItems.end());
+
+   BOOST_CHECK(mEventListener.hasEvent<materia::EventType::ContainerUpdated>("con4"));
 }
 
 BOOST_FIXTURE_TEST_CASE( DeleteItems, ContainerTest )  
 {
    BOOST_CHECK(!mService.deleteItems("invalid", {}));
    BOOST_CHECK(mService.deleteItems("con3", {}));
+   BOOST_CHECK(mEventListener.hasEvent<materia::EventType::ContainerUpdated>("con3"));
 
    {
       auto items = mInsertedItems["con2"];
       BOOST_CHECK(mService.deleteItems("con2", getIds(items)));
       BOOST_CHECK_EQUAL(0, mService.getItems("con2").size());
+
+      BOOST_CHECK(mEventListener.hasEvent<materia::EventType::ContainerUpdated>("con2"));
    }
    {
       auto items = mInsertedItems["con3"];
@@ -208,6 +225,7 @@ BOOST_FIXTURE_TEST_CASE( ReplaceItems, ContainerTest )
    std::for_each(items.begin(), items.end(), [] (auto& x)-> auto { x.content += "___"; });
 
    BOOST_CHECK(mService.replaceItems("con3", items));
+   BOOST_CHECK(mEventListener.hasEvent<materia::EventType::ContainerUpdated>("con3"));
 
    auto newItems = mService.getItems("con3");
 

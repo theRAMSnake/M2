@@ -19,6 +19,8 @@ class ContainerServiceImpl : public container::ContainerService
 public:
    ContainerServiceImpl(sqlite::database& db)
    : mDb(db)
+   , mClient("ContainerService")
+   , mCnProxy(mClient.getEvents())
    {
       mDb << "CREATE TABLE IF NOT EXISTS Containers (Name text, IsPublic boolean, Properties text)";
       std::cout << "Init ok\n";
@@ -40,6 +42,8 @@ public:
                << request->icon_id().guid();
 
             mDb << "CREATE TABLE " + request->name() + "Items" + " (id text primary key, json text, bin blob);";
+
+            raiseChangedEvent(request->name());
 
             response->set_success(true);
          }
@@ -72,6 +76,8 @@ public:
          {
             mDb << "DELETE FROM " + request->content() + "Items";
 
+            raiseChangedEvent(request->name());
+
             response->set_success(true);
          }
       }
@@ -89,6 +95,8 @@ public:
             std::cout << "Delete ok\n";
             mDb << "DROP TABLE IF EXISTS " + request->content() + "Items";
             std::cout << "Drop ok\n";
+
+            raiseChangedEvent(request->name());
 
             response->set_success(true);
          }
@@ -143,6 +151,8 @@ public:
                response->add_idset()->set_guid(newId);
                ps++;
             }
+
+            raiseChangedEvent(request->container_name());
          }
       }
 
@@ -173,6 +183,7 @@ public:
                ps++;
             }
 
+            raiseChangedEvent(request->container_name());
             response->set_success(true);
          }
       }
@@ -193,6 +204,7 @@ public:
                ps++;
             }
 
+            raiseChangedEvent(request->container_name());
             response->set_success(true);
          }
       }
@@ -269,7 +281,21 @@ private:
       return result;
    }
 
+   void raiseChangedEvent(const std::string& containerName)
+   {
+      namespace pt = boost::posix_time;
+
+      ContainerUpdatedEvent ev;
+      ev.type = EventType::ContainerUpdated;
+      ev.containerName = containerName;
+      ev.timestamp = pt::second_clock::local_time();
+
+      mEvents.putEvent<ContainerUpdatedEvent>(ev);
+   }
+
    sqlite::database mDb;
+   materia::MateriaClient mClient;
+   materia::Events& mEvents;
 };
 
 }

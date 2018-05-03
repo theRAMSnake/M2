@@ -454,6 +454,11 @@ public:
       {
          response->set_success(false);
          Objective o = fromProto(*request);
+
+         if(!mObjectives.contains(o.id))
+         {
+            return;
+         }
          
          auto parent = mGoalTree.find(o.parentGoalId);
 
@@ -551,8 +556,19 @@ public:
       ::google::protobuf::Closure* done)
       {
          Id id(*request);
+
          auto obs = getGoalItems(mObjectives, id);
          auto tasks = getGoalItems(mTasks, id);
+
+         for(auto x : obs)
+         {
+            response->add_objectives()->CopyFrom(toProto(x));
+         }
+
+         for(auto x : tasks)
+         {
+            response->add_tasks()->CopyFrom(toProto(x));
+         }
       }
 
    void AddMeasurement(::google::protobuf::RpcController* controller,
@@ -560,7 +576,14 @@ public:
       ::common::UniqueId* response,
       ::google::protobuf::Closure* done)
       {
+         std::string id = to_string(generator());
+
+         Measurement m = fromProto(*request);
+         m.id = id;
          
+         mMeasurements.add(m);
+         mEventRaiser.raiseMeasurementChangedEvent(m.id);
+         response->set_guid(id);
       }
 
    void ModifyMeasurement(::google::protobuf::RpcController* controller,
@@ -568,7 +591,28 @@ public:
       ::common::OperationResultMessage* response,
       ::google::protobuf::Closure* done)
       {
-         
+         response->set_success(false);
+         Measurement m = fromProto(*request);
+
+         if(!mMeasurements.contains(m.id))
+         {
+            return;
+         }
+
+         for(auto x : mObjectives.getItems())
+         {
+            if(x.measurementId == m.id)
+            {
+               x.reached = calculateReached(m, x.expected);
+               mObjectives.update(x);
+
+               auto parent = mGoalTree.find(x.parentGoalId);
+               mGoalTree.recalculateAchieved(parent);
+               mEventRaiser.raiseMeasurementChangedEvent(m.id);
+            }
+         }
+
+         response->set_success(true);
       }
 
    void DeleteMeasurement(::google::protobuf::RpcController* controller,
@@ -576,7 +620,11 @@ public:
       ::common::OperationResultMessage* response,
       ::google::protobuf::Closure* done)
       {
-
+         response->set_success(false);
+         Measurement m = fromProto(*request);
+         
+         mMeasurements.erase(m);
+         mEventRaiser.raiseMeasurementChangedEvent(m.id);
       }
 
    void GetMeasurements(::google::protobuf::RpcController* controller,
@@ -584,7 +632,10 @@ public:
       ::strategy::Measurements* response,
       ::google::protobuf::Closure* done)
       {
-
+         for(auto x : mMeasurements.getItems())
+         {
+            response->add_items()->CopyFrom(toProto(x));
+         }
       }
 
    void ConfigureAffinities(::google::protobuf::RpcController* controller,
@@ -592,7 +643,12 @@ public:
       ::common::OperationResultMessage* response,
       ::google::protobuf::Closure* done)
       {
+         std::vector<Affinity> result(request.items_size());
+         std::transform(request.items().begin(), request.items().end(), result.begin(), [] (auto x)-> auto { return fromProto(x); });
 
+         mAffinities.reset(result);
+         mEventRaiser.raiseAffinitiesChangedEvent();
+         response->set_success(true);
       }
 
    void GetAffinities(::google::protobuf::RpcController* controller,
@@ -600,7 +656,10 @@ public:
       ::strategy::Affinities* response,
       ::google::protobuf::Closure* done)
       {
-
+         for(auto x : mAffinities.getItems())
+         {
+            response.add_items()->CopyFrom(toProto(x));
+         }
       }
 
    void Clear(::google::protobuf::RpcController* controller,
@@ -608,13 +667,19 @@ public:
       ::common::OperationResultMessage* response,
       ::google::protobuf::Closure* done)
       {
-         
+         mGoalTree.clear();
+         mObjectives.clear();
+         mTasks.clear();
+         mMeasurements.clear();
+         mAffinities.clear();
       }
 
 private:
 
    RemoteCollection<Objective> mObjectives;
    RemoteCollection<Task> mTasks;
+   RemoteCollection<Measurement> mMeasurements;
+   RemoteCollection<Affinity> mAffinities;
    EventRaiser mEventRaiser;
    GoalTree mGoalTree;
 };
