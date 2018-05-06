@@ -6,6 +6,8 @@
 #include "messages/container.pb.h"
 
 #include <boost/optional.hpp>
+#include <boost/noncopyable.hpp>
+#include <functional>
 
 namespace materia
 {
@@ -42,6 +44,26 @@ struct Func
     std::string containerName;
 };
 
+class ContainerSlot : boost::noncopyable
+{
+public:
+   typedef std::function<Id(const ContainerItem& item)> TCreateImpl;
+   typedef std::function<void(const ContainerItem& item)> TUpdateImpl;
+   typedef std::function<void(const Id& id)> TEraseImpl;
+
+   ContainerSlot(TCreateImpl create, TUpdateImpl update, TEraseImpl erase, const Id& id = Id::Invalid);
+   ContainerSlot(ContainerSlot&& other);
+   void put(const std::string& content);
+   ~ContainerSlot();
+
+private:
+   TCreateImpl mCreate;
+   TUpdateImpl mUpdate;
+   TEraseImpl mErase;
+
+   Id mId;
+};
+
 class Container
 {
 public:
@@ -60,6 +82,9 @@ public:
    bool deleteItems(const std::string& containerName, const std::vector<Id>& ids);
 
    std::vector<char> fetch();
+
+   ContainerSlot acquireSlot(const std::string& containerName);
+   ContainerSlot acquireSlot(const std::string& containerName, const Id& slotId);
 
 private:
    MateriaServiceProxy<container::ContainerService> mProxy;

@@ -44,4 +44,9 @@ namespace materia
    {
       return mGuid;
    }
+
+   bool Id::operator < (const Id& other) const
+   {
+      return mGuid < other.mGuid;
+   }
 }

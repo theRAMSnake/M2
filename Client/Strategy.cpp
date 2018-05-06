@@ -203,14 +203,14 @@ std::vector<Goal> Strategy::getGoals()
    return result;
 }
 
-std::optional<Goal> getGoal(const Id& id)
+std::optional<Goal> Strategy::getGoal(const Id& id)
 {
    auto protoId = id.toProtoId();
    strategy::Goal out;
 
    mProxy.getService().GetGoal(nullptr, &protoId, &out, nullptr);
 
-   if(out.id() != Id::Invalid)
+   if(Id(out.common_props().id()) != Id::Invalid)
    {
       return fromProto(out);
    }

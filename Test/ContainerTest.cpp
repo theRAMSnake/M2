@@ -84,6 +84,7 @@ protected:
       mService.deleteContainer("con3");
       mService.deleteContainer("con4");
       mService.deleteContainer("someCont");
+      mService.deleteContainer("conSlot");
    }
 
    void setIds(const std::vector<materia::Id>& ids, std::vector<materia::ContainerItem>& items)
@@ -265,3 +266,49 @@ BOOST_FIXTURE_TEST_CASE( ExecFunc, ContainerTest )
    BOOST_CHECK_EQUAL(0, *mService.execFunc({materia::FuncType::Sum, "con3"}));
    BOOST_CHECK_EQUAL(10, *mService.execFunc({materia::FuncType::Count, "con3"}));
 }
+
+BOOST_FIXTURE_TEST_CASE( ContainerSlot, ContainerTest )
+{
+   mService.addContainer({"conSlot"});
+
+   {
+      std::cout << ".";
+      BOOST_CHECK(mService.getItems("conSlot").empty());
+
+      std::cout << ".";
+      materia::ContainerSlot slot1 = std::move(mService.acquireSlot("conSlot"));
+      std::cout << ".";
+      auto slot2 = mService.acquireSlot("conSlot");
+
+      slot1.put("val");
+
+      auto items = mService.getItems("conSlot"); 
+      BOOST_CHECK_EQUAL(1, items.size());
+      BOOST_CHECK_EQUAL("val", items[0].content);
+
+      slot1.put("val2");
+      items = mService.getItems("conSlot"); 
+      BOOST_CHECK_EQUAL(1, items.size());
+      BOOST_CHECK_EQUAL("val2", items[0].content);
+
+      slot2.put("val2");
+      items = mService.getItems("conSlot"); 
+      BOOST_CHECK_EQUAL(2, items.size());
+      BOOST_CHECK_EQUAL("val2", items[0].content);
+      BOOST_CHECK_EQUAL("val2", items[1].content);
+
+      {
+         auto slot3 = mService.acquireSlot("conSlot");
+         slot3.put("dsgssdg");
+
+         items = mService.getItems("conSlot"); 
+         BOOST_CHECK_EQUAL(3, items.size());
+      }
+
+      items = mService.getItems("conSlot"); 
+      BOOST_CHECK_EQUAL(2, items.size());
+   }
+
+   auto items = mService.getItems("conSlot"); 
+   BOOST_CHECK_EQUAL(0, items.size());
+}  

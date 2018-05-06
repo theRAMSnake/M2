@@ -214,4 +214,78 @@ bool ContainerItem::operator != (const ContainerItem& other) const
    return !operator==(other);
 }
 
+ContainerSlot Container::acquireSlot(const std::string& containerName)
+{
+   return ContainerSlot(
+      [=](const ContainerItem& x)->Id { return insertItems(containerName, {x})[0]; },
+      [=](const ContainerItem& x)->void { replaceItems(containerName, {x}); },
+      [=](const Id& id)->void { deleteItems(containerName, {id}); }
+   );
+}
+
+ContainerSlot::ContainerSlot(TCreateImpl create, TUpdateImpl update, TEraseImpl erase, const Id& id)
+: mCreate(create)
+, mUpdate(update)
+, mErase(erase)
+, mId(id)
+{
+
+}
+
+Id emptyCreate(const ContainerItem& item)
+{
+   return Id::Invalid;
+}
+
+void emptyUpdate(const ContainerItem& item)
+{
+
+}
+
+void emptyErase(const Id& id)
+{
+   std::cout << ":";
+}
+
+ContainerSlot::ContainerSlot(ContainerSlot&& other)
+: mCreate(other.mCreate)
+, mUpdate(other.mUpdate)
+, mErase(other.mErase)
+, mId(other.mId)
+{
+   other.mCreate = emptyCreate;
+   other.mUpdate = emptyUpdate;
+   other.mErase = emptyErase;
+}
+
+ContainerSlot::~ContainerSlot()
+{
+   if(mId != Id::Invalid)
+   {
+      mErase(mId);
+   }
+}
+
+void ContainerSlot::put(const std::string& content)
+{
+   if(mId == Id::Invalid)
+   {
+      mId = mCreate({mId, content});
+   }
+   else
+   {
+      mUpdate({mId, content});
+   }
+}
+
+ContainerSlot Container::acquireSlot(const std::string& containerName, const Id& slotId)
+{
+   return ContainerSlot(
+      emptyCreate,
+      [=](const ContainerItem& x)->void { replaceItems(containerName, {x}); },
+      [=](const Id& id)->void { deleteItems(containerName, {id}); },
+      slotId
+   );
+}
+
 }

@@ -17,6 +17,7 @@ public:
 
    bool operator == (const Id& other) const;
    bool operator != (const Id& other) const;
+   bool operator < (const Id& other) const;
    
    const std::string& getGuid() const;
 

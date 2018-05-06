@@ -53,7 +53,7 @@ public:
    void getEvents(const boost::posix_time::ptime from, IEventHandler& handler);
 
    template<class TEvent>
-   void putEvent(const Event& newEvent)
+   void putEvent(const TEvent& newEvent)
    {
       auto ev = createRawEvent(newEvent);
       common::OperationResultMessage result;

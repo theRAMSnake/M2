@@ -4,26 +4,33 @@ namespace materia
 {
 
 template<class T>
+T fromJson(const std::string& content);
+
+template<class T>
+std::string toJson(const T& t);
+
+template<class T>
 class ToJsonSerializer
 {
 public:
    static T deserialize(const std::string& content)
    {
-      return fromJson(content);
+      return fromJson<T>(content);
    }
 
    static std::string serialize(const T& src)
    {
-      return toJson(src);
+      return toJson<T>(src);
    }
-}
+};
 
-template<class T, class Serializer = ToJsonSerializer>
+template<class T, class Serializer = ToJsonSerializer<T>>
 class RemoteCollection
 {
 public:
    class Iterator
    {
+   public:
       friend class RemoteCollection<T>;
 
       bool operator == (const Iterator& other) const
@@ -36,21 +43,37 @@ public:
          return !operator==(other);
       }
 
+      Iterator& operator ++ ()
+      {
+         mImpl++;
+         return *this;
+      }
+
+      const T& operator* ()
+      {
+         return *mImpl;
+      }
+
    protected:
-      Iterator(std::vector<T>::iterator& impl)
+      Iterator(typename std::vector<T>::iterator impl)
       : mImpl(impl)
       {
          
       }
 
-      std::vector<T>::iterator mImpl;
+      typename std::vector<T>::iterator mImpl;
    };
 
-   RemoteCollection(const std::string& name, Container& container)
+   RemoteCollection(const std::string& name, Container& container, bool isPrivate = true)
    : mName(name)
    , mContainer(container)
    {
       auto items = mContainer.getItems(mName);
+
+      if(items.empty())
+      {
+         mContainer.addContainer({name, !isPrivate});
+      }
 
       mLocalCache.reserve(items.size());
 
@@ -59,10 +82,7 @@ public:
          auto item = Serializer::deserialize(x.content);
          mLocalToRemoteIdMap.insert(std::make_pair(item.id, x.id));
          mLocalCache.push_back(item);
-         result.push_back(item);
       }
-
-      return result;
    }
 
    void insert(const T& item)
@@ -75,11 +95,11 @@ public:
       }
    }
 
-   template<TIterator>
+   template<class TIterator>
    void insert(const TIterator& begin, const TIterator& end)
    {
       std::vector<ContainerItem> items(std::distance(begin, end));
-      std::transform(begin, end, items, [](auto x)->auto {return { materia::Id::Invalid, Serializer::serialize(x) }; });
+      std::transform(begin, end, items.begin(), [](auto x)->auto {return ContainerItem{ materia::Id::Invalid, Serializer::serialize(x) }; });
 
       auto insertedIds = mContainer.insertItems(mName, items);
       if(insertedIds.size() == items.size())
@@ -111,9 +131,7 @@ public:
 
    void clear()
    {
-      mContainer.deleteContainer(mName);
-      mContainer.createContainer(mName);
-
+      mContainer.clearContainer(mName);
       mLocalCache.clear();
       mLocalToRemoteIdMap.clear();
    }

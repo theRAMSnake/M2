@@ -65,7 +65,7 @@ void Events::getEvents(const boost::posix_time::ptime from, IEventHandler& handl
          x.type() == events::MeasurementUpdated)
       {
          materia::IdEvent ev;
-         ev.type = EventType::ContainerUpdated;
+         ev.type = fromProto(x.type());
          ev.timestamp = time;
          ev.id = x.id();
 
@@ -119,7 +119,7 @@ events::EventInfo Events::createRawEvent(const Event& ev)
    return nfo;
 }
 
-events::EventInfo createRawEvent(const ContainerUpdatedEvent& ev)
+events::EventInfo Events::createRawEvent(const ContainerUpdatedEvent& ev)
 {
    events::EventInfo nfo;
 
@@ -130,7 +130,7 @@ events::EventInfo createRawEvent(const ContainerUpdatedEvent& ev)
    return nfo;
 }
 
-events::EventInfo createRawEvent(const IdEvent& ev)
+events::EventInfo Events::createRawEvent(const IdEvent& ev)
 {
    events::EventInfo nfo;
 

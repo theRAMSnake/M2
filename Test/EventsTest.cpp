@@ -1,7 +1,7 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 #include <Client/MateriaClient.hpp>
-
+#include <thread>
 #include "TestHelpers.hpp"
 
 
@@ -32,6 +32,8 @@ protected:
 
 BOOST_FIXTURE_TEST_CASE( AddGetEvents, EventsTest ) 
 {  
+   using namespace std::chrono_literals;
+   std::this_thread::sleep_for(3s);
    namespace pt = boost::posix_time;
    auto ts = pt::second_clock::local_time();
 

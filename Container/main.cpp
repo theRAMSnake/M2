@@ -2,6 +2,7 @@
 #include <fstream>
 #include <Common/InterprocessService.hpp>
 #include <Common/PortLayout.hpp>
+#include <Client/MateriaClient.hpp>
 #include <messages/container.pb.h>
 #include <boost/filesystem.hpp>
 #include <boost/uuid/uuid_generators.hpp>
@@ -20,7 +21,7 @@ public:
    ContainerServiceImpl(sqlite::database& db)
    : mDb(db)
    , mClient("ContainerService")
-   , mCnProxy(mClient.getEvents())
+   , mEvents(mClient.getEvents())
    {
       mDb << "CREATE TABLE IF NOT EXISTS Containers (Name text, IsPublic boolean, Properties text)";
       std::cout << "Init ok\n";
@@ -76,7 +77,7 @@ public:
          {
             mDb << "DELETE FROM " + request->content() + "Items";
 
-            raiseChangedEvent(request->name());
+            raiseChangedEvent(request->content());
 
             response->set_success(true);
          }
@@ -96,7 +97,7 @@ public:
             mDb << "DROP TABLE IF EXISTS " + request->content() + "Items";
             std::cout << "Drop ok\n";
 
-            raiseChangedEvent(request->name());
+            raiseChangedEvent(request->content());
 
             response->set_success(true);
          }
