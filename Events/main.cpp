@@ -46,7 +46,16 @@ public:
          events::EventInfo nfo;
          nfo.set_timestamp(request->timestampfrom());
 
-         for(auto iter = std::lower_bound(mEvents.begin(), mEvents.end(), nfo, eventCmp); iter != mEvents.end(); ++iter)
+         auto iter = std::lower_bound(mEvents.begin(), mEvents.end(), nfo, eventCmp);
+         if(iter == mEvents.begin())
+         {
+            events::EventInfo nfo;
+            nfo.set_timestamp(iter->timestamp());
+            nfo.set_type(events::EventType::HistoryStarted);
+
+            response->add_items()->CopyFrom(nfo);
+         }
+         for(iter; iter != mEvents.end(); ++iter)
          {
             response->add_items()->CopyFrom(*iter);
          }
