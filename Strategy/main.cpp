@@ -16,45 +16,6 @@ namespace materia
 
 boost::uuids::random_generator generator;
 
-/*template<>
-std::string toJson(const Goal& g)
-{
-   boost::property_tree::ptree pt;
-
-   pt.put ("id", g.id.getGuid());
-   pt.put ("parent_id", g.parentGoalId.getGuid());
-   pt.put ("name", g.name);
-   pt.put ("notes", g.notes);
-   pt.put ("icon_id", g.iconId.getGuid());
-   pt.put ("affinity_id", g.affinityId.getGuid());
-   pt.put ("achieved", g.achieved);
-   pt.put ("focused", g.focused);
-
-   std::ostringstream buf; 
-   write_json (buf, pt, false);
-   return buf.str();
-}
-
-Goal fromJson(const std::string& json)
-{
-   Goal result;
-
-   boost::property_tree::ptree pt;
-   std::istringstream is (json);
-   read_json (is, pt);
-   
-   result.id = pt.get<std::string> ("id");
-   result.parentGoalId = pt.get<std::string> ("parent_id");
-   result.name = pt.get<std::string> ("name");
-   result.notes = pt.get<std::string> ("notes");
-   result.iconId = pt.get<std::string> ("icon_id");
-   result.affinityId = pt.get<std::string> ("affinity_id");
-   result.achieved = pt.get<bool> ("achieved");
-   result.focused = pt.get<bool> ("focused");
-
-   return result;
-}*/
-
 template<>
 Affinity fromJson(const std::string& content)
 {
@@ -222,7 +183,25 @@ public:
 
    void connect(const Measurement& meas)
    {
-      //check measurement manipulation code to sync with objective
+      mMeasConnection.disconnect();
+      mMeasConnection = meas.OnValueChanged.connect(std::bind(&Objective::OnMeasValueChanged, this, std::placeholders::_1));
+      mLastKnowMeasValue = meas.getProps().value;
+      if(updateReached(mImpl.reached))
+      {
+         mSlot.put(toJson());
+      }
+   }
+
+   void disconnect(const Measurement& meas)
+   {
+      mImpl.measId = Id::Invalid;
+      mMeasConnection.disconnect();
+      mSlot.put(toJson());
+   }
+
+   ~Objective()
+   {
+      mMeasConnection.disconnect();
    }
 
 private:
@@ -244,6 +223,32 @@ private:
       return buf.str();
    }
 
+   bool updateReached(const bool oldReached)
+   {
+      if(mImpl.measId != Id::Invalid)
+      {
+         mImpl.reached = mLastKnowMeasValue <= mImpl.expected;
+      }
+      
+      if(mImpl.reached != oldReached)
+      {
+         OnReachedChanged(mImpl.reached);
+      }
+
+      return mImpl.reached != oldReached;
+   }
+
+   void OnMeasValueChanged(const Measurement::TValue value)
+   {
+      mLastKnowMeasValue = value;
+      if(updateReached(mImpl.reached))
+      {
+         mSlot.put(toJson());
+      }
+   }
+
+   boost::signals2::connection mMeasConnection;
+   Measurement::TValue mLastKnowMeasValue = 0;
    ContainerSlot mSlot;
    materia::Objective mImpl;
 };
@@ -441,7 +446,6 @@ public:
    , mAffinities("affinities", container)
    , mTasks("tasks", container)
    {
-      //check state - might be broken if incorrect shutdown
       populateCollection(mGoals);
       populateCollection(mObjectives);
       populateCollection(mMeasurements);
@@ -556,24 +560,35 @@ public:
       ::common::UniqueId* response,
       ::google::protobuf::Closure* done)
       {
-         /*std::string id = to_string(generator());
+         std::string id = to_string(generator());
 
          Objective o = fromProto(*request);
          o.id = id;
          
-         auto parent = mGoalTree.find(o.parentGoalId);
+         auto parent = mGoals.find(o.parentGoalId);
 
-         if(parent != mGoalTree.end())
+         if(parent != mGoals.end())
          {
-            if(o.measurementId != Id::Invalid)
+            std::shared_ptr<impl::Objective> newObjective(new impl::Objective(
+               o,
+               mContainer.acquireSlot(ItemTraits<impl::Objective>::CONTAINER_NAME)));
+
+            if(o.measId != Id::Invalid)
             {
-               o.reached = calculateReached(o.measurementId, o.expected);
+               auto meas = mMeasurements.find(o.measId);
+               if(meas == mMeasurements.end())
+               {
+                  return;
+               }
+
+               newObjective->connect(*meas->second);
             }
-            mObjectives.add(o);
-            mEventRaiser.raiseGoalChangedEvent(o.parentGoalId);
-            mGoalTree.recalculateAchieved(parent);
+
+            parent->second->connect(*newObjective);
+            mObjectives.insert(std::make_pair(o.id, newObjective));
+            raiseGoalChangedEvent(o.parentGoalId);
             response->set_guid(id);
-         }*/
+         }
       }
 
    void ModifyObjective(::google::protobuf::RpcController* controller,
@@ -581,27 +596,44 @@ public:
       ::common::OperationResultMessage* response,
       ::google::protobuf::Closure* done)
       {
-         /*response->set_success(false);
-         Objective o = fromProto(*request);
+         //meas id might changed
+         response->set_success(false);
+         auto newObj = fromProto(*request);
+         auto oldObj = mObjectives.find(newObj.id);
 
-         if(!mObjectives.contains(o.id))
+         if(oldObj != mObjectives->end())
          {
-            return;
-         }
-         
-         auto parent = mGoalTree.find(o.parentGoalId);
+            auto oldParent = mGoals.find(oldObj->getProps().parentGoalId);
+            auto newParent = mGoals.find(newObj.parentGoalId);
 
-         if(parent != mGoalTree.end())
-         {
-            if(o.measurementId != Id::Invalid)
+            if(newParent != mGoals.end())
             {
-               o.reached = calculateReached(o.measurementId, o.expected);
+               if(newObj.measId != Id::Invalid)
+               {
+                  auto meas = mMeasurements.find(newObj.measId);
+                  if(meas == mMeasurements.end())
+                  {
+                     return;
+                  }
+
+                  oldObj->connect(*meas->second);
+               }
+
+               oldObj->accept(newObj);
+
+               if(newParent != oldParent)
+               {
+                  oldParent->disconnect(oldObj->second);
+                  newParent->connect(oldObj->second);
+               }
+               else
+               {
+                  raiseGoalChangedEvent(newParent->parentGoalId);
+               }
+               
+               response->set_success(true);
             }
-            mObjectives.update(o);
-            mEventRaiser.raiseGoalChangedEvent(o.parentGoalId);
-            mGoalTree.recalculateAchieved(parent);
-            response->set_success(true);
-         }*/
+         }
       }
 
    void DeleteObjective(::google::protobuf::RpcController* controller,
@@ -609,18 +641,20 @@ public:
       ::common::OperationResultMessage* response,
       ::google::protobuf::Closure* done)
       {
-         /*response->set_success(false);
+         response->set_success(false);
          Objective o = fromProto(*request);
          
-         auto parent = mGoalTree.find(o.parentGoalId);
+         auto parent = mGoals.find(o.parentGoalId);
+         auto oPos = mObjectives.find(o.id);
 
-         if(parent != mGoalTree.end())
+         if(parent != mGoals.end() && oPos != mObjectives.end())
          {
-            mObjectives.erase(o);
-            mEventRaiser.raiseGoalChangedEvent(o.parentGoalId);
-            mGoalTree.recalculateAchieved(parent);
+            parent->second.disconnect(*oPos);
+
+            mObjectives.erase(oPos);
+            raiseGoalChangedEvent(oPos.parentGoalId);
             response->set_success(true);
-         }*/
+         }
       }
 
    void AddTask(::google::protobuf::RpcController* controller,
@@ -696,18 +730,19 @@ public:
       {
          Id id(*request);
 
-         //auto obs = getGoalItems(mObjectives, id);
-
-         /*for(auto x : obs)
-         {
-            response->add_objectives()->CopyFrom(toProto(x));
-         }*/
-
          for(auto x : mTasks)
          {
             if(x.parentGoalId == id)
             {
                response->add_tasks()->CopyFrom(toProto(x));
+            }
+         }
+
+         for(auto x : mObjectives)
+         {
+            if(x->getProps().parentGoalId == id)
+            {
+               response->add_objectives()->CopyFrom(toProto(x->getProps()));
             }
          }
       }
@@ -760,6 +795,15 @@ public:
          auto meas = mMeasurements.find(id);
          if(meas != mMeasurements.end())
          {
+            for(auto o : mObjectives)
+            {
+               if(o.getProps().measId == id)
+               {
+                  o.disconnect(meas->second);
+                  break;
+               }
+            }
+
             mMeasurements.erase(id);
             raiseMeasurementChangedEvent(id);
             response->set_success(true);
@@ -835,6 +879,7 @@ private:
          deleteGoalImpl(x->getProps().id);
       }
 
+      //TODO: delete all related tasks and objectives
       mGoals.erase(id);
       raiseGoalChangedEvent(id);
    }
@@ -893,7 +938,11 @@ private:
          auto parentGoalId = g->getProps().parentGoalId;
          if(parentGoalId != Id::Invalid)
          {
-            mGoals[parentGoalId]->registerChild(g);
+            auto parentGoal = mGoals.find(parentGoalId);
+            if(parentGoal != mGoals.end())
+            {
+               parentGoal->second->registerChild(g);
+            }
          }
       }
    }
@@ -905,7 +954,11 @@ private:
          auto measId = o->getProps().measId;
          if(measId != Id::Invalid)
          {
-            o->connect(*mMeasurements[measId]);
+            auto measurement = mMeasurements.find(measId);
+            if(measurement != mMeasurements.end())
+            {
+               o->connect(*measurement->second);
+            }
          }
       }
    }
@@ -914,7 +967,11 @@ private:
    {
       for(auto o : mObjectives)
       {
-         mGoals[o->getProps().parentGoalId]->connect(*o);
+         auto parentGoal = mGoals.find(parentGoalId);
+         if(parentGoal != mGoals.end())
+         {
+            parentGoal->second->connect(*o);
+         }
       }
    }
 
