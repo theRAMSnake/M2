@@ -1,30 +1,22 @@
 #pragma once
 
 #include "MateriaServiceProxy.hpp"
-#include "Id.hpp"
+#include "../IInbox.hpp"
 
 #include "messages/inbox.pb.h"
-
-#include <boost/optional.hpp>
 
 namespace materia
 {
 
-struct InboxItem
-{
-   Id id;
-   std::string text;
-};
-
-class Inbox
+class Inbox : public IInbox
 {
 public:
    Inbox(materia::ZmqPbChannel& channel);
 
-   std::vector<InboxItem> getItems();
-   bool deleteItem(const Id& id);
-   bool replaceItem(const InboxItem& item);
-   Id insertItem(const InboxItem& item);
+   std::vector<InboxItem> getItems() override;
+   bool deleteItem(const Id& id) override;
+   bool replaceItem(const InboxItem& item) override;
+   Id insertItem(const InboxItem& item) override;
 
 private:
    MateriaServiceProxy<inbox::InboxService> mProxy;

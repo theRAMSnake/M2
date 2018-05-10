@@ -1,4 +1,5 @@
 #include "Calendar.hpp"
+#include "ProtoConverter.hpp"
 
 namespace materia
 {
@@ -11,7 +12,7 @@ Calendar::Calendar(materia::ZmqPbChannel& channel)
 
 bool Calendar::deleteItem(const Id& id)
 {
-   common::UniqueId protoid = id.toProtoId();  
+   common::UniqueId protoid = toProto(id);  
    common::OperationResultMessage result;
 
    mProxy.getService().DeleteItem(nullptr, &protoid, &result, nullptr);
@@ -22,16 +23,16 @@ calendar::CalendarItem convert(const CalendarItem& in)
 {
    calendar::CalendarItem out;
 
-   out.mutable_id()->CopyFrom(in.id.toProtoId());
+   out.mutable_id()->CopyFrom(toProto(in.id));
    out.set_text(in.text);
-   out.set_timestamp(boost::posix_time::to_time_t(in.timestamp));
+   out.set_timestamp(in.timestamp);
 
    return out;
 }
 
 CalendarItem convert(const calendar::CalendarItem& in)
 {
-   return { Id(in.id()), in.text(), boost::posix_time::from_time_t(in.timestamp()) };
+   return { fromProto(in.id()), in.text(), in.timestamp() };
 }
 
 bool Calendar::replaceItem(const CalendarItem& item)
@@ -50,14 +51,14 @@ Id Calendar::insertItem(const CalendarItem& item)
    common::UniqueId id;
    mProxy.getService().AddItem(nullptr, &protoItem, &id, nullptr);
 
-   return Id(id);
+   return fromProto(id);
 }
 
-std::vector<CalendarItem> Calendar::next(const boost::posix_time::ptime from, const int limit)
+std::vector<CalendarItem> Calendar::next(const std::time_t from, const int limit)
 {
    calendar::NextQueryParameters query;
 
-   query.set_timestampfrom(boost::posix_time:: to_time_t(from));
+   query.set_timestampfrom(from);
    query.set_limit(limit);
 
    calendar::CalendarItems items;
@@ -70,11 +71,11 @@ std::vector<CalendarItem> Calendar::next(const boost::posix_time::ptime from, co
    return result;
 }
 
-std::vector<CalendarItem> Calendar::query(const boost::posix_time::ptime from, const boost::posix_time::ptime to)
+std::vector<CalendarItem> Calendar::query(const std::time_t from, const std::time_t to)
 {
    calendar::TimeRange timeRange;
-   timeRange.set_timestampfrom(boost::posix_time:: to_time_t(from));
-   timeRange.set_timestampto(boost::posix_time:: to_time_t(to));
+   timeRange.set_timestampfrom(from);
+   timeRange.set_timestampto(to);
 
    calendar::CalendarItems items;
 

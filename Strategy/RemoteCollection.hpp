@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Client/IContainer.hpp>
+
 namespace materia
 {
 
@@ -64,7 +66,7 @@ public:
       typename std::vector<T>::iterator mImpl;
    };
 
-   RemoteCollection(const std::string& name, Container& container, bool isPrivate = true)
+   RemoteCollection(const std::string& name, IContainer& container, bool isPrivate = true)
    : mName(name)
    , mContainer(container)
    {
@@ -151,7 +153,7 @@ private:
    std::vector<T> mLocalCache;
    std::map<Id, Id> mLocalToRemoteIdMap;
    std::string mName;
-   Container& mContainer;
+   IContainer& mContainer;
 };
 
 }

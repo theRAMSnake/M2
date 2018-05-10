@@ -1,4 +1,5 @@
 #include "Container.hpp"
+#include "ProtoConverter.hpp"
 
 namespace materia
 {
@@ -16,7 +17,7 @@ bool Container::addContainer(const ContainerDefinition& def)
    c.set_is_public(def.isPublic);
    if(def.iconId != materia::Id::Invalid)
    {
-      c.mutable_icon_id()->CopyFrom(def.iconId.toProtoId());
+      c.mutable_icon_id()->CopyFrom(toProto(def.iconId));
    }
 
    common::OperationResultMessage result;
@@ -27,7 +28,7 @@ bool Container::addContainer(const ContainerDefinition& def)
 
 materia::ContainerDefinition fromProto(const container::Container& x)
 {
-   return { x.name(), x.is_public(), x.icon_id()};
+   return { x.name(), x.is_public(), fromProto(x.icon_id())};
 }
 
 std::vector<ContainerDefinition> Container::getPublicContainers()
@@ -69,7 +70,7 @@ materia::ContainerItem fromProto(const container::Item& x)
 {
    materia::ContainerItem result;
 
-   result.id = materia::Id(x.id());
+   result.id = fromProto(x.id());
    result.content = x.content();
 
    if(x.blob().size() > 0)
@@ -99,7 +100,7 @@ container::Item toProto(const materia::ContainerItem& x)
 {
    container::Item result;
 
-   result.mutable_id()->CopyFrom(x.id.toProtoId());
+   result.mutable_id()->CopyFrom(toProto(x.id));
    result.set_content(x.content);
    result.mutable_blob()->resize(x.blob.size());
    memcpy(&result.mutable_blob()->front(), &x.blob.front(), x.blob.size());
@@ -127,7 +128,7 @@ container::FuncType toProto(const FuncType src)
 
 }
 
-boost::optional<int> Container::execFunc(const Func& func)
+std::optional<int> Container::execFunc(const Func& func)
 {
    container::Func f;
    f.set_func_type(toProto(func.funcType));
@@ -141,7 +142,7 @@ boost::optional<int> Container::execFunc(const Func& func)
       return r.value();
    }
 
-   return boost::optional<int>();
+   return std::optional<int>();
 }
 
 std::vector<Id> Container::insertItems(const std::string& containerName, const std::vector<ContainerItem>& items)
@@ -155,7 +156,7 @@ std::vector<Id> Container::insertItems(const std::string& containerName, const s
    mProxy.getService().InsertItems(nullptr, &in, &result, nullptr);
 
    std::vector<Id> ids(result.idset_size());
-   std::transform(result.idset().begin(), result.idset().end(), ids.begin(), [] (auto x)-> auto { return materia::Id(x); });
+   std::transform(result.idset().begin(), result.idset().end(), ids.begin(), [] (auto x)-> auto { return fromProto(x); });
    
    return ids;
 }
@@ -178,7 +179,7 @@ bool Container::deleteItems(const std::string& containerName, const std::vector<
    container::DeleteItemsRequest in;
    in.set_container_name(containerName);
 
-   std::for_each(ids.begin(), ids.end(), [&] (auto x)->auto { in.mutable_id_set()->add_idset()->CopyFrom(x.toProtoId()); });
+   std::for_each(ids.begin(), ids.end(), [&] (auto x)->auto { in.mutable_id_set()->add_idset()->CopyFrom(toProto(x)); });
 
    common::OperationResultMessage opResult;
    mProxy.getService().DeleteItems(nullptr, &in, &opResult, nullptr);

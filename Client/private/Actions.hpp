@@ -1,11 +1,8 @@
 #pragma once
 
 #include "MateriaServiceProxy.hpp"
-#include "Id.hpp"
 #include "../IActions.hpp"
 #include "messages/actions.pb.h"
-
-#include <boost/optional.hpp>
 
 namespace materia
 {

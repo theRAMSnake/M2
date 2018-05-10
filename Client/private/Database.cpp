@@ -1,4 +1,5 @@
 #include "Database.hpp"
+#include "ProtoConverter.hpp"
 
 namespace materia
 {
@@ -68,9 +69,9 @@ std::vector<Document> Database::queryDocuments(const std::vector<QueryElement>& 
    return docs;
 }
 
-boost::optional<Document> Database::getDocument(const Id& id)
+std::optional<Document> Database::getDocument(const Id& id)
 {
-   boost::optional<Document> resultDoc;
+   std::optional<Document> resultDoc;
 
    database::DocumentHeader header;
    header.set_category(mCategory);
@@ -82,7 +83,7 @@ boost::optional<Document> Database::getDocument(const Id& id)
    if(result.result().size() > 0)
    {
       auto d = result.result()[0];
-      resultDoc.reset(convert(d));
+      resultDoc = convert(d);
    }
 
    return resultDoc;
@@ -127,7 +128,7 @@ Id Database::insertDocument(const Document& doc, const IdMode idMode)
    common::UniqueId result;
    mProxy.getService().AddDocument(nullptr, &request, &result, nullptr);
 
-   return result;
+   return fromProto(result);
 }
 
 std::vector<Document> Database::fetch()

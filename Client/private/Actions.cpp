@@ -1,4 +1,5 @@
 #include "Actions.hpp"
+#include "ProtoConverter.hpp"
 
 namespace materia
 {
@@ -26,7 +27,7 @@ ActionType fromProto(const actions::ActionType t)
 
 materia::ActionItem fromProto(const actions::ActionInfo& x)
 {
-   return { Id(x.id()), Id(x.parentid()), x.title(), x.description(), fromProto(x.type())};
+   return { fromProto(x.id()), fromProto(x.parentid()), x.title(), x.description(), fromProto(x.type())};
 }
 
 std::vector<ActionItem> Actions::getRootItems()
@@ -45,7 +46,7 @@ std::vector<ActionItem> Actions::getRootItems()
 std::vector<ActionItem> Actions::getChildren(const Id& id)
 {
    actions::ActionsList responce;
-   auto protoId = id.toProtoId();
+   auto protoId = toProto(id);
    mProxy.getService().GetChildren(nullptr, &protoId, &responce, nullptr);
 
    std::vector<ActionItem> result(responce.list_size());
@@ -56,7 +57,7 @@ std::vector<ActionItem> Actions::getChildren(const Id& id)
 
 bool Actions::deleteItem(const Id& id)
 {
-   auto protoId = id.toProtoId();
+   auto protoId = toProto(id);
    
    common::OperationResultMessage opResult;
    mProxy.getService().DeleteElement(nullptr, &protoId, &opResult, nullptr);
@@ -86,8 +87,8 @@ actions::ActionInfo fillRequest(const ActionItem& item)
    request.set_title(item.title);
    request.set_description(item.description);
    request.set_type(toProto(item.type));
-   request.mutable_id()->CopyFrom(item.id.toProtoId());
-   request.mutable_parentid()->CopyFrom(item.parentId.toProtoId());
+   request.mutable_id()->CopyFrom(toProto(item.id));
+   request.mutable_parentid()->CopyFrom(toProto(item.parentId));
 
    return request;
 }
@@ -110,7 +111,7 @@ Id Actions::insertItem(const ActionItem& item)
 
    mProxy.getService().AddElement(nullptr, &request, &id, nullptr);
    
-   return Id(id);
+   return fromProto(id);
 }
 
 bool ActionItem::operator == (const ActionItem& other) const

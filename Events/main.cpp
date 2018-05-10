@@ -4,6 +4,7 @@
 #include <Common/PortLayout.hpp>
 #include <Client/MateriaClient.hpp>
 #include <messages/events.pb.h>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 namespace std
 {
@@ -55,7 +56,7 @@ public:
 
             response->add_items()->CopyFrom(nfo);
          }
-         for(iter; iter != mEvents.end(); ++iter)
+         for(; iter != mEvents.end(); ++iter)
          {
             response->add_items()->CopyFrom(*iter);
          }

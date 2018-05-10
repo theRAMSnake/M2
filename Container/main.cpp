@@ -3,11 +3,13 @@
 #include <Common/InterprocessService.hpp>
 #include <Common/PortLayout.hpp>
 #include <Client/MateriaClient.hpp>
+#include <Client/IEvents.hpp>
 #include <messages/container.pb.h>
 #include <boost/filesystem.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include "sqlite_modern_cpp/hdr/sqlite_modern_cpp.h"
 
 namespace materia
@@ -289,14 +291,14 @@ private:
       ContainerUpdatedEvent ev;
       ev.type = EventType::ContainerUpdated;
       ev.containerName = containerName;
-      ev.timestamp = pt::second_clock::local_time();
+      ev.timestamp = pt::to_time_t(pt::second_clock::local_time());
 
-      mEvents.putEvent<ContainerUpdatedEvent>(ev);
+      mEvents.putEvent(ev);
    }
 
    sqlite::database mDb;
    materia::MateriaClient mClient;
-   materia::Events& mEvents;
+   materia::IEvents& mEvents;
 };
 
 }

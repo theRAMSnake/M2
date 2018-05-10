@@ -69,7 +69,7 @@ protected:
    {
       journal::InsertFolderParams item;
       item.set_title(title);
-      item.mutable_folderid()->CopyFrom(parentId.toProtoId());
+      item.mutable_folderid()->CopyFrom(parenttoProto(id));
 
       common::UniqueId id;
       mService.InsertFolder(nullptr, &item, &id, nullptr);
@@ -81,7 +81,7 @@ protected:
    {
       journal::InsertPageParams item;
       item.set_title(title);
-      item.mutable_folderid()->CopyFrom(parentId.toProtoId());
+      item.mutable_folderid()->CopyFrom(parenttoProto(id));
       item.set_content(content);
 
       common::UniqueId id;
@@ -124,7 +124,7 @@ protected:
    {
       boost::optional<journal::Page> result;
 
-      common::UniqueId matid(id.toProtoId());
+      common::UniqueId matid(toProto(id));
       mService.GetPage(nullptr, &matid, &result.get(), nullptr);
 
       return result;

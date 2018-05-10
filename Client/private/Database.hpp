@@ -1,7 +1,7 @@
 #pragma once
 
 #include "MateriaServiceProxy.hpp"
-#include "Id.hpp"
+#include "../IDatabase.hpp"
 
 #include "messages/database.pb.h"
 
@@ -10,48 +10,20 @@
 namespace materia
 {
 
-struct Document
-{
-   Id id;
-   std::string body;
-};
-
-enum class QueryElementType
-{
-   Equals,
-   Less,
-   Greater,
-   Between
-};
-
-struct QueryElement
-{
-   string key;
-   string value;
-   string value2;
-   QueryElementType type;
-};
-
-enum class IdMode
-{
-   Provided,
-   Generate
-};
-
-class Database
+class Database : public IDatabase
 {
 public:
    Database(materia::ZmqPbChannel& channel);
 
-   void setCategory(const std::string& category);
-   std::vector<Document> getDocuments();
-   std::vector<Document> fetch();
-   std::vector<Document> fts(const std::string& keyword);
-   boost::optional<Document> getDocument(const Id& id);
-   std::vector<Document> queryDocuments(const std::vector<QueryElement>& query);
-   bool deleteDocument(const Id& id);
-   bool replaceDocument(const Document& doc);
-   Id insertDocument(const Document& doc, const IdMode idMode);
+   void setCategory(const std::string& category) override;
+   std::vector<Document> getDocuments() override;
+   std::vector<Document> fetch() override;
+   std::vector<Document> fts(const std::string& keyword) override;
+   std::optional<Document> getDocument(const Id& id) override;
+   std::vector<Document> queryDocuments(const std::vector<QueryElement>& query) override;
+   bool deleteDocument(const Id& id) override;
+   bool replaceDocument(const Document& doc) override;
+   Id insertDocument(const Document& doc, const IdMode idMode) override;
 
 private:
    std::string mCategory;

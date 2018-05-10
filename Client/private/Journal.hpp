@@ -1,7 +1,7 @@
 #pragma once
 
 #include "MateriaServiceProxy.hpp"
-#include "Id.hpp"
+#include "../Id.hpp"
 
 #include "messages/journal.pb.h"
 

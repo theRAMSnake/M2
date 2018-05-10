@@ -7,7 +7,7 @@ common::UniqueId toProto(const Id& id)
 {
    common::UniqueId result;
 
-   result.set_guid(mGuid);
+   result.set_guid(id.getGuid());
 
    return result;
 }

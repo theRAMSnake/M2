@@ -1,4 +1,5 @@
 #include "Strategy.hpp"
+#include "ProtoConverter.hpp"
 
 namespace materia
 {
@@ -13,12 +14,12 @@ strategy::CommonItemProperties toProto(const materia::StrategyItem& x)
 {
    strategy::CommonItemProperties result;
 
-   result.mutable_id()->CopyFrom(x.id.toProtoId());
-   result.mutable_parent_goal_id()->CopyFrom(x.parentGoalId.toProtoId());
+   result.mutable_id()->CopyFrom(toProto(x.id));
+   result.mutable_parent_goal_id()->CopyFrom(toProto(x.parentGoalId));
 
    result.set_name(x.name);
    result.set_notes(x.notes);
-   result.mutable_icon_id()->CopyFrom(x.iconId.toProtoId());
+   result.mutable_icon_id()->CopyFrom(toProto(x.iconId));
 
    return result;
 }
@@ -28,13 +29,13 @@ T fromProto(const strategy::CommonItemProperties& x)
 {
    T result;
 
-   result.id = x.id();
-   result.parentGoalId = x.parent_goal_id();
+   result.id = fromProto(x.id());
+   result.parentGoalId = fromProto(x.parent_goal_id());
 
 
    result.name = x.name();
    result.notes = x.notes();
-   result.iconId = x.icon_id();
+   result.iconId = fromProto(x.icon_id());
 
    return result;
 }
@@ -44,7 +45,7 @@ strategy::Goal toProto(const materia::Goal& x)
    strategy::Goal result;
 
    result.mutable_common_props()->CopyFrom(toProto(static_cast<const materia::StrategyItem&>(x)));
-   result.mutable_affinityid()->CopyFrom(x.affinityId.toProtoId());
+   result.mutable_affinityid()->CopyFrom(toProto(x.affinityId));
    result.set_focused(x.focused);
    result.set_achieved(x.achieved);
 
@@ -55,7 +56,7 @@ materia::Goal fromProto(const strategy::Goal& x)
 {
    materia::Goal result = fromProto<Goal>(x.common_props());
 
-   result.affinityId = x.affinityid();
+   result.affinityId = fromProto(x.affinityid());
    result.focused = x.focused();
    result.achieved = x.achieved();
 
@@ -70,7 +71,7 @@ strategy::Task toProto(const materia::Task& x)
    result.set_done(x.done);
    for(auto a : x.requiredTasks)
    {
-      result.add_required_tasks()->CopyFrom(a.toProtoId());
+      result.add_required_tasks()->CopyFrom(toProto(a));
    }
 
    return result;
@@ -83,7 +84,7 @@ materia::Task fromProto(const strategy::Task& x)
    result.done = x.done();
    for(auto a : x.required_tasks())
    {
-      result.requiredTasks.push_back(a);
+      result.requiredTasks.push_back(fromProto(a));
    }
 
    return result;
@@ -94,7 +95,7 @@ strategy::Objective toProto(const materia::Objective& x)
    strategy::Objective result;
 
    result.mutable_common_props()->CopyFrom(toProto(static_cast<const materia::StrategyItem&>(x)));
-   result.mutable_meas_id()->CopyFrom(x.measurementId.toProtoId());
+   result.mutable_meas_id()->CopyFrom(toProto(x.measurementId));
    result.set_reached(x.reached);
    result.set_expectedtreshold(x.expected);
 
@@ -105,7 +106,7 @@ materia::Objective fromProto(const strategy::Objective& x)
 {
    materia::Objective result = fromProto<Objective>(x.common_props());
 
-   result.measurementId = x.meas_id();
+   result.measurementId = fromProto(x.meas_id());
    result.reached = x.reached();
    result.expected = x.expectedtreshold();
 
@@ -116,10 +117,10 @@ strategy::Measurement toProto(const materia::Measurement& x)
 {
    strategy::Measurement result;
 
-   result.mutable_id()->CopyFrom(x.id.toProtoId());
+   result.mutable_id()->CopyFrom(toProto(x.id));
    result.set_value(x.value);
    result.set_name(x.name);
-   result.mutable_icon_id()->CopyFrom(x.iconId.toProtoId());
+   result.mutable_icon_id()->CopyFrom(toProto(x.iconId));
 
    return result;
 }
@@ -128,10 +129,10 @@ materia::Measurement fromProto(const strategy::Measurement& x)
 {
    materia::Measurement result;
 
-   result.id = x.id();
+   result.id = fromProto(x.id());
    result.name = x.name();
    result.value = x.value();
-   result.iconId = x.icon_id();
+   result.iconId = fromProto(x.icon_id());
 
    return result;
 }
@@ -140,10 +141,10 @@ strategy::Affinity toProto(const materia::Affinity& x)
 {
    strategy::Affinity result;
 
-   result.mutable_id()->CopyFrom(x.id.toProtoId());
+   result.mutable_id()->CopyFrom(toProto(x.id));
    result.set_name(x.name);
    result.set_colorname(x.colorName);
-   result.mutable_icon_id()->CopyFrom(x.iconId.toProtoId());
+   result.mutable_icon_id()->CopyFrom(toProto(x.iconId));
 
    return result;
 }
@@ -152,10 +153,10 @@ materia::Affinity fromProto(const strategy::Affinity& x)
 {
    materia::Affinity result;
 
-   result.id = x.id();
+   result.id = fromProto(x.id());
    result.name = x.name();
    result.colorName = x.colorname();
-   result.iconId = x.icon_id();
+   result.iconId = fromProto(x.icon_id());
 
    return result;
 }
@@ -167,7 +168,7 @@ Id Strategy::addGoal(const Goal& goal)
 
    mProxy.getService().AddGoal(nullptr, &proto, &id, nullptr);
    
-   return Id(id);
+   return fromProto(id);
 }
 
 bool Strategy::modifyGoal(const Goal& goal)
@@ -182,7 +183,7 @@ bool Strategy::modifyGoal(const Goal& goal)
 
 bool Strategy::deleteGoal(const Id& id)
 {
-   auto protoId = id.toProtoId();
+   auto protoId = toProto(id);
    
    common::OperationResultMessage opResult;
    mProxy.getService().DeleteGoal(nullptr, &protoId, &opResult, nullptr);
@@ -205,12 +206,12 @@ std::vector<Goal> Strategy::getGoals()
 
 std::optional<Goal> Strategy::getGoal(const Id& id)
 {
-   auto protoId = id.toProtoId();
+   auto protoId = toProto(id);
    strategy::Goal out;
 
    mProxy.getService().GetGoal(nullptr, &protoId, &out, nullptr);
 
-   if(Id(out.common_props().id()) != Id::Invalid)
+   if(fromProto(out.common_props().id()) != Id::Invalid)
    {
       return fromProto(out);
    }
@@ -220,7 +221,7 @@ std::optional<Goal> Strategy::getGoal(const Id& id)
 
 std::tuple<std::vector<Task>, std::vector<Objective>> Strategy::getGoalItems(const Id& id)
 {
-   auto protoId = id.toProtoId();
+   auto protoId = toProto(id);
    strategy::GoalItems responce;
 
    mProxy.getService().GetGoalItems(nullptr, &protoId, &responce, nullptr);
@@ -241,7 +242,7 @@ Id Strategy::addObjective(const Objective& obj)
 
    mProxy.getService().AddObjective(nullptr, &proto, &id, nullptr);
    
-   return Id(id);
+   return fromProto(id);
 }
 
 bool Strategy::modifyObjective(const Objective& obj)
@@ -256,7 +257,7 @@ bool Strategy::modifyObjective(const Objective& obj)
 
 bool Strategy::deleteObjective(const Id& id)
 {
-   auto protoId = id.toProtoId();
+   auto protoId = toProto(id);
    
    common::OperationResultMessage opResult;
    mProxy.getService().DeleteObjective(nullptr, &protoId, &opResult, nullptr);
@@ -271,7 +272,7 @@ Id Strategy::addTask(const Task& task)
 
    mProxy.getService().AddTask(nullptr, &proto, &id, nullptr);
    
-   return Id(id);
+   return fromProto(id);
 }
 
 bool Strategy::modifyTask(const Task& task)
@@ -286,7 +287,7 @@ bool Strategy::modifyTask(const Task& task)
 
 bool Strategy::deleteTask(const Id& id)
 {
-   auto protoId = id.toProtoId();
+   auto protoId = toProto(id);
    
    common::OperationResultMessage opResult;
    mProxy.getService().DeleteTask(nullptr, &protoId, &opResult, nullptr);
@@ -301,7 +302,7 @@ Id Strategy::addMeasurement(const Measurement& meas)
 
    mProxy.getService().AddMeasurement(nullptr, &proto, &id, nullptr);
    
-   return Id(id);
+   return fromProto(id);
 }
 
 bool Strategy::modifyMeasurement(const Measurement& meas)
@@ -316,7 +317,7 @@ bool Strategy::modifyMeasurement(const Measurement& meas)
 
 bool Strategy::deleteMeasurement(const Id& id)
 {
-   auto protoId = id.toProtoId();
+   auto protoId = toProto(id);
    
    common::OperationResultMessage opResult;
    mProxy.getService().DeleteMeasurement(nullptr, &protoId, &opResult, nullptr);

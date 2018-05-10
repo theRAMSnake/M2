@@ -2,11 +2,9 @@
 
 #include "MateriaServiceProxy.hpp"
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include "Id.hpp"
+#include "../ICalendar.hpp"
 
 #include "messages/calendar.pb.h"
-
-#include <boost/optional.hpp>
 
 namespace materia
 {

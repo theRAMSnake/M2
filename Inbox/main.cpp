@@ -3,6 +3,8 @@
 #include <Common/InterprocessService.hpp>
 #include <Common/PortLayout.hpp>
 #include <Client/MateriaClient.hpp>
+#include <Client/IContainer.hpp>
+#include <Client/private/ProtoConverter.hpp>
 #include <messages/inbox.pb.h>
 #include <messages/database.pb.h>
 #include <boost/filesystem.hpp>
@@ -33,7 +35,7 @@ public:
       for(auto x : mCnProxy.getItems(mContainerName))
       {
          auto item = response->add_items();
-         *item->mutable_id() = x.id.toProtoId();
+         *item->mutable_id() = toProto(x.id);
          item->set_text(x.content);
       }
    }
@@ -43,7 +45,7 @@ public:
                        ::common::OperationResultMessage* response,
                        ::google::protobuf::Closure* done)
    {
-      response->set_success(mCnProxy.deleteItems(mContainerName, {*request}));
+      response->set_success(mCnProxy.deleteItems(mContainerName, {fromProto(*request)}));
    }
 
    virtual void EditItem(::google::protobuf::RpcController* controller,
@@ -51,7 +53,7 @@ public:
                        ::common::OperationResultMessage* response,
                        ::google::protobuf::Closure* done)
    {
-      materia::ContainerItem item { request->id(), request->text() };
+      materia::ContainerItem item { fromProto(request->id()), request->text() };
       response->set_success(mCnProxy.replaceItems(mContainerName, {item}));
    }
 
@@ -64,13 +66,13 @@ public:
       auto ids = mCnProxy.insertItems(mContainerName, {item});
       if(!ids.empty())
       {
-         *response = ids.begin()->toProtoId();
+         *response = toProto(*ids.begin());
       }
    }
 
 private:
    materia::MateriaClient mClient;
-   materia::Container& mCnProxy;
+   materia::IContainer& mCnProxy;
    const std::string mContainerName = "inbox";
 };
 

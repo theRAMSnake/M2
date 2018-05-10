@@ -1,4 +1,5 @@
 #include "Events.hpp"
+#include "ProtoConverter.hpp"
 
 namespace materia
 {
@@ -39,10 +40,10 @@ EventType fromProto(const events::EventType src)
    }
 }
 
-void Events::getEvents(const boost::posix_time::ptime from, IEventHandler& handler)
+void Events::getEvents(const std::time_t from, IEventHandler& handler)
 {
    events::Events evs;
-   auto from_Proto = boost::posix_time:: to_time_t(from);
+   auto from_Proto = from;
 
    events::GetEventsRequest req;
    req.set_timestampfrom(from_Proto);
@@ -51,7 +52,7 @@ void Events::getEvents(const boost::posix_time::ptime from, IEventHandler& handl
 
    for(auto x : evs.items())
    {
-      auto time = boost::posix_time::from_time_t(x.timestamp());
+      auto time = x.timestamp();
       if(x.type() == events::ContainerUpdated)
       {
          materia::ContainerUpdatedEvent ev;
@@ -67,7 +68,7 @@ void Events::getEvents(const boost::posix_time::ptime from, IEventHandler& handl
          materia::IdEvent ev;
          ev.type = fromProto(x.type());
          ev.timestamp = time;
-         ev.id = x.id();
+         ev.id = fromProto(x.id());
 
          handler.onIdEvent(ev);
       }
@@ -114,7 +115,7 @@ events::EventInfo Events::createRawEvent(const Event& ev)
    events::EventInfo nfo;
 
    nfo.set_type(toProto(ev.type));
-   nfo.set_timestamp(boost::posix_time:: to_time_t(ev.timestamp));
+   nfo.set_timestamp(ev.timestamp);
 
    return nfo;
 }
@@ -124,7 +125,7 @@ events::EventInfo Events::createRawEvent(const ContainerUpdatedEvent& ev)
    events::EventInfo nfo;
 
    nfo.set_type(toProto(ev.type));
-   nfo.set_timestamp(boost::posix_time:: to_time_t(ev.timestamp));
+   nfo.set_timestamp(ev.timestamp);
    nfo.set_container_name(ev.containerName);
 
    return nfo;
@@ -135,10 +136,25 @@ events::EventInfo Events::createRawEvent(const IdEvent& ev)
    events::EventInfo nfo;
 
    nfo.set_type(toProto(ev.type));
-   nfo.set_timestamp(boost::posix_time:: to_time_t(ev.timestamp));
-   nfo.mutable_id()->CopyFrom(ev.id.toProtoId());
+   nfo.set_timestamp(ev.timestamp);
+   nfo.mutable_id()->CopyFrom(toProto(ev.id));
 
    return nfo;
+}
+
+void Events::putEvent(const Event& newEvent)
+{
+   putEventImpl(newEvent);
+}
+
+void Events::putEvent(const ContainerUpdatedEvent& newEvent)
+{
+   putEventImpl(newEvent);
+}
+
+void Events::putEvent(const IdEvent& newEvent)
+{
+   putEventImpl(newEvent);
 }
 
 }

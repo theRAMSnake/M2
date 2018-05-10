@@ -46,12 +46,17 @@ struct MateriaClientImpl
    Container mContainer;
    Events mEvents;
    Strategy mStrategy;
-}
+};
 
-MateriaClient::MateriaClient(const std::string& clientName, const std::string& ip = "localhost")
+MateriaClient::MateriaClient(const std::string& clientName, const std::string& ip)
 : mImpl(new MateriaClientImpl(clientName, ip))
 {
 
+}
+
+MateriaClient::~MateriaClient()
+{
+   delete mImpl;
 }
 
 IDatabase& MateriaClient::getDatabase()
@@ -67,11 +72,6 @@ IActions& MateriaClient::getActions()
 ICalendar& MateriaClient::getCalendar()
 {
    return mImpl->mCalendar;
-}
-
-IJournal& MateriaClient::getJournal()
-{
-   return mImpl->mJournal;
 }
 
 IAdmin& MateriaClient::getAdmin()

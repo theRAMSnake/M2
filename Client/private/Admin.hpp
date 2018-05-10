@@ -2,6 +2,7 @@
 
 #include "MateriaServiceProxy.hpp"
 #include "messages/admin.pb.h"
+#include "../IAdmin.hpp"
 
 namespace materia
 {

@@ -3,6 +3,7 @@
 #include <Common/InterprocessService.hpp>
 #include <Common/PortLayout.hpp>
 #include <Client/MateriaClient.hpp>
+#include <Client/IStrategy.hpp>
 #include <messages/strategy.pb.h>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -161,7 +162,7 @@ public:
       mImpl.name = pt.get<std::string> ("name");
       mImpl.notes = pt.get<std::string> ("notes");
       mImpl.iconId = pt.get<std::string> ("icon_id");
-      mImpl.measId = pt.get<std::string> ("meas_id");
+      mImpl.measurementId = pt.get<std::string> ("meas_id");
       mImpl.expected = pt.get<Measurement::TValue> ("expected");
       mImpl.reached = pt.get<bool> ("reached");
    }
@@ -181,7 +182,7 @@ public:
       return mImpl;
    }
 
-   void connect(const Measurement& meas)
+   void connect(Measurement& meas)
    {
       mMeasConnection.disconnect();
       mMeasConnection = meas.OnValueChanged.connect(std::bind(&Objective::OnMeasValueChanged, this, std::placeholders::_1));
@@ -194,7 +195,7 @@ public:
 
    void disconnect(const Measurement& meas)
    {
-      mImpl.measId = Id::Invalid;
+      mImpl.measurementId = Id::Invalid;
       mMeasConnection.disconnect();
       mSlot.put(toJson());
    }
@@ -214,7 +215,7 @@ private:
       pt.put ("name", mImpl.name);
       pt.put ("notes", mImpl.notes);
       pt.put ("icon_id", mImpl.iconId.getGuid());
-      pt.put ("meas_id", mImpl.measId.getGuid());
+      pt.put ("meas_id", mImpl.measurementId.getGuid());
       pt.put ("expected", mImpl.expected);
       pt.put ("reached", mImpl.reached);
 
@@ -225,7 +226,7 @@ private:
 
    bool updateReached(const bool oldReached)
    {
-      if(mImpl.measId != Id::Invalid)
+      if(mImpl.measurementId != Id::Invalid)
       {
          mImpl.reached = mLastKnowMeasValue <= mImpl.expected;
       }
@@ -266,6 +267,7 @@ public:
    }
 
    Goal(const std::string& json, ContainerSlot&& slot)
+   : mSlot(slot)
    {
       boost::property_tree::ptree pt;
       std::istringstream is (json);
@@ -322,7 +324,7 @@ public:
       UpdateAndSaveAchieved();
    }
 
-   const std::vector<std::shared_ptr<Goal> getChildren() const
+   const std::vector<std::shared_ptr<Goal>> getChildren() const
    {
       decltype(getChildren()) result;
       for(auto x : mChildren)
@@ -405,8 +407,8 @@ private:
       return result;
    }
 
-   std::map<Id, TConnectedObject<Goal, boost::signals2::connection>> mChildren;
-   std::map<Id, TConnectedObject<Objective, boost::signals2::connection>> mObjectives;
+   std::map<Id, ConnectedObject<Goal, boost::signals2::connection>> mChildren;
+   std::map<Id, ConnectedObject<Objective, boost::signals2::connection>> mObjectives;
    ContainerSlot mSlot;
    materia::Goal mImpl;
 };

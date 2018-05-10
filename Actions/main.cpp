@@ -10,6 +10,8 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <messages/database.pb.h>
 #include <Client/MateriaClient.hpp>
+#include <Client/IDatabase.hpp>
+#include <Client/private/ProtoConverter.hpp>
 
 namespace materia
 {
@@ -112,7 +114,7 @@ public:
                        ::common::UniqueId* response,
                        ::google::protobuf::Closure* done)
    {
-      materia::Id parentId = request->parentid();
+      materia::Id parentId = fromProto(request->parentid());
       if(parentId == materia::Id::Invalid || is_item_exist(parentId))
       {
          /*std::string id = to_string(generator());
@@ -158,7 +160,7 @@ public:
       common::OperationResultMessage result;
 
       mDatabase->DeleteDocument(nullptr, &head, &result, nullptr);*/
-      if(mDbProxy.deleteDocument(materia::Id(*request)))
+      if(mDbProxy.deleteDocument(fromProto(*request)))
       {
          actions::ActionsList children;
          GetChildren(0, request, &children, 0);
@@ -236,7 +238,7 @@ private:
    }
 
    materia::MateriaClient mClient;
-   materia::Database& mDbProxy;
+   materia::IDatabase& mDbProxy;
    const std::string mCategory = "ACTIONS";
 };
 

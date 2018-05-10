@@ -1,12 +1,10 @@
 #pragma once
 
 #include "MateriaServiceProxy.hpp"
-#include "Id.hpp"
+#include "../IContainer.hpp"
 
 #include "messages/container.pb.h"
 
-#include <boost/optional.hpp>
-#include <boost/noncopyable.hpp>
 #include <functional>
 
 namespace materia
@@ -22,7 +20,7 @@ public:
    bool clearContainer(const std::string& name) override;
    bool deleteContainer(const std::string& name) override;
 
-   boost::optional<int> execFunc(const Func& func) override;
+   std::optional<int> execFunc(const Func& func) override;
 
    std::vector<ContainerItem> getItems(const std::string& containerName) override;
    std::vector<Id> insertItems(const std::string& containerName, const std::vector<ContainerItem>& items) override;

@@ -1,4 +1,5 @@
 #include "Inbox.hpp"
+#include "ProtoConverter.hpp"
 
 namespace materia
 {
@@ -20,7 +21,7 @@ std::vector<InboxItem> Inbox::getItems()
 
    for(auto x : responce.items())
    {
-      result.push_back({x.id(), x.text()});
+      result.push_back({fromProto(x.id()), x.text()});
    }
 
    return result;
@@ -29,7 +30,7 @@ std::vector<InboxItem> Inbox::getItems()
 bool Inbox::deleteItem(const Id& id)
 {
    common::UniqueId request;
-   request.CopyFrom(id.toProtoId());
+   request.CopyFrom(toProto(id));
    
    common::OperationResultMessage opResult;
    mProxy.getService().DeleteItem(nullptr, &request, &opResult, nullptr);
@@ -41,7 +42,7 @@ bool Inbox::replaceItem(const InboxItem& item)
 {
    inbox::InboxItemInfo request;
    request.set_text(item.text);
-   request.mutable_id()->CopyFrom(item.id.toProtoId());
+   request.mutable_id()->CopyFrom(toProto(item.id));
    
    common::OperationResultMessage opResult;
    
@@ -59,7 +60,7 @@ Id Inbox::insertItem(const InboxItem& item)
    
    mProxy.getService().AddItem(nullptr, &request, &responce, nullptr);
 
-   return responce;
+   return fromProto(responce);
 }
 
 }

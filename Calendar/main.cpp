@@ -10,6 +10,8 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/lexical_cast.hpp>
 #include <Client/MateriaClient.hpp>
+#include <Client/IDatabase.hpp>
+#include <Client/private/ProtoConverter.hpp>
 
 namespace materia
 {
@@ -109,7 +111,7 @@ public:
          ::common::OperationResultMessage* response,
          ::google::protobuf::Closure* done)
    {
-      response->set_success(mDbProxy.deleteDocument(*request));
+      response->set_success(mDbProxy.deleteDocument(fromProto(*request)));
    }
 
    virtual void EditItem(::google::protobuf::RpcController* controller,
@@ -117,7 +119,7 @@ public:
          ::common::OperationResultMessage* response,
          ::google::protobuf::Closure* done)
    {
-      materia::Document doc { request->id(), to_json(*request) };
+      materia::Document doc { fromProto(request->id()), to_json(*request) };
       response->set_success(mDbProxy.replaceDocument(doc));
    }
 
@@ -132,12 +134,12 @@ public:
       newItem.mutable_id()->set_guid(id);
 
       materia::Document doc { materia::Id::Invalid, to_json(newItem) };
-      *response = mDbProxy.insertDocument(doc, materia::IdMode::Generate).toProtoId();
+      *response = toProto(mDbProxy.insertDocument(doc, materia::IdMode::Generate));
    }
 
 private:
    materia::MateriaClient mClient;
-   materia::Database& mDbProxy;
+   materia::IDatabase& mDbProxy;
    const std::string mCategory = "CAL";
 };
 
