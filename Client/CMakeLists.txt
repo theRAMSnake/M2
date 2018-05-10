@@ -9,18 +9,19 @@ find_package(Boost COMPONENTS system REQUIRED)
 find_package(Protobuf REQUIRED)
 
 add_library(m2client STATIC 
-   Id.cpp
-   Inbox.cpp
-   ZmqPbChannel.cpp
-   MateriaClient.cpp
-   Database.cpp
-   Admin.cpp
-   Journal.cpp
-   Calendar.cpp
-   Actions.cpp
-   Container.cpp
-   Events.cpp
-   Strategy.cpp
+   private/Id.cpp
+   private/Inbox.cpp
+   private/ZmqPbChannel.cpp
+   private/MateriaClient.cpp
+   private/Database.cpp
+   private/Admin.cpp
+   private/Journal.cpp
+   private/Calendar.cpp
+   private/Actions.cpp
+   private/Container.cpp
+   private/Events.cpp
+   private/Strategy.cpp
+   private/ProtoConverter.cpp
 )
 
 target_link_libraries(m2client m2common)
