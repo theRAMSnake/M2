@@ -17,7 +17,7 @@ TEMPLATE = app
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++17
-INCLUDEPATH += "../../Client"
+INCLUDEPATH += "MateriaEmu"
 INCLUDEPATH += "../../out"
 
 # You can also make your code fail to compile if you use deprecated APIs.
@@ -31,13 +31,18 @@ SOURCES += \
         mainwindow.cpp \
     materiaproxy.cpp \
     materiagatewaythread.cpp \
-    materiagateway.cpp
+    materiagateway.cpp \
+    MateriaEmu/materiaclient.cpp
 
 HEADERS += \
         mainwindow.h \
     materiaproxy.h \
     materiagatewaythread.h \
-    materiagateway.h
+    materiagateway.h \
+    MateriaEmu/materiaclient.h
 
 FORMS += \
         mainwindow.ui
+
+RESOURCES += \
+    mainres.qrc

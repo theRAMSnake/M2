@@ -21,8 +21,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_MateriaGateway_t {
-    QByteArrayData data[1];
-    char stringdata0[15];
+    QByteArrayData data[11];
+    char stringdata0[171];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -31,10 +31,24 @@ struct qt_meta_stringdata_MateriaGateway_t {
     )
 static const qt_meta_stringdata_MateriaGateway_t qt_meta_stringdata_MateriaGateway = {
     {
-QT_MOC_LITERAL(0, 0, 14) // "MateriaGateway"
+QT_MOC_LITERAL(0, 0, 14), // "MateriaGateway"
+QT_MOC_LITERAL(1, 15, 19), // "sigAffinitiesLoaded"
+QT_MOC_LITERAL(2, 35, 0), // ""
+QT_MOC_LITERAL(3, 36, 30), // "std::vector<materia::Affinity>"
+QT_MOC_LITERAL(4, 67, 10), // "affinities"
+QT_MOC_LITERAL(5, 78, 14), // "sigGoalsLoaded"
+QT_MOC_LITERAL(6, 93, 26), // "std::vector<materia::Goal>"
+QT_MOC_LITERAL(7, 120, 5), // "goals"
+QT_MOC_LITERAL(8, 126, 14), // "loadAffinities"
+QT_MOC_LITERAL(9, 141, 9), // "loadGoals"
+QT_MOC_LITERAL(10, 151, 19) // "configureAffinities"
 
     },
-    "MateriaGateway"
+    "MateriaGateway\0sigAffinitiesLoaded\0\0"
+    "std::vector<materia::Affinity>\0"
+    "affinities\0sigGoalsLoaded\0"
+    "std::vector<materia::Goal>\0goals\0"
+    "loadAffinities\0loadGoals\0configureAffinities"
 };
 #undef QT_MOC_LITERAL
 
@@ -44,22 +58,64 @@ static const uint qt_meta_data_MateriaGateway[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-       0,    0, // methods
+       5,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       0,       // signalCount
+       2,       // signalCount
+
+ // signals: name, argc, parameters, tag, flags
+       1,    1,   39,    2, 0x06 /* Public */,
+       5,    1,   42,    2, 0x06 /* Public */,
+
+ // slots: name, argc, parameters, tag, flags
+       8,    0,   45,    2, 0x0a /* Public */,
+       9,    0,   46,    2, 0x0a /* Public */,
+      10,    1,   47,    2, 0x0a /* Public */,
+
+ // signals: parameters
+    QMetaType::Void, 0x80000000 | 3,    4,
+    QMetaType::Void, 0x80000000 | 6,    7,
+
+ // slots: parameters
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void, 0x80000000 | 3,    2,
 
        0        // eod
 };
 
 void MateriaGateway::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
-    Q_UNUSED(_o);
-    Q_UNUSED(_id);
-    Q_UNUSED(_c);
-    Q_UNUSED(_a);
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        MateriaGateway *_t = static_cast<MateriaGateway *>(_o);
+        Q_UNUSED(_t)
+        switch (_id) {
+        case 0: _t->sigAffinitiesLoaded((*reinterpret_cast< std::vector<materia::Affinity>(*)>(_a[1]))); break;
+        case 1: _t->sigGoalsLoaded((*reinterpret_cast< std::vector<materia::Goal>(*)>(_a[1]))); break;
+        case 2: _t->loadAffinities(); break;
+        case 3: _t->loadGoals(); break;
+        case 4: _t->configureAffinities((*reinterpret_cast< std::vector<materia::Affinity>(*)>(_a[1]))); break;
+        default: ;
+        }
+    } else if (_c == QMetaObject::IndexOfMethod) {
+        int *result = reinterpret_cast<int *>(_a[0]);
+        {
+            typedef void (MateriaGateway::*_t)(std::vector<materia::Affinity> );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&MateriaGateway::sigAffinitiesLoaded)) {
+                *result = 0;
+                return;
+            }
+        }
+        {
+            typedef void (MateriaGateway::*_t)(std::vector<materia::Goal> );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&MateriaGateway::sigGoalsLoaded)) {
+                *result = 1;
+                return;
+            }
+        }
+    }
 }
 
 QT_INIT_METAOBJECT const QMetaObject MateriaGateway::staticMetaObject = {
@@ -84,7 +140,32 @@ void *MateriaGateway::qt_metacast(const char *_clname)
 int MateriaGateway::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QObject::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        if (_id < 5)
+            qt_static_metacall(this, _c, _id, _a);
+        _id -= 5;
+    } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
+        if (_id < 5)
+            *reinterpret_cast<int*>(_a[0]) = -1;
+        _id -= 5;
+    }
     return _id;
+}
+
+// SIGNAL 0
+void MateriaGateway::sigAffinitiesLoaded(std::vector<materia::Affinity> _t1)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
+}
+
+// SIGNAL 1
+void MateriaGateway::sigGoalsLoaded(std::vector<materia::Goal> _t1)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 1, _a);
 }
 QT_WARNING_POP
 QT_END_MOC_NAMESPACE
