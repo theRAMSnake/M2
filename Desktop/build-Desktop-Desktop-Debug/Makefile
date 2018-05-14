@@ -15,7 +15,7 @@ CXX           = g++
 DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../Desktop -I. -I../../Client -I../../out -isystem /usr/include/qt -isystem /usr/include/qt/QtWidgets -isystem /usr/include/qt/QtGui -isystem /usr/include/qt/QtCore -I. -isystem /usr/include/libdrm -I. -I/usr/lib/qt/mkspecs/linux-g++
+INCPATH       = -I../Desktop -I. -I../Desktop/MateriaEmu -I../../out -isystem /usr/include/qt -isystem /usr/include/qt/QtWidgets -isystem /usr/include/qt/QtGui -isystem /usr/include/qt/QtCore -I. -isystem /usr/include/libdrm -I. -I/usr/lib/qt/mkspecs/linux-g++
 QMAKE         = /usr/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -54,7 +54,9 @@ SOURCES       = ../Desktop/main.cpp \
 		../Desktop/mainwindow.cpp \
 		../Desktop/materiaproxy.cpp \
 		../Desktop/materiagatewaythread.cpp \
-		../Desktop/materiagateway.cpp moc_mainwindow.cpp \
+		../Desktop/materiagateway.cpp \
+		../Desktop/MateriaEmu/materiaclient.cpp qrc_mainres.cpp \
+		moc_mainwindow.cpp \
 		moc_materiaproxy.cpp \
 		moc_materiagatewaythread.cpp \
 		moc_materiagateway.cpp
@@ -63,6 +65,8 @@ OBJECTS       = main.o \
 		materiaproxy.o \
 		materiagatewaythread.o \
 		materiagateway.o \
+		materiaclient.o \
+		qrc_mainres.o \
 		moc_mainwindow.o \
 		moc_materiaproxy.o \
 		moc_materiagatewaythread.o \
@@ -188,11 +192,13 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		../Desktop/Desktop.pro ../Desktop/mainwindow.h \
 		../Desktop/materiaproxy.h \
 		../Desktop/materiagatewaythread.h \
-		../Desktop/materiagateway.h ../Desktop/main.cpp \
+		../Desktop/materiagateway.h \
+		../Desktop/MateriaEmu/materiaclient.h ../Desktop/main.cpp \
 		../Desktop/mainwindow.cpp \
 		../Desktop/materiaproxy.cpp \
 		../Desktop/materiagatewaythread.cpp \
-		../Desktop/materiagateway.cpp
+		../Desktop/materiagateway.cpp \
+		../Desktop/MateriaEmu/materiaclient.cpp
 QMAKE_TARGET  = Desktop
 DESTDIR       = 
 TARGET        = Desktop
@@ -323,6 +329,7 @@ Makefile: ../Desktop/Desktop.pro /usr/lib/qt/mkspecs/linux-g++/qmake.conf /usr/l
 		/usr/lib/qt/mkspecs/features/yacc.prf \
 		/usr/lib/qt/mkspecs/features/lex.prf \
 		../Desktop/Desktop.pro \
+		../Desktop/mainres.qrc \
 		/usr/lib/libQt5Widgets.prl \
 		/usr/lib/libQt5Gui.prl \
 		/usr/lib/libQt5Core.prl
@@ -446,6 +453,7 @@ Makefile: ../Desktop/Desktop.pro /usr/lib/qt/mkspecs/linux-g++/qmake.conf /usr/l
 /usr/lib/qt/mkspecs/features/yacc.prf:
 /usr/lib/qt/mkspecs/features/lex.prf:
 ../Desktop/Desktop.pro:
+../Desktop/mainres.qrc:
 /usr/lib/libQt5Widgets.prl:
 /usr/lib/libQt5Gui.prl:
 /usr/lib/libQt5Core.prl:
@@ -463,9 +471,10 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
+	$(COPY_FILE) --parents ../Desktop/mainres.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../Desktop/mainwindow.h ../Desktop/materiaproxy.h ../Desktop/materiagatewaythread.h ../Desktop/materiagateway.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../Desktop/main.cpp ../Desktop/mainwindow.cpp ../Desktop/materiaproxy.cpp ../Desktop/materiagatewaythread.cpp ../Desktop/materiagateway.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../Desktop/mainwindow.h ../Desktop/materiaproxy.h ../Desktop/materiagatewaythread.h ../Desktop/materiagateway.h ../Desktop/MateriaEmu/materiaclient.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../Desktop/main.cpp ../Desktop/mainwindow.cpp ../Desktop/materiaproxy.cpp ../Desktop/materiagatewaythread.cpp ../Desktop/materiagateway.cpp ../Desktop/MateriaEmu/materiaclient.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../Desktop/mainwindow.ui $(DISTDIR)/
 
 
@@ -490,8 +499,14 @@ check: first
 
 benchmark: first
 
-compiler_rcc_make_all:
+compiler_rcc_make_all: qrc_mainres.cpp
 compiler_rcc_clean:
+	-$(DEL_FILE) qrc_mainres.cpp
+qrc_mainres.cpp: ../Desktop/mainres.qrc \
+		/usr/bin/rcc \
+		../Desktop/Icons/M.png
+	/usr/bin/rcc -name mainres ../Desktop/mainres.qrc -o qrc_mainres.cpp
+
 compiler_moc_predefs_make_all: moc_predefs.h
 compiler_moc_predefs_clean:
 	-$(DEL_FILE) moc_predefs.h
@@ -504,35 +519,24 @@ compiler_moc_header_clean:
 moc_mainwindow.cpp: ../Desktop/mainwindow.h \
 		moc_predefs.h \
 		/usr/bin/moc
-	/usr/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/snake/m2/M2/Desktop/Desktop -I/home/snake/m2/M2/Client -I/home/snake/m2/M2/out -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I. -I/usr/include/c++/7.3.1 -I/usr/include/c++/7.3.1/x86_64-pc-linux-gnu -I/usr/include/c++/7.3.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include-fixed -I/usr/include ../Desktop/mainwindow.h -o moc_mainwindow.cpp
+	/usr/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/snake/m2/M2/Desktop/Desktop -I/home/snake/m2/M2/Desktop/Desktop/MateriaEmu -I/home/snake/m2/M2/out -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I. -I/usr/include/c++/7.3.1 -I/usr/include/c++/7.3.1/x86_64-pc-linux-gnu -I/usr/include/c++/7.3.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include-fixed -I/usr/include ../Desktop/mainwindow.h -o moc_mainwindow.cpp
 
-moc_materiaproxy.cpp: ../Desktop/materiaproxy.h \
+moc_materiaproxy.cpp: ../Desktop/MateriaEmu/materiaclient.h \
+		../Desktop/materiaproxy.h \
 		moc_predefs.h \
 		/usr/bin/moc
-	/usr/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/snake/m2/M2/Desktop/Desktop -I/home/snake/m2/M2/Client -I/home/snake/m2/M2/out -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I. -I/usr/include/c++/7.3.1 -I/usr/include/c++/7.3.1/x86_64-pc-linux-gnu -I/usr/include/c++/7.3.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include-fixed -I/usr/include ../Desktop/materiaproxy.h -o moc_materiaproxy.cpp
+	/usr/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/snake/m2/M2/Desktop/Desktop -I/home/snake/m2/M2/Desktop/Desktop/MateriaEmu -I/home/snake/m2/M2/out -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I. -I/usr/include/c++/7.3.1 -I/usr/include/c++/7.3.1/x86_64-pc-linux-gnu -I/usr/include/c++/7.3.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include-fixed -I/usr/include ../Desktop/materiaproxy.h -o moc_materiaproxy.cpp
 
 moc_materiagatewaythread.cpp: ../Desktop/materiagatewaythread.h \
 		moc_predefs.h \
 		/usr/bin/moc
-	/usr/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/snake/m2/M2/Desktop/Desktop -I/home/snake/m2/M2/Client -I/home/snake/m2/M2/out -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I. -I/usr/include/c++/7.3.1 -I/usr/include/c++/7.3.1/x86_64-pc-linux-gnu -I/usr/include/c++/7.3.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include-fixed -I/usr/include ../Desktop/materiagatewaythread.h -o moc_materiagatewaythread.cpp
+	/usr/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/snake/m2/M2/Desktop/Desktop -I/home/snake/m2/M2/Desktop/Desktop/MateriaEmu -I/home/snake/m2/M2/out -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I. -I/usr/include/c++/7.3.1 -I/usr/include/c++/7.3.1/x86_64-pc-linux-gnu -I/usr/include/c++/7.3.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include-fixed -I/usr/include ../Desktop/materiagatewaythread.h -o moc_materiagatewaythread.cpp
 
-moc_materiagateway.cpp: ../../Client/MateriaClient.hpp \
-		../../Client/ZmqPbChannel.hpp \
-		../../Client/Database.hpp \
-		../../Client/MateriaServiceProxy.hpp \
-		../../Client/Id.hpp \
-		../../Client/Admin.hpp \
-		../../Client/Inbox.hpp \
-		../../Client/Actions.hpp \
-		../../Client/Calendar.hpp \
-		../../Client/Container.hpp \
-		../../Client/Journal.hpp \
-		../../Client/Events.hpp \
-		../../Client/Strategy.hpp \
+moc_materiagateway.cpp: ../Desktop/MateriaEmu/materiaclient.h \
 		../Desktop/materiagateway.h \
 		moc_predefs.h \
 		/usr/bin/moc
-	/usr/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/snake/m2/M2/Desktop/Desktop -I/home/snake/m2/M2/Client -I/home/snake/m2/M2/out -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I. -I/usr/include/c++/7.3.1 -I/usr/include/c++/7.3.1/x86_64-pc-linux-gnu -I/usr/include/c++/7.3.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include-fixed -I/usr/include ../Desktop/materiagateway.h -o moc_materiagateway.cpp
+	/usr/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/snake/m2/M2/Desktop/Desktop -I/home/snake/m2/M2/Desktop/Desktop/MateriaEmu -I/home/snake/m2/M2/out -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I. -I/usr/include/c++/7.3.1 -I/usr/include/c++/7.3.1/x86_64-pc-linux-gnu -I/usr/include/c++/7.3.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include-fixed -I/usr/include ../Desktop/materiagateway.h -o moc_materiagateway.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -551,7 +555,7 @@ compiler_yacc_impl_make_all:
 compiler_yacc_impl_clean:
 compiler_lex_make_all:
 compiler_lex_clean:
-compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_uic_clean 
+compiler_clean: compiler_rcc_clean compiler_moc_predefs_clean compiler_moc_header_clean compiler_uic_clean 
 
 ####### Compile
 
@@ -563,41 +567,23 @@ mainwindow.o: ../Desktop/mainwindow.cpp ../Desktop/mainwindow.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../Desktop/mainwindow.cpp
 
 materiaproxy.o: ../Desktop/materiaproxy.cpp ../Desktop/materiaproxy.h \
+		../Desktop/MateriaEmu/materiaclient.h \
 		../Desktop/materiagatewaythread.h \
-		../Desktop/materiagateway.h \
-		../../Client/MateriaClient.hpp \
-		../../Client/ZmqPbChannel.hpp \
-		../../Client/Database.hpp \
-		../../Client/MateriaServiceProxy.hpp \
-		../../Client/Id.hpp \
-		../../Client/Admin.hpp \
-		../../Client/Inbox.hpp \
-		../../Client/Actions.hpp \
-		../../Client/Calendar.hpp \
-		../../Client/Container.hpp \
-		../../Client/Journal.hpp \
-		../../Client/Events.hpp \
-		../../Client/Strategy.hpp
+		../Desktop/materiagateway.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o materiaproxy.o ../Desktop/materiaproxy.cpp
 
 materiagatewaythread.o: ../Desktop/materiagatewaythread.cpp ../Desktop/materiagatewaythread.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o materiagatewaythread.o ../Desktop/materiagatewaythread.cpp
 
 materiagateway.o: ../Desktop/materiagateway.cpp ../Desktop/materiagateway.h \
-		../../Client/MateriaClient.hpp \
-		../../Client/ZmqPbChannel.hpp \
-		../../Client/Database.hpp \
-		../../Client/MateriaServiceProxy.hpp \
-		../../Client/Id.hpp \
-		../../Client/Admin.hpp \
-		../../Client/Inbox.hpp \
-		../../Client/Actions.hpp \
-		../../Client/Calendar.hpp \
-		../../Client/Container.hpp \
-		../../Client/Journal.hpp \
-		../../Client/Events.hpp \
-		../../Client/Strategy.hpp
+		../Desktop/MateriaEmu/materiaclient.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o materiagateway.o ../Desktop/materiagateway.cpp
+
+materiaclient.o: ../Desktop/MateriaEmu/materiaclient.cpp ../Desktop/MateriaEmu/materiaclient.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o materiaclient.o ../Desktop/MateriaEmu/materiaclient.cpp
+
+qrc_mainres.o: qrc_mainres.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_mainres.o qrc_mainres.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
