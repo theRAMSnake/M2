@@ -313,7 +313,7 @@ int main(int argc, char *argv[])
       
       service.provideAt("*:" + gContainerPort, "ContainerService");
    }
-   catch(sqlite::sqlite_exception ex)
+   catch(sqlite::sqlite_exception& ex)
    {
       std::cout << ex.what();
    }

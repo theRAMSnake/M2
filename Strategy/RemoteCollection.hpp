@@ -56,6 +56,11 @@ public:
          return *mImpl;
       }
 
+      const T* operator-> ()
+      {
+         return mImpl.operator->();
+      }
+
    protected:
       Iterator(typename std::vector<T>::iterator impl)
       : mImpl(impl)
@@ -146,6 +151,11 @@ public:
    Iterator end()
    {
       return Iterator(mLocalCache.end());
+   }
+
+   Iterator find(const Id& id)
+   {
+      return std::find_if(begin(), end(), [&](auto x)->auto{return x.id == id;});
    }
 
 private:
