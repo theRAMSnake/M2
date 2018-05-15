@@ -29,17 +29,21 @@ INCLUDEPATH += "../../out"
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    materiaproxy.cpp \
     materiagatewaythread.cpp \
     materiagateway.cpp \
-    MateriaEmu/materiaclient.cpp
+    MateriaEmu/materiaclient.cpp \
+    Models/strategydatamodel.cpp \
+    Views/strategyview.cpp \
+    Views/outputview.cpp
 
 HEADERS += \
         mainwindow.h \
-    materiaproxy.h \
     materiagatewaythread.h \
     materiagateway.h \
-    MateriaEmu/materiaclient.h
+    MateriaEmu/materiaclient.h \
+    Models/strategydatamodel.h \
+    Views/strategyview.h \
+    Views/outputview.h
 
 FORMS += \
         mainwindow.ui

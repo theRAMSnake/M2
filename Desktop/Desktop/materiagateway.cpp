@@ -9,15 +9,15 @@ MateriaGateway::MateriaGateway(const QString &ip, QObject *parent)
 
 void MateriaGateway::loadAffinities()
 {
-    emit sigAffinitiesLoaded(mClient.getStrategy().getAffinities());
+    emit onAffinitiesLoaded(mClient.getStrategy().getAffinities());
 }
 
-void MateriaGateway::configureAffinities(std::vector<materia::Affinity> affinities)
+void MateriaGateway::configureAffinities(const std::vector<materia::Affinity> affinities)
 {
     mClient.getStrategy().configureAffinities(affinities);
 }
 
 void MateriaGateway::loadGoals()
 {
-    emit sigGoalsLoaded(mClient.getStrategy().getGoals());
+    emit onGoalsLoaded(mClient.getStrategy().getGoals());
 }

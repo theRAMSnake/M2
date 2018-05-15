@@ -11,15 +11,14 @@ public:
     MateriaGateway(const QString &ip, QObject *parent = nullptr);
 
 signals:
-    void sigAffinitiesLoaded(std::vector<materia::Affinity> affinities);
-    void sigGoalsLoaded(std::vector<materia::Goal> goals);
-    void sigGoalDetailsLoaded(std::vector<materia::Task> tasks, std::vector<materia::Objective> objectives);
+    void onAffinitiesLoaded(const std::vector<materia::Affinity> affinities);
+    void onGoalsLoaded(const std::vector<materia::Goal> goals);
+    //void onGoalDetailsLoaded(const std::vector<materia::Task> tasks, const std::vector<materia::Objective> objectives);
 
 public slots:
     void loadAffinities();
     void loadGoals();
-    void loadGoalDetails(materia::Id id);
-    void configureAffinities(std::vector<materia::Affinity>);
+    void configureAffinities(const std::vector<materia::Affinity> affinities);
 
 private:
     materia::MateriaClient mClient;
