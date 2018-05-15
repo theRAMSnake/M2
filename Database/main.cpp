@@ -260,7 +260,7 @@ public:
                result.push_back(result_item);
             }
          }
-         catch(mongocxx::query_exception ex)
+         catch(mongocxx::query_exception& ex)
          {
             //log << "!!!" << bsoncxx::to_json(ex.raw_server_error()->view());
          }

@@ -36,7 +36,7 @@ private:
     std::ofstream mFile;
 };
 
-DoubleLogger log("Central.log");
+DoubleLogger logger("Central.log");
 
 class ConnectionManager : public materia::IComponentInfoProvider
 {
@@ -145,7 +145,7 @@ public:
 private:
     void doRouting(const common::MateriaMessage& materiaMsg)
     {
-        log << "Routing: " << materiaMsg.ShortDebugString() ;
+        logger << "Routing: " << materiaMsg.ShortDebugString() ;
 
         if(materiaMsg.to() == "AdminService")
         {
@@ -187,11 +187,11 @@ private:
                     auto time_D_msec = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - perfIter->second);
                     mPerformanceTimers.erase(perfIter);
 
-                    log << " (" << time_D_msec.count() << " ms)\n";
+                    logger << " (" << time_D_msec.count() << " ms)\n";
                 }
                 else
                 {
-                    log << "Routing error: unknown destination\n";
+                    logger << "Routing error: unknown destination\n";
                 }
             }
         }
