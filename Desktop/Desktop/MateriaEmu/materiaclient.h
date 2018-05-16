@@ -43,12 +43,33 @@ struct Goal : public StrategyItem
    bool operator != (const Goal& other) const;
 };
 
+struct Objective : public StrategyItem
+{
+   bool reached;
+   Id measurementId;
+   int expected;
+
+   bool operator == (const Objective& other) const;
+   bool operator != (const Objective& other) const;
+};
+
+struct Task : public StrategyItem
+{
+   bool done;
+   std::vector<Id> requiredTasks;
+
+   bool operator == (const Task& other) const;
+   bool operator != (const Task& other) const;
+};
+
+
 class IStrategy
 {
 public:
     virtual void configureAffinities(const std::vector<Affinity>& affinites) = 0;
     virtual std::vector<Affinity> getAffinities() = 0;
     virtual std::vector<Goal> getGoals() = 0;
+    virtual std::tuple<std::vector<Task>, std::vector<Objective>> getGoalItems(const Id& id) = 0;
 
     virtual ~IStrategy() {}
 };

@@ -57,13 +57,16 @@ SOURCES       = ../Desktop/main.cpp \
 		../Desktop/MateriaEmu/materiaclient.cpp \
 		../Desktop/Models/strategydatamodel.cpp \
 		../Desktop/Views/strategyview.cpp \
-		../Desktop/Views/outputview.cpp qrc_mainres.cpp \
+		../Desktop/logger.cpp \
+		../Desktop/Controls/goalwidget.cpp qrc_mainres.cpp \
+		qrc_style.cpp \
 		moc_mainwindow.cpp \
 		moc_materiagatewaythread.cpp \
 		moc_materiagateway.cpp \
 		moc_strategydatamodel.cpp \
 		moc_strategyview.cpp \
-		moc_outputview.cpp
+		moc_logger.cpp \
+		moc_goalwidget.cpp
 OBJECTS       = main.o \
 		mainwindow.o \
 		materiagatewaythread.o \
@@ -71,14 +74,17 @@ OBJECTS       = main.o \
 		materiaclient.o \
 		strategydatamodel.o \
 		strategyview.o \
-		outputview.o \
+		logger.o \
+		goalwidget.o \
 		qrc_mainres.o \
+		qrc_style.o \
 		moc_mainwindow.o \
 		moc_materiagatewaythread.o \
 		moc_materiagateway.o \
 		moc_strategydatamodel.o \
 		moc_strategyview.o \
-		moc_outputview.o
+		moc_logger.o \
+		moc_goalwidget.o
 DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/common/unix.conf \
 		/usr/lib/qt/mkspecs/common/linux.conf \
@@ -203,14 +209,16 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		../Desktop/MateriaEmu/materiaclient.h \
 		../Desktop/Models/strategydatamodel.h \
 		../Desktop/Views/strategyview.h \
-		../Desktop/Views/outputview.h ../Desktop/main.cpp \
+		../Desktop/logger.h \
+		../Desktop/Controls/goalwidget.h ../Desktop/main.cpp \
 		../Desktop/mainwindow.cpp \
 		../Desktop/materiagatewaythread.cpp \
 		../Desktop/materiagateway.cpp \
 		../Desktop/MateriaEmu/materiaclient.cpp \
 		../Desktop/Models/strategydatamodel.cpp \
 		../Desktop/Views/strategyview.cpp \
-		../Desktop/Views/outputview.cpp
+		../Desktop/logger.cpp \
+		../Desktop/Controls/goalwidget.cpp
 QMAKE_TARGET  = Desktop
 DESTDIR       = 
 TARGET        = Desktop
@@ -342,6 +350,7 @@ Makefile: ../Desktop/Desktop.pro /usr/lib/qt/mkspecs/linux-g++/qmake.conf /usr/l
 		/usr/lib/qt/mkspecs/features/lex.prf \
 		../Desktop/Desktop.pro \
 		../Desktop/mainres.qrc \
+		../Desktop/style.qrc \
 		/usr/lib/libQt5Widgets.prl \
 		/usr/lib/libQt5Gui.prl \
 		/usr/lib/libQt5Core.prl
@@ -466,6 +475,7 @@ Makefile: ../Desktop/Desktop.pro /usr/lib/qt/mkspecs/linux-g++/qmake.conf /usr/l
 /usr/lib/qt/mkspecs/features/lex.prf:
 ../Desktop/Desktop.pro:
 ../Desktop/mainres.qrc:
+../Desktop/style.qrc:
 /usr/lib/libQt5Widgets.prl:
 /usr/lib/libQt5Gui.prl:
 /usr/lib/libQt5Core.prl:
@@ -483,10 +493,10 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents ../Desktop/mainres.qrc $(DISTDIR)/
+	$(COPY_FILE) --parents ../Desktop/mainres.qrc ../Desktop/style.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../Desktop/mainwindow.h ../Desktop/materiagatewaythread.h ../Desktop/materiagateway.h ../Desktop/MateriaEmu/materiaclient.h ../Desktop/Models/strategydatamodel.h ../Desktop/Views/strategyview.h ../Desktop/Views/outputview.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../Desktop/main.cpp ../Desktop/mainwindow.cpp ../Desktop/materiagatewaythread.cpp ../Desktop/materiagateway.cpp ../Desktop/MateriaEmu/materiaclient.cpp ../Desktop/Models/strategydatamodel.cpp ../Desktop/Views/strategyview.cpp ../Desktop/Views/outputview.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../Desktop/mainwindow.h ../Desktop/materiagatewaythread.h ../Desktop/materiagateway.h ../Desktop/MateriaEmu/materiaclient.h ../Desktop/Models/strategydatamodel.h ../Desktop/Views/strategyview.h ../Desktop/logger.h ../Desktop/Controls/goalwidget.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../Desktop/main.cpp ../Desktop/mainwindow.cpp ../Desktop/materiagatewaythread.cpp ../Desktop/materiagateway.cpp ../Desktop/MateriaEmu/materiaclient.cpp ../Desktop/Models/strategydatamodel.cpp ../Desktop/Views/strategyview.cpp ../Desktop/logger.cpp ../Desktop/Controls/goalwidget.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../Desktop/mainwindow.ui $(DISTDIR)/
 
 
@@ -511,13 +521,57 @@ check: first
 
 benchmark: first
 
-compiler_rcc_make_all: qrc_mainres.cpp
+compiler_rcc_make_all: qrc_mainres.cpp qrc_style.cpp
 compiler_rcc_clean:
-	-$(DEL_FILE) qrc_mainres.cpp
+	-$(DEL_FILE) qrc_mainres.cpp qrc_style.cpp
 qrc_mainres.cpp: ../Desktop/mainres.qrc \
 		/usr/bin/rcc \
 		../Desktop/Icons/M.png
 	/usr/bin/rcc -name mainres ../Desktop/mainres.qrc -o qrc_mainres.cpp
+
+qrc_style.cpp: ../Desktop/style.qrc \
+		/usr/bin/rcc \
+		../Desktop/rc/Vsepartoolbar.png \
+		../Desktop/rc/close-pressed.png \
+		../Desktop/rc/Hmovetoolbar.png \
+		../Desktop/rc/up_arrow.png \
+		../Desktop/rc/left_arrow_disabled.png \
+		../Desktop/rc/close-hover.png \
+		../Desktop/rc/checkbox_unchecked.png \
+		../Desktop/rc/radio_unchecked_disabled.png \
+		../Desktop/rc/radio_checked.png \
+		../Desktop/rc/checkbox_checked_disabled.png \
+		../Desktop/rc/Hsepartoolbar.png \
+		../Desktop/rc/sizegrip.png \
+		../Desktop/rc/down_arrow.png \
+		../Desktop/rc/stylesheet-branch-more.png \
+		../Desktop/rc/radio_unchecked.png \
+		../Desktop/rc/branch_closed-on.png \
+		../Desktop/rc/checkbox_unchecked_disabled.png \
+		../Desktop/rc/branch_open.png \
+		../Desktop/rc/left_arrow.png \
+		../Desktop/rc/stylesheet-branch-end.png \
+		../Desktop/rc/undock.png \
+		../Desktop/rc/right_arrow.png \
+		../Desktop/rc/checkbox_indeterminate.png \
+		../Desktop/rc/checkbox_checked_focus.png \
+		../Desktop/rc/stylesheet-vline.png \
+		../Desktop/rc/radio_checked_focus.png \
+		../Desktop/rc/branch_closed.png \
+		../Desktop/rc/right_arrow_disabled.png \
+		../Desktop/rc/down_arrow_disabled.png \
+		../Desktop/rc/branch_open-on.png \
+		../Desktop/rc/radio_unchecked_focus.png \
+		../Desktop/rc/Vmovetoolbar.png \
+		../Desktop/rc/transparent.png \
+		../Desktop/rc/close.png \
+		../Desktop/rc/radio_checked_disabled.png \
+		../Desktop/rc/checkbox_checked.png \
+		../Desktop/rc/up_arrow_disabled.png \
+		../Desktop/rc/checkbox_indeterminate_focus.png \
+		../Desktop/rc/checkbox_unchecked_focus.png \
+		../Desktop/style.qss
+	/usr/bin/rcc -name style ../Desktop/style.qrc -o qrc_style.cpp
 
 compiler_moc_predefs_make_all: moc_predefs.h
 compiler_moc_predefs_clean:
@@ -525,10 +579,13 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib/qt/mkspecs/features/data/dummy.cpp
 	g++ -pipe -g -Wall -W -dM -E -o moc_predefs.h /usr/lib/qt/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_mainwindow.cpp moc_materiagatewaythread.cpp moc_materiagateway.cpp moc_strategydatamodel.cpp moc_strategyview.cpp moc_outputview.cpp
+compiler_moc_header_make_all: moc_mainwindow.cpp moc_materiagatewaythread.cpp moc_materiagateway.cpp moc_strategydatamodel.cpp moc_strategyview.cpp moc_logger.cpp moc_goalwidget.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_mainwindow.cpp moc_materiagatewaythread.cpp moc_materiagateway.cpp moc_strategydatamodel.cpp moc_strategyview.cpp moc_outputview.cpp
-moc_mainwindow.cpp: ../Desktop/mainwindow.h \
+	-$(DEL_FILE) moc_mainwindow.cpp moc_materiagatewaythread.cpp moc_materiagateway.cpp moc_strategydatamodel.cpp moc_strategyview.cpp moc_logger.cpp moc_goalwidget.cpp
+moc_mainwindow.cpp: ../Desktop/Models/strategydatamodel.h \
+		../Desktop/materiagateway.h \
+		../Desktop/MateriaEmu/materiaclient.h \
+		../Desktop/mainwindow.h \
 		moc_predefs.h \
 		/usr/bin/moc
 	/usr/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/snake/m2/M2/Desktop/Desktop -I/home/snake/m2/M2/Desktop/Desktop/MateriaEmu -I/home/snake/m2/M2/out -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I. -I/usr/include/c++/7.3.1 -I/usr/include/c++/7.3.1/x86_64-pc-linux-gnu -I/usr/include/c++/7.3.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include-fixed -I/usr/include ../Desktop/mainwindow.h -o moc_mainwindow.cpp
@@ -551,15 +608,24 @@ moc_strategydatamodel.cpp: ../Desktop/materiagateway.h \
 		/usr/bin/moc
 	/usr/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/snake/m2/M2/Desktop/Desktop -I/home/snake/m2/M2/Desktop/Desktop/MateriaEmu -I/home/snake/m2/M2/out -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I. -I/usr/include/c++/7.3.1 -I/usr/include/c++/7.3.1/x86_64-pc-linux-gnu -I/usr/include/c++/7.3.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include-fixed -I/usr/include ../Desktop/Models/strategydatamodel.h -o moc_strategydatamodel.cpp
 
-moc_strategyview.cpp: ../Desktop/Views/strategyview.h \
+moc_strategyview.cpp: ../Desktop/Models/strategydatamodel.h \
+		../Desktop/materiagateway.h \
+		../Desktop/MateriaEmu/materiaclient.h \
+		../Desktop/Views/strategyview.h \
 		moc_predefs.h \
 		/usr/bin/moc
 	/usr/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/snake/m2/M2/Desktop/Desktop -I/home/snake/m2/M2/Desktop/Desktop/MateriaEmu -I/home/snake/m2/M2/out -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I. -I/usr/include/c++/7.3.1 -I/usr/include/c++/7.3.1/x86_64-pc-linux-gnu -I/usr/include/c++/7.3.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include-fixed -I/usr/include ../Desktop/Views/strategyview.h -o moc_strategyview.cpp
 
-moc_outputview.cpp: ../Desktop/Views/outputview.h \
+moc_logger.cpp: ../Desktop/logger.h \
 		moc_predefs.h \
 		/usr/bin/moc
-	/usr/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/snake/m2/M2/Desktop/Desktop -I/home/snake/m2/M2/Desktop/Desktop/MateriaEmu -I/home/snake/m2/M2/out -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I. -I/usr/include/c++/7.3.1 -I/usr/include/c++/7.3.1/x86_64-pc-linux-gnu -I/usr/include/c++/7.3.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include-fixed -I/usr/include ../Desktop/Views/outputview.h -o moc_outputview.cpp
+	/usr/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/snake/m2/M2/Desktop/Desktop -I/home/snake/m2/M2/Desktop/Desktop/MateriaEmu -I/home/snake/m2/M2/out -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I. -I/usr/include/c++/7.3.1 -I/usr/include/c++/7.3.1/x86_64-pc-linux-gnu -I/usr/include/c++/7.3.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include-fixed -I/usr/include ../Desktop/logger.h -o moc_logger.cpp
+
+moc_goalwidget.cpp: ../Desktop/MateriaEmu/materiaclient.h \
+		../Desktop/Controls/goalwidget.h \
+		moc_predefs.h \
+		/usr/bin/moc
+	/usr/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/snake/m2/M2/Desktop/Desktop -I/home/snake/m2/M2/Desktop/Desktop/MateriaEmu -I/home/snake/m2/M2/out -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I. -I/usr/include/c++/7.3.1 -I/usr/include/c++/7.3.1/x86_64-pc-linux-gnu -I/usr/include/c++/7.3.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include-fixed -I/usr/include ../Desktop/Controls/goalwidget.h -o moc_goalwidget.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -583,21 +649,27 @@ compiler_clean: compiler_rcc_clean compiler_moc_predefs_clean compiler_moc_heade
 ####### Compile
 
 main.o: ../Desktop/main.cpp ../Desktop/mainwindow.h \
+		../Desktop/Models/strategydatamodel.h \
 		../Desktop/materiagateway.h \
 		../Desktop/MateriaEmu/materiaclient.h \
-		../Desktop/materiagatewaythread.h \
-		../Desktop/Models/strategydatamodel.h
+		../Desktop/materiagatewaythread.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../Desktop/main.cpp
 
 mainwindow.o: ../Desktop/mainwindow.cpp ../Desktop/mainwindow.h \
-		ui_mainwindow.h
+		../Desktop/Models/strategydatamodel.h \
+		../Desktop/materiagateway.h \
+		../Desktop/MateriaEmu/materiaclient.h \
+		../Desktop/logger.h \
+		ui_mainwindow.h \
+		../Desktop/Views/strategyview.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../Desktop/mainwindow.cpp
 
 materiagatewaythread.o: ../Desktop/materiagatewaythread.cpp ../Desktop/materiagatewaythread.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o materiagatewaythread.o ../Desktop/materiagatewaythread.cpp
 
 materiagateway.o: ../Desktop/materiagateway.cpp ../Desktop/materiagateway.h \
-		../Desktop/MateriaEmu/materiaclient.h
+		../Desktop/MateriaEmu/materiaclient.h \
+		../Desktop/logger.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o materiagateway.o ../Desktop/materiagateway.cpp
 
 materiaclient.o: ../Desktop/MateriaEmu/materiaclient.cpp ../Desktop/MateriaEmu/materiaclient.h
@@ -608,14 +680,24 @@ strategydatamodel.o: ../Desktop/Models/strategydatamodel.cpp ../Desktop/Models/s
 		../Desktop/MateriaEmu/materiaclient.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o strategydatamodel.o ../Desktop/Models/strategydatamodel.cpp
 
-strategyview.o: ../Desktop/Views/strategyview.cpp ../Desktop/Views/strategyview.h
+strategyview.o: ../Desktop/Views/strategyview.cpp ../Desktop/Views/strategyview.h \
+		../Desktop/Models/strategydatamodel.h \
+		../Desktop/materiagateway.h \
+		../Desktop/MateriaEmu/materiaclient.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o strategyview.o ../Desktop/Views/strategyview.cpp
 
-outputview.o: ../Desktop/Views/outputview.cpp ../Desktop/Views/outputview.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o outputview.o ../Desktop/Views/outputview.cpp
+logger.o: ../Desktop/logger.cpp ../Desktop/logger.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o logger.o ../Desktop/logger.cpp
+
+goalwidget.o: ../Desktop/Controls/goalwidget.cpp ../Desktop/Controls/goalwidget.h \
+		../Desktop/MateriaEmu/materiaclient.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o goalwidget.o ../Desktop/Controls/goalwidget.cpp
 
 qrc_mainres.o: qrc_mainres.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_mainres.o qrc_mainres.cpp
+
+qrc_style.o: qrc_style.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_style.o qrc_style.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
@@ -632,8 +714,11 @@ moc_strategydatamodel.o: moc_strategydatamodel.cpp
 moc_strategyview.o: moc_strategyview.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_strategyview.o moc_strategyview.cpp
 
-moc_outputview.o: moc_outputview.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_outputview.o moc_outputview.cpp
+moc_logger.o: moc_logger.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_logger.o moc_logger.cpp
+
+moc_goalwidget.o: moc_goalwidget.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_goalwidget.o moc_goalwidget.cpp
 
 ####### Install
 

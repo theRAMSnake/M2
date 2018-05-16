@@ -10,8 +10,6 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    Q_INIT_RESOURCE(style);
-
     QFile file(":/qdarkstyle/style.qss");
     file.open(QFile::ReadOnly);
 
@@ -30,12 +28,11 @@ int main(int argc, char *argv[])
     materiaGateway->moveToThread(thread);
     strategyModel->moveToThread(thread);
 
-    QObject::connect(thread, SIGNAL(started()), strategyModel, SLOT(init()));
-
-    thread->start();
-
-    MainWindow w;
+    MainWindow w(nullptr, *strategyModel);
     w.showMaximized();
+
+    QObject::connect(thread, SIGNAL(started()), strategyModel, SLOT(init()));
+    thread->start();
 
     return a.exec();
 }

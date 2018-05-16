@@ -2,4 +2,5 @@
     <qresource prefix="/icons">
         <file>Icons/M.png</file>
     </qresource>
+    <qresource prefix="/styles"/>
 </RCC>

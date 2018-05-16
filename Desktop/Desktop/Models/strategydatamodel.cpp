@@ -39,7 +39,23 @@ void StrategyDataModel::onAffinitiesLoaded(const std::vector<materia::Affinity> 
 
 void StrategyDataModel::onGoalsLoaded(const std::vector<materia::Goal> goals)
 {
+    for(auto g : goals)
+    {
+        if(g.focused)
+        {
+            mMateriaGateway.loadGoalDetails(g.id);
+            emit onGoalUpdated(g);
+        }
+    }
 
+    for(auto g : goals)
+    {
+        if(!g.focused)
+        {
+            mMateriaGateway.loadGoalDetails(g.id);
+            emit onGoalUpdated(g);
+        }
+    }
 }
 
 void StrategyDataModel::init()

@@ -23,6 +23,13 @@ public:
         return mAffinities;
     }
 
+    virtual std::tuple<std::vector<Task>, std::vector<Objective>> getGoalItems(const Id& id)
+    {
+        decltype(getGoalItems(id)) result;
+
+        return result;
+    }
+
     virtual std::vector<Goal> getGoals()
     {
         std::this_thread::sleep_for(DELAY);
@@ -55,10 +62,11 @@ public:
         result.push_back(g);
 
         g.achieved = false;
-        g.affinityId = {"aff4"};
+        g.affinityId = {"aff3"};
         g.focused = false;
         g.id = {"g4"};
         g.name = "goal4";
+        g.parentGoalId = {"g3"};
 
         result.push_back(g);
 

@@ -34,7 +34,8 @@ SOURCES += \
     MateriaEmu/materiaclient.cpp \
     Models/strategydatamodel.cpp \
     Views/strategyview.cpp \
-    Views/outputview.cpp
+    logger.cpp \
+    Controls/goalwidget.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -43,10 +44,12 @@ HEADERS += \
     MateriaEmu/materiaclient.h \
     Models/strategydatamodel.h \
     Views/strategyview.h \
-    Views/outputview.h
+    logger.h \
+    Controls/goalwidget.h
 
 FORMS += \
         mainwindow.ui
 
 RESOURCES += \
-    mainres.qrc
+    mainres.qrc \
+    style.qrc

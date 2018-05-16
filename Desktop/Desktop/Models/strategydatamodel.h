@@ -11,6 +11,7 @@ public:
     StrategyDataModel(MateriaGateway& materiaGateway);
 
 signals:
+    void onGoalUpdated(const materia::Goal g);
 
 public slots:
     void onAffinitiesLoaded(const std::vector<materia::Affinity> affinities);
