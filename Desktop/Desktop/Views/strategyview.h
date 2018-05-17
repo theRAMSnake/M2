@@ -5,19 +5,24 @@
 #include <QHBoxLayout>
 #include "Models/strategydatamodel.h"
 
+class QGridLayout;
 class StrategyView : public QWidget
 {
     Q_OBJECT
 public:
-    explicit StrategyView(QWidget *parent, StrategyDataModel &strategyDataModel);
+    StrategyView(QWidget *parent, StrategyDataModel &strategyDataModel);
+    ~StrategyView();
 
 signals:
 
 public slots:
     void onGoalUpdated(const materia::Goal g);
+    void onAffinitiesUpdated();
 
 private:
     QHBoxLayout* mLayout;
+    StrategyDataModel& mStrategyDataModel;
+    std::map<materia::Id, QGridLayout*> mAffinityToGuiMap;
 };
 
 #endif // STRATEGYVIEW_H

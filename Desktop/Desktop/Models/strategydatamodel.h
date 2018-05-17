@@ -10,8 +10,11 @@ class StrategyDataModel : public QObject
 public:
     StrategyDataModel(MateriaGateway& materiaGateway);
 
+    std::vector<materia::Affinity> getAffinities();
+
 signals:
     void onGoalUpdated(const materia::Goal g);
+    void onAffinitiesUpdated();
 
 public slots:
     void onAffinitiesLoaded(const std::vector<materia::Affinity> affinities);

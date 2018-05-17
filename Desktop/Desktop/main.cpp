@@ -10,6 +10,8 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    qRegisterMetaType<materia::Goal>("Goal");
+
     QFile file(":/qdarkstyle/style.qss");
     file.open(QFile::ReadOnly);
 
@@ -25,13 +27,13 @@ int main(int argc, char *argv[])
 
     auto strategyModel = new StrategyDataModel(*materiaGateway);
 
-    materiaGateway->moveToThread(thread);
-    strategyModel->moveToThread(thread);
-
     MainWindow w(nullptr, *strategyModel);
     w.showMaximized();
 
     QObject::connect(thread, SIGNAL(started()), strategyModel, SLOT(init()));
+
+    materiaGateway->moveToThread(thread);
+    strategyModel->moveToThread(thread);
     thread->start();
 
     return a.exec();

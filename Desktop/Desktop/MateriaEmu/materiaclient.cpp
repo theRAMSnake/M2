@@ -1,6 +1,7 @@
 #include "materiaclient.h"
 #include <chrono>
 #include <thread>
+#include <QString>
 
 const std::chrono::milliseconds DELAY(300);
 
@@ -36,44 +37,44 @@ public:
 
         std::vector<Goal> result;
 
-        Goal g;
-        g.achieved = false;
-        g.affinityId = {"aff1"};
-        g.focused = false;
-        g.id = {"g1"};
-        g.name = "goal1";
+        result.push_back(createGoal({"aff1"}, "g1"));
+        result.push_back(createGoal({"aff1"}, "g2"));
+        result.push_back(createGoal({"aff1"}, "g3"));
 
-        result.push_back(g);
+        auto id = result.back().id;
+        result.push_back(createGoal({"aff1"}, "g31", id));
+        result.push_back(createGoal({"aff1"}, "g32", id));
+        result.push_back(createGoal({"aff1"}, "g33", id));
+        result.push_back(createGoal({"aff1"}, "g34", id));
 
-        g.achieved = false;
-        g.affinityId = {"aff2"};
-        g.focused = true;
-        g.id = {"g2"};
-        g.name = "goal2";
+        result.push_back(createGoal({"aff2"}, "g1"));
+        result.push_back(createGoal({"aff2"}, "g2"));
 
-        result.push_back(g);
+        result.push_back(createGoal({"aff3"}, "g1"));
+        result.push_back(createGoal({"aff3"}, "g2"));
 
-        g.achieved = false;
-        g.affinityId = {"aff3"};
-        g.focused = true;
-        g.id = {"g3"};
-        g.name = "goal3";
-
-        result.push_back(g);
-
-        g.achieved = false;
-        g.affinityId = {"aff3"};
-        g.focused = false;
-        g.id = {"g4"};
-        g.name = "goal4";
-        g.parentGoalId = {"g3"};
-
-        result.push_back(g);
+        result.push_back(createGoal({"aff4"}, "g1"));
+        result.push_back(createGoal({"aff4"}, "g2"));
+        result.push_back(createGoal({"aff4"}, "g3"));
 
         return result;
     }
 
 private:
+    Goal createGoal(const Id affId, const std::string& name, const Id& parentId = Id{})
+    {
+        static int id = 0;
+        Goal g;
+        g.achieved = false;
+        g.affinityId = affId;
+        g.focused = false;
+        g.id = {QString::number(++id).toStdString()};
+        g.name = name;
+        g.parentGoalId = parentId;
+
+        return g;
+    }
+
     std::vector<Affinity> mAffinities;
 };
 
@@ -87,6 +88,11 @@ IStrategy& MateriaClient::getStrategy()
 {
     static FakeStrategy fakeStrategy;
     return fakeStrategy;
+}
+
+bool Id::operator <(const Id &other) const
+{
+    return guid < other.guid;
 }
 
 }

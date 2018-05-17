@@ -11,10 +11,10 @@ std::vector<materia::Affinity> createDefaultAffinities()
 {
     std::vector<materia::Affinity> result;
 
-    result.push_back({"aff1", "Family", "", "Blue"});
-    result.push_back({"aff2", "Survival", "", "Green"});
-    result.push_back({"aff3", "Creation", "", "Purple"});
-    result.push_back({"aff4", "Development", "", "Orange"});
+    result.push_back({"aff1", "Family", "", "#31365b" /*Blue*/});
+    result.push_back({"aff2", "Survival", "", "#31564b" /*Green*/});
+    result.push_back({"aff3", "Creation", "", "#41365b" /*Pruple*/});
+    result.push_back({"aff4", "Evolution", "", "#51564b" /*Yellow*/});
 
     return result;
 }
@@ -34,6 +34,8 @@ void StrategyDataModel::onAffinitiesLoaded(const std::vector<materia::Affinity> 
         mAffinities = affinities;
     }
 
+    emit onAffinitiesUpdated();
+
     mMateriaGateway.loadGoals();
 }
 
@@ -41,24 +43,17 @@ void StrategyDataModel::onGoalsLoaded(const std::vector<materia::Goal> goals)
 {
     for(auto g : goals)
     {
-        if(g.focused)
-        {
-            mMateriaGateway.loadGoalDetails(g.id);
-            emit onGoalUpdated(g);
-        }
-    }
-
-    for(auto g : goals)
-    {
-        if(!g.focused)
-        {
-            mMateriaGateway.loadGoalDetails(g.id);
-            emit onGoalUpdated(g);
-        }
+        mMateriaGateway.loadGoalDetails(g.id);
+        emit onGoalUpdated(g);
     }
 }
 
 void StrategyDataModel::init()
 {
     mMateriaGateway.loadAffinities();
+}
+
+std::vector<materia::Affinity> StrategyDataModel::getAffinities()
+{
+    return mAffinities;
 }

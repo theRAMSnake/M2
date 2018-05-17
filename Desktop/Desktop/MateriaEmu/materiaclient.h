@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <QMetaType>
 
 namespace materia
 {
@@ -10,6 +11,8 @@ namespace materia
 struct Id
 {
     std::string guid;
+
+    bool operator < (const Id& other) const;
 };
 
 struct Affinity
@@ -83,5 +86,7 @@ public:
 };
 
 }
+
+Q_DECLARE_METATYPE(materia::Goal);
 
 #endif // MATERIACLIENT_H
