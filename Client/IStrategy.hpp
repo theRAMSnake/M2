@@ -9,8 +9,6 @@ namespace materia
 struct StrategyItem
 {
    Id id;
-   Id parentGoalId;
-   
    std::string name;
    std::string notes;
    Id iconId;
@@ -30,6 +28,7 @@ struct Objective : public StrategyItem
 {
    bool reached;
    Id measurementId;
+   Id parentGoalId;
    int expected;
 
    bool operator == (const Objective& other) const;
@@ -39,6 +38,7 @@ struct Objective : public StrategyItem
 struct Task : public StrategyItem
 {
    bool done;
+   Id parentGoalId;
    std::vector<Id> requiredTasks;
 
    bool operator == (const Task& other) const;

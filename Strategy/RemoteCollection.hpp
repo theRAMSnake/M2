@@ -33,6 +33,12 @@ public:
    class Iterator
    {
    public:
+      typedef T value_type;
+      typedef int difference_type;
+      typedef std::random_access_iterator_tag iterator_category;
+      typedef T* pointer;
+      typedef T& reference;
+
       friend class RemoteCollection<T>;
 
       bool operator == (const Iterator& other) const
@@ -56,9 +62,14 @@ public:
          return *mImpl;
       }
 
-      const T* operator-> ()
+      const T* operator-> () const
       {
          return mImpl.operator->();
+      }
+
+      difference_type operator- (const Iterator& other)
+      {
+         return other.mImpl - mImpl;
       }
 
    protected:
@@ -124,7 +135,7 @@ public:
    void update(const T& item)
    {
       mContainer.replaceItems(mName, {{ mLocalToRemoteIdMap[item.id], Serializer::serialize(item) }});
-      *find(mLocalCache, item.id) = item;
+      *std::find_if(mLocalCache.begin(), mLocalCache.end(), [&](auto x)->bool{return item.id == x.id;}) = item;
    }
 
    void erase(const Iterator& pos)
@@ -167,3 +178,16 @@ private:
 };
 
 }
+
+/*namespace std 
+{
+   template <class T>
+   struct iterator_traits<materia::RemoteCollection<T>::Iterator> 
+   {
+      typedef typename T value_type;
+      typedef typename int difference_type;
+      typedef typename random_access_iterator_tag iterator_category;
+      typedef typename T* pointer;
+      typedef typename T& reference;
+   };
+}*/

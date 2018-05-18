@@ -15,7 +15,7 @@ strategy::CommonItemProperties toProto(const materia::StrategyItem& x)
    strategy::CommonItemProperties result;
 
    result.mutable_id()->CopyFrom(toProto(x.id));
-   result.mutable_parent_goal_id()->CopyFrom(toProto(x.parentGoalId));
+   
 
    result.set_name(x.name);
    result.set_notes(x.notes);
@@ -30,7 +30,7 @@ T fromProto(const strategy::CommonItemProperties& x)
    T result;
 
    result.id = fromProto(x.id());
-   result.parentGoalId = fromProto(x.parent_goal_id());
+   
 
 
    result.name = x.name();
@@ -69,6 +69,7 @@ strategy::Task toProto(const materia::Task& x)
 
    result.mutable_common_props()->CopyFrom(toProto(static_cast<const materia::StrategyItem&>(x)));
    result.set_done(x.done);
+   result.mutable_parent_goal_id()->CopyFrom(toProto(x.parentGoalId));
    for(auto a : x.requiredTasks)
    {
       result.add_required_tasks()->CopyFrom(toProto(a));
@@ -82,6 +83,7 @@ materia::Task fromProto(const strategy::Task& x)
    materia::Task result = fromProto<Task>(x.common_props());
 
    result.done = x.done();
+   result.parentGoalId = fromProto(x.parent_goal_id());
    for(auto a : x.required_tasks())
    {
       result.requiredTasks.push_back(fromProto(a));
@@ -96,6 +98,7 @@ strategy::Objective toProto(const materia::Objective& x)
 
    result.mutable_common_props()->CopyFrom(toProto(static_cast<const materia::StrategyItem&>(x)));
    result.mutable_meas_id()->CopyFrom(toProto(x.measurementId));
+   result.mutable_parent_goal_id()->CopyFrom(toProto(x.parentGoalId));
    result.set_reached(x.reached);
    result.set_expectedtreshold(x.expected);
 
@@ -107,6 +110,7 @@ materia::Objective fromProto(const strategy::Objective& x)
    materia::Objective result = fromProto<Objective>(x.common_props());
 
    result.measurementId = fromProto(x.meas_id());
+   result.parentGoalId = fromProto(x.parent_goal_id());
    result.reached = x.reached();
    result.expected = x.expectedtreshold();
 
@@ -367,7 +371,6 @@ std::vector<Affinity> Strategy::getAffinities()
 bool Goal::operator == (const Goal& other) const
 {
    return id == other.id
-      && parentGoalId == other.parentGoalId
       && name == other.name
       && notes == other.notes
       && affinityId == other.affinityId

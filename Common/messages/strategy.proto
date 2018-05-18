@@ -25,7 +25,6 @@ Events
 message CommonItemProperties
 {
    common.UniqueId id = 1;
-   common.UniqueId parent_goal_id = 2;
    string name = 4;
    string notes = 5;
    common.UniqueId icon_id = 6;
@@ -47,15 +46,17 @@ message Goals
 message Objective
 {
    CommonItemProperties common_props = 1;
-   bool reached = 2;
-   common.UniqueId meas_id = 3;
-   int32 expectedtreshold = 4;
+   common.UniqueId parent_goal_id = 2;
+   bool reached = 3;
+   common.UniqueId meas_id = 4;
+   int32 expectedtreshold = 5;
 }
 
 message Task
 {
    CommonItemProperties common_props = 1;
-   bool done = 2;
+   common.UniqueId parent_goal_id = 2;
+   bool done = 3;
    repeated common.UniqueId required_tasks = 4;
 }
 

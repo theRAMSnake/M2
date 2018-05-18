@@ -4,6 +4,7 @@
 #include <Common/PortLayout.hpp>
 #include <Client/MateriaClient.hpp>
 #include <Client/IStrategy.hpp>
+#include <Client/IEvents.hpp>
 #include <Client/private/ProtoConverter.hpp>
 #include <messages/strategy.pb.h>
 #include <boost/uuid/uuid_generators.hpp>
@@ -11,6 +12,7 @@
 #include <boost/signals2.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include "RemoteCollection.hpp"
 
 namespace materia
@@ -48,7 +50,40 @@ std::string toJson(const Affinity& t)
    std::ostringstream buf; 
    write_json (buf, pt, false);
    return buf.str();
-}  
+}
+
+template <typename T>
+std::vector<T> as_vector(boost::property_tree::ptree const& pt, boost::property_tree::ptree::key_type const& key)
+{
+    std::vector<T> r;
+    for (auto& item : pt.get_child(key))
+        r.push_back(item.second.get_value<T>());
+    return r;
+}
+
+template<>
+Task fromJson(const std::string& content)
+{
+   Task result;
+
+   boost::property_tree::ptree pt;
+   std::istringstream is (content);
+   read_json (is, pt);
+   
+   result.id = pt.get<std::string> ("id");
+   result.parentGoalId = pt.get<std::string> ("parent_goal_id");
+   result.name = pt.get<std::string> ("name");
+   result.notes = pt.get<std::string> ("notes");
+   result.iconId = pt.get<std::string> ("icon_id");
+   result.done = pt.get<bool> ("done");
+
+   auto tasks = as_vector<std::string>(pt, "required_tasks");
+
+   result.requiredTasks.resize(tasks.size());
+   std::copy(tasks.begin(), tasks.end(), result.requiredTasks.begin());
+
+   return result;
+}
 
 namespace impl
 {
@@ -275,7 +310,6 @@ public:
       read_json (is, pt);
       
       mImpl.id = pt.get<std::string> ("id");
-      mImpl.parentGoalId = pt.get<std::string> ("parent_goal_id");
       mImpl.name = pt.get<std::string> ("name");
       mImpl.notes = pt.get<std::string> ("notes");
       mImpl.iconId = pt.get<std::string> ("icon_id");
@@ -298,25 +332,6 @@ public:
       return mImpl;
    }
 
-   void registerChild(std::shared_ptr<Goal>& child)
-   {
-      auto bind = std::bind(&Goal::UpdateAndSaveAchieved, this);
-
-      mChildren.insert(std::make_pair(child->getProps().id, ConnectedObject(
-         child,
-         child->OnAchievedChanged.connect(bind)
-         )));
-      
-      UpdateAndSaveAchieved();
-   }
-
-   void unregisterChild(std::shared_ptr<Goal>& child)
-   {
-      mChildren.erase(child->getProps().id);
-
-      UpdateAndSaveAchieved();
-   }
-
    void connect(const std::shared_ptr<Objective>& obj)
    {
       mObjectives.insert(std::make_pair(obj->getProps().id, ConnectedObject(
@@ -329,20 +344,21 @@ public:
 
    void disconnect(const std::shared_ptr<Objective>& obj)
    {
-      mChildren.erase(obj->getProps().id);
+      mObjectives.erase(obj->getProps().id);
 
       UpdateAndSaveAchieved();
    }
 
-   std::vector<std::shared_ptr<Goal>> getChildren() const
+   std::vector<Id> getObjectives()
    {
-      decltype(getChildren()) result;
-      for(auto x : mChildren)
+      decltype(getObjectives()) result;
+
+      for(auto x : mObjectives)
       {
-         result.push_back(x.second.get());
+         result.push_back(x.second.get()->getProps().id);
       }
 
-      return result;
+      return result;  
    }
 
 private:
@@ -351,7 +367,6 @@ private:
       boost::property_tree::ptree pt;
 
       pt.put ("id", mImpl.id.getGuid());
-      pt.put ("parent_goal_id", mImpl.parentGoalId.getGuid());
       pt.put ("name", mImpl.name);
       pt.put ("notes", mImpl.notes);
       pt.put ("icon_id", mImpl.iconId.getGuid());
@@ -389,19 +404,6 @@ private:
    {
       bool result = false;
 
-      if(!mChildren.empty())
-      {
-         result = true;
-         for(auto g : mChildren)
-         {
-            result = result && g.second.get()->getProps().achieved;
-            if(!result)
-            {
-               return false;
-            }
-         }
-      }
-
       if(!mObjectives.empty())
       {
          for(auto o : mObjectives)
@@ -417,7 +419,6 @@ private:
       return result;
    }
 
-   std::map<Id, ConnectedObject<std::shared_ptr<Goal>, boost::signals2::connection>> mChildren;
    std::map<Id, ConnectedObject<std::shared_ptr<Objective>, boost::signals2::connection>> mObjectives;
    ContainerSlot mSlot;
    materia::Goal mImpl;
@@ -462,7 +463,6 @@ public:
       populateCollection(mObjectives);
       populateCollection(mMeasurements);
 
-      connectGoals();
       connectMeasurementsWithObjectives();
       connectObjectivesWithGoals();
    }
@@ -485,13 +485,6 @@ public:
          mGoals.insert(std::make_pair(g.id, newGoal));
          raiseGoalChangedEvent(g.id);
          newGoal->OnAchievedChanged.connect(std::bind(&StrategyServiceImpl::OnGoalAchivedChanged, this, g.id));
-         
-         auto parent = mGoals.find(g.parentGoalId);
-
-         if(parent != mGoals.end())
-         {
-            parent->second->registerChild(newGoal);
-         }
 
          response->set_guid(id);
       }
@@ -510,13 +503,6 @@ public:
          if(g != mGoals.end())
          {
             auto goal = g->second;
-
-            auto oldParent = goal->getProps().parentGoalId;
-            auto newParent = newGoalProps.parentGoalId;
-            if(oldParent != newParent)
-            {
-               reparent(goal, oldParent, newParent);
-            }
 
             g->second->accept(newGoalProps);
             raiseGoalChangedEvent(id);
@@ -819,7 +805,7 @@ public:
             {
                if(o.second->getProps().measurementId == id)
                {
-                  o.second->disconnect(meas->second);
+                  o.second->disconnect(*meas->second);
                   break;
                }
             }
@@ -885,44 +871,27 @@ private:
 
    void deleteGoalImpl(const Id& id)
    {
-      auto g = mGoals[id]->second;
-      auto parentId = g.getProps().parentGoalId;
+      auto g = mGoals[id];
       
-      if(parentId != Id::Invalid)
+      auto taskIter = std::find_if(mTasks.begin(), mTasks.end(), [=](auto t)->bool {return id == t.parentGoalId;});
+      while(taskIter != mTasks.end())
       {
-         mGoals[parentId]->second->unregisterChild(g);
+         mTasks.erase(taskIter);
+         taskIter = std::find_if(mTasks.begin(), mTasks.end(), [=](auto t)->bool {return id == t.parentGoalId;});
       }
 
-      auto children = g->getChildren();
-      for(auto x : children)
+      for(auto o : g->getObjectives())
       {
-         deleteGoalImpl(x->getProps().id);
+         mObjectives.erase(o);
       }
 
-      //TODO: delete all related tasks and objectives
       mGoals.erase(id);
       raiseGoalChangedEvent(id);
    }
 
-   void reparent(std::shared_ptr<impl::Goal>& g, const Id& oldParent, const Id& newParent)
-   {
-      if(oldParent != Id::Invalid)
-      {
-         mGoals[oldParent]->unregisterChild(g);
-      }
-      if(newParent != Id::Invalid)
-      {
-         auto newParentGoal = mGoals.find(newParent);
-         if(newParentGoal != mGoals.end())
-         {
-            newParentGoal->second->registerChild(g);
-         }
-      }
-   }
-
    void OnGoalAchivedChanged(const Id& goalId)
    {
-      raiseGoalChangedEvent(g.id);
+      raiseGoalChangedEvent(goalId);
    }
 
    std::vector<ContainerItem> loadOrCreateContainer(const std::string& name)
@@ -951,33 +920,17 @@ private:
       }
    }
 
-   void connectGoals()
-   {
-      for(auto g : mGoals)
-      {
-         auto parentGoalId = g->getProps().parentGoalId;
-         if(parentGoalId != Id::Invalid)
-         {
-            auto parentGoal = mGoals.find(parentGoalId);
-            if(parentGoal != mGoals.end())
-            {
-               parentGoal->second->registerChild(g);
-            }
-         }
-      }
-   }
-
    void connectMeasurementsWithObjectives()
    {
       for(auto o : mObjectives)
       {
-         auto measId = o->getProps().measId;
+         auto measId = o.second->getProps().measurementId;
          if(measId != Id::Invalid)
          {
             auto measurement = mMeasurements.find(measId);
             if(measurement != mMeasurements.end())
             {
-               o->connect(*measurement->second);
+               o.second->connect(*measurement->second);
             }
          }
       }
@@ -987,19 +940,20 @@ private:
    {
       for(auto o : mObjectives)
       {
-         auto parentGoal = mGoals.find(parentGoalId);
+         auto& objective = *o.second;
+         auto parentGoal = mGoals.find(objective.getProps().parentGoalId);
          if(parentGoal != mGoals.end())
          {
-            parentGoal->second->connect(*o);
+            parentGoal->second->connect(o.second);
          }
       }
    }
 
    void raiseMeasurementChangedEvent(const Id& id)
    {
-      materia::IdEvent idEv;
+      IdEvent idEv;
       idEv.type = materia::EventType::MeasurementUpdated;
-      idEv.timestamp = boost::posix_time::second_clock::local_time();
+      idEv.timestamp = boost::posix_time::to_time_t(boost::posix_time::second_clock::local_time());
       idEv.id = id;
 
       mEvents.putEvent(idEv);
@@ -1009,7 +963,7 @@ private:
    {
       materia::IdEvent idEv;
       idEv.type = materia::EventType::GoalUpdated;
-      idEv.timestamp = boost::posix_time::second_clock::local_time();
+      idEv.timestamp = boost::posix_time::to_time_t(boost::posix_time::second_clock::local_time());
       idEv.id = id;
 
       mEvents.putEvent(idEv);
@@ -1019,7 +973,7 @@ private:
    {
       materia::Event idEv;
       idEv.type = materia::EventType::AffinitiesUpdated;
-      idEv.timestamp = boost::posix_time::second_clock::local_time();
+      idEv.timestamp = boost::posix_time::to_time_t(boost::posix_time::second_clock::local_time());
 
       mEvents.putEvent(idEv);
    }
