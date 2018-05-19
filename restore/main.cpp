@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <Client/MateriaClient.hpp>
+#include <Client/IDatabase.hpp>
 #include <Common/PortLayout.hpp>
 
 #include <messages/database.pb.h>

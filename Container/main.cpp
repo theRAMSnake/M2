@@ -291,7 +291,7 @@ private:
       ContainerUpdatedEvent ev;
       ev.type = EventType::ContainerUpdated;
       ev.containerName = containerName;
-      ev.timestamp = pt::to_time_t(pt::second_clock::local_time());
+      ev.timestamp = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
       mEvents.putEvent(ev);
    }

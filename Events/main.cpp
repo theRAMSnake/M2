@@ -33,7 +33,7 @@ public:
    EventsServiceImpl()
    {
       events::EventInfo nfo;
-      nfo.set_timestamp(boost::posix_time::to_time_t(boost::posix_time::second_clock::local_time()));
+      nfo.set_timestamp(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
       nfo.set_type(events::EventType::HistoryStarted);
 
       mEvents.insert(nfo);

@@ -4,6 +4,7 @@
 #include <boost/lexical_cast.hpp>
 #include <algorithm>
 #include <Client/MateriaClient.hpp>
+#include <Client/IDatabase.hpp>
 
 #include <bsoncxx/json.hpp>
 #include <bsoncxx/builder/stream/document.hpp>
@@ -46,7 +47,7 @@ protected:
    }
 
    materia::MateriaClient mClient;
-   materia::Database& mService;
+   materia::IDatabase& mService;
    std::vector<materia::Id> mSampleIds;
 };
 

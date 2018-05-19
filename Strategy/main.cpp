@@ -61,6 +61,19 @@ std::vector<T> as_vector(boost::property_tree::ptree const& pt, boost::property_
     return r;
 }
 
+template <typename T>
+void put(boost::property_tree::ptree& pt, const std::string& key, const std::vector<T>& data)
+{
+   boost::property_tree::ptree child;
+
+   for(auto x : data)
+   {
+      child.put_value(x);
+   }
+
+   pt.add_child(key, child);
+}
+
 template<>
 Task fromJson(const std::string& content)
 {
@@ -83,6 +96,28 @@ Task fromJson(const std::string& content)
    std::copy(tasks.begin(), tasks.end(), result.requiredTasks.begin());
 
    return result;
+}
+
+template<>
+std::string toJson(const Task& t)
+{
+   boost::property_tree::ptree pt;
+
+   pt.put ("id", t.id.getGuid());
+   pt.put ("parent_goal_id", t.parentGoalId.getGuid());
+   pt.put ("name", t.name);
+   pt.put ("notes", t.notes);
+   pt.put ("icon_id", t.iconId.getGuid());
+   pt.put ("done", t.done);
+
+   std::vector<std::string> tasksToPut(t.requiredTasks.size());
+   std::transform(t.requiredTasks.begin(), t.requiredTasks.end(), tasksToPut.begin(), [](auto x)->auto {return x.getGuid();});
+
+   put(pt, "required_tasks", tasksToPut);
+
+   std::ostringstream buf; 
+   write_json (buf, pt, false);
+   return buf.str();
 }
 
 namespace impl

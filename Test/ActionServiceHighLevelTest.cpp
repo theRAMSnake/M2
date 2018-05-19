@@ -9,6 +9,7 @@
 #include <mongocxx/uri.hpp>
 
 #include <Client//MateriaClient.hpp>
+#include <Client/IActions.hpp>
 
 #include "TestHelpers.hpp"
 
@@ -28,7 +29,7 @@ public:
 protected:
 
    materia::MateriaClient mClient;
-   materia::Actions& mService;
+   materia::IActions& mService;
 };
 
 namespace std

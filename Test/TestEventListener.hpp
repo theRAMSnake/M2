@@ -1,6 +1,7 @@
 #pragma once
 
-#include <Client/Events.hpp>
+#include <Client/IEvents.hpp>
+#include <chrono>
 
 template<materia::EventType EV_TYPE>
 struct EventProperties
@@ -17,10 +18,10 @@ struct EventProperties<materia::EventType::ContainerUpdated>
 class TestEventListener
 {
 public:
-   TestEventListener(materia::Events& events)
+   TestEventListener(materia::IEvents& events)
    : mEvents(events)
    {
-      mStartTime = boost::posix_time::microsec_clock::local_time();
+      mStartTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
    }
 
    template<materia::EventType EV_TYPE>
@@ -62,6 +63,6 @@ public:
    }
 
 private:
-   materia::Events& mEvents;
-   boost::posix_time::ptime mStartTime;
+   materia::IEvents& mEvents;
+   std::time_t mStartTime;
 };

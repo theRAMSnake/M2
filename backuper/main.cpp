@@ -1,6 +1,8 @@
 #include <iostream>
 
 #include <Client/MateriaClient.hpp>
+#include <Client/IDatabase.hpp>
+#include <Client/IContainer.hpp>
 #include <Common/PortLayout.hpp>
 
 #include <boost/property_tree/ptree.hpp>

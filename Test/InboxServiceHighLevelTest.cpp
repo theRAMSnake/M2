@@ -2,6 +2,8 @@
 #include <boost/test/unit_test.hpp>
 #include <messages/inbox.pb.h>
 #include <Client/MateriaClient.hpp>
+#include <Client/IInbox.hpp>
+#include <Client/IContainer.hpp>
 #include <boost/filesystem.hpp>
 
 #include <mongocxx/instance.hpp>
@@ -29,7 +31,7 @@ protected:
    }
 
    materia::MateriaClient mClient;
-   materia::Inbox& mService;
+   materia::IInbox& mService;
 };
 
 BOOST_FIXTURE_TEST_CASE( AddDeleteInbox, InboxTest ) 

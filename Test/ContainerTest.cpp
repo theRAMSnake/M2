@@ -3,7 +3,7 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/lexical_cast.hpp>
 #include <Client/MateriaClient.hpp>
-#include <Client/Container.hpp>
+#include <Client/IContainer.hpp>
 #include "TestHelpers.hpp"
 #include "TestEventListener.hpp"
 #include <fstream>
@@ -106,7 +106,7 @@ protected:
 
    materia::MateriaClient mClient;
    TestEventListener mEventListener;
-   materia::Container& mService;
+   materia::IContainer& mService;
    std::map<std::string, std::vector<materia::ContainerItem>> mInsertedItems;
 };
 

@@ -3,6 +3,7 @@
 #include <boost/test/unit_test.hpp>
 #include <messages/admin.pb.h>
 #include <Client/MateriaClient.hpp>
+#include <Client/IAdmin.hpp>
 
 namespace materia
 {
