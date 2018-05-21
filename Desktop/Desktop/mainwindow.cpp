@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent, StrategyDataModel &strategyDataModel) :
     addDockWidget(Qt::BottomDockWidgetArea, dock);
 
     output->setReadOnly(true);
-    connect(&Logger::instance(), &Logger::onNewMessage,
+    connect(&Logger::instance(), &Logger::onNewMessage, this,
             [=]( auto msg ) {
 
         output->appendPlainText(msg.str);

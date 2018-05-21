@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "materiagateway.h"
 #include "materiagatewaythread.h"
+#include "logger.h"
 #include "Models/strategydatamodel.h"
 #include <QApplication>
 #include <QSettings>
@@ -11,6 +12,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     qRegisterMetaType<materia::Goal>("Goal");
+    qRegisterMetaType<Message>("Message");
 
     QFile file(":/qdarkstyle/style.qss");
     file.open(QFile::ReadOnly);

@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QHBoxLayout>
 #include "Models/strategydatamodel.h"
+#include "iconmanager.h"
 
 class QGridLayout;
 class StrategyView : public QWidget
@@ -23,6 +24,8 @@ private:
     QHBoxLayout* mLayout;
     StrategyDataModel& mStrategyDataModel;
     std::map<materia::Id, QGridLayout*> mAffinityToGuiMap;
+    std::map<materia::Id, int> mNumGoalsPerId;
+    IconManager mIconManager;
 };
 
 #endif // STRATEGYVIEW_H

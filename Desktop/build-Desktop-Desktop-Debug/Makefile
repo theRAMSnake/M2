@@ -58,7 +58,8 @@ SOURCES       = ../Desktop/main.cpp \
 		../Desktop/Models/strategydatamodel.cpp \
 		../Desktop/Views/strategyview.cpp \
 		../Desktop/logger.cpp \
-		../Desktop/Controls/goalwidget.cpp qrc_mainres.cpp \
+		../Desktop/Controls/goalwidget.cpp \
+		../Desktop/iconmanager.cpp qrc_mainres.cpp \
 		qrc_style.cpp \
 		moc_mainwindow.cpp \
 		moc_materiagatewaythread.cpp \
@@ -76,6 +77,7 @@ OBJECTS       = main.o \
 		strategyview.o \
 		logger.o \
 		goalwidget.o \
+		iconmanager.o \
 		qrc_mainres.o \
 		qrc_style.o \
 		moc_mainwindow.o \
@@ -210,7 +212,8 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		../Desktop/Models/strategydatamodel.h \
 		../Desktop/Views/strategyview.h \
 		../Desktop/logger.h \
-		../Desktop/Controls/goalwidget.h ../Desktop/main.cpp \
+		../Desktop/Controls/goalwidget.h \
+		../Desktop/iconmanager.h ../Desktop/main.cpp \
 		../Desktop/mainwindow.cpp \
 		../Desktop/materiagatewaythread.cpp \
 		../Desktop/materiagateway.cpp \
@@ -218,7 +221,8 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		../Desktop/Models/strategydatamodel.cpp \
 		../Desktop/Views/strategyview.cpp \
 		../Desktop/logger.cpp \
-		../Desktop/Controls/goalwidget.cpp
+		../Desktop/Controls/goalwidget.cpp \
+		../Desktop/iconmanager.cpp
 QMAKE_TARGET  = Desktop
 DESTDIR       = 
 TARGET        = Desktop
@@ -495,8 +499,8 @@ distdir: FORCE
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../Desktop/mainres.qrc ../Desktop/style.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../Desktop/mainwindow.h ../Desktop/materiagatewaythread.h ../Desktop/materiagateway.h ../Desktop/MateriaEmu/materiaclient.h ../Desktop/Models/strategydatamodel.h ../Desktop/Views/strategyview.h ../Desktop/logger.h ../Desktop/Controls/goalwidget.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../Desktop/main.cpp ../Desktop/mainwindow.cpp ../Desktop/materiagatewaythread.cpp ../Desktop/materiagateway.cpp ../Desktop/MateriaEmu/materiaclient.cpp ../Desktop/Models/strategydatamodel.cpp ../Desktop/Views/strategyview.cpp ../Desktop/logger.cpp ../Desktop/Controls/goalwidget.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../Desktop/mainwindow.h ../Desktop/materiagatewaythread.h ../Desktop/materiagateway.h ../Desktop/MateriaEmu/materiaclient.h ../Desktop/Models/strategydatamodel.h ../Desktop/Views/strategyview.h ../Desktop/logger.h ../Desktop/Controls/goalwidget.h ../Desktop/iconmanager.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../Desktop/main.cpp ../Desktop/mainwindow.cpp ../Desktop/materiagatewaythread.cpp ../Desktop/materiagateway.cpp ../Desktop/MateriaEmu/materiaclient.cpp ../Desktop/Models/strategydatamodel.cpp ../Desktop/Views/strategyview.cpp ../Desktop/logger.cpp ../Desktop/Controls/goalwidget.cpp ../Desktop/iconmanager.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../Desktop/mainwindow.ui $(DISTDIR)/
 
 
@@ -652,7 +656,8 @@ main.o: ../Desktop/main.cpp ../Desktop/mainwindow.h \
 		../Desktop/Models/strategydatamodel.h \
 		../Desktop/materiagateway.h \
 		../Desktop/MateriaEmu/materiaclient.h \
-		../Desktop/materiagatewaythread.h
+		../Desktop/materiagatewaythread.h \
+		../Desktop/logger.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../Desktop/main.cpp
 
 mainwindow.o: ../Desktop/mainwindow.cpp ../Desktop/mainwindow.h \
@@ -692,6 +697,9 @@ logger.o: ../Desktop/logger.cpp ../Desktop/logger.h
 goalwidget.o: ../Desktop/Controls/goalwidget.cpp ../Desktop/Controls/goalwidget.h \
 		../Desktop/MateriaEmu/materiaclient.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o goalwidget.o ../Desktop/Controls/goalwidget.cpp
+
+iconmanager.o: ../Desktop/iconmanager.cpp ../Desktop/iconmanager.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o iconmanager.o ../Desktop/iconmanager.cpp
 
 qrc_mainres.o: qrc_mainres.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_mainres.o qrc_mainres.cpp

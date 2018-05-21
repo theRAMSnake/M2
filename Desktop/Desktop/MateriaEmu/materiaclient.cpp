@@ -46,6 +46,10 @@ public:
         result.push_back(createGoal({"aff1"}, "g32", id));
         result.push_back(createGoal({"aff1"}, "g33", id));
         result.push_back(createGoal({"aff1"}, "g34", id));
+        result.push_back(createGoal({"aff1"}, "g34", id));
+        result.push_back(createGoal({"aff1"}, "g34", id));
+        result.push_back(createGoal({"aff1"}, "g34", id));
+        result.push_back(createGoal({"aff1"}, "g34", id));
 
         result.push_back(createGoal({"aff2"}, "g1"));
         result.push_back(createGoal({"aff2"}, "g2"));
@@ -71,6 +75,7 @@ private:
         g.id = {QString::number(++id).toStdString()};
         g.name = name;
         g.parentGoalId = parentId;
+        g.iconId = {"eye"};
 
         return g;
     }

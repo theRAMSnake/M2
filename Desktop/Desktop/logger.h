@@ -52,4 +52,6 @@ signals:
 public slots:
 };
 
+Q_DECLARE_METATYPE(Message);
+
 #endif // LOGGER_H

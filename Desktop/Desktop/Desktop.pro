@@ -35,7 +35,8 @@ SOURCES += \
     Models/strategydatamodel.cpp \
     Views/strategyview.cpp \
     logger.cpp \
-    Controls/goalwidget.cpp
+    Controls/goalwidget.cpp \
+    iconmanager.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -45,7 +46,8 @@ HEADERS += \
     Models/strategydatamodel.h \
     Views/strategyview.h \
     logger.h \
-    Controls/goalwidget.h
+    Controls/goalwidget.h \
+    iconmanager.h
 
 FORMS += \
         mainwindow.ui
