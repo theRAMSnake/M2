@@ -1,7 +1,6 @@
 #include "../MateriaClient.hpp"
 #include <Common/PortLayout.hpp>
 #include "ZmqPbChannel.hpp"
-#include "Database.hpp"
 #include "Admin.hpp"
 #include "Inbox.hpp"
 #include "Actions.hpp"
@@ -20,7 +19,6 @@ struct MateriaClientImpl
    : mContext(1)
    , mSocket(mContext, ZMQ_REQ)
    , mChannel(mSocket, clientName)
-   , mDatabase(mChannel)
    , mAdmin(mChannel)
    , mInbox(mChannel)
    , mActions(mChannel)
@@ -37,7 +35,6 @@ struct MateriaClientImpl
    zmq::socket_t mSocket;
    materia::ZmqPbChannel mChannel;
 
-   Database mDatabase;
    Admin mAdmin;
    Inbox mInbox;
    Actions mActions;
@@ -57,11 +54,6 @@ MateriaClient::MateriaClient(const std::string& clientName, const std::string& i
 MateriaClient::~MateriaClient()
 {
    delete mImpl;
-}
-
-IDatabase& MateriaClient::getDatabase()
-{
-   return mImpl->mDatabase;
 }
 
 IActions& MateriaClient::getActions()

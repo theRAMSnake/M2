@@ -4,7 +4,6 @@
 void start()
 {
    system("nohup ./m2Container &");
-   system("nohup ./m2DatabaseService &");
    system("nohup ./m2InboxService &");
    system("nohup ./m2ActionsService &");
    system("nohup ./m2Calendar &");

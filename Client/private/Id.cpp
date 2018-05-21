@@ -35,4 +35,9 @@ namespace materia
    {
       return mGuid < other.mGuid;
    }
+
+   Id::operator std::string() const
+   {
+      return mGuid;
+   }
 }

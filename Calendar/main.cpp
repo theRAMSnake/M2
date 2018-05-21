@@ -10,7 +10,8 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/lexical_cast.hpp>
 #include <Client/MateriaClient.hpp>
-#include <Client/IDatabase.hpp>
+#include <Client/RemoteCollection.hpp>
+#include <Client/ICalendar.hpp>
 #include <Client/private/ProtoConverter.hpp>
 
 namespace materia
@@ -18,24 +19,24 @@ namespace materia
    
 boost::uuids::random_generator generator;
 
-void from_json(const std::string& json, calendar::CalendarItem& result)
+void fromJson(const std::string& json, CalendarItem& result)
 {
    boost::property_tree::ptree pt;
    std::istringstream is (json);
    read_json (is, pt);
    
-   result.mutable_id()->set_guid(pt.get<std::string> ("id"));
-   result.set_text(pt.get<std::string> ("text"));
-   result.set_timestamp(pt.get<google::protobuf::int64> ("timestamp"));
+   result.id = pt.get<std::string> ("id");
+   result.text = pt.get<std::string> ("text");
+   result.timestamp = pt.get<std::time_t> ("timestamp");
 }
 
-std::string to_json(const calendar::CalendarItem& from)
+std::string toJson(const CalendarItem& from)
 {
    boost::property_tree::ptree pt;
 
-   pt.put ("id", from.id().guid());
-   pt.put ("text", from.text());
-   pt.put ("timestamp", from.timestamp());
+   pt.put ("id", from.id.getGuid());
+   pt.put ("text", from.text);
+   pt.put ("timestamp", from.timestamp);
 
    std::ostringstream buf; 
    write_json (buf, pt, false);
@@ -47,9 +48,9 @@ class CalendarServiceImpl : public calendar::CalendarService
 public:
    CalendarServiceImpl()
    : mClient("CalendarService")
-   , mDbProxy(mClient.getDatabase())
+   , mItems("calendar", mClient.getContainer())
    {
-      mDbProxy.setCategory(mCategory);
+      
    }
 
    virtual void Query(::google::protobuf::RpcController* controller,
@@ -57,14 +58,12 @@ public:
         ::calendar::CalendarItems* response,
         ::google::protobuf::Closure* done)
    {     
-      for(auto x : mDbProxy.getDocuments())
+      for(auto x : mItems)
       {
-         calendar::CalendarItem item;
-         from_json(x.body, item);
-         if(item.timestamp() > request->timestampfrom() && item.timestamp() < request->timestampto())
+         if(x.timestamp > request->timestampfrom() && x.timestamp < request->timestampto())
          {
             auto newItem = response->add_items();
-            newItem->CopyFrom(item);
+            newItem->CopyFrom(toProto(x));
          }
       }
    }
@@ -80,13 +79,11 @@ public:
       }
 
       std::vector<calendar::CalendarItem> fetchedItems;
-      for(auto x : mDbProxy.getDocuments())
+      for(auto x : mItems)
       {
-         calendar::CalendarItem item;
-         from_json(x.body, item);
-         if(item.timestamp() > request->timestampfrom())
+         if(x.timestamp > request->timestampfrom())
          {
-            fetchedItems.push_back(item);
+            fetchedItems.push_back(toProto(x));
          }
       }
 
@@ -111,7 +108,14 @@ public:
          ::common::OperationResultMessage* response,
          ::google::protobuf::Closure* done)
    {
-      response->set_success(mDbProxy.deleteDocument(fromProto(*request)));
+      auto pos = mItems.find(fromProto(*request));
+      bool found = pos != mItems.end();
+      if(found)
+      {
+         mItems.erase(pos);
+      }
+
+      response->set_success(found);
    }
 
    virtual void EditItem(::google::protobuf::RpcController* controller,
@@ -119,8 +123,14 @@ public:
          ::common::OperationResultMessage* response,
          ::google::protobuf::Closure* done)
    {
-      materia::Document doc { fromProto(request->id()), to_json(*request) };
-      response->set_success(mDbProxy.replaceDocument(doc));
+      auto pos = mItems.find(fromProto(request->id()));
+      bool found = pos != mItems.end();
+      if(found)
+      {
+         mItems.update(fromProto(*request));
+      }
+
+      response->set_success(found);
    }
 
    virtual void AddItem(::google::protobuf::RpcController* controller,
@@ -133,14 +143,14 @@ public:
       calendar::CalendarItem newItem(*request);
       newItem.mutable_id()->set_guid(id);
 
-      materia::Document doc { materia::Id::Invalid, to_json(newItem) };
-      *response = toProto(mDbProxy.insertDocument(doc, materia::IdMode::Generate));
+      mItems.insert(fromProto(newItem));
+
+      response->set_guid(id);
    }
 
 private:
    materia::MateriaClient mClient;
-   materia::IDatabase& mDbProxy;
-   const std::string mCategory = "CAL";
+   RemoteCollection<CalendarItem> mItems;
 };
 
 }

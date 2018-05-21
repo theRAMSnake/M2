@@ -38,7 +38,8 @@ BOOST_AUTO_TEST_CASE( Admin_GetComponentInfo )
       {"ContainerService", true},
       {"DatabaseService", true},
       {"EventsService", true},
-      {"InboxService", true}
+      {"InboxService", true},
+      {"StrategyService", true}
    };
    
    BOOST_CHECK_EQUAL_COLLECTIONS(statusList.begin(), statusList.end(), 

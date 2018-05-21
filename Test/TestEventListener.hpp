@@ -15,6 +15,24 @@ struct EventProperties<materia::EventType::ContainerUpdated>
    typedef std::string Value;
 };
 
+template<>
+struct EventProperties<materia::EventType::GoalUpdated>
+{
+   typedef materia::Id Value;
+};
+
+template<>
+struct EventProperties<materia::EventType::MeasurementUpdated>
+{
+   typedef materia::Id Value;
+};
+
+template<>
+struct EventProperties<materia::EventType::AffinitiesUpdated>
+{
+   typedef std::string Value;
+};
+
 class TestEventListener
 {
 public:

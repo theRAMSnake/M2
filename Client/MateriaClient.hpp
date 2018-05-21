@@ -22,8 +22,7 @@ public:
    MateriaClient(const MateriaClient& other) = delete;
    void operator = (const MateriaClient& other) = delete;
    ~MateriaClient();
-
-   IDatabase& getDatabase();
+   
    IAdmin& getAdmin();
    IInbox& getInbox();
    IActions& getActions();

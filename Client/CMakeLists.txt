@@ -13,7 +13,6 @@ add_library(m2client STATIC
    private/Inbox.cpp
    private/ZmqPbChannel.cpp
    private/MateriaClient.cpp
-   private/Database.cpp
    private/Admin.cpp
    private/Journal.cpp
    private/Calendar.cpp

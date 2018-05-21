@@ -18,6 +18,36 @@
 namespace materia
 {
 
+class DoubleLogger
+{
+public:
+    DoubleLogger(const std::string& fileName)
+    : mFile(fileName.c_str())
+    {
+    }
+
+    ~DoubleLogger()
+    {
+        mFile.close();
+    }
+
+    template<class T>
+    DoubleLogger& operator << (const T& val)
+    {
+        std::cout << val;
+        mFile << val;
+
+        mFile.flush();
+
+        return *this;
+    }
+
+private:
+    std::ofstream mFile;
+};
+
+DoubleLogger logger("Strategy2.log");
+
 boost::uuids::random_generator generator;
 
 template<>
@@ -177,13 +207,13 @@ public:
 
    void accept(const materia::Measurement& props)
    {
-      mImpl = props;
-      mSlot.put(toJson());
-
       if(mImpl.value != props.value)
       {
-         OnValueChanged(mImpl.value);
+         OnValueChanged(props.value);
       }
+      
+      mImpl = props;
+      mSlot.put(toJson());
    }
 
    const materia::Measurement& getProps() const
@@ -258,10 +288,10 @@ public:
       mMeasConnection.disconnect();
       mMeasConnection = meas.OnValueChanged.connect(std::bind(&Objective::OnMeasValueChanged, this, std::placeholders::_1));
       mLastKnowMeasValue = meas.getProps().value;
-      if(updateReached(mImpl.reached))
+      /*if(updateReached(mImpl.reached))
       {
          mSlot.put(toJson());
-      }
+      }*/
    }
 
    void disconnect(const Measurement& meas)
@@ -299,11 +329,12 @@ private:
    {
       if(mImpl.measurementId != Id::Invalid)
       {
-         mImpl.reached = mLastKnowMeasValue <= mImpl.expected;
+         mImpl.reached = mLastKnowMeasValue >= mImpl.expected;
       }
       
       if(mImpl.reached != oldReached)
       {
+         logger << "Sending update to the parent goal\n";
          OnReachedChanged(mImpl.reached);
       }
 
@@ -369,11 +400,19 @@ public:
 
    void connect(const std::shared_ptr<Objective>& obj)
    {
-      mObjectives.insert(std::make_pair(obj->getProps().id, ConnectedObject(
+      auto con = new ConnectedObject<std::shared_ptr<Objective>, boost::signals2::connection>(
          obj,
-         obj->OnReachedChanged.connect(std::bind(&Goal::UpdateAndSaveAchieved, this))
-         )));
+         obj->OnReachedChanged.connect(std::bind(&Goal::OnObjReachedChanged, this))
+         );
+
+      mObjectives.insert(std::make_pair(obj->getProps().id, con));
       
+      UpdateAndSaveAchieved();
+   }
+
+   void OnObjReachedChanged()
+   {
+      logger << "Received signal from objective \n";
       UpdateAndSaveAchieved();
    }
 
@@ -390,7 +429,7 @@ public:
 
       for(auto x : mObjectives)
       {
-         result.push_back(x.second.get()->getProps().id);
+         result.push_back(x.second->get()->getProps().id);
       }
 
       return result;  
@@ -437,13 +476,17 @@ private:
 
    bool calculateAchieved()
    {
+      logger << "Calculating achieved for obs count: " << mObjectives.size() << "\n";
+
       bool result = false;
 
       if(!mObjectives.empty())
       {
+         result = true;
          for(auto o : mObjectives)
          {
-            result = result && o.second.get()->getProps().reached;
+            logger << "obj->reached: " << o.second->get()->getProps().reached << "\n";
+            result = result && o.second->get()->getProps().reached;
             if(!result)
             {
                return false;
@@ -454,7 +497,7 @@ private:
       return result;
    }
 
-   std::map<Id, ConnectedObject<std::shared_ptr<Objective>, boost::signals2::connection>> mObjectives;
+   std::map<Id, std::shared_ptr<ConnectedObject<std::shared_ptr<Objective>, boost::signals2::connection>>> mObjectives;
    ContainerSlot mSlot;
    materia::Goal mImpl;
 };
@@ -629,6 +672,8 @@ public:
       ::common::OperationResultMessage* response,
       ::google::protobuf::Closure* done)
       {
+         logger << "Modify Objective\n";
+
          //meas id might changed
          response->set_success(false);
          auto newObj = fromProto(*request);
@@ -636,11 +681,15 @@ public:
 
          if(oldObj != mObjectives.end())
          {
+            logger << "Old obj there\n";
+
             auto oldParent = mGoals.find(oldObj->second->getProps().parentGoalId);
             auto newParent = mGoals.find(newObj.parentGoalId);
 
             if(newParent != mGoals.end())
             {
+               logger << "Parent found\n";
+
                if(newObj.measurementId != Id::Invalid)
                {
                   auto meas = mMeasurements.find(newObj.measurementId);
@@ -649,10 +698,13 @@ public:
                      return;
                   }
 
+                  logger << "Connecting meas with value: " << meas->second->getProps().value << "\n";
                   oldObj->second->connect(*meas->second);
                }
 
+               logger << "Reached before accept: " << oldObj->second->getProps().reached << "\n";
                oldObj->second->accept(newObj);
+               logger << "Reached after accept: " << oldObj->second->getProps().reached << "\n";
 
                if(newParent != oldParent)
                {
@@ -910,7 +962,7 @@ private:
       
       auto taskIter = std::find_if(mTasks.begin(), mTasks.end(), [=](auto t)->bool {return id == t.parentGoalId;});
       while(taskIter != mTasks.end())
-      {
+      { 
          mTasks.erase(taskIter);
          taskIter = std::find_if(mTasks.begin(), mTasks.end(), [=](auto t)->bool {return id == t.parentGoalId;});
       }

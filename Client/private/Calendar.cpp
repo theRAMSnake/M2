@@ -19,7 +19,7 @@ bool Calendar::deleteItem(const Id& id)
    return result.success();
 }
 
-calendar::CalendarItem convert(const CalendarItem& in)
+calendar::CalendarItem toProto(const CalendarItem& in)
 {
    calendar::CalendarItem out;
 
@@ -30,14 +30,14 @@ calendar::CalendarItem convert(const CalendarItem& in)
    return out;
 }
 
-CalendarItem convert(const calendar::CalendarItem& in)
+CalendarItem fromProto(const calendar::CalendarItem& in)
 {
    return { fromProto(in.id()), in.text(), in.timestamp() };
 }
 
 bool Calendar::replaceItem(const CalendarItem& item)
 {
-   calendar::CalendarItem protoItem = convert(item);
+   calendar::CalendarItem protoItem = toProto(item);
    common::OperationResultMessage result;
    
    mProxy.getService().EditItem(nullptr, &protoItem, &result, nullptr);
@@ -46,7 +46,7 @@ bool Calendar::replaceItem(const CalendarItem& item)
 
 Id Calendar::insertItem(const CalendarItem& item)
 {
-   calendar::CalendarItem protoItem = convert(item);
+   calendar::CalendarItem protoItem = toProto(item);
 
    common::UniqueId id;
    mProxy.getService().AddItem(nullptr, &protoItem, &id, nullptr);
@@ -66,7 +66,7 @@ std::vector<CalendarItem> Calendar::next(const std::time_t from, const int limit
    mProxy.getService().Next(nullptr, &query, &items, nullptr);
 
    std::vector<CalendarItem> result(items.items_size());
-   std::transform(items.items().begin(), items.items().end(), result.begin(), [] (auto x)-> auto { return convert(x); });
+   std::transform(items.items().begin(), items.items().end(), result.begin(), [] (auto x)-> auto { return fromProto(x); });
 
    return result;
 }
@@ -82,7 +82,7 @@ std::vector<CalendarItem> Calendar::query(const std::time_t from, const std::tim
    mProxy.getService().Query(nullptr, &timeRange, &items, nullptr);
 
    std::vector<CalendarItem> result(items.items_size());
-   std::transform(items.items().begin(), items.items().end(), result.begin(), [] (auto x)-> auto { return convert(x); });
+   std::transform(items.items().begin(), items.items().end(), result.begin(), [] (auto x)-> auto { return fromProto(x); });
 
    return result;
 }

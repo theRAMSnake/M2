@@ -18,6 +18,7 @@ public:
    bool operator < (const Id& other) const;
    
    const std::string& getGuid() const;
+   operator std::string() const;
 
 private:
    std::string mGuid;

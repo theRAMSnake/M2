@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Id.hpp"
+#include <ctime>
 
 namespace materia
 {
