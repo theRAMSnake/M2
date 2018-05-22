@@ -1,5 +1,6 @@
 #include "strategyview.h"
 #include "Models/strategydatamodel.h"
+#include "Controls/goalwidget.h"
 #include <QHBoxLayout>
 #include <QLabel>
 
@@ -9,6 +10,7 @@ StrategyView::StrategyView(QWidget *parent, StrategyDataModel &strategyDataModel
 {
     connect(&strategyDataModel, &StrategyDataModel::onGoalUpdated, this, &StrategyView::onGoalUpdated);
     connect(&strategyDataModel, &StrategyDataModel::onAffinitiesUpdated, this, &StrategyView::onAffinitiesUpdated);
+    connect(&strategyDataModel, &StrategyDataModel::onGoalDetailsUpdated, this, &StrategyView::onGoalDetailsLoaded);
 
     mLayout = new QHBoxLayout(this);
 }
@@ -23,17 +25,11 @@ void StrategyView::onGoalUpdated(const materia::Goal g)
     auto iter = mAffinityToGuiMap.find(g.affinityId);
     if(iter != mAffinityToGuiMap.end())
     {
-        auto gc = new QLabel();
-        gc->setStyleSheet(QString ("border: 1px solid black"));
-        gc->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        gc->setMinimumSize(75, 75);
-        gc->setMaximumSize(75, 75);
-
-        auto im = mIconManager.get(g.iconId);
-        gc->setPixmap(im->scaled(75, 75, Qt::IgnoreAspectRatio, Qt::FastTransformation));
+        auto gc = new GoalWidget(g, mIconManager);
 
         iter->second->addWidget(gc, mNumGoalsPerId[g.affinityId] / 5, mNumGoalsPerId[g.affinityId] % 5);
         mNumGoalsPerId[g.affinityId]++;
+        mGoalWidgetById[g.id] = gc;
     }
 }
 
@@ -61,4 +57,9 @@ void StrategyView::onAffinitiesUpdated()
         mLayout->addWidget(affinityFrame);
         mAffinityToGuiMap.insert(std::make_pair(a.id, g));
     }
+}
+
+void StrategyView::onGoalDetailsLoaded(const materia::Id id, const std::vector<materia::Task> tasks, const std::vector<materia::Objective> objectives)
+{
+    mGoalWidgetById[id]->attachDetails(tasks, objectives);
 }

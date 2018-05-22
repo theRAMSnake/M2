@@ -1,9 +1,9 @@
 QToolTip {
     border: 1px solid #76797C;
-    background-color: #5A7566;
+    background-color: black;
     color: white;
     padding: 0px;                /*remove padding, for fix combobox tooltip.*/
-    opacity: 200;
+    /*opacity: 200;*/
 }
 
 QWidget {

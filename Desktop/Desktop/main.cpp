@@ -12,7 +12,10 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     qRegisterMetaType<materia::Goal>("Goal");
+    qRegisterMetaType<materia::Id>("Id");
     qRegisterMetaType<Message>("Message");
+    qRegisterMetaType<std::vector<materia::Task>>("Tasks");
+    qRegisterMetaType<std::vector<materia::Objective>>("Objectives");
 
     QFile file(":/qdarkstyle/style.qss");
     file.open(QFile::ReadOnly);

@@ -615,6 +615,7 @@ moc_strategydatamodel.cpp: ../Desktop/materiagateway.h \
 moc_strategyview.cpp: ../Desktop/Models/strategydatamodel.h \
 		../Desktop/materiagateway.h \
 		../Desktop/MateriaEmu/materiaclient.h \
+		../Desktop/iconmanager.h \
 		../Desktop/Views/strategyview.h \
 		moc_predefs.h \
 		/usr/bin/moc
@@ -666,7 +667,8 @@ mainwindow.o: ../Desktop/mainwindow.cpp ../Desktop/mainwindow.h \
 		../Desktop/MateriaEmu/materiaclient.h \
 		../Desktop/logger.h \
 		ui_mainwindow.h \
-		../Desktop/Views/strategyview.h
+		../Desktop/Views/strategyview.h \
+		../Desktop/iconmanager.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../Desktop/mainwindow.cpp
 
 materiagatewaythread.o: ../Desktop/materiagatewaythread.cpp ../Desktop/materiagatewaythread.h
@@ -688,7 +690,8 @@ strategydatamodel.o: ../Desktop/Models/strategydatamodel.cpp ../Desktop/Models/s
 strategyview.o: ../Desktop/Views/strategyview.cpp ../Desktop/Views/strategyview.h \
 		../Desktop/Models/strategydatamodel.h \
 		../Desktop/materiagateway.h \
-		../Desktop/MateriaEmu/materiaclient.h
+		../Desktop/MateriaEmu/materiaclient.h \
+		../Desktop/iconmanager.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o strategyview.o ../Desktop/Views/strategyview.cpp
 
 logger.o: ../Desktop/logger.cpp ../Desktop/logger.h
@@ -698,7 +701,8 @@ goalwidget.o: ../Desktop/Controls/goalwidget.cpp ../Desktop/Controls/goalwidget.
 		../Desktop/MateriaEmu/materiaclient.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o goalwidget.o ../Desktop/Controls/goalwidget.cpp
 
-iconmanager.o: ../Desktop/iconmanager.cpp ../Desktop/iconmanager.h
+iconmanager.o: ../Desktop/iconmanager.cpp ../Desktop/iconmanager.h \
+		../Desktop/MateriaEmu/materiaclient.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o iconmanager.o ../Desktop/iconmanager.cpp
 
 qrc_mainres.o: qrc_mainres.cpp 

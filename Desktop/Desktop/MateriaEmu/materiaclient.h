@@ -29,7 +29,6 @@ struct Affinity
 struct StrategyItem
 {
    Id id;
-   Id parentGoalId;
 
    std::string name;
    std::string notes;
@@ -88,5 +87,8 @@ public:
 }
 
 Q_DECLARE_METATYPE(materia::Goal);
+Q_DECLARE_METATYPE(materia::Id);
+Q_DECLARE_METATYPE(std::vector<materia::Task>);
+Q_DECLARE_METATYPE(std::vector<materia::Objective>);
 
 #endif // MATERIACLIENT_H

@@ -5,6 +5,7 @@ StrategyDataModel::StrategyDataModel(MateriaGateway& materiaGateway)
 {
     connect(&materiaGateway, SIGNAL(onAffinitiesLoaded(const std::vector<materia::Affinity>)), this, SLOT(onAffinitiesLoaded(const std::vector<materia::Affinity>)));
     connect(&materiaGateway, SIGNAL(onGoalsLoaded(const std::vector<materia::Goal>)), this, SLOT(onGoalsLoaded(const std::vector<materia::Goal>)));
+    connect(&materiaGateway, &MateriaGateway::onGoalDetailsLoaded, this, &StrategyDataModel::onGoalDetailsLoaded);
 }
 
 std::vector<materia::Affinity> createDefaultAffinities()
@@ -43,8 +44,12 @@ void StrategyDataModel::onGoalsLoaded(const std::vector<materia::Goal> goals)
 {
     for(auto g : goals)
     {
-        mMateriaGateway.loadGoalDetails(g.id);
         emit onGoalUpdated(g);
+    }
+
+    for(auto g : goals)
+    {
+        mMateriaGateway.loadGoalDetails(g.id);
     }
 }
 
@@ -56,4 +61,9 @@ void StrategyDataModel::init()
 std::vector<materia::Affinity> StrategyDataModel::getAffinities()
 {
     return mAffinities;
+}
+
+void StrategyDataModel::onGoalDetailsLoaded(const materia::Id id, const std::vector<materia::Task> tasks, const std::vector<materia::Objective> objectives)
+{
+    emit onGoalDetailsUpdated(id, tasks, objectives);
 }

@@ -7,6 +7,7 @@
 #include "iconmanager.h"
 
 class QGridLayout;
+class GoalWidget;
 class StrategyView : public QWidget
 {
     Q_OBJECT
@@ -19,12 +20,14 @@ signals:
 public slots:
     void onGoalUpdated(const materia::Goal g);
     void onAffinitiesUpdated();
+    void onGoalDetailsLoaded(const materia::Id id, const std::vector<materia::Task> tasks, const std::vector<materia::Objective> objectives);
 
 private:
     QHBoxLayout* mLayout;
     StrategyDataModel& mStrategyDataModel;
     std::map<materia::Id, QGridLayout*> mAffinityToGuiMap;
     std::map<materia::Id, int> mNumGoalsPerId;
+    std::map<materia::Id, GoalWidget*> mGoalWidgetById;
     IconManager mIconManager;
 };
 

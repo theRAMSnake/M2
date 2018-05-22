@@ -13,7 +13,7 @@ public:
 signals:
     void onAffinitiesLoaded(const std::vector<materia::Affinity> affinities);
     void onGoalsLoaded(const std::vector<materia::Goal> goals);
-    void onGoalDetailsLoaded(const std::vector<materia::Task> tasks, const std::vector<materia::Objective> objectives);
+    void onGoalDetailsLoaded(const materia::Id id, const std::vector<materia::Task> tasks, const std::vector<materia::Objective> objectives);
 
 public slots:
     void loadAffinities();

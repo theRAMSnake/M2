@@ -14,12 +14,14 @@ public:
 
 signals:
     void onGoalUpdated(const materia::Goal g);
+    void onGoalDetailsUpdated(const materia::Id id, const std::vector<materia::Task> tasks, const std::vector<materia::Objective> objectives);
     void onAffinitiesUpdated();
 
 public slots:
     void onAffinitiesLoaded(const std::vector<materia::Affinity> affinities);
     void onGoalsLoaded(const std::vector<materia::Goal> goals);
     void init();
+    void onGoalDetailsLoaded(const materia::Id id, const std::vector<materia::Task> tasks, const std::vector<materia::Objective> objectives);
 
 private:
     std::vector<materia::Affinity> mAffinities;

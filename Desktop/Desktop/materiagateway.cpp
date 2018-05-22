@@ -36,5 +36,5 @@ void MateriaGateway::loadGoalDetails(const materia::Id id)
     Logger::instance().log(QString("Loading goal details for: {%1}").arg(id.guid.c_str()));
     auto goalDetails = mClient.getStrategy().getGoalItems(id);
     Logger::instance().log("Done");
-    emit onGoalDetailsLoaded(std::get<0>(goalDetails), std::get<1>(goalDetails));
+    emit onGoalDetailsLoaded(id, std::get<0>(goalDetails), std::get<1>(goalDetails));
 }
