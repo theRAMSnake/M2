@@ -8,19 +8,21 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
-#include <messages/database.pb.h>
 #include <Client/MateriaClient.hpp>
-#include <Client/IDatabase.hpp>
+#include <Client/IContainer.hpp>
+#include <Client/RemoteCollection.hpp>
 #include <Client/private/ProtoConverter.hpp>
 
 namespace materia
 {
 
 boost::uuids::random_generator generator;
-boost::filesystem::path g_dir("actions_service_data");
 
-void from_json(const std::string& json, actions::ActionInfo& result)
+template<>
+actions::ActionInfo fromJson(const std::string& json)
 {
+   actions::ActionInfo result;
+
    boost::property_tree::ptree pt;
    std::istringstream is (json);
    read_json (is, pt);
@@ -30,9 +32,12 @@ void from_json(const std::string& json, actions::ActionInfo& result)
    result.set_title(pt.get<std::string> ("title"));
    result.set_description(pt.get<std::string> ("description"));
    result.set_type(static_cast<actions::ActionType> (pt.get<int> ("type")));
+
+   return result;
 }
 
-std::string to_json(const actions::ActionInfo& from)
+template<>
+std::string toJson(const actions::ActionInfo& from)
 {
    boost::property_tree::ptree pt;
 
@@ -47,9 +52,26 @@ std::string to_json(const actions::ActionInfo& from)
    return buf.str();
 }
 
-std::string make_string_query_value(const std::string& from)
+template<>
+class RemoteCollectionItemTraits<actions::ActionInfo>
 {
-   return "\"" + from + "\"";
+public:
+   static Id getId(const actions::ActionInfo& item)
+   {
+      return fromProto(item.id());
+   }
+};
+
+template<typename Iterator, typename Pred, typename Operation> void 
+for_each_if(Iterator begin, Iterator end, Pred p, Operation op) 
+{
+    for(; begin != end; ++begin) 
+    {
+        if (p(*begin)) 
+        {
+            op(*begin);
+        }
+    }
 }
 
 class ActionsServiceImpl : public actions::ActionsService
@@ -57,9 +79,8 @@ class ActionsServiceImpl : public actions::ActionsService
 public:
    ActionsServiceImpl()
    : mClient("ActionsService")
-   , mDbProxy(mClient.getDatabase())
+   , mItems("actions", mClient.getContainer())
    {
-      mDbProxy.setCategory(mCategory);
    }
 
    void GetChildren(::google::protobuf::RpcController* controller,
@@ -67,15 +88,6 @@ public:
                        ::actions::ActionsList* response,
                        ::google::protobuf::Closure* done)
    {
-      /*database::DocumentQuery query;
-      query.set_category(mCategory);
-      auto kvl = query.add_query();
-      kvl->set_key("parent_id");
-      kvl->set_value(make_string_query_value(request->guid()));
-
-      database::Documents result;
-      mDatabase->SearchDocuments(nullptr, &query, &result, nullptr);*/
-
       getElementsWithParentIdEqualsTo(request->guid(), response);
    }
 
@@ -84,28 +96,6 @@ public:
                        ::actions::ActionsList* response,
                        ::google::protobuf::Closure* done)
    {
-      /*database::DocumentQuery query;
-      query.set_category(mCategory);
-      auto kvl = query.add_query();
-      kvl->set_key("parent_id");
-      kvl->set_value(make_string_query_value(""));
-
-      database::Documents result;
-      mDatabase->SearchDocuments(nullptr, &query, &result, nullptr);
-
-      for(auto x : result.result())
-      {
-         auto item = response->add_list();
-         from_json(x.body(), *item);
-      }*/
-
-      /*auto documents = mDbProxy.queryDocuments({QueryElement{"parent_id", make_string_query_value(""), "", QueryElementType::Equals}});
-      for(auto x : documents)
-      {
-         auto item = response->add_list();
-         from_json(x.body, *item);
-      }*/
-
       getElementsWithParentIdEqualsTo(materia::Id::Invalid, response);
    }
 
@@ -117,26 +107,12 @@ public:
       materia::Id parentId = fromProto(request->parentid());
       if(parentId == materia::Id::Invalid || is_item_exist(parentId))
       {
-         /*std::string id = to_string(generator());
-         
-         actions::ActionInfo newItem(*request);
-         newItem.mutable_id()->set_guid(id);
-
-         common::UniqueId result;
-         database::Document doc;
-         doc.set_body(to_json(newItem));
-         doc.mutable_header()->set_key(id);
-         doc.mutable_header()->set_category(mCategory);
-      
-         mDatabase->AddDocument(nullptr, &doc, &result, nullptr);
-         response->set_guid(result.guid());*/
          std::string id = to_string(generator());
 
          actions::ActionInfo newItem(*request);
          newItem.mutable_id()->set_guid(id);
 
-         materia::Document doc { id, to_json(newItem) };
-         mDbProxy.insertDocument(doc, materia::IdMode::Provided);
+         mItems.insert(newItem);
 
          response->set_guid(id);
       }
@@ -144,7 +120,7 @@ public:
 
    bool is_item_exist(const materia::Id& id)
    {
-      return static_cast<bool>(mDbProxy.getDocument(id));
+      return mItems.find(id) != mItems.end();
    }
 
    void DeleteElement(::google::protobuf::RpcController* controller,
@@ -152,16 +128,13 @@ public:
                        ::common::OperationResultMessage* response,
                        ::google::protobuf::Closure* done)
    {
-      /*auto id = request->guid();
+      auto item = fromProto(*request);
+      auto pos = mItems.find(item);
 
-      database::DocumentHeader head;
-      head.set_key(id);
-      head.set_category(mCategory);
-      common::OperationResultMessage result;
-
-      mDatabase->DeleteDocument(nullptr, &head, &result, nullptr);*/
-      if(mDbProxy.deleteDocument(fromProto(*request)))
+      if(pos != mItems.end())
       {
+         mItems.erase(pos);
+
          actions::ActionsList children;
          GetChildren(0, request, &children, 0);
          for(int i = 0; i < children.list_size(); ++i)
@@ -176,23 +149,6 @@ public:
       {
          response->set_success(false);
       }
-
-      /*if(result.success())
-      {
-         actions::ActionsList children;
-         GetChildren(0, request, &children, 0);
-         for(int i = 0; i < children.list_size(); ++i)
-         {
-            common::OperationResultMessage dummy;
-            DeleteElement(0, &children.list(i).id(), &dummy, 0);
-         }
-
-         response->set_success(true);
-      }
-      else
-      {
-         response->set_success(false);
-      }*/
    }
 
    void EditElement(::google::protobuf::RpcController* controller,
@@ -207,18 +163,8 @@ public:
       {
          if(parent_id == materia::Id::Invalid || is_item_exist(parent_id))
          {
-            /*database::Document doc;
-            doc.set_body(to_json(*request));
-            doc.mutable_header()->set_category(mCategory);
-            doc.mutable_header()->set_key(id);
-      
-            common::OperationResultMessage result;
-            mDatabase->ModifyDocument(nullptr, &doc, &result, nullptr);
-      
-            response->set_success(result.success());*/
-
-            materia::Document doc { id, to_json(*request) };
-            response->set_success(mDbProxy.replaceDocument(doc));
+            mItems.update(*request);
+            response->set_success(true);
             return;
          }
       }
@@ -226,20 +172,24 @@ public:
       response->set_success(false);
    }
 
+   void Clear(::google::protobuf::RpcController* controller,
+      const ::common::EmptyMessage* request,
+      ::common::OperationResultMessage* response,
+      ::google::protobuf::Closure* done)
+      {
+         mItems.clear();
+      }
+
 private:
    void getElementsWithParentIdEqualsTo(materia::Id id, ::actions::ActionsList* response)
    {
-      auto documents = mDbProxy.queryDocuments({QueryElement{"parent_id", make_string_query_value(id.getGuid()), "", QueryElementType::Equals}});
-      for(auto x : documents)
-      {
-         auto item = response->add_list();
-         from_json(x.body, *item);
-      }
+      for_each_if(mItems.begin(), mItems.end(), 
+         [&](auto x)->auto {return fromProto(x.parentid()) == id;},
+         [&](auto x)->void {response->add_list()->CopyFrom(x);});
    }
 
    materia::MateriaClient mClient;
-   materia::IDatabase& mDbProxy;
-   const std::string mCategory = "ACTIONS";
+   RemoteCollection<actions::ActionInfo> mItems;
 };
 
 }

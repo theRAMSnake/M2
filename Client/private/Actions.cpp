@@ -124,4 +124,12 @@ bool ActionItem::operator != (const ActionItem& other) const
    return !operator==(other);
 }
 
+void Actions::clear()
+{
+   common::EmptyMessage r;
+   common::OperationResultMessage responce;
+
+   mProxy.getService().Clear(nullptr, &r, &responce, nullptr);
+}
+
 }

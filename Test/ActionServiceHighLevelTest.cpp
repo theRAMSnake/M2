@@ -2,14 +2,9 @@
 #include <boost/test/unit_test.hpp>
 #include <messages/actions.pb.h>
 #include <boost/filesystem.hpp>
-
-#include <mongocxx/instance.hpp>
-#include <mongocxx/client.hpp>
-#include <mongocxx/stdx.hpp>
-#include <mongocxx/uri.hpp>
-
 #include <Client//MateriaClient.hpp>
 #include <Client/IActions.hpp>
+#include <Client/IContainer.hpp>
 
 #include "TestHelpers.hpp"
 
@@ -20,10 +15,7 @@ public:
    : mClient("test")
    , mService(mClient.getActions())
    {
-      mongocxx::instance instance{}; 
-      mongocxx::client client{mongocxx::uri{}};
-
-      client["materia"].drop();
+      mService.clear();
    }
 
 protected:

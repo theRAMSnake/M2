@@ -5,10 +5,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <Client/MateriaClient.hpp>
 #include <Client/ICalendar.hpp>
-#include <mongocxx/instance.hpp>
-#include <mongocxx/client.hpp>
-#include <mongocxx/stdx.hpp>
-#include <mongocxx/uri.hpp>
+#include <Client/IContainer.hpp>
 
 class CalendarTest
 {
@@ -17,10 +14,7 @@ public:
    : mClient("test")
    , mService(mClient.getCalendar())
    {
-      mongocxx::instance instance{}; 
-      mongocxx::client client{mongocxx::uri{}};
-
-      client["materia"].drop();
+      mService.clear();
 
       for(int i = 0; i < 20; ++i)
       {

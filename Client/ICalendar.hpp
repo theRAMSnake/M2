@@ -23,6 +23,8 @@ public:
    virtual std::vector<CalendarItem> next(const std::time_t from, const int limit) = 0;
    virtual std::vector<CalendarItem> query(const std::time_t from, const std::time_t to) = 0;
 
+   virtual void clear() = 0;
+
    virtual ~ICalendar(){}
 };
 

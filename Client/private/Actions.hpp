@@ -18,6 +18,8 @@ public:
    bool replaceItem(const ActionItem& item) override;
    Id insertItem(const ActionItem& item) override;
 
+   void clear() override;
+
 private:
    MateriaServiceProxy<actions::ActionsService> mProxy;
 };

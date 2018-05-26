@@ -26,6 +26,16 @@ public:
    }
 };
 
+template<class T>
+class RemoteCollectionItemTraits
+{
+public:
+   static Id getId(const T& item)
+   {
+      return item.id;
+   }
+};
+
 template<class T, class Serializer = ToJsonSerializer<T>>
 class RemoteCollection
 {
@@ -57,7 +67,7 @@ public:
          return *this;
       }
 
-      const T& operator* ()
+      const T& operator* () const
       {
          return *mImpl;
       }
@@ -98,7 +108,7 @@ public:
       for(auto x : items)
       {
          auto item = Serializer::deserialize(x.content);
-         mLocalToRemoteIdMap.insert(std::make_pair(item.id, x.id));
+         mLocalToRemoteIdMap.insert(std::make_pair(RemoteCollectionItemTraits<T>::getId(item), x.id));
          mLocalCache.push_back(item);
       }
    }
@@ -108,7 +118,7 @@ public:
       auto insertedIds = mContainer.insertItems(mName, {{ materia::Id::Invalid, Serializer::serialize(item) }});
       if(insertedIds.size() == 1)
       {
-         mLocalToRemoteIdMap.insert(std::make_pair(item.id, insertedIds[0]));
+         mLocalToRemoteIdMap.insert(std::make_pair(RemoteCollectionItemTraits<T>::getId(item), insertedIds[0]));
          mLocalCache.push_back(item);
       }
    }
@@ -138,15 +148,16 @@ public:
 
    void update(const T& item)
    {
-      mContainer.replaceItems(mName, {{ mLocalToRemoteIdMap[item.id], Serializer::serialize(item) }});
-      *std::find_if(mLocalCache.begin(), mLocalCache.end(), [&](auto x)->bool{return item.id == x.id;}) = item;
+      mContainer.replaceItems(mName, {{ mLocalToRemoteIdMap[RemoteCollectionItemTraits<T>::getId(item)], Serializer::serialize(item) }});
+      *std::find_if(mLocalCache.begin(), mLocalCache.end(), [&](auto x)->bool{return RemoteCollectionItemTraits<T>::getId(item) == 
+         RemoteCollectionItemTraits<T>::getId(x);}) = item;
    }
 
    void erase(const Iterator& pos)
    {
-      if(mContainer.deleteItems(mName, {{ mLocalToRemoteIdMap[pos->id] }}))
+      if(mContainer.deleteItems(mName, {{ mLocalToRemoteIdMap[RemoteCollectionItemTraits<T>::getId(*pos)] }}))
       {
-         mLocalToRemoteIdMap.erase(mLocalToRemoteIdMap.find(pos->id));
+         mLocalToRemoteIdMap.erase(mLocalToRemoteIdMap.find(RemoteCollectionItemTraits<T>::getId(*pos)));
          mLocalCache.erase(pos.mImpl);
       }
    }
@@ -170,7 +181,7 @@ public:
 
    Iterator find(const Id& id)
    {
-      return std::find_if(begin(), end(), [&](auto x)->auto{return x.id == id;});
+      return std::find_if(begin(), end(), [&](auto x)->auto{return RemoteCollectionItemTraits<T>::getId(x) == id;});
    }
 
 private:

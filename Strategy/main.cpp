@@ -13,7 +13,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include "RemoteCollection.hpp"
+#include <Client/RemoteCollection.hpp>
 
 namespace materia
 {

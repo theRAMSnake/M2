@@ -87,4 +87,12 @@ std::vector<CalendarItem> Calendar::query(const std::time_t from, const std::tim
    return result;
 }
 
+void Calendar::clear()
+{
+   common::EmptyMessage r;
+   common::OperationResultMessage responce;
+
+   mProxy.getService().Clear(nullptr, &r, &responce, nullptr);
+}
+
 }

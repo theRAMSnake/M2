@@ -32,6 +32,7 @@ public:
    virtual bool deleteItem(const Id& id) = 0;
    virtual bool replaceItem(const ActionItem& item) = 0;
    virtual Id insertItem(const ActionItem& item) = 0;
+   virtual void clear() = 0;
 
    virtual ~IActions() {}
 };

@@ -38,5 +38,6 @@ service CalendarService
    rpc DeleteItem (common.UniqueId) returns (common.OperationResultMessage);
    rpc EditItem (CalendarItem) returns (common.OperationResultMessage);
    rpc AddItem (CalendarItem) returns (common.UniqueId);
+   rpc Clear(common.EmptyMessage) returns (common.OperationResultMessage);
 }
 

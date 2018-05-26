@@ -6,10 +6,6 @@
 #include <Client/IContainer.hpp>
 #include <boost/filesystem.hpp>
 
-#include <mongocxx/instance.hpp>
-#include <mongocxx/client.hpp>
-#include <mongocxx/stdx.hpp>
-#include <mongocxx/uri.hpp>
 #include "TestHelpers.hpp"
 
 

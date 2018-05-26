@@ -19,8 +19,11 @@ namespace materia
    
 boost::uuids::random_generator generator;
 
-void fromJson(const std::string& json, CalendarItem& result)
+template<>
+CalendarItem fromJson(const std::string& json)
 {
+   CalendarItem result;
+
    boost::property_tree::ptree pt;
    std::istringstream is (json);
    read_json (is, pt);
@@ -28,8 +31,11 @@ void fromJson(const std::string& json, CalendarItem& result)
    result.id = pt.get<std::string> ("id");
    result.text = pt.get<std::string> ("text");
    result.timestamp = pt.get<std::time_t> ("timestamp");
+
+   return result;
 }
 
+template<>
 std::string toJson(const CalendarItem& from)
 {
    boost::property_tree::ptree pt;
@@ -147,6 +153,14 @@ public:
 
       response->set_guid(id);
    }
+
+   void Clear(::google::protobuf::RpcController* controller,
+      const ::common::EmptyMessage* request,
+      ::common::OperationResultMessage* response,
+      ::google::protobuf::Closure* done)
+      {
+         mItems.clear();
+      }
 
 private:
    materia::MateriaClient mClient;

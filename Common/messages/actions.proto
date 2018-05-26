@@ -34,4 +34,5 @@ service ActionsService
   rpc AddElement (ActionInfo) returns (common.UniqueId);
   rpc DeleteElement (common.UniqueId) returns (common.OperationResultMessage);
   rpc EditElement (ActionInfo) returns (common.OperationResultMessage);
+  rpc Clear(common.EmptyMessage) returns (common.OperationResultMessage);
 }

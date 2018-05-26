@@ -21,6 +21,8 @@ public:
    std::vector<CalendarItem> next(const std::time_t from, const int limit) override;
    std::vector<CalendarItem> query(const std::time_t from, const std::time_t to) override;
 
+   void clear() override;
+
 private:
    MateriaServiceProxy<calendar::CalendarService> mProxy;
 };
