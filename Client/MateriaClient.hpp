@@ -15,6 +15,7 @@ class ICalendar;
 class IContainer;
 class IStrategy;
 class IEvents;
+class IJournal;
 class MateriaClient
 {
 public:
@@ -29,6 +30,7 @@ public:
    ICalendar& getCalendar();
    IContainer& getContainer();
    IStrategy& getStrategy();
+   IJournal& getJournal();
    IEvents& getEvents();
 
 private:

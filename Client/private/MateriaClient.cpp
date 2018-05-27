@@ -91,4 +91,9 @@ IStrategy& MateriaClient::getStrategy()
    return mImpl->mStrategy;
 }
 
+IJournal& MateriaClient::getJournal()
+{
+   return mImpl->mJournal;
+}
+
 }

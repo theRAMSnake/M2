@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <algorithm>
 
 namespace materia
 {
@@ -24,4 +25,15 @@ private:
    std::string mGuid;
 };
 
+template<class TIterator>
+TIterator find_by_id(TIterator beg, TIterator end, const Id& id)
+{
+   return std::find_if(beg, end, [&](auto x)->bool {return x.id == id;});
+}
+
+template<class TCollection>
+auto find_by_id(TCollection& col, const Id& id) -> decltype(col.begin()) 
+{
+   return find_by_id(col.begin(), col.end(), id);
+}
 }

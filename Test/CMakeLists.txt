@@ -15,7 +15,7 @@ TestHelpers.cpp
 ContainerTest.cpp
 EventsTest.cpp
 StrategyTest.cpp
-#JournalServiceTest.cpp
+JournalServiceTest.cpp
 )
 
 find_package(Boost COMPONENTS unit_test_framework filesystem REQUIRED)

@@ -17,6 +17,7 @@ message IndexItem
 {
    JournalItem journalItem = 1;
    int64 modifiedTimestamp = 2;
+   bool isPage = 3;
 }
 
 message Page
@@ -33,13 +34,13 @@ message SearchResult
 
 message InsertFolderParams
 {
-   common.UniqueId folderId = 1;
+   common.UniqueId parent_folder_id = 1;
    string title = 2;
 }
 
 message InsertPageParams
 {
-   common.UniqueId folderId = 1;
+   common.UniqueId parent_folder_id = 1;
    string title = 2;
    string content = 3;
 }
