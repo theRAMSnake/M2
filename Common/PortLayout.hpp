@@ -8,3 +8,4 @@ const std::string gCalendarPort = "5914";
 const std::string gContainerPort = "5915";
 const std::string gEventsPort = "5916";
 const std::string gStrategyPort = "5917";
+const std::string gJournalPort = "5918";

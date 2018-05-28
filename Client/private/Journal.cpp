@@ -168,4 +168,12 @@ bool IndexItem::operator == (const IndexItem& other) const
    return id == other.id && parentFolderId == other.parentFolderId && modified == other.modified && title == other.title;
 }
 
+void Journal::clear()
+{
+   common::EmptyMessage r;
+   common::OperationResultMessage responce;
+
+   mProxy.getService().Clear(nullptr, &r, &responce, nullptr);
+}
+
 }

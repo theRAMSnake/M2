@@ -25,6 +25,8 @@ public:
    std::vector<SearchResult> search(const std::string& keyword) override;
    std::optional<JournalPage> getPage(const Id& id) override;
 
+   void clear() override;
+
 private:
    MateriaServiceProxy<journal::JournalService> mProxy;
 };

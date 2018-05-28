@@ -62,6 +62,8 @@ public:
    virtual std::vector<SearchResult> search(const std::string& keyword) = 0;
    virtual std::optional<JournalPage> getPage(const Id& id) = 0;
 
+   virtual void clear() = 0;
+
    virtual ~IJournal(){}
 };
 

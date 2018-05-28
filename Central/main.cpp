@@ -69,6 +69,10 @@ public:
         std::shared_ptr<zmq::socket_t> strategySocket (new zmq::socket_t(context, ZMQ_DEALER));
         strategySocket->connect("tcp://localhost:" + gStrategyPort);
         mSockets.insert(std::make_pair("StrategyService", strategySocket));
+
+        std::shared_ptr<zmq::socket_t> journalSocket (new zmq::socket_t(context, ZMQ_DEALER));
+        journalSocket->connect("tcp://localhost:" + gJournalPort);
+        mSockets.insert(std::make_pair("JournalService", journalSocket));
     }
 
     void routeMessage(const zmq::message_t& msg)

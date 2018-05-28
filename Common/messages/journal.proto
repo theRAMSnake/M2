@@ -63,4 +63,6 @@ service JournalService
    rpc GetIndex (common.EmptyMessage) returns (Index);
    rpc Search (common.StringMessage) returns (SearchResult);
    rpc GetPage (common.UniqueId) returns (Page);
+
+   rpc Clear(common.EmptyMessage) returns (common.OperationResultMessage);
 }

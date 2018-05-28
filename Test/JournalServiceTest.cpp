@@ -26,10 +26,7 @@ public:
    : mClient("test")
    , mService(mClient.getJournal())
    {
-      mClient.getContainer().deleteContainer("journal_index");
-      mClient.getContainer().addContainer({"journal_index"});
-      mClient.getContainer().deleteContainer("journal_pages");
-      mClient.getContainer().addContainer({"journal_pages"});
+      mClient.getJournal().clear();
 
       fillSampleItems();
    }
@@ -85,17 +82,17 @@ BOOST_FIXTURE_TEST_CASE( DeleteItem, JournalTest )
    //2. delete page
    {
       mService.deleteItem(mColorsPageId);
-      BOOST_CHECK_EQUAL(mIndexSize - 1, mService.getIndex().size());
+      BOOST_CHECK_EQUAL(mIndexSize - 2, mService.getIndex().size());
       BOOST_CHECK(!mService.getPage(mColorsPageId));
    }
 
    //3. delete contained folder -> results in pages deleted
    {
       mService.deleteItem(mMamalsId);
-      BOOST_CHECK_EQUAL(mIndexSize - 3, mService.getIndex().size());
+      BOOST_CHECK_EQUAL(mIndexSize - 5, mService.getIndex().size());
       BOOST_CHECK(!mService.getPage(mSapiensId));
       BOOST_CHECK(!mService.getPage(mNonSapiensId));
-      BOOST_CHECK(!mService.getPage(mInsectsId));
+      BOOST_CHECK(mService.getPage(mInsectsId));
    }
    //4. delete all
    {
@@ -110,11 +107,14 @@ BOOST_FIXTURE_TEST_CASE( UpdateFolder_NoReparent, JournalTest )
    auto item = *materia::find_by_id(index, mAnimalsId);
    item.title = "omg";
 
-   mService.updateFolder(item);
+   std::cout << "\n: " << item.modified;
+
+   BOOST_CHECK(mService.updateFolder(item));
 
    index = mService.getIndex();
    auto updatedItem = *materia::find_by_id(index, mAnimalsId);
    BOOST_CHECK_EQUAL(item.title, updatedItem.title);
+   std::cout << "\n: " << item.modified << " " << updatedItem.modified << "\n"; 
    BOOST_CHECK(item.modified != updatedItem.modified);
 }
 
