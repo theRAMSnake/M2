@@ -627,6 +627,7 @@ moc_logger.cpp: ../Desktop/logger.h \
 	/usr/bin/moc $(DEFINES) --include ./moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/snake/m2/M2/Desktop/Desktop -I/home/snake/m2/M2/Desktop/Desktop/MateriaEmu -I/home/snake/m2/M2/out -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I. -I/usr/include/c++/7.3.1 -I/usr/include/c++/7.3.1/x86_64-pc-linux-gnu -I/usr/include/c++/7.3.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/7.3.1/include-fixed -I/usr/include ../Desktop/logger.h -o moc_logger.cpp
 
 moc_goalwidget.cpp: ../Desktop/MateriaEmu/materiaclient.h \
+		../Desktop/iconmanager.h \
 		../Desktop/Controls/goalwidget.h \
 		moc_predefs.h \
 		/usr/bin/moc
@@ -691,14 +692,16 @@ strategyview.o: ../Desktop/Views/strategyview.cpp ../Desktop/Views/strategyview.
 		../Desktop/Models/strategydatamodel.h \
 		../Desktop/materiagateway.h \
 		../Desktop/MateriaEmu/materiaclient.h \
-		../Desktop/iconmanager.h
+		../Desktop/iconmanager.h \
+		../Desktop/Controls/goalwidget.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o strategyview.o ../Desktop/Views/strategyview.cpp
 
 logger.o: ../Desktop/logger.cpp ../Desktop/logger.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o logger.o ../Desktop/logger.cpp
 
 goalwidget.o: ../Desktop/Controls/goalwidget.cpp ../Desktop/Controls/goalwidget.h \
-		../Desktop/MateriaEmu/materiaclient.h
+		../Desktop/MateriaEmu/materiaclient.h \
+		../Desktop/iconmanager.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o goalwidget.o ../Desktop/Controls/goalwidget.cpp
 
 iconmanager.o: ../Desktop/iconmanager.cpp ../Desktop/iconmanager.h \
