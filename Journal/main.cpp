@@ -191,6 +191,10 @@ public:
          if(iter != mIndex.end())
          {
             auto item = *iter;
+            if(item.journalitem().id().guid() == request->folderid().guid())
+            {
+               return;
+            }
             item.mutable_journalitem()->CopyFrom(*request);
             item.set_modifiedtimestamp(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
 

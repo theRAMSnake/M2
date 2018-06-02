@@ -88,7 +88,7 @@ public:
                        ::actions::ActionsList* response,
                        ::google::protobuf::Closure* done)
    {
-      getElementsWithParentIdEqualsTo(request->guid(), response);
+      ; //Obsolete
    }
 
    void GetParentlessElements(::google::protobuf::RpcController* controller,
@@ -96,7 +96,10 @@ public:
                        ::actions::ActionsList* response,
                        ::google::protobuf::Closure* done)
    {
-      getElementsWithParentIdEqualsTo(materia::Id::Invalid, response);
+      for(auto x : mItems)
+      {
+         response->add_list()->CopyFrom(x);
+      }
    }
 
    void AddElement(::google::protobuf::RpcController* controller,
@@ -181,13 +184,6 @@ public:
       }
 
 private:
-   void getElementsWithParentIdEqualsTo(materia::Id id, ::actions::ActionsList* response)
-   {
-      for_each_if(mItems.begin(), mItems.end(), 
-         [&](auto x)->auto {return fromProto(x.parentid()) == id;},
-         [&](auto x)->void {response->add_list()->CopyFrom(x);});
-   }
-
    materia::MateriaClient mClient;
    RemoteCollection<actions::ActionInfo> mItems;
 };

@@ -7,6 +7,8 @@
 #include <Client/IContainer.hpp>
 #include "TestHelpers.hpp"
 
+#include <thread>
+
 namespace std
 {
 std::ostream& operator << (std::ostream& str, const materia::JournalItem& item)
@@ -103,18 +105,18 @@ BOOST_FIXTURE_TEST_CASE( DeleteItem, JournalTest )
 
 BOOST_FIXTURE_TEST_CASE( UpdateFolder_NoReparent, JournalTest ) 
 {
+   using namespace std::chrono_literals;
+
    auto index = mService.getIndex();
    auto item = *materia::find_by_id(index, mAnimalsId);
    item.title = "omg";
 
-   std::cout << "\n: " << item.modified;
-
+   std::this_thread::sleep_for(1s);
    BOOST_CHECK(mService.updateFolder(item));
 
    index = mService.getIndex();
    auto updatedItem = *materia::find_by_id(index, mAnimalsId);
    BOOST_CHECK_EQUAL(item.title, updatedItem.title);
-   std::cout << "\n: " << item.modified << " " << updatedItem.modified << "\n"; 
    BOOST_CHECK(item.modified != updatedItem.modified);
 }
 
@@ -128,12 +130,14 @@ BOOST_FIXTURE_TEST_CASE( UpdateFolder_SelfParent, JournalTest )
 
    index = mService.getIndex();
    auto updatedItem = *materia::find_by_id(index, mMamalsId);
-   BOOST_CHECK(item.id != updatedItem.id);
+   BOOST_CHECK(item.parentFolderId != updatedItem.parentFolderId);
    BOOST_CHECK_EQUAL(item.modified, updatedItem.modified);
 }
 
 BOOST_FIXTURE_TEST_CASE( UpdatePage, JournalTest ) 
 {
+   using namespace std::chrono_literals;
+
    auto index = mService.getIndex();
    auto oldPageIndexItem = *materia::find_by_id(index, mColorsPageId);
 
@@ -141,6 +145,7 @@ BOOST_FIXTURE_TEST_CASE( UpdatePage, JournalTest )
    page.title = "omg";
    page.content = "other_content";
 
+   std::this_thread::sleep_for(1s);
    mService.updatePage(page);
 
    index = mService.getIndex();
@@ -207,7 +212,7 @@ BOOST_FIXTURE_TEST_CASE( GetPage, JournalTest )
    BOOST_CHECK(!mService.getPage(mAnimalsId));
    auto page = *mService.getPage(mColorsPageId);
 
-   BOOST_CHECK_EQUAL(materia::Id::Invalid, page.id);
+   BOOST_CHECK(materia::Id::Invalid != page.id);
    BOOST_CHECK_EQUAL("colors", page.title);
    BOOST_CHECK_EQUAL("<li>red</li><li>green</li><li>blue</li>", page.content);
 }
@@ -217,10 +222,10 @@ BOOST_FIXTURE_TEST_CASE( SearchTest, JournalTest )
    auto result = mService.search("wrong");
    BOOST_CHECK(result.empty());
 
-   result = mService.search("co");
+   result = mService.search("ph");
    BOOST_CHECK_EQUAL(2, result.size());
    BOOST_CHECK_EQUAL(mSapiensId, result[0].pageId);
-   BOOST_CHECK_EQUAL(mColorsPageId, result[1].pageId);
+   BOOST_CHECK_EQUAL(mNonSapiensId, result[1].pageId);
    BOOST_CHECK_EQUAL(39, result[0].position);
    BOOST_CHECK_EQUAL(33, result[1].position);
 
