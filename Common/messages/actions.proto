@@ -19,6 +19,7 @@ message ActionInfo
    string title = 3;
    string description = 4;
    ActionType type = 5;
+   common.UniqueId data_source_id = 6;
 }
 
 message ActionsList

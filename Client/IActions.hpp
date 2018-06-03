@@ -15,10 +15,10 @@ enum class ActionType
 struct ActionItem
 {
    Id id;
-   Id parentId;
    std::string title;
    std::string description;
    ActionType type;
+   Id dataSourceId;
 
    bool operator != (const ActionItem& other) const;
    bool operator == (const ActionItem& other) const;

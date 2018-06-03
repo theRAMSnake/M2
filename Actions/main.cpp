@@ -8,8 +8,13 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/date_time/gregorian/gregorian.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <Client/MateriaClient.hpp>
 #include <Client/IContainer.hpp>
+#include <Client/IStrategy.hpp>
+#include <Client/ICalendar.hpp>
+#include <Client/IActions.hpp>
 #include <Client/RemoteCollection.hpp>
 #include <Client/private/ProtoConverter.hpp>
 
@@ -19,60 +24,235 @@ namespace materia
 boost::uuids::random_generator generator;
 
 template<>
-actions::ActionInfo fromJson(const std::string& json)
+ActionItem fromJson(const std::string& json)
 {
-   actions::ActionInfo result;
+   ActionItem result;
 
    boost::property_tree::ptree pt;
    std::istringstream is (json);
    read_json (is, pt);
    
-   result.mutable_id()->set_guid(pt.get<std::string> ("id"));
-   result.mutable_parentid()->set_guid(pt.get<std::string> ("parent_id"));
-   result.set_title(pt.get<std::string> ("title"));
-   result.set_description(pt.get<std::string> ("description"));
-   result.set_type(static_cast<actions::ActionType> (pt.get<int> ("type")));
+   result.id = pt.get<std::string> ("id");
+   result.title = pt.get<std::string> ("title");
+   result.description = pt.get<std::string> ("description");
+   result.type = static_cast<materia::ActionType> (pt.get<int> ("type"));
+   result.dataSourceId = pt.get<std::string> ("dataSourceId");
 
    return result;
 }
 
 template<>
-std::string toJson(const actions::ActionInfo& from)
+std::string toJson(const ActionItem& from)
 {
    boost::property_tree::ptree pt;
 
-   pt.put ("id", from.id().guid());
-   pt.put ("parent_id", from.parentid().guid());
-   pt.put ("title", from.title());
-   pt.put ("description", from.description());
-   pt.put ("type", from.type());
+   pt.put ("id", from.id.getGuid());
+   pt.put ("title", from.title);
+   pt.put ("description", from.description);
+   pt.put ("type", static_cast<int>(from.type));
+   pt.put ("dataSourceId", from.dataSourceId.getGuid());
 
    std::ostringstream buf; 
    write_json (buf, pt, false);
    return buf.str();
 }
 
-template<>
-class RemoteCollectionItemTraits<actions::ActionInfo>
+class IDataSource
 {
 public:
-   static Id getId(const actions::ActionInfo& item)
+   using TItemsType = std::vector<ActionItem>;
+
+   virtual TItemsType getItems() = 0;
+   virtual void erase(const Id& id) = 0;
+   virtual bool allowUpdate() const = 0;
+   virtual void update(const ActionItem& item) = 0; 
+
+   virtual ~IDataSource()
    {
-      return fromProto(item.id());
+
    }
 };
 
-template<typename Iterator, typename Pred, typename Operation> void 
-for_each_if(Iterator begin, Iterator end, Pred p, Operation op) 
+class ItemsDataSource : public IDataSource
 {
-    for(; begin != end; ++begin) 
-    {
-        if (p(*begin)) 
-        {
-            op(*begin);
-        }
-    }
+public:
+   ItemsDataSource(RemoteCollection<ActionItem>& items)
+   : mItems(items)
+   {
+
+   }
+
+   TItemsType getItems() override
+   {
+      TItemsType result(mItems.size());
+      std::copy(mItems.begin(), mItems.end(), result.begin());
+
+      return result;
+   }
+
+   void erase(const Id& id) override
+   {
+      auto pos = mItems.find(id);
+      if(pos != mItems.end())
+      {
+         mItems.erase(pos);
+      }
+   }
+
+   bool allowUpdate() const override
+   {
+      return true;
+   }
+
+   void update(const ActionItem& item) override
+   {
+      mItems.update(item);
+   }
+
+private:
+   RemoteCollection<ActionItem>& mItems;
+};
+
+std::time_t getOneWeekAgo()
+{
+   auto day = boost::gregorian::day_clock::local_day();
+   day -= boost::gregorian::date_duration(7);
+
+   return boost::posix_time::to_time_t(boost::posix_time::ptime(day, boost::posix_time::time_duration(0, 0, 0)));
 }
+
+std::time_t getTodayNight()
+{
+   auto day = boost::gregorian::day_clock::local_day();
+   day += boost::gregorian::date_duration(1);
+
+   return boost::posix_time::to_time_t(boost::posix_time::ptime(day, boost::posix_time::time_duration(0, 0, 0)));
+}
+
+class CalendarDataSource : public IDataSource
+{
+public:
+   CalendarDataSource(ICalendar& calendar)
+   : mCalendar(calendar)
+   {
+
+   }
+
+   TItemsType getItems() override
+   {
+      TItemsType result;
+
+      auto calendarItems = mCalendar.query(getOneWeekAgo(), getTodayNight());
+
+      for(auto c : calendarItems)
+      {
+         result.push_back({
+            c.id,
+            c.text,
+            "",
+            ActionType::Task,
+            mDataSourceId
+         });
+      }
+
+      return result;
+   }
+
+   void erase(const Id& id) override
+   {
+      mCalendar.deleteItem(id);
+   }
+
+   bool allowUpdate() const override
+   {
+      return false;
+   }
+
+   void update(const ActionItem& item) override
+   {
+      throw -1;
+   }
+
+private:
+   Id mDataSourceId {"calendar"};
+   ICalendar& mCalendar;
+};
+
+class StrategyDataSource : public IDataSource
+{
+public:
+   StrategyDataSource(IStrategy& strategy)
+   : mStrategy(strategy)
+   {
+
+   }
+
+   TItemsType getItems() override
+   {
+      TItemsType result;
+
+      for(auto t : getUnfinishedTasks())
+      {
+         result.push_back({
+            t.id,
+            t.name,
+            t.notes,
+            ActionType::Task,
+            mDataSourceId
+         });
+      }
+
+      return result;
+   }
+
+   void erase(const Id& id) override
+   {
+      auto items = getUnfinishedTasks();
+      auto pos = find_by_id(items, id);
+      if(pos != items.end())
+      {
+         pos->done = true;
+         mStrategy.modifyTask(*pos);
+      }
+   }
+
+   bool allowUpdate() const override
+   {
+      return false;
+   }
+
+   void update(const ActionItem& item) override
+   {
+      throw -1;
+   }
+
+private:
+   std::vector<Task> getUnfinishedTasks()
+   {
+      std::vector<Task> result;
+
+      auto goals = mStrategy.getGoals();
+      for(auto g : goals)
+      {
+         if(g.focused)
+         {
+            auto items = mStrategy.getGoalItems(g.id);
+            for(auto t : std::get<0>(items))
+            {
+               if(!t.done)
+               {
+                  result.push_back(t);
+               }
+            }
+         }
+      }
+
+      return result;
+   }
+
+   Id mDataSourceId {"strategy"};
+   IStrategy& mStrategy;
+};
 
 class ActionsServiceImpl : public actions::ActionsService
 {
@@ -81,6 +261,9 @@ public:
    : mClient("ActionsService")
    , mItems("actions", mClient.getContainer())
    {
+      mDataSources.insert(std::make_pair(Id("items"), new ItemsDataSource(mItems)));
+      mDataSources.insert(std::make_pair(Id("calendar"), new CalendarDataSource(mClient.getCalendar())));
+      mDataSources.insert(std::make_pair(Id("strategy"), new StrategyDataSource(mClient.getStrategy())));
    }
 
    void GetChildren(::google::protobuf::RpcController* controller,
@@ -96,9 +279,12 @@ public:
                        ::actions::ActionsList* response,
                        ::google::protobuf::Closure* done)
    {
-      for(auto x : mItems)
+      for(auto ds : mDataSources)
       {
-         response->add_list()->CopyFrom(x);
+         for(auto x : ds.second->getItems())
+         {
+            response->add_list()->CopyFrom(toProto(x));
+         }
       }
    }
 
@@ -107,23 +293,13 @@ public:
                        ::common::UniqueId* response,
                        ::google::protobuf::Closure* done)
    {
-      materia::Id parentId = fromProto(request->parentid());
-      if(parentId == materia::Id::Invalid || is_item_exist(parentId))
-      {
-         std::string id = to_string(generator());
+      //Adds only permited to ItemsDataSource
+      materia::ActionItem newItem(fromProto(*request));
+      newItem.id = to_string(generator());
 
-         actions::ActionInfo newItem(*request);
-         newItem.mutable_id()->set_guid(id);
+      mItems.insert(newItem);
 
-         mItems.insert(newItem);
-
-         response->set_guid(id);
-      }
-   }
-
-   bool is_item_exist(const materia::Id& id)
-   {
-      return mItems.find(id) != mItems.end();
+      response->set_guid(newItem.id.getGuid());
    }
 
    void DeleteElement(::google::protobuf::RpcController* controller,
@@ -131,27 +307,17 @@ public:
                        ::common::OperationResultMessage* response,
                        ::google::protobuf::Closure* done)
    {
-      auto item = fromProto(*request);
-      auto pos = mItems.find(item);
+      auto id = fromProto(*request);
 
-      if(pos != mItems.end())
+      for(auto ds : mDataSources)
       {
-         mItems.erase(pos);
-
-         actions::ActionsList children;
-         GetChildren(0, request, &children, 0);
-         for(int i = 0; i < children.list_size(); ++i)
-         {
-            common::OperationResultMessage dummy;
-            DeleteElement(0, &children.list(i).id(), &dummy, 0);
-         }
-
+         auto& d = (*ds.second);
+         d.erase(id);
          response->set_success(true);
+         return;
       }
-      else
-      {
-         response->set_success(false);
-      }
+
+      response->set_success(false);
    }
 
    void EditElement(::google::protobuf::RpcController* controller,
@@ -159,14 +325,15 @@ public:
                        ::common::OperationResultMessage* response,
                        ::google::protobuf::Closure* done)
    {
-      materia::Id id = request->id().guid();
-      materia::Id parent_id = request->parentid().guid();
+      auto newItem = fromProto(*request);
+      auto dsPos = mDataSources.find(newItem.dataSourceId);
 
-      if(id != parent_id)
+      if(dsPos != mDataSources.end())
       {
-         if(parent_id == materia::Id::Invalid || is_item_exist(parent_id))
+         auto ds = dsPos->second;
+         if(ds->allowUpdate())
          {
-            mItems.update(*request);
+            ds->update(newItem);
             response->set_success(true);
             return;
          }
@@ -185,7 +352,8 @@ public:
 
 private:
    materia::MateriaClient mClient;
-   RemoteCollection<actions::ActionInfo> mItems;
+   std::map<Id, std::shared_ptr<IDataSource>> mDataSources;
+   RemoteCollection<ActionItem> mItems;
 };
 
 }

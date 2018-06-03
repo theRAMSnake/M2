@@ -184,6 +184,11 @@ public:
       return std::find_if(begin(), end(), [&](auto x)->auto{return RemoteCollectionItemTraits<T>::getId(x) == id;});
    }
 
+   std::size_t size() const
+   {
+      return mLocalCache.size();
+   }
+
 private:
 
    std::vector<T> mLocalCache;

@@ -27,7 +27,7 @@ ActionType fromProto(const actions::ActionType t)
 
 materia::ActionItem fromProto(const actions::ActionInfo& x)
 {
-   return { fromProto(x.id()), fromProto(x.parentid()), x.title(), x.description(), fromProto(x.type())};
+   return { fromProto(x.id()), x.title(), x.description(), fromProto(x.type()), fromProto(x.data_source_id())};
 }
 
 std::vector<ActionItem> Actions::getRootItems()
@@ -80,7 +80,7 @@ actions::ActionType toProto(const ActionType t)
    }
 }
 
-actions::ActionInfo fillRequest(const ActionItem& item)
+actions::ActionInfo toProto(const ActionItem& item)
 {
    actions::ActionInfo request;
    
@@ -88,14 +88,14 @@ actions::ActionInfo fillRequest(const ActionItem& item)
    request.set_description(item.description);
    request.set_type(toProto(item.type));
    request.mutable_id()->CopyFrom(toProto(item.id));
-   request.mutable_parentid()->CopyFrom(toProto(item.parentId));
+   request.mutable_data_source_id()->CopyFrom(toProto(item.dataSourceId));
 
    return request;
 }
 
 bool Actions::replaceItem(const ActionItem& item)
 {
-   actions::ActionInfo request = fillRequest(item);
+   actions::ActionInfo request = toProto(item);
    
    common::OperationResultMessage opResult;
    mProxy.getService().EditElement(nullptr, &request, &opResult, nullptr);
@@ -107,7 +107,7 @@ Id Actions::insertItem(const ActionItem& item)
 {
    common::UniqueId id;
 
-   actions::ActionInfo request = fillRequest(item);
+   actions::ActionInfo request = toProto(item);
 
    mProxy.getService().AddElement(nullptr, &request, &id, nullptr);
    
@@ -116,7 +116,7 @@ Id Actions::insertItem(const ActionItem& item)
 
 bool ActionItem::operator == (const ActionItem& other) const
 {
-   return id == other.id && parentId == other.parentId && title == other.title && description == other.description && type == other.type;
+   return id == other.id && dataSourceId == other.dataSourceId && title == other.title && description == other.description && type == other.type;
 }
 
 bool ActionItem::operator != (const ActionItem& other) const
