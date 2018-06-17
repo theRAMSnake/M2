@@ -27,8 +27,7 @@ struct ActionItem
 class IActions
 {
 public:
-   virtual std::vector<ActionItem> getRootItems() = 0;
-   virtual std::vector<ActionItem> getChildren(const Id& id) = 0;
+   virtual std::vector<ActionItem> getItems() = 0;
    virtual bool deleteItem(const Id& id) = 0;
    virtual bool replaceItem(const ActionItem& item) = 0;
    virtual Id insertItem(const ActionItem& item) = 0;

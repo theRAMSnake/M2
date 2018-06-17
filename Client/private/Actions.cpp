@@ -30,24 +30,12 @@ materia::ActionItem fromProto(const actions::ActionInfo& x)
    return { fromProto(x.id()), x.title(), x.description(), fromProto(x.type()), fromProto(x.data_source_id())};
 }
 
-std::vector<ActionItem> Actions::getRootItems()
+std::vector<ActionItem> Actions::getItems()
 {
    common::EmptyMessage emptyMsg;
    actions::ActionsList responce;
 
-   mProxy.getService().GetParentlessElements(nullptr, &emptyMsg, &responce, nullptr);
-
-   std::vector<ActionItem> result(responce.list_size());
-   std::transform(responce.list().begin(), responce.list().end(), result.begin(), [] (auto x)-> auto { return fromProto(x); });
-
-   return result;
-}
-
-std::vector<ActionItem> Actions::getChildren(const Id& id)
-{
-   actions::ActionsList responce;
-   auto protoId = toProto(id);
-   mProxy.getService().GetChildren(nullptr, &protoId, &responce, nullptr);
+   mProxy.getService().GetItems(nullptr, &emptyMsg, &responce, nullptr);
 
    std::vector<ActionItem> result(responce.list_size());
    std::transform(responce.list().begin(), responce.list().end(), result.begin(), [] (auto x)-> auto { return fromProto(x); });

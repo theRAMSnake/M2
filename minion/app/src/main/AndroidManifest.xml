@@ -30,7 +30,8 @@
         <activity android:name=".ActionsItemViewActivity" />
         <activity android:name=".CalendarActivity" />
         <activity android:name=".CalendarDayViewActivity" />
-        <activity android:name=".CalendarItemViewActivity"></activity>
+        <activity android:name=".CalendarItemViewActivity" />
+        <activity android:name=".WpActivity"></activity>
     </application>
 
 </manifest>

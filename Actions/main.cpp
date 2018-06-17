@@ -2,6 +2,7 @@
 #include <fstream>
 #include <Common/InterprocessService.hpp>
 #include <Common/PortLayout.hpp>
+#include <Common/Utils.hpp>
 #include <messages/actions.pb.h>
 #include <boost/filesystem.hpp>
 #include <boost/uuid/uuid_generators.hpp>
@@ -118,7 +119,7 @@ std::time_t getOneWeekAgo()
    auto day = boost::gregorian::day_clock::local_day();
    day -= boost::gregorian::date_duration(7);
 
-   return boost::posix_time::to_time_t(boost::posix_time::ptime(day, boost::posix_time::time_duration(0, 0, 0)));
+   return day_to_time_t(day);
 }
 
 std::time_t getTodayNight()
@@ -126,7 +127,7 @@ std::time_t getTodayNight()
    auto day = boost::gregorian::day_clock::local_day();
    day += boost::gregorian::date_duration(1);
 
-   return boost::posix_time::to_time_t(boost::posix_time::ptime(day, boost::posix_time::time_duration(0, 0, 0)));
+   return day_to_time_t(day);
 }
 
 class CalendarDataSource : public IDataSource
@@ -266,15 +267,7 @@ public:
       mDataSources.insert(std::make_pair(Id("strategy"), new StrategyDataSource(mClient.getStrategy())));
    }
 
-   void GetChildren(::google::protobuf::RpcController* controller,
-                       const ::common::UniqueId* request,
-                       ::actions::ActionsList* response,
-                       ::google::protobuf::Closure* done)
-   {
-      ; //Obsolete
-   }
-
-   void GetParentlessElements(::google::protobuf::RpcController* controller,
+   void GetItems(::google::protobuf::RpcController* controller,
                        const ::common::EmptyMessage* request,
                        ::actions::ActionsList* response,
                        ::google::protobuf::Closure* done)
@@ -296,6 +289,7 @@ public:
       //Adds only permited to ItemsDataSource
       materia::ActionItem newItem(fromProto(*request));
       newItem.id = to_string(generator());
+      newItem.dataSourceId = materia::Id("items");
 
       mItems.insert(newItem);
 
@@ -313,11 +307,9 @@ public:
       {
          auto& d = (*ds.second);
          d.erase(id);
-         response->set_success(true);
-         return;
       }
 
-      response->set_success(false);
+      response->set_success(true);
    }
 
    void EditElement(::google::protobuf::RpcController* controller,

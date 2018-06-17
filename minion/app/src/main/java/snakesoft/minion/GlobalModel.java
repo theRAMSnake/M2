@@ -76,6 +76,7 @@ public class GlobalModel
 
         mInboxModel = new InboxModel(new InboxServiceProxy(mConnection));
         mActionsModel = new ActionsModel(new ActionsServiceProxy(mConnection));
+        mWpModel = new WpModel();
         mCalendarModel = new CalendarModel(
                 new CalendarServiceProxy(mConnection));
 
@@ -107,6 +108,8 @@ public class GlobalModel
             dbok = false;
         }
 
+        mWpModel.loadState(mLocalDatabase);
+
         if(!dbok)
         {
 
@@ -130,6 +133,7 @@ public class GlobalModel
     }
     public static ActionsModel getActionsModel() {return mActionsModel; }
     public static CalendarModel getCalendarModel() {return mCalendarModel; }
+    public static WpModel getWpModel() {return mWpModel;}
 
     public static String getIp()
     {
@@ -158,4 +162,5 @@ public class GlobalModel
     static private InboxModel mInboxModel;
     static private ActionsModel mActionsModel;
     static private CalendarModel mCalendarModel;
+    static private WpModel mWpModel;
 }

@@ -209,19 +209,19 @@ public class CalendarModel
         }
     }
 
-    public void saveState()
-    {
-        mLocalDb.put("CalendarItems", mItems.toByteArray());
-
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-        for(StatusOfChange x : mItemsChanges)
+        public void saveState()
         {
-            bos.write(x.type.ordinal());
-        }
+            mLocalDb.put("CalendarItems", mItems.toByteArray());
 
-        mLocalDb.put("CalendarItemsStatus", bos.toByteArray());
-    }
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+            for(StatusOfChange x : mItemsChanges)
+            {
+                bos.write(x.type.ordinal());
+            }
+
+            mLocalDb.put("CalendarItemsStatus", bos.toByteArray());
+        }
 
     public String getNewId()
     {

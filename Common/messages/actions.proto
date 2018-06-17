@@ -15,7 +15,6 @@ enum ActionType
 message ActionInfo
 {
    common.UniqueId id = 1;
-   common.UniqueId parentId = 2;
    string title = 3;
    string description = 4;
    ActionType type = 5;
@@ -29,8 +28,7 @@ message ActionsList
 
 service ActionsService 
 {
-  rpc GetChildren (common.UniqueId) returns (ActionsList);
-  rpc GetParentlessElements (common.EmptyMessage) returns (ActionsList);  
+  rpc GetItems (common.EmptyMessage) returns (ActionsList);
   
   rpc AddElement (ActionInfo) returns (common.UniqueId);
   rpc DeleteElement (common.UniqueId) returns (common.OperationResultMessage);

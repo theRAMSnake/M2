@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="snakesoft.minion.WpActivity">
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/btnSuccess"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:layout_column="0"
+            android:layout_row="2"
+            android:text="Success"
+            tools:layout_editor_absoluteX="67dp"
+            tools:layout_editor_absoluteY="243dp" />
+
+        <Button
+            android:id="@+id/btnFail"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:layout_column="1"
+            android:layout_row="2"
+            android:padding="0dp"
+            android:text="Fail"
+            android:visibility="visible"
+            tools:layout_editor_absoluteX="214dp"
+            tools:layout_editor_absoluteY="243dp" />
+
+        <TextView
+            android:id="@+id/tvScore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_column="0"
+            android:layout_columnSpan="2"
+            android:layout_row="1"
+            android:text="5 : 5"
+            android:textAlignment="center"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
+            android:textSize="28sp"
+            tools:layout_editor_absoluteX="166dp"
+            tools:layout_editor_absoluteY="136dp" />
+
+        <Button
+            android:id="@+id/btnClear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_column="0"
+            android:layout_columnSpan="2"
+            android:layout_row="4"
+            android:text="clear"
+            tools:layout_editor_absoluteX="148dp"
+            tools:layout_editor_absoluteY="444dp" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="57dp"
+            android:layout_column="0"
+            android:layout_columnSpan="2"
+            android:layout_row="0"
+            android:max="100"
+            android:progress="50" />
+    </GridLayout>
+
+</android.support.constraint.ConstraintLayout>
