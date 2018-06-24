@@ -1,0 +1,166 @@
+#include "CommonDialogManager.hpp"
+#include <Wt/WDialog.h>
+#include <Wt/WLineEdit.h>
+#include <Wt/WLabel.h>
+#include <Wt/WPushButton.h>
+#include <Wt/WMessageBox.h>
+#include <Wt/WTextArea.h>
+#include <boost/range/algorithm/find.hpp>
+#include <boost/algorithm/string.hpp>
+
+void CommonDialogManager::showDialogSimple(const std::string& caption, const std::vector<std::string>& fields, TCallback& callback)
+{
+    std::vector<FieldInfo> infos;
+    for (auto a : fields)
+    {
+        infos.push_back(FieldInfo{ a });
+    }
+
+    showDialog(caption, infos, callback);
+}
+
+void CommonDialogManager::showOneLineDialog(const std::string & caption, const std::string & fieldName, const std::string & defaultValue, std::function<void(std::string)>& callback)
+{
+    TCallback functor = [=](std::vector<std::string> a)->void {callback(a[0]); };
+    showDialog(caption, {{fieldName, defaultValue}}, functor);
+}
+
+void CommonDialogManager::showConfirmationDialog(const std::string & text, std::function<void(void)>& callback)
+{
+    Wt::WMessageBox *messageBox = new Wt::WMessageBox
+        ("Confirm",
+            "<p>" + text + "</p>",
+            Wt::Icon::Question, Wt::StandardButton::Yes | Wt::StandardButton::No);
+
+    messageBox->buttonClicked().connect(std::bind([=]() {
+        if(messageBox->buttonResult() == Wt::StandardButton::Yes)callback();
+        delete messageBox;
+    }));
+
+    messageBox->show();
+    messageBox->setWidth(750);
+}
+
+void CommonDialogManager::showMessage(const std::string & text)
+{
+    Wt::WMessageBox *messageBox = new Wt::WMessageBox
+        ("Confirm",
+            "<p>" + text + "</p>",
+            Wt::Icon::Critical, Wt::StandardButton::Ok);
+
+    messageBox->buttonClicked().connect(std::bind([=]() {
+        delete messageBox;
+    }));
+
+    messageBox->show();
+    messageBox->setWidth(750);
+}
+
+void CommonDialogManager::showDialog(
+   const std::string& caption, 
+   const std::vector<FieldInfo>& fields, 
+   TCallback& callback
+)
+{
+   auto d = createDialog(caption, fields, callback);
+   d->show();
+}
+
+Wt::WDialog* CommonDialogManager::createDialog(const std::string& caption, const std::vector<FieldInfo>& fields, TCallback& callback)
+{
+   Wt::WDialog* dialog = new Wt::WDialog(caption);
+
+   std::vector<Wt::WLabel*> labels;
+   std::vector<Wt::WLineEdit*> edits;
+
+    for (auto item : fields)
+    {
+        Wt::WLabel* labelName = new Wt::WLabel(item.name);
+        dialog->contents()->addWidget(std::unique_ptr<Wt::WLabel>(labelName));
+        Wt::WLineEdit* editName = new Wt::WLineEdit(Wt::WString::fromUTF8(item.initialValue));
+        dialog->contents()->addWidget(std::unique_ptr<Wt::WLineEdit>(editName));
+        labelName->setBuddy(editName);
+
+        labels.push_back(labelName);
+        edits.push_back(editName);
+    }
+
+    Wt::WPushButton *ok = new Wt::WPushButton("OK");
+    dialog->footer()->addWidget(std::unique_ptr<Wt::WPushButton>(ok));
+    ok->setDefault(true);
+
+    Wt::WPushButton *cancel = new Wt::WPushButton("Cancel");
+    dialog->footer()->addWidget(std::unique_ptr<Wt::WPushButton>(cancel));
+    dialog->rejectWhenEscapePressed();
+
+    ok->clicked().connect(std::bind([=]() {
+        dialog->accept();
+    }));
+
+    cancel->clicked().connect(dialog, &Wt::WDialog::reject);
+
+    dialog->finished().connect(std::bind([=]() {
+        if (dialog->result() == Wt::DialogCode::Accepted)
+        {
+            std::vector<std::string> result;
+            for (auto ctrl : edits)
+            {
+                result.push_back(std::string(ctrl->text().toUTF8()));
+            }
+            callback(result);
+        }
+
+        delete dialog;
+    }));
+
+    dialog->setWidth(750);
+    return dialog;
+}
+
+void CommonDialogManager::showLinesDialog(const std::vector<Wt::WString>& lines, std::function<void(const std::vector<Wt::WString>&)> callback)
+{
+    Wt::WDialog* dialog = new Wt::WDialog();
+    
+    Wt::WTextArea* linesArea = new Wt::WTextArea;
+    dialog->contents()->addWidget(std::unique_ptr<Wt::WTextArea>(linesArea));
+    
+    for(auto i : lines)
+    {
+       linesArea->setText(linesArea->text() + "\n" + i); 
+    }
+   
+    Wt::WPushButton *ok = new Wt::WPushButton("OK");
+    dialog->footer()->addWidget(std::unique_ptr<Wt::WPushButton>(ok));
+
+    Wt::WPushButton *cancel = new Wt::WPushButton("Cancel");
+    dialog->footer()->addWidget(std::unique_ptr<Wt::WPushButton>(cancel));
+    dialog->rejectWhenEscapePressed();
+
+    ok->clicked().connect(std::bind([=]() {
+        dialog->accept();
+    }));
+
+    cancel->clicked().connect(dialog, &Wt::WDialog::reject);
+
+    dialog->finished().connect(std::bind([=]() {
+        if (dialog->result() == Wt::DialogCode::Accepted)
+        {
+            std::vector<std::string> result;
+            
+            std::string utf8 = linesArea->text().toUTF8();
+            boost::split(result, utf8, boost::is_any_of("\n"));
+            
+            std::vector<Wt::WString> realResult;
+            for(auto i : result)
+            {
+               realResult.push_back(Wt::WString::fromUTF8(i));
+            }
+            callback(realResult);
+        }
+
+        delete dialog;
+    }));
+
+    dialog->setWidth(750);
+    dialog->show();
+}
