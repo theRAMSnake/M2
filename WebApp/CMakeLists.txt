@@ -13,6 +13,10 @@ MainScreen.cpp
 InboxView.cpp
 ActionsView.cpp
 CommonDialogManager.cpp
+StrategyView.cpp
+WtConverters.cpp
+CalendarView.cpp
+TemplateBuilder.cpp
 )
 
 find_package(Boost COMPONENTS system REQUIRED)

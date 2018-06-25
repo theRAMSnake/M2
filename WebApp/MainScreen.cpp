@@ -19,4 +19,5 @@ MainScreen::MainScreen(materia::MateriaClient& client)
     auto menu_ = navigation->addMenu(std::move(menu));
 
     menu_->addItem("Actions", Wt::cpp14::make_unique<ActionsView>(client.getActions()));
+    menu_->addItem("Strategy", Wt::cpp14::make_unique<StrategyView>(client.getStrategy(), client.getCalendar()));
 }
