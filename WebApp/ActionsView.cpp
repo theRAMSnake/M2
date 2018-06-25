@@ -12,6 +12,7 @@
 #include <Wt/WCalendar.h>
 #include <Wt/WTimeEdit.h>
 #include <Wt/WDateEdit.h>
+#include <Wt/WLabel.h>
 #include "boost/date_time/gregorian/gregorian.hpp"
 #include <boost/date_time/posix_time/posix_time.hpp>
 
@@ -67,88 +68,36 @@ private:
    Wt::WTextEdit* mDesc;
 };
 
-class ActionItemView : public Wt::WTreeNode
+class ActionItemView : public Wt::WLabel
 {
 public:
-   ActionItemView(const actions::ActionInfo& actionInfo, actions::ActionsService_Stub& actionsService)
-   : Wt::WTreeNode(actionInfo.title())
-   , mActionInfo(actionInfo)
-   , mActionsService(actionsService)
+   ActionItemView(const materia::ActionItem& actionItem, materia::IActions& actions)
+   : Wt::WLabel(actionItem.title)
+   , mActionItem(actionItem)
+   , mActions(actions)
    {
-      labelArea()->doubleClicked().connect(std::bind(&ActionItemView::onDblClicked, this, std::placeholders::_1));
-      labelArea()->clicked().connect(std::bind(&ActionItemView::onClick, this, std::placeholders::_1));
-
-      acceptDrops("node");
-   }
-
-   virtual void populate() override
-   {
-      actions::ActionsList result;
-      mActionsService.GetChildren(nullptr, &mActionInfo.id(), &result, nullptr);
-
-      for(int i = 0; i < result.list_size(); ++i)
-      {
-         addChildNode(Wt::cpp14::make_unique<ActionItemView>(result.list(i), mActionsService));
-      }
-   }
-
-   void reparent(const common::UniqueId& parentId, Wt::WTreeNode* newParentNode)
-   {
-      mActionInfo.mutable_parentid()->set_guid(parentId.guid());
-
-      common::OperationResultMessage dummy;
-      mActionsService.EditElement(nullptr, &mActionInfo, &dummy, nullptr);
-      
-      newParentNode->addChildNode(parentNode()->removeChildNode(this));
-   }
-
-   void dropEvent	(Wt::WDropEvent dropEvent)	
-   {
-      ActionItemView* node = static_cast<ActionItemView*>(dropEvent.source());
-      node->reparent(mActionInfo.id(), this);
-   }
-
-   void setMoveMode(const bool moveMode)
-   {
-      if(moveMode)
-      {
-         labelArea()->setDraggable("node", nullptr, false, this);
-      }
-      else
-      {
-         labelArea()->unsetDraggable();
-      }
-      
-      if(populated())
-      {
-         for(auto x : childNodes())
-         {
-            ActionItemView* node = static_cast<ActionItemView*>(x);
-            node->setMoveMode(moveMode);
-         }
-      }
-      
+      doubleClicked().connect(std::bind(&ActionItemView::onDblClicked, this, std::placeholders::_1));
+      clicked().connect(std::bind(&ActionItemView::onClick, this, std::placeholders::_1));
    }
 
 private:
    void onDblClicked(Wt::WMouseEvent ev)
    {
       auto dlg = new ActionItemViewEditDialog(
-         mActionInfo.title(),
-         mActionInfo.description(),
+         mActionItem.title(),
+         mActionItem.description(),
          std::bind(&ActionItemView::onDialogOk, this, std::placeholders::_1, std::placeholders::_2));
       dlg->show();
    }
 
    void onDialogOk(const std::string& title, const std::string& desc)
    {
-      label()->setText(title);
+      setText(title);
 
-      mActionInfo.set_title(title);
-      mActionInfo.set_description(desc);
+      mActionItem.title = title;
+      mActionItem.description = desc;
 
-      common::OperationResultMessage dummy;
-      mActionsService.EditElement(nullptr, &mActionInfo, &dummy, nullptr);
+      mActions.replace(mActionItem);
    }
 
    void onClick(Wt::WMouseEvent ev)
@@ -156,39 +105,15 @@ private:
       if(ev.modifiers().test(Wt::KeyboardModifier::Control))
       {
           std::function<void()> elementDeletedFunc = [=] () {
-            common::OperationResultMessage dummy;
-            mActionsService.DeleteElement(nullptr, &mActionInfo.id(), &dummy, nullptr);
-
-            parentNode()->removeChildNode(this);
+            mAcions.deleteItem(mActionItem);
             };
 
           CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
       }
-      else if(ev.modifiers().test(Wt::KeyboardModifier::Shift))
-      {
-          auto dlg = new ActionItemViewEditDialog(
-          "",
-          "",
-          [=](const std::string& title, const std::string& desc)
-          {
-              actions::ActionInfo newItem;
-              newItem.set_title(title);
-              newItem.set_description(desc);
-              newItem.mutable_parentid()->set_guid(mActionInfo.id().guid());
-
-              common::UniqueId* newId = new common::UniqueId;
-              mActionsService.AddElement(nullptr, &newItem, newId, nullptr);
-
-              newItem.set_allocated_id(newId);
-              
-              addChildNode(Wt::cpp14::make_unique<ActionItemView>(newItem, mActionsService));
-          });
-          dlg->show();
-      }
    }
 
-   actions::ActionInfo mActionInfo;
-   actions::ActionsService_Stub& mActionsService;
+   materia::ActionItem mActionItem;
+   materia::IActions& mActions;
 };
 
 class ActionsRootTreeNode : public Wt::WTreeNode
