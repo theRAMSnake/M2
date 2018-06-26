@@ -1,6 +1,7 @@
 #include "MainScreen.hpp"
 #include "InboxView.hpp"
 #include "ActionsView.hpp"
+#include "StrategyView.hpp"
 
 #include <Wt/WNavigationBar.h>
 #include <Wt/WText.h>

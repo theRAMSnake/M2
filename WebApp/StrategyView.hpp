@@ -5,7 +5,7 @@
 class StrategyView : public Wt::WContainerWidget
 {
 public:
-   StrategyView(materia::IStartegy& strategy, materia::ICalendar& calendar);
+   StrategyView(materia::IStrategy& strategy, materia::ICalendar& calendar);
 
 private:
    materia::IStrategy& mStrategy;

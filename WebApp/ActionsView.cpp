@@ -84,8 +84,8 @@ private:
    void onDblClicked(Wt::WMouseEvent ev)
    {
       auto dlg = new ActionItemViewEditDialog(
-         mActionItem.title(),
-         mActionItem.description(),
+         mActionItem.title,
+         mActionItem.description,
          std::bind(&ActionItemView::onDialogOk, this, std::placeholders::_1, std::placeholders::_2));
       dlg->show();
    }
@@ -97,7 +97,7 @@ private:
       mActionItem.title = title;
       mActionItem.description = desc;
 
-      mActions.replace(mActionItem);
+      mActions.replaceItem(mActionItem);
    }
 
    void onClick(Wt::WMouseEvent ev)
@@ -105,7 +105,7 @@ private:
       if(ev.modifiers().test(Wt::KeyboardModifier::Control))
       {
           std::function<void()> elementDeletedFunc = [=] () {
-            mAcions.deleteItem(mActionItem);
+            mActions.deleteItem(mActionItem.id);
             };
 
           CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
@@ -116,132 +116,35 @@ private:
    materia::IActions& mActions;
 };
 
-class ActionsRootTreeNode : public Wt::WTreeNode
-{
-public:
-   ActionsRootTreeNode(actions::ActionsService_Stub& actionsService)
-   : Wt::WTreeNode("Actions")
-   , mActionsService(actionsService)
-   {
-      labelArea()->clicked().connect(std::bind(&ActionsRootTreeNode::onClick, this, std::placeholders::_1));
-      acceptDrops("node");
-   }
-
-   virtual void populate() override
-   {
-      common::EmptyMessage dummy;
-      actions::ActionsList result;
-      mActionsService.GetParentlessElements(nullptr, &dummy, &result, nullptr);
-
-      for(int i = 0; i < result.list_size(); ++i)
-      {
-         auto node = addChildNode(Wt::cpp14::make_unique<ActionItemView>(result.list(i), mActionsService));
-
-         if(result.list(i).title() == "Backlog")
-         {
-            mBackLogNode = node;
-            mBackLogNode->hide();
-         }
-      }
-   }
-
-   virtual void dropEvent(Wt::WDropEvent dropEvent) override
-   {
-      ActionItemView* node = dynamic_cast<ActionItemView*>(dropEvent.source());
-      if(node == nullptr)
-      {
-         std::cout << "\nshit\n";
-      }
-      else
-      {
-         std::cout << "\nnodeok\n";
-      }
-      node->reparent(common::UniqueId(), this);
-   }
-
-   void setMoveMode(const bool moveMode)
-   {
-      for(auto x : childNodes())
-      {
-         ActionItemView* node = static_cast<ActionItemView*>(x);
-         node->setMoveMode(moveMode);
-      }
-   }
-
-   void setShowBacklogMode(const bool isShowBacklog)
-   {
-      if(mBackLogNode != nullptr)
-      {
-         if(isShowBacklog)
-         {
-            mBackLogNode->show();
-         }
-         else
-         {
-            mBackLogNode->hide();
-         }
-      }
-   }
-
-private:
-   void onClick(Wt::WMouseEvent ev)
-   {
-      if(ev.modifiers().test(Wt::KeyboardModifier::Shift))
-      {
-         auto dlg = new ActionItemViewEditDialog(
-         "",
-         "",
-         [=](const std::string& title, const std::string& desc)
-         {
-            actions::ActionInfo newItem;
-            newItem.set_title(title);
-            newItem.set_description(desc);
-
-            common::UniqueId* newId = new common::UniqueId;
-            mActionsService.AddElement(nullptr, &newItem, newId, nullptr);
-
-            newItem.set_allocated_id(newId);
-            addChildNode(Wt::cpp14::make_unique<ActionItemView>(newItem, mActionsService));
-         });
-         dlg->show();
-      }
-   }
-
-   Wt::WTreeNode* mBackLogNode = nullptr;
-   actions::ActionsService_Stub& mActionsService;
-};
-
-ActionsView::ActionsView()
+ActionsView::ActionsView(materia::IActions& actions)
+: mActions(actions)
 {
    addStyleClass("container-fluid");
-
-   mService.reset(new MateriaServiceProxy<actions::ActionsService>("WebApp"));
-   mActions = &mService->getService();
 
    auto actionsGroup = new Wt::WGroupBox;
    actionsGroup->addStyleClass("col-md-10");
 
-   actionsGroup->addWidget(Wt::cpp14::make_unique< Wt::WText>("Ctrl+click = delete, shift+click = add    "));
-
-   auto tree = new Wt::WTree();
-   auto root = new ActionsRootTreeNode(*mActions);
-
-   auto cbMoveMode = new Wt::WCheckBox("Move mode");
-   cbMoveMode->checked().connect(std::bind([=](){root->setMoveMode(true);}));
-   cbMoveMode->unChecked().connect(std::bind([=](){root->setMoveMode(false);}));
-   actionsGroup->addWidget(std::unique_ptr<Wt::WCheckBox>(cbMoveMode));
-
-   auto cbShowBl = new Wt::WCheckBox("Show backlog");
-   cbShowBl->checked().connect(std::bind([=](){root->setShowBacklogMode(true);}));
-   cbShowBl->unChecked().connect(std::bind([=](){root->setShowBacklogMode(false);}));
-   actionsGroup->addWidget(std::unique_ptr<Wt::WCheckBox>(cbShowBl));
+   for(auto x : mActions.getItems())
+   {
+      actionsGroup->addWidget(std::unique_ptr<Wt::WCheckBox>(new ActionItemView(x, mActions)));
+   }
    
-   tree->setTreeRoot(std::unique_ptr<ActionsRootTreeNode>(root));
-   tree->setStyleClass("custom-tree");
-   root->setLoadPolicy(Wt::ContentLoading::Lazy);
-   root->expand();
-
-   actionsGroup->addWidget(std::unique_ptr<Wt::WTree>(tree));
-
    addWidget(std::unique_ptr<Wt::WGroupBox>(actionsGroup));
+}
+
+void ActionsView::initiateItemAdd()
+{
+   auto dlg = new ActionItemViewEditDialog(
+   "",
+   "",
+   [=](const std::string& title, const std::string& desc)
+   {
+      materia::ActionItem newItem;
+      newItem.title = title;
+      newItem.description = desc;
+
+      newItem.id = mActions.addItem(newItem);
+      addChildNode(Wt::cpp14::make_unique<ActionItemView>(newItem, mActionsService));
+   });
+   dlg->show();
 }

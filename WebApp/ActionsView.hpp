@@ -9,5 +9,6 @@ public:
    ActionsView(materia::IActions& actions);
 
 private:
+   void initiateItemAdd();
    materia::IActions& mActions;
 };
