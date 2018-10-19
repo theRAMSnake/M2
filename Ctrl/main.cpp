@@ -3,14 +3,7 @@
 
 void start()
 {
-   system("nohup ./m2Container &");
-   system("nohup ./m2InboxService &");
-   system("nohup ./m2ActionsService &");
-   system("nohup ./m2Calendar &");
-   system("nohup ./m2Events &");
-   system("nohup ./m2Strategy &");
-   system("nohup ./m2Journal &");
-   system("nohup ./m2central &");
+   system("nohup ./m2server &");
    system("nohup ./run_wa.sh &");
 
    std::cout << "Done\n";
@@ -18,15 +11,7 @@ void start()
 
 void stop()
 {
-   system("pkill m2Container");
-   system("pkill m2DatabaseServi");
-   system("pkill m2InboxService");
-   system("pkill m2ActionsServic");
-   system("pkill m2Calendar");
-   system("pkill m2Events");
-   system("pkill m2Journal");
-   system("pkill m2Strategy");
-   system("pkill m2central");
+   system("pkill m2server");
    system("pkill WebApp");
 
    std::cout << "Done\n";
