@@ -1,4 +1,7 @@
 #include "Journal.hpp"
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <chrono>
 
 namespace materia
 {
@@ -53,7 +56,7 @@ JournalPage fromProto(const journal::Page& src)
 }
 */
 
-template<>
+/*template<>
 journal::IndexItem fromJson(const std::string& json)
 {
    journal::IndexItem result;
@@ -117,12 +120,53 @@ std::string toJson(const journal::Page& from)
    std::ostringstream buf; 
    write_json (buf, pt, false);
    return buf.str();
+}*/
+
+std::string toJson(const IndexItem& from)
+{
+   boost::property_tree::ptree pt;
+
+   pt.put ("id", from.id.getGuid());
+   pt.put ("parent_folder_id", from.parentFolderId.getGuid());
+   pt.put ("title", from.title);
+   pt.put ("modified", from.modified);
+   pt.put ("isPage", from.isPage);
+
+   std::ostringstream buf; 
+   write_json (buf, pt, false);
+   return buf.str();
+}
+
+IndexItem createIndexItemFromJson(const std::string& json)
+{
+   IndexItem result;
+
+   boost::property_tree::ptree pt;
+   std::istringstream is (json);
+   read_json (is, pt);
+   
+   result.id = pt.get<std::string> ("id");
+   result.parentFolderId = pt.get<std::string> ("parent_folder_id");
+   result.title = pt.get<std::string> ("title");
+   result.modified = pt.get<std::time_t> ("modified");
+   result.isPage = pt.get<bool> ("is_page");
+
+   return result;
 }
 
 Journal::Journal(Database& db)
-: mDb(db)
+: mIndexStorage(db.getTable("journal_index"))
+, mContentStorage(db.getTable("journal_content"))
 {
-    loadItems();
+    mIndexStorage->foreach([&](std::string id, std::string json) 
+    {
+        mIndex.insert({id, createIndexItemFromJson(json)});
+    });
+
+    mContentStorage->foreach([&](std::string id, std::string json) 
+    {
+        mPageContents.insert({id, json});
+    });
 }
 
 Id Journal::insertFolder(const Id& parentFolderId, const std::string& name)
@@ -137,36 +181,38 @@ Id Journal::insertPage(const Id& parentFolderId, const std::string& name, const 
    auto id = insertIndexItem(parentFolderId, name, isPage);
 
    mPageContents.insert(std::make_pair(id, content));
-   saveToDb();
+   mContentStorage->store(id, content);
+
+   return id;
 }
 
 void Journal::deleteItem(const Id& id)
 {
-    auto pos = find_by_id(mIndex, id);
-    if(pos != mItems.end())
+    auto pos = mIndex.find(id);
+    if(pos != mIndex.end())
     {
         mIndex.erase(pos);
-        eraseFromDb();
+        mIndexStorage->erase(id);
 
-        if(pos->isPage)
+        if(pos->second.isPage)
         {
-            mContents.erase(id);
-            eraseFromDb();
+            mPageContents.erase(id);
+            mContentStorage->erase(id);
         }
         else
         {
             std::vector<Id> children;
             for(auto x : mIndex)
             {
-                if(x.parentFolderId == id)
+                if(x.second.parentFolderId == id)
                 {
-                    children.push_back(x.id);
+                    children.push_back(x.second.id);
                 }
             }
 
             for(auto x : children)
             {
-                deleteItem(x.id);
+                deleteItem(x);
             }
         }
     }
@@ -177,10 +223,12 @@ void Journal::updateIndexItem(const JournalItem& item)
    auto pos = find_by_id(mIndex, item.id);
    if(pos != mIndex.end())
    {
-       pos->parentFolderId = item.parentFolderId;
-       pos->title = item.title;
-       pos->modified = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-       saveToDb();
+       auto& x = pos->second;
+       x.parentFolderId = item.parentFolderId;
+       x.title = item.title;
+       x.modified = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+       mIndexStorage->store(x.id, toJson(x));
    }
 }
 
@@ -191,13 +239,13 @@ void Journal::updateFolder(const JournalItem& item)
 
 void Journal::updatePage(const JournalPage& item)
 {
-   auto pos = find_by_id(mContents, item.id);
-   if(pos != mItems.end())
+   auto pos = mPageContents.find(item.id);
+   if(pos != mPageContents.end())
    {
        updateIndexItem(item);
 
-       *pos = item.content;
-       saveToDb();
+       pos->second = item.content;
+       mContentStorage->store(item.id, item.content);
    }
 }
 
@@ -217,14 +265,14 @@ std::vector<SearchResult> Journal::search(const std::string& keyword)
 {
     std::vector<SearchResult> result;
 
-    for(auto x : mContents)
+    for(auto& x : mPageContents)
     {
         auto pos = x.second.find(keyword);
         while(pos != std::string::npos)
         {
             result.push_back({x.first, pos});
 
-            pos = x.content().find(request->content(), pos + 1);
+            pos = x.second.find(keyword, pos + 1);
         }
     }
 
@@ -235,14 +283,14 @@ std::optional<JournalPage> Journal::getPage(const Id& id)
 {
     std::optional<JournalPage> result;
 
-    auto pos = find_by_id(mIndex, item.id);
+    auto pos = find_by_id(mIndex, id);
     if(pos == mIndex.end())
     {
-        if(pos->isPage)
+        if(pos->second.isPage)
         {
-            result.reset({});
-            static_cast<JournalItem&>(*result) = *pos;
-            result->content = mContens[item.id];
+            result = JournalPage{};
+            static_cast<JournalItem&>(*result) = pos->second;
+            result->content = mPageContents[id];
         }
     }
 
@@ -260,8 +308,8 @@ const Id Journal::insertIndexItem(const Id& parentId, const std::string& title, 
         newItem.modified = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         newItem.isPage = isPage;
 
-        mIndex.insert(newItem);
-        saveToDb();
+        mIndex.insert({newItem.id, newItem});
+        mIndexStorage->store(newItem.id, toJson(newItem));
 
         return newItem.id;   
     }
@@ -273,7 +321,7 @@ bool Journal::isFolderExist(const Id& id)
 {
     auto iter = mIndex.find(id);
 
-    return iter != mIndex.end() && !iter->isPage;
+    return iter != mIndex.end() && !iter->second.isPage;
 }
 
 bool IndexItem::operator == (const IndexItem& other) const

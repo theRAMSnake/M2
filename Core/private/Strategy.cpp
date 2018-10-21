@@ -1,4 +1,7 @@
 #include "Strategy.hpp"
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/signals2/signal.hpp>
 
 namespace materia
 {
@@ -160,7 +163,6 @@ materia::Affinity fromProto(const strategy::Affinity& x)
 }
 */
 
-template<>
 Task fromJson(const std::string& content)
 {
    Task result;
@@ -173,18 +175,11 @@ Task fromJson(const std::string& content)
    result.parentGoalId = pt.get<std::string> ("parent_goal_id");
    result.name = pt.get<std::string> ("name");
    result.notes = pt.get<std::string> ("notes");
-   result.iconId = pt.get<std::string> ("icon_id");
    result.done = pt.get<bool> ("done");
-
-   auto tasks = as_vector<std::string>(pt, "required_tasks");
-
-   result.requiredTasks.resize(tasks.size());
-   std::copy(tasks.begin(), tasks.end(), result.requiredTasks.begin());
 
    return result;
 }
 
-template<>
 std::string toJson(const Task& t)
 {
    boost::property_tree::ptree pt;
@@ -193,13 +188,7 @@ std::string toJson(const Task& t)
    pt.put ("parent_goal_id", t.parentGoalId.getGuid());
    pt.put ("name", t.name);
    pt.put ("notes", t.notes);
-   pt.put ("icon_id", t.iconId.getGuid());
    pt.put ("done", t.done);
-
-   std::vector<std::string> tasksToPut(t.requiredTasks.size());
-   std::transform(t.requiredTasks.begin(), t.requiredTasks.end(), tasksToPut.begin(), [](auto x)->auto {return x.getGuid();});
-
-   put(pt, "required_tasks", tasksToPut);
 
    std::ostringstream buf; 
    write_json (buf, pt, false);

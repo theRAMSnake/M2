@@ -1,5 +1,4 @@
 #include "../Id.hpp"
-#include "messages/common.pb.h"
 
 namespace materia
 {

@@ -3,6 +3,7 @@
 #include "Id.hpp"
 #include <ctime>
 #include <vector>
+#include <optional>
 
 namespace materia
 {

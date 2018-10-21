@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Id.hpp"
+#include <vector>
+#include <optional>
 
 namespace materia
 {

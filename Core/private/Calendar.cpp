@@ -1,10 +1,11 @@
 #include "Calendar.hpp"
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
 namespace materia
 {
 
-template<>
-CalendarItem fromJson(const std::string& json)
+CalendarItem createCalendarItemFromJson(const std::string& json)
 {
    CalendarItem result;
 
@@ -19,7 +20,6 @@ CalendarItem fromJson(const std::string& json)
    return result;
 }
 
-template<>
 std::string toJson(const CalendarItem& from)
 {
    boost::property_tree::ptree pt;
@@ -34,9 +34,12 @@ std::string toJson(const CalendarItem& from)
 }
 
 Calendar::Calendar(Database& db)
-: mDb(db)
+: mStorage(db.getTable("calendar"))
 {
-    loadItems();
+    mStorage->foreach([&](std::string id, std::string json) 
+    {
+        mItems.insert({id, createCalendarItemFromJson(json)});
+    });
 }
 
 void Calendar::deleteItem(const Id& id)

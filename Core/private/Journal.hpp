@@ -2,10 +2,13 @@
 
 #include "../Id.hpp"
 #include "../IJournal.hpp"
+#include "Database.hpp"
+#include <map>
 
 namespace materia
 {
 
+class Database;
 class Journal : public IJournal
 {
 public:
@@ -31,7 +34,8 @@ private:
    std::map<Id, IndexItem> mIndex;
    std::map<Id, std::string> mPageContents;
 
-   Database mDb;
+   std::unique_ptr<DatabaseTable> mIndexStorage;
+   std::unique_ptr<DatabaseTable> mContentStorage;
 };
 
 }

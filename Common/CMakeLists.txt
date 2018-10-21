@@ -8,7 +8,6 @@ find_package(Boost COMPONENTS system REQUIRED)
 find_package(Protobuf REQUIRED)
 
 add_library(m2common STATIC 
-   ZmqPbController.cpp
    Utils.cpp
 )
 

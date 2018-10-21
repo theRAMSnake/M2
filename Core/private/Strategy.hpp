@@ -5,6 +5,7 @@
 namespace materia
 {
 
+class Database;
 class Strategy : public IStrategy
 {
 public:
@@ -33,7 +34,7 @@ public:
 private:
    void connectMeasurementsWithObjectives();
    void connectObjectivesWithGoals();
-   Database mDb;
+   Database& mDb;
 };
 
 }

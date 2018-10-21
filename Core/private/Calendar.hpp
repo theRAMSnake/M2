@@ -1,12 +1,20 @@
 #pragma once
 
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <multiset>
+#include <set>
 #include "../ICalendar.hpp"
 #include "Database.hpp"
 
 namespace materia
 {
+
+struct CompareByTime 
+{
+    bool operator() (const CalendarItem& lhs, const CalendarItem& rhs) const 
+    {
+        return lhs.timestamp < rhs.timestamp;    
+    }
+};
 
 class Calendar : public ICalendar
 {
@@ -22,7 +30,7 @@ public:
 
 private:
    std::multiset<CalendarItem, CompareByTime> mItems;
-   Database mDb;
+   std::unique_ptr<DatabaseTable> mStorage;
 };
 
 }

@@ -4,12 +4,15 @@ namespace materia
 {
 
 Inbox::Inbox(Database& db)
-: mDb(db)
+: mStorage(db.getTable("inbox"))
 {
-    loadItems();
+    mStorage->foreach([&](std::string id, std::string json) 
+    {
+        mItems.push_back({id, json});
+    });
 }
 
-std::vector<InboxItem> Inbox::get()
+std::vector<InboxItem> Inbox::get() const
 {
    return mItems;
 }
@@ -20,7 +23,7 @@ void Inbox::remove(const Id& id)
    if(pos != mItems.end())
    {
        mItems.erase(pos);
-       mDb.erase(id);
+       mStorage->erase(id);
    }
 }
 
@@ -31,7 +34,7 @@ void Inbox::replace(const InboxItem& item)
    {
        *pos = item;
 
-       mDb.store(item.id, toJson(item));
+       mStorage->store(item.id, item.text);
    }
 }
 
@@ -43,7 +46,7 @@ Id Inbox::add(const InboxItem& item)
        auto newItem = item;
        newItem.id = Id::generate();
 
-       mDb.store(newItem.id, toJson(item));
+       mStorage->store(newItem.id, item.text);
 
        return newItem.id;
    }

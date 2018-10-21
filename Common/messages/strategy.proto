@@ -3,7 +3,6 @@ option cc_generic_services = true;
 option java_generic_services = true;
 
 import "common.proto";
-import "container.proto";
 
 package strategy; 
 
@@ -79,19 +78,6 @@ message Measurements
    repeated Measurement items = 1;
 }
 
-message Affinity
-{
-   common.UniqueId id = 1;
-   string name = 2;
-   common.UniqueId icon_id = 3;
-   string colorName = 4;
-}
-
-message Affinities
-{
-   repeated Affinity items = 1;
-}
-
 service StrategyService 
 {
    rpc AddGoal (Goal) returns (common.UniqueId);
@@ -114,10 +100,5 @@ service StrategyService
    rpc AddMeasurement (Measurement) returns (common.UniqueId);
    rpc ModifyMeasurement (Measurement) returns (common.OperationResultMessage);
    rpc DeleteMeasurement (common.UniqueId) returns (common.OperationResultMessage);
-   rpc GetMeasurements (common.EmptyMessage) returns (Measurements);
-
-   rpc ConfigureAffinities (Affinities) returns (common.OperationResultMessage);
-   rpc GetAffinities (common.EmptyMessage) returns (Affinities);
-
-   rpc Clear(common.EmptyMessage) returns (common.OperationResultMessage);
+   rpc GetMeasurements (common.EmptyMessage) returns (Measurements);;
 }

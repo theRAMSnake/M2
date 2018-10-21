@@ -18,4 +18,4 @@ private/Strategy.cpp
 
 find_package(Boost COMPONENTS system REQUIRED)
 
-target_link_libraries(${Boost_LIBRARIES} pthread)
+target_link_libraries(m2core ${Boost_LIBRARIES} pthread)

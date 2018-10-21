@@ -21,6 +21,8 @@ public:
    const std::string& getGuid() const;
    operator std::string() const;
 
+   static Id generate();
+
 private:
    std::string mGuid;
 };
