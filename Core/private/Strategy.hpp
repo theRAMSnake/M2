@@ -1,11 +1,13 @@
 #pragma once
 
 #include "../IStrategy.hpp"
+#include "Database.hpp"
+#include "Goal.hpp"
+#include "Objective.hpp"
 
 namespace materia
 {
 
-class Database;
 class Strategy : public IStrategy
 {
 public:
@@ -32,9 +34,32 @@ public:
    std::vector<Measurement> getMeasurements() override;
 
 private:
+   template<class T>
+   void loadCollection(DatabaseTable& storage, std::map<Id, std::shared_ptr<T>>& out)
+   {
+      storage.foreach([&](std::string id, std::string json) 
+      {
+         std::shared_ptr<T> item(new T(json));
+         out.insert({id, item});
+         item->OnChanged.connect(std::bind(&Strategy::saveItem<T>, this, std::placeholders::_1));
+      });
+   }
+
    void connectMeasurementsWithObjectives();
    void connectObjectivesWithGoals();
-   Database& mDb;
+
+   template<class T>
+   void saveItem(const T& item);
+   
+   std::unique_ptr<DatabaseTable> mGoalsStorage;
+   std::unique_ptr<DatabaseTable> mTasksStorage;
+   std::unique_ptr<DatabaseTable> mObjectivesStorage;
+   std::unique_ptr<DatabaseTable> mMeasurementsStorage;
+
+   std::map<Id, std::shared_ptr<strategy::Goal>> mGoals;
+   std::map<Id, Task> mTasks;
+   std::map<Id, std::shared_ptr<strategy::Objective>> mObjectives;
+   std::map<Id, std::shared_ptr<strategy::Measurement>> mMeasurements; 
 };
 
 }

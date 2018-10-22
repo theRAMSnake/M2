@@ -195,364 +195,20 @@ std::string toJson(const Task& t)
    return buf.str();
 }
 
-template<class TObject, class TConnection>
-class ConnectedObject
-{
-public:
-   ConnectedObject(const TObject& obj, TConnection con)
-   : mObj(obj)
-   , mCon(con)
-   {
-
-   }
-
-   const TObject& get()
-   {
-      return mObj;
-   }
-
-   ~ConnectedObject()
-   {
-      mCon.disconnect();
-   }
-
-private:
-   const TObject mObj;
-   TConnection mCon;
-};
-
-namespace impl
-{
-
-class Measurement
-{
-public:
-   typedef int TValue;
-
-   boost::signals2::signal<void (const TValue& val)> OnValueChanged;
-
-   Measurement(const materia::Measurement& props, ContainerSlot&& slot)
-   : mSlot(std::move(slot))
-   {
-      accept(props);
-   }
-
-   Measurement(const std::string& json, ContainerSlot&& slot)
-   : mSlot(std::move(slot))
-   {
-      boost::property_tree::ptree pt;
-      std::istringstream is (json);
-      read_json (is, pt);
-      
-      mImpl.id = pt.get<std::string> ("id");
-      mImpl.name = pt.get<std::string> ("name");
-      mImpl.value = pt.get<TValue> ("value");
-      mImpl.iconId = pt.get<std::string> ("icon_id");
-   }
-
-   void accept(const materia::Measurement& props)
-   {
-      if(mImpl.value != props.value)
-      {
-         OnValueChanged(props.value);
-      }
-      
-      mImpl = props;
-      mSlot.put(toJson());
-   }
-
-   const materia::Measurement& getProps() const
-   {
-      return mImpl;
-   }
-
-private:
-   std::string toJson() const
-   {
-      boost::property_tree::ptree pt;
-
-      pt.put ("id", mImpl.id.getGuid());
-      pt.put ("name", mImpl.name);
-      pt.put ("value", mImpl.value);
-      pt.put ("icon_id", mImpl.iconId.getGuid());
-
-      std::ostringstream buf; 
-      write_json (buf, pt, false);
-      return buf.str();
-   }
-
-   ContainerSlot mSlot;
-   materia::Measurement mImpl;
-};
-
-class Objective
-{
-public:
-   boost::signals2::signal<void (const bool val)> OnReachedChanged;
-
-   Objective(const materia::Objective& props, ContainerSlot&& slot)
-   : mSlot(std::move(slot))
-   {
-      accept(props);
-   }
-
-   Objective(const std::string& json, ContainerSlot&& slot)
-   : mSlot(std::move(slot))
-   {
-      boost::property_tree::ptree pt;
-      std::istringstream is (json);
-      read_json (is, pt);
-      
-      mImpl.id = pt.get<std::string> ("id");
-      mImpl.parentGoalId = pt.get<std::string> ("parent_goal_id");
-      mImpl.name = pt.get<std::string> ("name");
-      mImpl.notes = pt.get<std::string> ("notes");
-      mImpl.iconId = pt.get<std::string> ("icon_id");
-      mImpl.measurementId = pt.get<std::string> ("meas_id");
-      mImpl.expected = pt.get<Measurement::TValue> ("expected");
-      mImpl.reached = pt.get<bool> ("reached");
-   }
-
-   void accept(const materia::Objective& props)
-   {
-      bool oldReached = mImpl.reached;
-      mImpl = props;
-
-      updateReached(oldReached);
-
-      mSlot.put(toJson());
-   }
-
-   const materia::Objective& getProps() const
-   {
-      return mImpl;
-   }
-
-   void connect(Measurement& meas)
-   {
-      mMeasConnection.disconnect();
-      mMeasConnection = meas.OnValueChanged.connect(std::bind(&Objective::OnMeasValueChanged, this, std::placeholders::_1));
-      mLastKnowMeasValue = meas.getProps().value;
-      /*if(updateReached(mImpl.reached))
-      {
-         mSlot.put(toJson());
-      }*/
-   }
-
-   void disconnect(const Measurement& meas)
-   {
-      mImpl.measurementId = Id::Invalid;
-      mMeasConnection.disconnect();
-      mSlot.put(toJson());
-   }
-
-   ~Objective()
-   {
-      mMeasConnection.disconnect();
-   }
-
-private:
-   std::string toJson() const
-   {
-      boost::property_tree::ptree pt;
-
-      pt.put ("id", mImpl.id.getGuid());
-      pt.put ("parent_goal_id", mImpl.parentGoalId.getGuid());
-      pt.put ("name", mImpl.name);
-      pt.put ("notes", mImpl.notes);
-      pt.put ("icon_id", mImpl.iconId.getGuid());
-      pt.put ("meas_id", mImpl.measurementId.getGuid());
-      pt.put ("expected", mImpl.expected);
-      pt.put ("reached", mImpl.reached);
-
-      std::ostringstream buf; 
-      write_json (buf, pt, false);
-      return buf.str();
-   }
-
-   bool updateReached(const bool oldReached)
-   {
-      if(mImpl.measurementId != Id::Invalid)
-      {
-         mImpl.reached = mLastKnowMeasValue >= mImpl.expected;
-      }
-      
-      if(mImpl.reached != oldReached)
-      {
-         logger << "Sending update to the parent goal\n";
-         OnReachedChanged(mImpl.reached);
-      }
-
-      return mImpl.reached != oldReached;
-   }
-
-   void OnMeasValueChanged(const Measurement::TValue value)
-   {
-      mLastKnowMeasValue = value;
-      if(updateReached(mImpl.reached))
-      {
-         mSlot.put(toJson());
-      }
-   }
-
-   boost::signals2::connection mMeasConnection;
-   Measurement::TValue mLastKnowMeasValue = 0;
-   ContainerSlot mSlot;
-   materia::Objective mImpl;
-};
-
-class Goal
-{
-public:
-   boost::signals2::signal<void ()> OnAchievedChanged;
-
-   Goal(const materia::Goal& props, ContainerSlot&& slot)
-   : mSlot(std::move(slot))
-   {
-      mImpl.achieved = false;
-      accept(props);
-   }
-
-   Goal(const std::string& json, ContainerSlot&& slot)
-   : mSlot(std::move(slot))
-   {
-      boost::property_tree::ptree pt;
-      std::istringstream is (json);
-      read_json (is, pt);
-      
-      mImpl.id = pt.get<std::string> ("id");
-      mImpl.name = pt.get<std::string> ("name");
-      mImpl.notes = pt.get<std::string> ("notes");
-      mImpl.iconId = pt.get<std::string> ("icon_id");
-      mImpl.affinityId = pt.get<std::string> ("affinity_id");
-      mImpl.focused = pt.get<bool> ("focused");
-      mImpl.achieved = pt.get<bool> ("achieved");
-   }
-
-   void accept(const materia::Goal& props)
-   {
-      mImpl = props;
-
-      updateAchieved();
-
-      mSlot.put(toJson());
-   }
-
-   const materia::Goal& getProps() const
-   {
-      return mImpl;
-   }
-
-   void connect(const std::shared_ptr<Objective>& obj)
-   {
-      auto con = new ConnectedObject<std::shared_ptr<Objective>, boost::signals2::connection>(
-         obj,
-         obj->OnReachedChanged.connect(std::bind(&Goal::OnObjReachedChanged, this))
-         );
-
-      mObjectives.insert(std::make_pair(obj->getProps().id, con));
-      
-      UpdateAndSaveAchieved();
-   }
-
-   void OnObjReachedChanged()
-   {
-      logger << "Received signal from objective \n";
-      UpdateAndSaveAchieved();
-   }
-
-   void disconnect(const std::shared_ptr<Objective>& obj)
-   {
-      mObjectives.erase(obj->getProps().id);
-
-      UpdateAndSaveAchieved();
-   }
-
-   std::vector<Id> getObjectives()
-   {
-      decltype(getObjectives()) result;
-
-      for(auto x : mObjectives)
-      {
-         result.push_back(x.second->get()->getProps().id);
-      }
-
-      return result;  
-   }
-
-private:
-   std::string toJson() const
-   {
-      boost::property_tree::ptree pt;
-
-      pt.put ("id", mImpl.id.getGuid());
-      pt.put ("name", mImpl.name);
-      pt.put ("notes", mImpl.notes);
-      pt.put ("icon_id", mImpl.iconId.getGuid());
-      pt.put ("affinity_id", mImpl.affinityId.getGuid());
-      pt.put ("focused", mImpl.focused);
-      pt.put ("achieved", mImpl.achieved);
-
-      std::ostringstream buf; 
-      write_json (buf, pt, false);
-      return buf.str();
-   }
-
-   void UpdateAndSaveAchieved()
-   {
-      if(updateAchieved())
-      {
-         mSlot.put(toJson());
-      }
-   }
-
-   bool updateAchieved()
-   {
-      bool newAchieved = calculateAchieved();
-      if(mImpl.achieved != newAchieved)
-      {
-         mImpl.achieved = newAchieved;
-         OnAchievedChanged();
-         return true;
-      }
-
-      return false;
-   }
-
-   bool calculateAchieved()
-   {
-      logger << "Calculating achieved for obs count: " << mObjectives.size() << "\n";
-
-      bool result = false;
-
-      if(!mObjectives.empty())
-      {
-         result = true;
-         for(auto o : mObjectives)
-         {
-            logger << "obj->reached: " << o.second->get()->getProps().reached << "\n";
-            result = result && o.second->get()->getProps().reached;
-            if(!result)
-            {
-               return false;
-            }
-         }
-      }
-
-      return result;
-   }
-
-   std::map<Id, std::shared_ptr<ConnectedObject<std::shared_ptr<Objective>, boost::signals2::connection>>> mObjectives;
-   ContainerSlot mSlot;
-   materia::Goal mImpl;
-};
-
-}
-
 Strategy::Strategy(Database& db)
-: mDb(db)
+: mGoalsStorage(db.getTable("goals"))
+, mTasksStorage(db.getTable("tasks"))
+, mObjectivesStorage(db.getTable("objectives"))
+, mMeasurementsStorage(db.getTable("measurements"))
 {
-   loadItems(); //Don't forget to connect
+   loadCollection(*mGoalsStorage, mGoals);
+   loadCollection(*mObjectivesStorage, mObjectives);
+   loadCollection(*mMeasurementsStorage, mMeasurements);
+
+   mTasksStorage->foreach([&](std::string id, std::string json) 
+   {
+      mTasks.insert({id, fromJson(json)});
+   });
 
    connectMeasurementsWithObjectives();
    connectObjectivesWithGoals();
@@ -564,10 +220,12 @@ Id Strategy::addGoal(const Goal& goal)
     g.id = Id::generate();
     g.achieved = false;
 
-    std::shared_ptr<impl::Goal> newGoal(new impl::Goal(g));
+    std::shared_ptr<strategy::Goal> newGoal(new strategy::Goal(g));
 
     mGoals.insert(std::make_pair(g.id, newGoal));
-    newGoal->OnChanged.connect(std::bind(&Strategy::saveItem, this, *newGoal));
+    newGoal->OnChanged.connect(std::bind(&Strategy::saveItem<strategy::Goal>, this, std::placeholders::_1));
+
+    saveItem(*newGoal);
 
     return g.id;
 }
@@ -577,9 +235,7 @@ void Strategy::modifyGoal(const Goal& goal)
     auto pos = mGoals.find(goal.id);
     if(pos != mGoals.end())
     {
-        auto g = *pos->second;
-
-        g.accept(goal);
+        pos->second->accept(goal);
     }
 }
 
@@ -588,20 +244,20 @@ void Strategy::deleteGoal(const Id& id)
    auto pos = mGoals.find(id);
    if(pos != mGoals.end())
    {
-       auto taskIter = std::find_if(mTasks.begin(), mTasks.end(), [=](auto t)->bool {return id == t.parentGoalId;});
+       auto taskIter = std::find_if(mTasks.begin(), mTasks.end(), [=](auto t)->bool {return id == t.second.parentGoalId;});
        while(taskIter != mTasks.end())
        { 
-          mTasks.erase(taskIter);
-          taskIter = std::find_if(mTasks.begin(), mTasks.end(), [=](auto t)->bool {return id == t.parentGoalId;});
+          deleteTask(taskIter->first);
+          taskIter = std::find_if(mTasks.begin(), mTasks.end(), [=](auto t)->bool {return id == t.second.parentGoalId;});
        }
 
-       for(auto o : g->getObjectives())
+       for(auto o : pos->second->getObjectives())
        {
-          mObjectives.erase(o);
+          deleteObjective(o);
        }
 
        mGoals.erase(pos);
-       mDb.erase(id);
+       mGoalsStorage->erase(id);
    }
 }
 
@@ -622,7 +278,7 @@ std::optional<Goal> Strategy::getGoal(const Id& id)
    auto pos = mGoals.find(id);
    if(pos != mGoals.end())
    {
-       return pos->second.getProps();
+       return pos->second->getProps();
    }
 
    return std::optional<Goal>();
@@ -635,9 +291,9 @@ std::tuple<std::vector<Task>, std::vector<Objective>> Strategy::getGoalItems(con
 
     for(auto x : mTasks)
     {
-        if(x.parentGoalId == id)
+        if(x.second.parentGoalId == id)
         {
-            tasks.push_back(x);
+            tasks.push_back(x.second);
         }
     }
 
@@ -662,24 +318,25 @@ Id Strategy::addObjective(const Objective& obj)
 
     if(parentPos != mGoals.end())
     {
-        std::shared_ptr<impl::Objective> newObjective(new impl::Objective(o));
-        newObjective->OnChanged.connect(std::bind(&Strategy::saveItem, this, *newObjective));
+        std::shared_ptr<strategy::Objective> newObjective(new strategy::Objective(o));
+        newObjective->OnChanged.connect(std::bind(&Strategy::saveItem<strategy::Objective>, this, std::placeholders::_1));
 
         if(o.measurementId != Id::Invalid)
         {
             auto measPos = mMeasurements.find(o.measurementId);
             if(measPos != mMeasurements.end())
             {
-                newObjective->connect(*meas->second);
+                newObjective->connect(*measPos->second);
             }
             else
             {
-                LOG;
+                //LOG;
             }
         }
 
         parentPos->second->connect(newObjective);
         mObjectives.insert(std::make_pair(o.id, newObjective));
+        saveItem(*newObjective);
 
         return o.id;
     }
@@ -694,16 +351,16 @@ void Strategy::modifyObjective(const Objective& obj)
     if(oldObj != mObjectives.end())
     {
         auto oldParent = mGoals.find(oldObj->second->getProps().parentGoalId);
-        auto newParent = mGoals.find(newObj.parentGoalId);
+        auto newParent = mGoals.find(obj.parentGoalId);
 
         if(newParent != mGoals.end())
         {
             if(obj.measurementId != Id::Invalid)
             {
-                auto meas = mMeasurements.find(newObj.measurementId);
+                auto meas = mMeasurements.find(obj.measurementId);
                 if(meas == mMeasurements.end())
                 {
-                    LOG;
+                    //LOG;
                 }
                 else
                 {
@@ -711,7 +368,7 @@ void Strategy::modifyObjective(const Objective& obj)
                 }
             }
 
-            oldObj->second->accept(newObj);
+            oldObj->second->accept(obj);
 
             if(newParent != oldParent)
             {
@@ -736,7 +393,7 @@ void Strategy::deleteObjective(const Id& id)
             parent->second->disconnect(oPos->second);
 
             mObjectives.erase(oPos);
-            mDb.erase(id);
+            mObjectivesStorage->erase(id);
         }
     }
 }
@@ -746,29 +403,30 @@ Id Strategy::addTask(const Task& task)
     Task t = task;
     t.id = Id::generate();
     
-    mTasks.insert(t);
-    mDb.insert(t);
+    mTasks.insert({t.id, t});
+    mTasksStorage->store(t.id, toJson(t));
     return t.id;
 }
 
 void Strategy::modifyTask(const Task& task)
 {
-   auto pos = mTask.find(item.id);
+   auto pos = mTasks.find(task.id);
    if(pos != mTasks.end())
    {
-       *pos = task;
+       mTasks.erase(pos);
+       mTasks.insert({task.id, task});
 
-       mDb.store(task.id, toJson(task));
+       mTasksStorage->store(task.id, toJson(task));
    }
 }
 
 void Strategy::deleteTask(const Id& id)
 {
-   auto pos = mTask.find(id);
+   auto pos = mTasks.find(id);
    if(pos != mTasks.end())
    {
        mTasks.erase(pos);
-       mDb.erase(id);
+       mTasksStorage->erase(id);
    }
 }
 
@@ -777,10 +435,11 @@ Id Strategy::addMeasurement(const Measurement& meas)
     auto m = meas;
     m.id = Id::generate();
 
-    std::shared_ptr<impl::Measurement> newMeas(new impl::Measurement(m));
+    std::shared_ptr<strategy::Measurement> newMeas(new strategy::Measurement(m));
 
-    mMeasurements.insert(std::make_pair(g.id, newGoal));
-    newMeas->OnChanged.connect(std::bind(&Strategy::saveItem, this, *newMeas));
+    mMeasurements.insert(std::make_pair(m.id, newMeas));
+    newMeas->OnChanged.connect(std::bind(&Strategy::saveItem<strategy::Measurement>, this, std::placeholders::_1));
+    saveItem(*newMeas);
 
     return m.id;
 }
@@ -808,7 +467,7 @@ void Strategy::deleteMeasurement(const Id& id)
         }
 
         mMeasurements.erase(id);
-        mDb.erase(id);
+        mMeasurementsStorage->erase(id);
     }
 }
 
@@ -858,9 +517,7 @@ bool Goal::operator == (const Goal& other) const
    return id == other.id
       && name == other.name
       && notes == other.notes
-      && affinityId == other.affinityId
       && achieved == other.achieved
-      && iconId == other.iconId
       && focused == other.focused;
 }
 
@@ -875,7 +532,6 @@ bool Task::operator == (const Task& other) const
       && parentGoalId == other.parentGoalId
       && name == other.name
       && notes == other.notes
-      && requiredTasks == other.requiredTasks
       && done == other.done;
 }
 
@@ -892,7 +548,7 @@ bool Objective::operator == (const Objective& other) const
       && notes == other.notes
       && reached == other.reached
       && measurementId == other.measurementId
-      && expected == other.expected;
+      && expectedMeasurementValue == other.expectedMeasurementValue;
 }
 bool Objective::operator != (const Objective& other) const
 {
@@ -902,25 +558,11 @@ bool Objective::operator != (const Objective& other) const
 bool Measurement::operator == (const Measurement& other) const
 {
    return id == other.id
-      && iconId == other.iconId
       && name == other.name
       && value == other.value;
 }
 
 bool Measurement::operator != (const Measurement& other) const
-{
-   return !operator==(other);
-}
-
-bool Affinity::operator == (const Affinity& other) const
-{
-   return id == other.id
-      && iconId == other.iconId
-      && name == other.name
-      && colorName == other.colorName;
-}
-
-bool Affinity::operator != (const Affinity& other) const
 {
    return !operator==(other);
 }

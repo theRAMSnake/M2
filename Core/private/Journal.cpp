@@ -220,7 +220,7 @@ void Journal::deleteItem(const Id& id)
 
 void Journal::updateIndexItem(const JournalItem& item)
 {
-   auto pos = find_by_id(mIndex, item.id);
+   auto pos = mIndex.find(item.id);
    if(pos != mIndex.end())
    {
        auto& x = pos->second;
@@ -283,7 +283,7 @@ std::optional<JournalPage> Journal::getPage(const Id& id)
 {
     std::optional<JournalPage> result;
 
-    auto pos = find_by_id(mIndex, id);
+    auto pos = mIndex.find(id);
     if(pos == mIndex.end())
     {
         if(pos->second.isPage)

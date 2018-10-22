@@ -38,7 +38,7 @@ Calendar::Calendar(Database& db)
 {
     mStorage->foreach([&](std::string id, std::string json) 
     {
-        mItems.insert({id, createCalendarItemFromJson(json)});
+        mItems.insert(createCalendarItemFromJson(json));
     });
 }
 
@@ -48,7 +48,7 @@ void Calendar::deleteItem(const Id& id)
    if(pos != mItems.end())
    {
        mItems.erase(pos);
-       mDb.erase(id);
+       mStorage->erase(id);
    }
 }
 
@@ -57,9 +57,10 @@ void Calendar::replaceItem(const CalendarItem& item)
    auto pos = find_by_id(mItems, item.id);
    if(pos != mItems.end())
    {
-       *pos = item;
+       mItems.erase(pos);
+       mItems.insert(item);
 
-       mDb.store(item.id, toJson(item));
+       mStorage->store(item.id, toJson(item));
    }
 }
 
@@ -71,7 +72,7 @@ Id Calendar::insertItem(const CalendarItem& item)
        auto newItem = item;
        newItem.id = Id::generate();
 
-       mDb.store(newItem.id, toJson(item));
+       mStorage->store(newItem.id, toJson(item));
 
        return newItem.id;
    }
@@ -85,16 +86,13 @@ std::vector<CalendarItem> Calendar::next(const std::time_t from, const int limit
 
     CalendarItem fromItem {Id::Invalid, "", from};
 
-    auto it = std::lower_bound(mItems.begin(), mItems.end(), from);
+    CompareByTime c;
+    auto it = std::lower_bound(mItems.begin(), mItems.end(), fromItem, c);
     auto end = it;
-    std::advance(end, limit);
 
-    if(end > mItems.end())
-    {
-        end = mItems.end();
-    }
+    for(int i = 0; i < limit && end != mItems.end(); ++end, ++i);
 
-    std::copy(it, end, std::inserter(result));
+    std::copy(it, end, std::inserter(result, result.begin()));
 
     return result;
 }
@@ -106,10 +104,11 @@ std::vector<CalendarItem> Calendar::query(const std::time_t from, const std::tim
     CalendarItem fromItem {Id::Invalid, "", from};
     CalendarItem toItem {Id::Invalid, "", to};
 
-    auto it = std::lower_bound(mItems.begin(), mItems.end(), from);
-    auto end = std::lower_bound(mItems.begin(), mItems.end(), to);
+    CompareByTime c;
+    auto it = std::lower_bound(mItems.begin(), mItems.end(), fromItem, c);
+    auto end = std::lower_bound(mItems.begin(), mItems.end(), toItem, c);
     
-    std::copy(it, end, std::inserter(result));
+    std::copy(it, end, std::inserter(result, result.begin()));
 
     return result;
 }
