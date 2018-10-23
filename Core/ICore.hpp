@@ -9,17 +9,23 @@ class IInbox;
 class ICalendar;
 class IStrategy;
 class IJournal;
+
+struct CoreConfig
+{
+    std::string dbFileName;
+};
+
 class ICore
 {
 public:
-    virtual IInbox& getInbox() const = 0;
-    virtual ICalendar& getCalendar() const = 0;
-    virtual IStrategy& getStrategy() const = 0;
-    virtual IJournal& getJournal() const = 0;
+    virtual IInbox& getInbox() = 0;
+    virtual ICalendar& getCalendar() = 0;
+    virtual IStrategy& getStrategy() = 0;
+    virtual IJournal& getJournal() = 0;
 
     virtual ~ICore(){}
 };
 
-std::shared_ptr<ICore> createCore();
+std::shared_ptr<ICore> createCore(const CoreConfig& config);
 
 }

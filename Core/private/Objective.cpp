@@ -33,6 +33,8 @@ void Objective::accept(const materia::Objective& props)
     mImpl = props;
 
     updateReached(oldReached);
+
+    OnChanged(*this);
 }
 
 const materia::Objective& Objective::getProps() const
@@ -45,10 +47,10 @@ void Objective::connect(Measurement& meas)
     mMeasConnection.disconnect();
     mMeasConnection = meas.OnValueChanged.connect(std::bind(&Objective::OnMeasValueChanged, this, std::placeholders::_1));
     mLastKnowMeasValue = meas.getProps().value;
-    /*if(updateReached(mImpl.reached))
+    if(updateReached(mImpl.reached))
     {
-        mSlot.put(toJson());
-    }*/
+        OnChanged(*this);
+    }
 }
 
 void Objective::disconnect(const Measurement& meas)
@@ -99,8 +101,13 @@ void Objective::OnMeasValueChanged(const Measurement::TValue value)
     mLastKnowMeasValue = value;
     if(updateReached(mImpl.reached))
     {
-        //onchanged
+        OnChanged(*this);
     }
+}
+
+Id Objective::getId() const
+{
+    return mImpl.id;
 }
 
 }

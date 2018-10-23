@@ -18,6 +18,11 @@ Database::Database(const std::string& dbPath)
     
 }
 
+std::unique_ptr<DatabaseTable> Database::getTable(const std::string& name)
+{
+    return std::unique_ptr<DatabaseTable>(new DatabaseTable(name, mDb));
+}
+
 void DatabaseTable::store(const Id& id, const std::string& data)
 {
     auto& binder = (*mInsertBinder);

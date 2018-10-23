@@ -72,6 +72,7 @@ Id Calendar::insertItem(const CalendarItem& item)
        auto newItem = item;
        newItem.id = Id::generate();
 
+       mItems.insert(newItem);
        mStorage->store(newItem.id, toJson(item));
 
        return newItem.id;

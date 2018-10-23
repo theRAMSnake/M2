@@ -31,6 +31,8 @@ void Goal::accept(const materia::Goal& props)
     mImpl = props;
 
     updateAchieved();
+
+    OnChanged(*this);
 }
 
 const materia::Goal& Goal::getProps() const
@@ -93,7 +95,7 @@ void Goal::UpdateAndSaveAchieved()
 {
     if(updateAchieved())
     {
-        //Onchanged
+        OnChanged(*this);
     }
 }
 
@@ -128,6 +130,11 @@ bool Goal::calculateAchieved()
     }
 
     return result;
+}
+
+Id Goal::getId() const
+{
+    return mImpl.id;
 }
 
 }

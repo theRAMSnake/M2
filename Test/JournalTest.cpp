@@ -1,10 +1,7 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
-
-#include <Client/Id.hpp>
-#include <Client/MateriaClient.hpp>
-#include <Client/IJournal.hpp>
-#include <Client/IContainer.hpp>
+#include <Core/ICore.hpp>
+#include <Core/IJournal.hpp>
 #include "TestHelpers.hpp"
 
 #include <thread>
@@ -25,10 +22,10 @@ class JournalTest
 {
 public:
    JournalTest()
-   : mClient("test")
-   , mService(mClient.getJournal())
    {
-      mClient.getJournal().clear();
+      system("rm Test.db");
+      mCore = materia::createCore({"Test.db"});
+      mJournal = &mCore->getJournal();
 
       fillSampleItems();
    }
@@ -48,19 +45,19 @@ protected:
        * emptyFolder
        */
 
-      mAnimalsId = mService.insertFolder(materia::Id::Invalid, "animals");
-      mMamalsId = mService.insertFolder(mAnimalsId, "mamals");
-      mSapiensId = mService.insertPage(mMamalsId, "sapiens", "<li>human</li><li>chimpanze</li><li>dolphin</li>");
-      mNonSapiensId = mService.insertPage(mMamalsId, "non-sapiens", "<li>camel</li><li>cow</li><li>elephant</li>");
-      mInsectsId = mService.insertPage(mAnimalsId, "insects", "<li>ant</li><li>bug</li><li>spider</li>");
-      mColorsPageId = mService.insertPage(materia::Id::Invalid, "colors", "<li>red</li><li>green</li><li>blue</li>");
-      mEmptyFolderId = mService.insertFolder(materia::Id::Invalid, "emptyFolder");
+      mAnimalsId = mJournal->insertFolder(materia::Id::Invalid, "animals");
+      mMamalsId = mJournal->insertFolder(mAnimalsId, "mamals");
+      mSapiensId = mJournal->insertPage(mMamalsId, "sapiens", "<li>human</li><li>chimpanze</li><li>dolphin</li>");
+      mNonSapiensId = mJournal->insertPage(mMamalsId, "non-sapiens", "<li>camel</li><li>cow</li><li>elephant</li>");
+      mInsectsId = mJournal->insertPage(mAnimalsId, "insects", "<li>ant</li><li>bug</li><li>spider</li>");
+      mColorsPageId = mJournal->insertPage(materia::Id::Invalid, "colors", "<li>red</li><li>green</li><li>blue</li>");
+      mEmptyFolderId = mJournal->insertFolder(materia::Id::Invalid, "emptyFolder");
 
       mIndexSize = 7;
    }
 
-   materia::MateriaClient mClient;
-   materia::IJournal& mService;
+   std::shared_ptr<materia::ICore> mCore;
+   materia::IJournal* mJournal;
    
    std::size_t mIndexSize;
 
@@ -77,29 +74,29 @@ BOOST_FIXTURE_TEST_CASE( DeleteItem, JournalTest )
 {
    //1. delete empty folder
    {
-      mService.deleteItem(mEmptyFolderId);
-      BOOST_CHECK_EQUAL(mIndexSize - 1, mService.getIndex().size());
+      mJournal->deleteItem(mEmptyFolderId);
+      BOOST_CHECK_EQUAL(mIndexSize - 1, mJournal->getIndex().size());
    }
 
    //2. delete page
    {
-      mService.deleteItem(mColorsPageId);
-      BOOST_CHECK_EQUAL(mIndexSize - 2, mService.getIndex().size());
-      BOOST_CHECK(!mService.getPage(mColorsPageId));
+      mJournal->deleteItem(mColorsPageId);
+      BOOST_CHECK_EQUAL(mIndexSize - 2, mJournal->getIndex().size());
+      BOOST_CHECK(!mJournal->getPage(mColorsPageId));
    }
 
    //3. delete contained folder -> results in pages deleted
    {
-      mService.deleteItem(mMamalsId);
-      BOOST_CHECK_EQUAL(mIndexSize - 5, mService.getIndex().size());
-      BOOST_CHECK(!mService.getPage(mSapiensId));
-      BOOST_CHECK(!mService.getPage(mNonSapiensId));
-      BOOST_CHECK(mService.getPage(mInsectsId));
+      mJournal->deleteItem(mMamalsId);
+      BOOST_CHECK_EQUAL(mIndexSize - 5, mJournal->getIndex().size());
+      BOOST_CHECK(!mJournal->getPage(mSapiensId));
+      BOOST_CHECK(!mJournal->getPage(mNonSapiensId));
+      BOOST_CHECK(mJournal->getPage(mInsectsId));
    }
    //4. delete all
    {
-      mService.deleteItem(mAnimalsId);
-      BOOST_CHECK_EQUAL(0, mService.getIndex().size());
+      mJournal->deleteItem(mAnimalsId);
+      BOOST_CHECK_EQUAL(0, mJournal->getIndex().size());
    }
 }
 
@@ -107,14 +104,14 @@ BOOST_FIXTURE_TEST_CASE( UpdateFolder_NoReparent, JournalTest )
 {
    using namespace std::chrono_literals;
 
-   auto index = mService.getIndex();
+   auto index = mJournal->getIndex();
    auto item = *materia::find_by_id(index, mAnimalsId);
    item.title = "omg";
 
    std::this_thread::sleep_for(1s);
-   BOOST_CHECK(mService.updateFolder(item));
+   mJournal->updateFolder(item);
 
-   index = mService.getIndex();
+   index = mJournal->getIndex();
    auto updatedItem = *materia::find_by_id(index, mAnimalsId);
    BOOST_CHECK_EQUAL(item.title, updatedItem.title);
    BOOST_CHECK(item.modified != updatedItem.modified);
@@ -122,13 +119,13 @@ BOOST_FIXTURE_TEST_CASE( UpdateFolder_NoReparent, JournalTest )
 
 BOOST_FIXTURE_TEST_CASE( UpdateFolder_SelfParent, JournalTest ) 
 {
-   auto index = mService.getIndex();
+   auto index = mJournal->getIndex();
    auto item = *materia::find_by_id(index, mMamalsId);
    item.parentFolderId = mMamalsId;
 
-   mService.updateFolder(item);
+   mJournal->updateFolder(item);
 
-   index = mService.getIndex();
+   index = mJournal->getIndex();
    auto updatedItem = *materia::find_by_id(index, mMamalsId);
    BOOST_CHECK(item.parentFolderId != updatedItem.parentFolderId);
    BOOST_CHECK_EQUAL(item.modified, updatedItem.modified);
@@ -138,28 +135,28 @@ BOOST_FIXTURE_TEST_CASE( UpdatePage, JournalTest )
 {
    using namespace std::chrono_literals;
 
-   auto index = mService.getIndex();
+   auto index = mJournal->getIndex();
    auto oldPageIndexItem = *materia::find_by_id(index, mColorsPageId);
 
-   auto page = *mService.getPage(mColorsPageId);
+   auto page = *mJournal->getPage(mColorsPageId);
    page.title = "omg";
    page.content = "other_content";
 
    std::this_thread::sleep_for(1s);
-   mService.updatePage(page);
+   mJournal->updatePage(page);
 
-   index = mService.getIndex();
+   index = mJournal->getIndex();
    auto updatedItem = *materia::find_by_id(index, mColorsPageId);
    BOOST_CHECK_EQUAL(page.title, updatedItem.title);
    BOOST_CHECK(oldPageIndexItem.modified != updatedItem.modified);
 
-   auto otherPage = *mService.getPage(mColorsPageId);
+   auto otherPage = *mJournal->getPage(mColorsPageId);
    BOOST_CHECK_EQUAL(page.content, otherPage.content);
 }
 
 BOOST_FIXTURE_TEST_CASE( GetIndex, JournalTest ) 
 {
-   auto index = mService.getIndex();
+   auto index = mJournal->getIndex();
 
    BOOST_CHECK_EQUAL(mIndexSize, index.size());
 
@@ -209,8 +206,8 @@ BOOST_FIXTURE_TEST_CASE( GetIndex, JournalTest )
 
 BOOST_FIXTURE_TEST_CASE( GetPage, JournalTest ) 
 {
-   BOOST_CHECK(!mService.getPage(mAnimalsId));
-   auto page = *mService.getPage(mColorsPageId);
+   BOOST_CHECK(!mJournal->getPage(mAnimalsId));
+   auto page = *mJournal->getPage(mColorsPageId);
 
    BOOST_CHECK(materia::Id::Invalid != page.id);
    BOOST_CHECK_EQUAL("colors", page.title);
@@ -219,17 +216,29 @@ BOOST_FIXTURE_TEST_CASE( GetPage, JournalTest )
 
 BOOST_FIXTURE_TEST_CASE( SearchTest, JournalTest ) 
 {
-   auto result = mService.search("wrong");
+   auto result = mJournal->search("wrong");
    BOOST_CHECK(result.empty());
 
-   result = mService.search("ph");
+   result = mJournal->search("ph");
    BOOST_CHECK_EQUAL(2, result.size());
-   BOOST_CHECK_EQUAL(mSapiensId, result[0].pageId);
-   BOOST_CHECK_EQUAL(mNonSapiensId, result[1].pageId);
-   BOOST_CHECK_EQUAL(39, result[0].position);
-   BOOST_CHECK_EQUAL(33, result[1].position);
+   if(result[0].pageId == mSapiensId)
+   {
+      BOOST_CHECK_EQUAL(mNonSapiensId, result[1].pageId);
+      BOOST_CHECK_EQUAL(39, result[0].position);
+      BOOST_CHECK_EQUAL(33, result[1].position);
+   }
+   else if(result[1].pageId == mSapiensId)
+   {
+      BOOST_CHECK_EQUAL(mNonSapiensId, result[0].pageId);
+      BOOST_CHECK_EQUAL(39, result[1].position);
+      BOOST_CHECK_EQUAL(33, result[0].position);
+   }
+   else
+   {
+      BOOST_CHECK(false);
+   }
 
-   result = mService.search("re");
+   result = mJournal->search("re");
    BOOST_CHECK_EQUAL(2, result.size());
    BOOST_CHECK_EQUAL(mColorsPageId, result[0].pageId);
    BOOST_CHECK_EQUAL(mColorsPageId, result[1].pageId);

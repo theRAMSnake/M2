@@ -49,7 +49,17 @@ private:
    void connectObjectivesWithGoals();
 
    template<class T>
-   void saveItem(const T& item);
+   void saveItem(const T& item)
+   {
+      getStorage<T>().store(item.getId(), item.toJson());
+   }
+
+   template<class T>
+   DatabaseTable& getStorage()
+   {
+      //Should never be called
+      throw -1;
+   }
    
    std::unique_ptr<DatabaseTable> mGoalsStorage;
    std::unique_ptr<DatabaseTable> mTasksStorage;

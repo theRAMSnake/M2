@@ -18,6 +18,8 @@ public:
    Objective(const materia::Objective& props);
    Objective(const std::string& json);
 
+   Id getId() const;
+
    void accept(const materia::Objective& props);
 
    const materia::Objective& getProps() const;
@@ -25,10 +27,11 @@ public:
    void connect(Measurement& meas);
    void disconnect(const Measurement& meas);
 
+   std::string toJson() const;
+
    ~Objective();
 
 private:
-   std::string toJson() const;
 
    bool updateReached(const bool oldReached);
    void OnMeasValueChanged(const strategy::Measurement::TValue value);

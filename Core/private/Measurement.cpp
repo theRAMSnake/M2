@@ -31,6 +31,8 @@ void Measurement::accept(const materia::Measurement& props)
     }
     
     mImpl = props;
+
+    OnChanged(*this);
 }
 
 const materia::Measurement& Measurement::getProps() const
@@ -49,6 +51,11 @@ std::string Measurement::toJson() const
     std::ostringstream buf; 
     write_json (buf, pt, false);
     return buf.str();
+}
+
+Id Measurement::getId() const
+{
+    return mImpl.id;
 }
 
 }

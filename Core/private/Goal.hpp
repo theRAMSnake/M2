@@ -18,6 +18,8 @@ public:
    Goal(const materia::Goal& props);
    Goal(const std::string& json);
 
+   Id getId() const;
+
    void accept(const materia::Goal& props);
 
    const materia::Goal& getProps() const;
@@ -29,9 +31,10 @@ public:
    
    std::vector<Id> getObjectives();
 
-private:
    std::string toJson() const;
 
+private:
+   
    void UpdateAndSaveAchieved();
    bool updateAchieved();
    bool calculateAchieved();

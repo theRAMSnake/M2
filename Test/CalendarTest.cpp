@@ -12,7 +12,9 @@ class CalendarTest
 public:
    CalendarTest()
    {
-      //cleanup
+      system("rm Test.db");
+      mCore = materia::createCore({"Test.db"});
+      mCalendar = &mCore->getCalendar();
 
       for(int i = 0; i < 20; ++i)
       {
@@ -21,7 +23,7 @@ public:
 
          std::string text = "date" + boost::lexical_cast<std::string>(i);
 
-         mSampleIds.push_back( mCalendar.insertItem({materia::Id::Invalid, text, boost::posix_time::to_time_t(timestamp)}));
+         mSampleIds.push_back( mCalendar->insertItem({materia::Id::Invalid, text, boost::posix_time::to_time_t(timestamp)}));
       }
    }
 
@@ -34,11 +36,11 @@ protected:
       auto timeto = boost::posix_time::ptime(
          boost::gregorian::date(2018, boost::date_time::months_of_year::Feb, 26));
    
-      return mCalendar.query(boost::posix_time::to_time_t(timefrom), boost::posix_time::to_time_t(timeto));
+      return mCalendar->query(boost::posix_time::to_time_t(timefrom), boost::posix_time::to_time_t(timeto));
    }
 
-   std::shared_ptr<materia::ICore> mCore = materia::createCore();
-   materia::ICalendar& mCalendar = mCore->getCalendar();
+   std::shared_ptr<materia::ICore> mCore;
+   materia::ICalendar* mCalendar;
    std::vector<materia::Id> mSampleIds;
 };
 
@@ -52,7 +54,7 @@ BOOST_FIXTURE_TEST_CASE( Query, CalendarTest )
       auto to = boost::posix_time::ptime(
          boost::gregorian::date(2016, boost::date_time::months_of_year::Feb, 15));
 
-      BOOST_CHECK(mCalendar.query(boost::posix_time::to_time_t(from), boost::posix_time::to_time_t(to)).size() == 0);
+      BOOST_CHECK(mCalendar->query(boost::posix_time::to_time_t(from), boost::posix_time::to_time_t(to)).size() == 0);
    }
    //query from > to
    {
@@ -62,7 +64,7 @@ BOOST_FIXTURE_TEST_CASE( Query, CalendarTest )
       auto to = boost::posix_time::ptime(
          boost::gregorian::date(2016, boost::date_time::months_of_year::Feb, 5));
 
-      BOOST_CHECK(mCalendar.query(boost::posix_time::to_time_t(from), boost::posix_time::to_time_t(to)).size() == 0);
+      BOOST_CHECK(mCalendar->query(boost::posix_time::to_time_t(from), boost::posix_time::to_time_t(to)).size() == 0);
    }
    //query 5 items
    {
@@ -72,7 +74,7 @@ BOOST_FIXTURE_TEST_CASE( Query, CalendarTest )
       auto timeto = boost::posix_time::ptime(
          boost::gregorian::date(2018, boost::date_time::months_of_year::Feb, 6));
 
-      auto result = mCalendar.query(boost::posix_time::to_time_t(timefrom), boost::posix_time::to_time_t(timeto));
+      auto result = mCalendar->query(boost::posix_time::to_time_t(timefrom), boost::posix_time::to_time_t(timeto));
       BOOST_CHECK_EQUAL(result.size(), 5);
 
       for(auto x : result)
@@ -93,14 +95,14 @@ BOOST_FIXTURE_TEST_CASE( Next, CalendarTest )
       auto timefrom = boost::posix_time::ptime(
          boost::gregorian::date(2018, boost::date_time::months_of_year::Feb, 1));
 
-      BOOST_CHECK(mCalendar.next(boost::posix_time::to_time_t(timefrom), -2).empty());
+      BOOST_CHECK(mCalendar->next(boost::posix_time::to_time_t(timefrom), -2).empty());
    }
    //query 5
    {
       auto timefrom = boost::posix_time::ptime(
          boost::gregorian::date(2018, boost::date_time::months_of_year::Feb, 1));
 
-      auto result = mCalendar.next(boost::posix_time::to_time_t(timefrom), 5);
+      auto result = mCalendar->next(boost::posix_time::to_time_t(timefrom), 5);
       BOOST_CHECK(result.size() == 5);
 
       auto timetreshold = boost::posix_time::ptime(
@@ -115,14 +117,14 @@ BOOST_FIXTURE_TEST_CASE( Next, CalendarTest )
    auto timefrom = boost::posix_time::ptime(
          boost::gregorian::date(2018, boost::date_time::months_of_year::Mar, 1));
 
-   BOOST_CHECK(mCalendar.next(boost::posix_time::to_time_t(timefrom), 5).empty());
+   BOOST_CHECK(mCalendar->next(boost::posix_time::to_time_t(timefrom), 5).empty());
 }
 
 BOOST_FIXTURE_TEST_CASE( CalendarTest_Delete, CalendarTest ) 
 {
    //delete unexist item
    {
-      mCalendar.deleteItem(materia::Id("dfdfsd"));
+      mCalendar->deleteItem(materia::Id("dfdfsd"));
       //check that all items are there
       BOOST_CHECK(queryAll().size() == 20);
    }
@@ -130,7 +132,7 @@ BOOST_FIXTURE_TEST_CASE( CalendarTest_Delete, CalendarTest )
    //delete exist item
    const int sampleItemIndex = 2;
    {
-      mCalendar.deleteItem(mSampleIds[sampleItemIndex]);
+      mCalendar->deleteItem(mSampleIds[sampleItemIndex]);
 
       //check that all, but deleted items are there
       {
@@ -153,7 +155,7 @@ BOOST_FIXTURE_TEST_CASE( CalendarTest_Delete, CalendarTest )
          continue;
       }
 
-      mCalendar.deleteItem(x);
+      mCalendar->deleteItem(x);
    }
 
    //nothing can be obtained anymore
@@ -164,7 +166,7 @@ BOOST_FIXTURE_TEST_CASE( CalendarTest_Delete, CalendarTest )
       auto timeto = boost::posix_time::ptime(
          boost::gregorian::date(2030, boost::date_time::months_of_year::Feb, 6));
 
-      BOOST_CHECK(mCalendar.query(boost::posix_time::to_time_t(timefrom), boost::posix_time::to_time_t(timeto)).empty());
+      BOOST_CHECK(mCalendar->query(boost::posix_time::to_time_t(timefrom), boost::posix_time::to_time_t(timeto)).empty());
    }
 }
 
@@ -175,10 +177,10 @@ BOOST_FIXTURE_TEST_CASE( CalendarTest_Edit, CalendarTest )
       auto timefrom = boost::posix_time::ptime(
          boost::gregorian::date(2019, boost::date_time::months_of_year::Mar, 1));
 
-      mCalendar.replaceItem({mSampleIds[0], "other_text", boost::posix_time::to_time_t(timefrom)});
+      mCalendar->replaceItem({mSampleIds[0], "other_text", boost::posix_time::to_time_t(timefrom)});
 
       {
-         auto result = mCalendar.next(boost::posix_time::to_time_t(timefrom - boost::gregorian::date_duration(
+         auto result = mCalendar->next(boost::posix_time::to_time_t(timefrom - boost::gregorian::date_duration(
             boost::gregorian::days(1))), 1);
          BOOST_CHECK(result.size() == 1);
          BOOST_CHECK(result[0].id == mSampleIds[0]);
@@ -192,6 +194,6 @@ BOOST_FIXTURE_TEST_CASE( CalendarTest_Edit, CalendarTest )
       auto timefrom = boost::posix_time::ptime(
          boost::gregorian::date(2019, boost::date_time::months_of_year::Mar, 1));
 
-      mCalendar.replaceItem({materia::Id("sdfhjksdfhjk"), "other_text", boost::posix_time::to_time_t(timefrom)});
+      mCalendar->replaceItem({materia::Id("sdfhjksdfhjk"), "other_text", boost::posix_time::to_time_t(timefrom)});
    }
 }

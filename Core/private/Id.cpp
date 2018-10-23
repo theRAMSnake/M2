@@ -1,4 +1,6 @@
 #include "../Id.hpp"
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 namespace materia
 {
@@ -38,5 +40,11 @@ namespace materia
    Id::operator std::string() const
    {
       return mGuid;
+   }
+
+   Id Id::generate()
+   {
+      static boost::uuids::random_generator generator;
+      return to_string(generator());
    }
 }

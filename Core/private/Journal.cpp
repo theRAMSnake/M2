@@ -234,7 +234,10 @@ void Journal::updateIndexItem(const JournalItem& item)
 
 void Journal::updateFolder(const JournalItem& item)
 {
-   updateIndexItem(item);
+    if(item.parentFolderId != item.id)
+    {
+        updateIndexItem(item);
+    }
 }
 
 void Journal::updatePage(const JournalPage& item)
@@ -284,7 +287,7 @@ std::optional<JournalPage> Journal::getPage(const Id& id)
     std::optional<JournalPage> result;
 
     auto pos = mIndex.find(id);
-    if(pos == mIndex.end())
+    if(pos != mIndex.end())
     {
         if(pos->second.isPage)
         {

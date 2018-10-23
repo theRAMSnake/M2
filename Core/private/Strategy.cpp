@@ -567,4 +567,22 @@ bool Measurement::operator != (const Measurement& other) const
    return !operator==(other);
 }
 
+template<>
+DatabaseTable& Strategy::getStorage<strategy::Goal>()
+{
+    return *mGoalsStorage;
+}
+
+template<>
+DatabaseTable& Strategy::getStorage<strategy::Objective>()
+{
+    return *mObjectivesStorage;
+}
+
+template<>
+DatabaseTable& Strategy::getStorage<strategy::Measurement>()
+{
+    return *mMeasurementsStorage;
+}
+
 }

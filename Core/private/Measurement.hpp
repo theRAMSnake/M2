@@ -20,11 +20,14 @@ public:
    Measurement(const materia::Measurement& props);
    Measurement(const std::string& json);
 
+   Id getId() const;
+
    void accept(const materia::Measurement& props);
    const materia::Measurement& getProps() const;
 
-private:
    std::string toJson() const;
+
+private:
 
    materia::Measurement mImpl;
 };

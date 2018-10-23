@@ -46,6 +46,7 @@ Id Inbox::add(const InboxItem& item)
        auto newItem = item;
        newItem.id = Id::generate();
 
+       mItems.push_back(newItem);
        mStorage->store(newItem.id, item.text);
 
        return newItem.id;
