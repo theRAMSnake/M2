@@ -30,8 +30,7 @@ message NextQueryParameters
    int32 limit = 2;
 }
 
-
-service CalendarService 
+service CalendarService
 {
    rpc Query (TimeRange) returns (CalendarItems);
    rpc Next (NextQueryParameters) returns (CalendarItems);

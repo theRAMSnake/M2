@@ -2,24 +2,33 @@
 #include <exception>
 #include <messages/common.pb.h>
 #include <google/protobuf/service.h>
+#include <Core/ICore.hpp>
 
 namespace materia
 {
    
 class CannotProvideServiceException : public std::exception{};
 class MethodNotImplementedException : public std::exception{};
-   
-template<class TServiceProvider>
-class ServiceWrapper : public google::protobuf::RpcController
+
+class IService
 {
 public:
-   ServiceWrapper(TServiceProvider& provider)
-   : mProvider(provider)
+   virtual common::MateriaMessage handleMessage(const common::MateriaMessage& msg) = 0;
+
+   virtual ~IService() {}
+};
+   
+template<class TServiceProvider>
+class ServiceWrapper : public google::protobuf::RpcController, public IService
+{
+public:
+   ServiceWrapper(ICore& core)
+   : mProvider(core)
    , mEmptyCb(google::protobuf::NewCallback(&google::protobuf::DoNothing))
    {
    }
    
-   common::MateriaMessage sendMessage(const common::MateriaMessage& msg)
+   common::MateriaMessage handleMessage(const common::MateriaMessage& msg) override
    {
       common::MateriaMessage result;
       result.set_from(mProvider.descriptor()->name());
@@ -93,7 +102,7 @@ public:
    }
    
 private:
-   TServiceProvider& mProvider;
+   TServiceProvider mProvider;
    std::unique_ptr<google::protobuf::Closure> mEmptyCb;
 };
    

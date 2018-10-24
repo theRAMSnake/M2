@@ -8,10 +8,9 @@ message MateriaMessage
    string to = 2;
    string operationName = 3;
    string error = 4;
+   int32 request_id = 5;
    
-   bytes payload = 5;
-
-   int32 request_id = 6;
+   bytes payload = 6;
 }
 
 message EmptyMessage

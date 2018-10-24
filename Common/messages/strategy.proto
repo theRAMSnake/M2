@@ -26,13 +26,11 @@ message CommonItemProperties
    common.UniqueId id = 1;
    string name = 4;
    string notes = 5;
-   common.UniqueId icon_id = 6;
 }
 
 message Goal
 {
    CommonItemProperties common_props = 1;
-   common.UniqueId affinityId = 2;
    bool focused = 3;
    bool achieved = 4;
 }

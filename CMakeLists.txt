@@ -10,6 +10,7 @@ add_subdirectory(Common)
 add_subdirectory(Core)
 add_subdirectory(Test)
 add_subdirectory(Ctrl)
+add_subdirectory(Server)
 
 #add_subdirectory(backuper)
 #add_subdirectory(WebApp)

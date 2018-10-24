@@ -8,6 +8,7 @@ include_directories("..")
 
 add_executable(m2server
 main.cpp
+ProtoConvertion.cpp
 )
 
 find_package(ZeroMQ REQUIRED)
