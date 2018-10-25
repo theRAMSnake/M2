@@ -1,5 +1,8 @@
 #pragma once
 
+#include <ctime>
+#include <Wt/WDate.h>
+
 std::time_t WtDateTimeToTimestamp(const Wt::WDate& date, const Wt::WTime& time);
 std::time_t WtDateToTimeStamp(const Wt::WDate& date);
 

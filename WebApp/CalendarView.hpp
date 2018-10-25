@@ -1,22 +1,25 @@
 #pragma once
 
+#include <Wt/WContainerWidget.h>
+#include "materia/CalendarModel.hpp"
+
 class MateriaCalendar;
 class CalendarItemList;
 class CalendarView : public Wt::WContainerWidget
 {
 public:
-    CalendarView(materia::ICalendar& calendar);
+   CalendarView(CalendarModel& calendar);
 
 private:
    void initiateItemAdd(const Wt::WDate date);
-   void initiateItemDelete(const materia::CalendarItem item);
-   void initiateItemEdit(const materia::CalendarItem item);
+   void initiateItemDelete(const CalendarModel::Item item);
+   void initiateItemEdit(const CalendarModel::Item item);
 
    void onCalendarClicked();
 
    void updateNextCalendar();
 
-   materia::ICalendar& mCalendar;
+   CalendarModel& mCalendar;
    MateriaCalendar* mCalendarWidget;
    CalendarItemList* mDateCalendar;
    CalendarItemList* mNextCalendar;

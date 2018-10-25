@@ -1,4 +1,6 @@
 #include "WtConverters.hpp"
+#include <Wt/WTime.h>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 std::time_t WtDateTimeToTimestamp(const Wt::WDate& date, const Wt::WTime& time)
 {

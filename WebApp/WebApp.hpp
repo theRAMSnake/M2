@@ -1,6 +1,6 @@
 #pragma once
 #include <Wt/WApplication.h>
-#include <Client/MateriaClient.hpp>
+#include "MateriaClient.hpp"
 
 class WebApp : public Wt::WApplication
 {
@@ -17,5 +17,5 @@ private:
 
     Wt::WContainerWidget* mMainScreen;
     Wt::WContainerWidget* mLoginScreen;
-    materia::MateriaClient mClient;
+    MateriaClient mClient;
 };

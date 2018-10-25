@@ -1,12 +1,12 @@
 #pragma once
 #include <Wt/WContainerWidget.h>
-#include <Client/IStrategy.hpp>
+#include "materia/StrategyModel.hpp"
 
 class StrategyView : public Wt::WContainerWidget
 {
 public:
-   StrategyView(materia::IStrategy& strategy, materia::ICalendar& calendar);
+   StrategyView(StrategyModel& strategy);
 
 private:
-   materia::IStrategy& mStrategy;
+   StrategyModel& mStrategy;
 };

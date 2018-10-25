@@ -17,6 +17,9 @@ StrategyView.cpp
 WtConverters.cpp
 CalendarView.cpp
 TemplateBuilder.cpp
+MateriaClient.cpp
+materia/ZmqPbChannel.cpp
+materia/StrategyModel.cpp
 )
 
 find_package(Boost COMPONENTS system REQUIRED)

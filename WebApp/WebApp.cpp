@@ -9,12 +9,11 @@
 
 #include <future>
 #include <zmq.hpp>
-#include <Common/PortLayout.hpp>
 #include <messages/common.pb.h>
 
 WebApp::WebApp(const Wt::WEnvironment & env)
     : Wt::WApplication(env)
-    , mClient("WebApp")
+    , mClient()
 {
     setLoadingIndicator(std::unique_ptr<Wt::WOverlayLoadingIndicator>(new Wt::WOverlayLoadingIndicator()));
 
@@ -70,7 +69,7 @@ bool isMateriaAvailable()
    zmq::socket_t socket(context, ZMQ_REQ);
    socket.setsockopt(ZMQ_LINGER, 0);
 
-   socket.connect("tcp://localhost:" + gCentralPort);
+   socket.connect("tcp://localhost:5757");
 
    common::MateriaMessage envelope;
    envelope.set_from("wa");

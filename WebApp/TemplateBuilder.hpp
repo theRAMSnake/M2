@@ -1,10 +1,12 @@
 #pragma once
 
+#include <Wt/WTemplate.h>
+
 class TemplateBuilder
 {
 public:
    template<class TCtrl>
-   static WTemplate* makeTable(const unsigned int numRows, const unsigned int numCols)
+   static Wt::WTemplate* makeTable(const unsigned int numRows, const unsigned int numCols)
    {
       std::string result = "<table>";
 
@@ -20,7 +22,7 @@ public:
          result += "</tr>";
       }
 
-      result += "</table>"
+      result += "</table>";
 
       auto templ = new Wt::WTemplate(result);
       for(auto r = 0; r < numRows; ++r)

@@ -71,10 +71,10 @@ private:
 class ActionItemView : public Wt::WLabel
 {
 public:
-   ActionItemView(const materia::ActionItem& actionItem, materia::IActions& actions)
-   : Wt::WLabel(actionItem.title)
-   , mActionItem(actionItem)
-   , mActions(actions)
+   ActionItemView(const StrategyModel::Task& task, StrategyModel& strategy)
+   : Wt::WLabel(task.title)
+   , mTask(task)
+   , mStrategy(strategy)
    {
       doubleClicked().connect(std::bind(&ActionItemView::onDblClicked, this, std::placeholders::_1));
       clicked().connect(std::bind(&ActionItemView::onClick, this, std::placeholders::_1));
@@ -84,8 +84,8 @@ private:
    void onDblClicked(Wt::WMouseEvent ev)
    {
       auto dlg = new ActionItemViewEditDialog(
-         mActionItem.title,
-         mActionItem.description,
+         mTask.title,
+         mTask.notes,
          std::bind(&ActionItemView::onDialogOk, this, std::placeholders::_1, std::placeholders::_2));
       dlg->show();
    }
@@ -94,10 +94,10 @@ private:
    {
       setText(title);
 
-      mActionItem.title = title;
-      mActionItem.description = desc;
+      mTask.title = title;
+      mTask.notes = desc;
 
-      mActions.replaceItem(mActionItem);
+      mStrategy.modifyTask(mTask);
    }
 
    void onClick(Wt::WMouseEvent ev)
@@ -105,46 +105,29 @@ private:
       if(ev.modifiers().test(Wt::KeyboardModifier::Control))
       {
           std::function<void()> elementDeletedFunc = [=] () {
-            mActions.deleteItem(mActionItem.id);
+            mStrategy.deleteTask(mTask.id);
             };
 
           CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
       }
    }
 
-   materia::ActionItem mActionItem;
-   materia::IActions& mActions;
+   StrategyModel::Task mTask;
+   StrategyModel& mStrategy;
 };
 
-ActionsView::ActionsView(materia::IActions& actions)
-: mActions(actions)
+ActionsView::ActionsView(StrategyModel& strategy)
+: mStrategy(strategy)
 {
    addStyleClass("container-fluid");
 
    auto actionsGroup = new Wt::WGroupBox;
    actionsGroup->addStyleClass("col-md-10");
 
-   for(auto x : mActions.getItems())
+   for(auto x : mStrategy.getActiveTasks())
    {
-      actionsGroup->addWidget(std::unique_ptr<Wt::WCheckBox>(new ActionItemView(x, mActions)));
+      actionsGroup->addWidget(std::unique_ptr<Wt::WLabel>(new ActionItemView(x, mStrategy)));
    }
    
    addWidget(std::unique_ptr<Wt::WGroupBox>(actionsGroup));
-}
-
-void ActionsView::initiateItemAdd()
-{
-   auto dlg = new ActionItemViewEditDialog(
-   "",
-   "",
-   [=](const std::string& title, const std::string& desc)
-   {
-      materia::ActionItem newItem;
-      newItem.title = title;
-      newItem.description = desc;
-
-      newItem.id = mActions.addItem(newItem);
-      addChildNode(Wt::cpp14::make_unique<ActionItemView>(newItem, mActionsService));
-   });
-   dlg->show();
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <messages/common.pb.h>
-#include <Core/Id.hpp>
+#include <Common/Id.hpp>
 
 namespace materia
 {

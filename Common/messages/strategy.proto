@@ -54,7 +54,6 @@ message Task
    CommonItemProperties common_props = 1;
    common.UniqueId parent_goal_id = 2;
    bool done = 3;
-   repeated common.UniqueId required_tasks = 4;
 }
 
 message GoalItems

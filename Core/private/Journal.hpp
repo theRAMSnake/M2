@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Id.hpp"
+#include <Common/Id.hpp>
 #include "../IJournal.hpp"
 #include "Database.hpp"
 #include <map>

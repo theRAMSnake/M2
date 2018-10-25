@@ -1,10 +1,23 @@
 #include "CalendarView.hpp"
+#include "WtConverters.hpp"
+#include "CommonDialogManager.hpp"
+#include <Common/Id.hpp>
+#include <Wt/WDialog.h>
+#include <Wt/WLineEdit.h>
+#include <Wt/WGroupBox.h>
+#include <Wt/WTimeEdit.h>
+#include <Wt/WDateEdit.h>
+#include <Wt/WPushButton.h>
+#include <Wt/WCalendar.h>
+#include <Wt/WCssDecorationStyle.h>
+#include <boost/date_time/gregorian/greg_date.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 class CalendarItemDialog : public Wt::WDialog
 {
 public:
-   typedef std::function<void(const materia::CalendarItem&)> TOnOkCallback;
-   CalendarItemDialog(const materia::CalendarItem& src, TOnOkCallback cb)
+   typedef std::function<void(const CalendarModel::Item&)> TOnOkCallback;
+   CalendarItemDialog(const CalendarModel::Item& src, TOnOkCallback cb)
    {
       setWidth(Wt::WLength("50%"));
       auto title = new Wt::WLineEdit();
@@ -47,7 +60,7 @@ public:
       finished().connect(std::bind([=]() {
         if (result() == Wt::DialogCode::Accepted)
         {
-            materia::CalendarItem resultItem(src);
+            CalendarModel::Item resultItem(src);
             resultItem.text = title->text().narrow();
             resultItem.timestamp = WtDateTimeToTimestamp(date->date(), time->time());
 
@@ -62,7 +75,7 @@ public:
 class MateriaCalendar : public Wt::WCalendar
 {
 public:
-    MateriaCalendar(materia::ICalendar& calendar)
+    MateriaCalendar(CalendarModel& calendar)
     : mCalendar(calendar)
     {
         populate();
@@ -70,9 +83,9 @@ public:
         currentPageChanged().connect([=]{populate();refresh();});
     }
 
-    std::vector<materia::CalendarItem> getItems(const Wt::WDate& date)
+    std::vector<CalendarModel::Item> getItems(const Wt::WDate& date)
     {
-        std::vector<materia::CalendarItem> result;
+        std::vector<CalendarModel::Item> result;
 
         int timestampFrom = WtDateToTimeStamp(date);
         int timestampTo = WtDateToTimeStamp(date.addDays(1)) - 1;
@@ -88,7 +101,7 @@ public:
         return result;
     }
 
-    void addItem(const materia::CalendarItem& item)
+    void addItem(const CalendarModel::Item& item)
     {
         mItems.push_back(item);
     }
@@ -141,13 +154,13 @@ private:
        return parentResult;
     }
 
-    materia::ICalendar& mCalendar;
-    std::vector<CalendarItem> mItems;
+    CalendarModel& mCalendar;
+    std::vector<CalendarModel::Item> mItems;
 };
 
 struct calendarByTimestampCmp
 {
-    bool operator()(const materia::CalendarItem& lhs, const materia::CalendarItem& rhs) 
+    bool operator()(const CalendarModel::Item& lhs, const CalendarModel::Item& rhs) const
     {
         return lhs.timestamp < rhs.timestamp;
     }
@@ -169,14 +182,14 @@ public:
 
     }
 
-    void addItem(const materia::CalendarItem& item)
+    void addItem(const CalendarModel::Item& item)
     {
         auto w = createWidget(item);
         mItems.insert(std::make_pair(item, w));
         addWidget(std::unique_ptr<Wt::WWidget>(w));
     }
 
-    bool removeItem(const materia::CalendarItem& item)
+    bool removeItem(const CalendarModel::Item& item)
     {
        auto iter = mItems.find(item);
        if(iter != mItems.end())
@@ -211,12 +224,12 @@ public:
        setTitle(""); 
     }
 
-    Wt::Signal<materia::CalendarItem>& onItemCtrlClicked()
+    Wt::Signal<CalendarModel::Item>& onItemCtrlClicked()
     {
        return mOnItemCtrlClicked;
     }
 
-    Wt::Signal<materia::CalendarItem>& onItemDblClicked()
+    Wt::Signal<CalendarModel::Item>& onItemDblClicked()
     {
        return mOnItemDblClicked;
     }
@@ -233,7 +246,7 @@ private:
       }
    } 
 
-   Wt::WWidget* createWidget(const materia::CalendarItem& item)
+   Wt::WWidget* createWidget(const CalendarModel::Item& item)
    {
       std::string text;
 
@@ -241,7 +254,7 @@ private:
       {
          case DisplayMode::Time:
          {
-               auto ptime = boost::posix_time::from_time_t(item.timestamp());
+               auto ptime = boost::posix_time::from_time_t(item.timestamp);
 
                text = boost::lexical_cast<std::string>(ptime.time_of_day(). hours()) + ":" +
                   boost::lexical_cast<std::string>(ptime.time_of_day().minutes());
@@ -257,7 +270,7 @@ private:
          {
                auto curTime = boost::posix_time::from_time_t(WtDateTimeToTimestamp(
                   Wt::WDateTime::currentDateTime().date(), Wt::WDateTime::currentDateTime().time()));
-               auto itemTime = boost::posix_time::from_time_t(item.timestamp());
+               auto itemTime = boost::posix_time::from_time_t(item.timestamp);
 
                auto diff = itemTime - curTime;
 
@@ -266,7 +279,7 @@ private:
          break;
       }
 
-      auto textWidget = new Wt::WText(text + " " + item.text() + "<br></br><br></br>");
+      auto textWidget = new Wt::WText(text + " " + item.text + "<br></br><br></br>");
 
       textWidget->clicked().connect([=]( Wt::WMouseEvent x)
         {
@@ -288,13 +301,13 @@ private:
       return textWidget;
    }
 
-   Wt::Signal<materia::CalendarItem> mOnItemCtrlClicked;
-   Wt::Signal<materia::CalendarItem> mOnItemDblClicked;
-   std::multimap<materia::CalendarItem, Wt::WWidget*, calendarByTimestampCmp> mItems;
+   Wt::Signal<CalendarModel::Item> mOnItemCtrlClicked;
+   Wt::Signal<CalendarModel::Item> mOnItemDblClicked;
+   std::multimap<CalendarModel::Item, Wt::WWidget*, calendarByTimestampCmp> mItems;
    const DisplayMode mDisplayMode;
 };
 
-CalendarView::CalendarView(materia::ICalendar& calendar)
+CalendarView::CalendarView(CalendarModel& calendar)
 : mCalendar(calendar)
 {
    mCalendarWidget = new MateriaCalendar(mCalendar);
@@ -302,11 +315,11 @@ CalendarView::CalendarView(materia::ICalendar& calendar)
    addWidget(std::unique_ptr<Wt::WCalendar>(mCalendarWidget));
 
    mDateCalendar = addWidget(std::unique_ptr<CalendarItemList>(new CalendarItemList("", CalendarItemList::DisplayMode::Time)));
-   mDateCalendar->onItemCtrlClicked().connect([=](calendar::CalendarItem x){initiateItemDelete(x);} );
-   mDateCalendar->onItemDblClicked().connect([=](calendar::CalendarItem x){initiateItemEdit(x);} );
+   mDateCalendar->onItemCtrlClicked().connect([=](CalendarModel::Item x){initiateItemDelete(x);} );
+   mDateCalendar->onItemDblClicked().connect([=](CalendarModel::Item x){initiateItemEdit(x);} );
    mNextCalendar = addWidget(std::unique_ptr<CalendarItemList>(new CalendarItemList("Upcoming", CalendarItemList::DisplayMode::Countdown)));
-   mNextCalendar->onItemCtrlClicked().connect([=](calendar::CalendarItem x){initiateItemDelete(x);} );
-   mNextCalendar->onItemDblClicked().connect([=](calendar::CalendarItem x){initiateItemEdit(x);} );
+   mNextCalendar->onItemCtrlClicked().connect([=](CalendarModel::Item x){initiateItemDelete(x);} );
+   mNextCalendar->onItemDblClicked().connect([=](CalendarModel::Item x){initiateItemEdit(x);} );
 
    updateNextCalendar();
 
@@ -321,15 +334,15 @@ CalendarView::CalendarView(materia::ICalendar& calendar)
 
 void CalendarView::initiateItemAdd(const Wt::WDate date)
 {
-   materia::CalendarItem item; 
-   item = WtDateTimeToTimestamp(date, Wt::WTime(9, 0));
-   CalendarItemDialog* dlg = new CalendarItemDialog(item, [=](const materia::CalendarItem& result) 
+   CalendarModel::Item item; 
+   item.timestamp = WtDateTimeToTimestamp(date, Wt::WTime(9, 0));
+   CalendarItemDialog* dlg = new CalendarItemDialog(item, [=](const CalendarModel::Item& result) 
    {
-      common::UniqueId id = mCalendar.add(result);
+      materia::Id id = mCalendar.add(result);
 
       if(id != materia::Id::Invalid)
       {
-         materia::CalendarItem item {result};
+         CalendarModel::Item item {result};
          item.id = id;
 
          mCalendarWidget->addItem(item);
@@ -348,10 +361,9 @@ void CalendarView::initiateItemAdd(const Wt::WDate date)
    dlg->show();
 }
 
-void CalendarView::initiateItemDelete(const materia::CalendarItem item)
+void CalendarView::initiateItemDelete(const CalendarModel::Item item)
 {
    std::function<void()> elementDeletedFunc = [=] () {
-      common::OperationResultMessage dummy;
       mCalendar.erase(item.id);
 
       mDateCalendar->removeItem(item);
@@ -359,7 +371,7 @@ void CalendarView::initiateItemDelete(const materia::CalendarItem item)
       {
          updateNextCalendar();
       }
-      mCalendarWidget->removeItem(item);
+      mCalendarWidget->removeItem(item.id);
 
       auto items = mCalendarWidget->getItems(timestampToWtDate(item.timestamp));
       if(items.empty())
@@ -372,14 +384,14 @@ void CalendarView::initiateItemDelete(const materia::CalendarItem item)
    CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
 }
 
-void CalendarView::initiateItemEdit(const materia::CalendarItem item)
+void CalendarView::initiateItemEdit(const CalendarModel::Item item)
 {
-   const materia::CalendarItem prevItem(item);
-   CalendarItemDialog* dlg = new CalendarItemDialog(item, [=](const materia::CalendarItem& result) 
+   const CalendarModel::Item prevItem(item);
+   CalendarItemDialog* dlg = new CalendarItemDialog(item, [=](const CalendarModel::Item& result) 
    {
-      if(mService.replace(result))
+      mCalendar.replace(result);
       {
-         mCalendarWidget->removeItem(prevItem);
+         mCalendarWidget->removeItem(prevItem.id);
          mCalendarWidget->addItem(result);
          mCalendarWidget->refresh();
 

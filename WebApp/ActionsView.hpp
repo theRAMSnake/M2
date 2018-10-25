@@ -1,14 +1,13 @@
 #pragma once
 #include <Wt/WContainerWidget.h>
 #include <Wt/WCalendar.h>
-#include <Client/IActions.hpp>
+#include "materia/StrategyModel.hpp"
 
 class ActionsView : public Wt::WContainerWidget
 {
 public:
-   ActionsView(materia::IActions& actions);
+   ActionsView(StrategyModel& strategy);
 
 private:
-   void initiateItemAdd();
-   materia::IActions& mActions;
+   StrategyModel& mStrategy;
 };

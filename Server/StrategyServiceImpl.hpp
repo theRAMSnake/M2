@@ -36,6 +36,22 @@ Objective fromProto(const strategy::Objective& x)
    return result;
 }
 
+Measurement fromProto(const strategy::Measurement& x)
+{
+   return {fromProto(x.id()), x.name(), x.value()};
+}
+
+strategy::Measurement toProto(const Measurement& meas)
+{
+   strategy::Measurement result;
+
+   result.mutable_id()->CopyFrom(toProto(meas.id));
+   result.set_name(meas.name);
+   result.set_value(meas.value);
+
+   return result;
+}
+
 Task fromProto(const strategy::Task& x)
 {
    Task result;
@@ -66,6 +82,30 @@ strategy::Goal toProto(const Goal& x)
    result.set_achieved(x.achieved);
    result.set_focused(x.focused);
 
+   return result;
+}
+
+strategy::Objective toProto(const Objective& x)
+{
+   strategy::Objective result;
+
+   result.mutable_common_props()->CopyFrom(toProto(static_cast<const StrategyItem&>(x)));
+   result.mutable_parent_goal_id()->CopyFrom(toProto(x.parentGoalId));
+   result.set_reached(x.reached);
+   result.mutable_meas_id()->CopyFrom(toProto(x.measurementId));
+   result.set_expectedtreshold(x.expectedMeasurementValue);
+
+   return result;
+}
+
+strategy::Task toProto(const Task& x)
+{
+   strategy::Task result;
+
+   result.mutable_common_props()->CopyFrom(toProto(static_cast<const StrategyItem&>(x)));
+   result.mutable_parent_goal_id()->CopyFrom(toProto(x.parentGoalId));
+   result.set_done(x.done);
+   
    return result;
 }
 
@@ -187,11 +227,11 @@ public:
       auto [os, ts] = mStrategy.getGoalItems(fromProto(*request));
       for(auto x : os)
       {
-         response->add_objectives()->CopyFrom(toProto(x));//!No to proto implemented
+         response->add_objectives()->CopyFrom(toProto(x));
       }
       for(auto x : ts)
       {
-         response->add_tasks()->CopyFrom(toProto(x));//!No to proto implemented
+         response->add_tasks()->CopyFrom(toProto(x));
       }
    }
 
@@ -200,7 +240,7 @@ public:
                        ::common::UniqueId* response,
                        ::google::protobuf::Closure* done)
    {
-
+      response->CopyFrom(toProto(mStrategy.addMeasurement(fromProto(*request))));
    }
 
    virtual void ModifyMeasurement(::google::protobuf::RpcController* controller,
@@ -208,7 +248,8 @@ public:
                        ::common::OperationResultMessage* response,
                        ::google::protobuf::Closure* done)
    {
-
+      mStrategy.modifyMeasurement(fromProto(*request));
+      response->set_success(true);
    }
 
    virtual void DeleteMeasurement(::google::protobuf::RpcController* controller,
@@ -216,7 +257,8 @@ public:
                        ::common::OperationResultMessage* response,
                        ::google::protobuf::Closure* done)
    {
-
+      mStrategy.deleteMeasurement(fromProto(*request));
+      response->set_success(true);
    }
 
    virtual void GetMeasurements(::google::protobuf::RpcController* controller,
@@ -224,7 +266,10 @@ public:
                        ::strategy::Measurements* response,
                        ::google::protobuf::Closure* done)
    {
-      
+      for(auto x : mStrategy.getMeasurements())
+      {
+         response->add_items()->CopyFrom(toProto(x));
+      }
    }
 
 private:

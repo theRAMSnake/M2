@@ -9,6 +9,7 @@ find_package(Protobuf REQUIRED)
 
 add_library(m2common STATIC 
    Utils.cpp
+   Id.cpp
 )
 
 add_subdirectory(messages)

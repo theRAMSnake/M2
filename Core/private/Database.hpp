@@ -3,7 +3,7 @@
 #include <map>
 #include <memory>
 #include "sqlite_modern_cpp.h"
-#include "../Id.hpp"
+#include <Common/Id.hpp>
 
 namespace materia
 {
