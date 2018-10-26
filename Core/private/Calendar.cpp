@@ -66,19 +66,13 @@ void Calendar::replaceItem(const CalendarItem& item)
 
 Id Calendar::insertItem(const CalendarItem& item)
 {
-   auto pos = find_by_id(mItems, item.id);
-   if(pos == mItems.end())
-   {
-       auto newItem = item;
-       newItem.id = Id::generate();
+    auto newItem = item;
+    newItem.id = Id::generate();
 
-       mItems.insert(newItem);
-       mStorage->store(newItem.id, toJson(item));
+    mItems.insert(newItem);
+    mStorage->store(newItem.id, toJson(item));
 
-       return newItem.id;
-   }
-
-   return Id::Invalid;
+    return newItem.id;
 }
 
 std::vector<CalendarItem> Calendar::next(const std::time_t from, const int limit)

@@ -29,6 +29,7 @@ public:
     {
         std::cout << val;
         mFile << val;
+        mFile.flush();
 
         return *this;
     }
@@ -83,6 +84,7 @@ int main()
     zmq::socket_t clientSocket (context, ZMQ_ROUTER);
     clientSocket.bind ("tcp://*:5757");
 
+    logger << "Creating core\n";
     auto core = materia::createCore({"materia.db"});
 
     gServices.insert({"InboxService", std::make_shared<materia::ServiceWrapper<materia::InboxServiceImpl>>((*core))});
@@ -90,6 +92,7 @@ int main()
     gServices.insert({"JournalService", std::make_shared<materia::ServiceWrapper<materia::JournalServiceImpl>>((*core))});
     gServices.insert({"StrategyService", std::make_shared<materia::ServiceWrapper<materia::StrategyServiceImpl>>((*core))});
     
+    logger << "Start listening\n";
     while(true)
     {
         zmq::message_t requestEndpoint;

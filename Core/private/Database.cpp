@@ -7,8 +7,8 @@ DatabaseTable::DatabaseTable(const std::string& name, sqlite::database& db)
 : mName(name)
 , mDb(db)
 {
-    mDb << "CREATE TABLE IF NOT EXISTS " + mName + " (Id text, Json text)";
-    mInsertBinder.reset(new sqlite::database_binder(mDb << "INSERT INTO " + mName + " VALUES (?, ?);"));
+    mDb << "CREATE TABLE IF NOT EXISTS " + mName + " (Id text, Json text, PRIMARY KEY (Id))";
+    mInsertBinder.reset(new sqlite::database_binder(mDb << "REPLACE INTO " + mName + " VALUES (?, ?);"));
     mEraseBinder.reset(new sqlite::database_binder(mDb << "DELETE FROM " + mName + " WHERE Id = ?;"));
 }
 

@@ -17,6 +17,8 @@ void StrategyModel::modifyTask(const Task& task)
 
    common::OperationResultMessage opResult;
    mService.getService().ModifyTask(nullptr, &t, &opResult, nullptr);
+
+   *materia::find_by_id(mActiveTasks, task.id) = task;
 }
 
 void StrategyModel::deleteTask(const materia::Id& src)
@@ -26,11 +28,13 @@ void StrategyModel::deleteTask(const materia::Id& src)
 
    common::OperationResultMessage opResult;
    mService.getService().DeleteTask(nullptr, &id, &opResult, nullptr);
+
+   mActiveTasks.erase(materia::find_by_id(mActiveTasks, src));
 }
 
 std::vector<StrategyModel::Task> StrategyModel::getActiveTasks()
 {
-
+   return mActiveTasks;
 }
 
 void StrategyModel::fetchGoals()
@@ -38,7 +42,7 @@ void StrategyModel::fetchGoals()
    common::EmptyMessage e;
    strategy::Goals result;
 
-   mService.getService().GetGoals(nullptr, &e, &g, nullptr);
+   mService.getService().GetGoals(nullptr, &e, &result, nullptr);
 
    for(auto g : result.items())
    {
@@ -51,6 +55,22 @@ void StrategyModel::fetchGoals()
             g.achieved()
          });
 
-      //fetch items if focused
+      if(g.focused())
+      {
+         strategy::GoalItems result;
+
+         mService.getService().GetGoalItems(nullptr, &g.common_props().id(), &result, nullptr);
+
+         for(auto t : result.tasks())
+         {
+            mActiveTasks.push_back(
+               {
+                  t.common_props().id().guid(), 
+                  t.common_props().name(),
+                  t.common_props().notes(),
+                  t.parent_goal_id().guid()
+               });
+         }
+      }
    }
 }

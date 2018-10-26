@@ -18,8 +18,12 @@ WtConverters.cpp
 CalendarView.cpp
 TemplateBuilder.cpp
 MateriaClient.cpp
+MainView.cpp
 materia/ZmqPbChannel.cpp
 materia/StrategyModel.cpp
+materia/CalendarModel.cpp
+materia/InboxModel.cpp
+materia/JournalModel.cpp
 )
 
 find_package(Boost COMPONENTS system REQUIRED)

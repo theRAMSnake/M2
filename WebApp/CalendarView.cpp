@@ -339,7 +339,7 @@ void CalendarView::initiateItemAdd(const Wt::WDate date)
    CalendarItemDialog* dlg = new CalendarItemDialog(item, [=](const CalendarModel::Item& result) 
    {
       materia::Id id = mCalendar.add(result);
-
+      std::cout << "\n*" << id.getGuid() << "*\n";
       if(id != materia::Id::Invalid)
       {
          CalendarModel::Item item {result};
@@ -351,7 +351,7 @@ void CalendarView::initiateItemAdd(const Wt::WDate date)
          mDateCalendar->addItem(item);
          mDateCalendar->updateItemsOrdering();
 
-         if(item.timestamp < mNextCalendarHighestItemTimestamp)
+         if(item.timestamp < mNextCalendarHighestItemTimestamp || mNextCalendar->count() < 6)
          {
             updateNextCalendar();    
          }

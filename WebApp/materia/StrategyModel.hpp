@@ -13,9 +13,9 @@ public:
    struct Task
    {
       materia::Id id;
-      materia::Id parentGoalId;
       std::string title;
       std::string notes;
+      materia::Id parentGoalId;
    };
 
    struct Goal
@@ -35,5 +35,6 @@ private:
    void fetchGoals();
 
    std::vector<Goal> mGoals;
+   std::vector<Task> mActiveTasks;
    MateriaServiceProxy<strategy::StrategyService> mService;
 };

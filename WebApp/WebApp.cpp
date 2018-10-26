@@ -13,7 +13,6 @@
 
 WebApp::WebApp(const Wt::WEnvironment & env)
     : Wt::WApplication(env)
-    , mClient()
 {
     setLoadingIndicator(std::unique_ptr<Wt::WOverlayLoadingIndicator>(new Wt::WOverlayLoadingIndicator()));
 
@@ -105,7 +104,8 @@ bool WebApp::checkMateriaAvailability()
 
 void WebApp::showMainScreen()
 {
-   root()->addWidget(std::unique_ptr<Wt::WContainerWidget>(new MainScreen(mClient)));
+    mClient.reset(new MateriaClient());
+    root()->addWidget(std::unique_ptr<Wt::WContainerWidget>(new MainScreen(*mClient)));
 }
 
 void WebApp::showErrorScreen()

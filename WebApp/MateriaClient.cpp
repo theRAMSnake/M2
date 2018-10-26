@@ -4,30 +4,30 @@ MateriaClient::MateriaClient()
 : mContext(1)
 , mSocket(mContext, ZMQ_REQ)
 , mChannel(mSocket, "webapp")
-, mCalendar(mChannel)
-, mInbox(mChannel)
-, mJournal(mChannel)
-, mStrategy(mChannel)
 {
     mSocket.connect("tcp://localhost:5757");
+    mCalendar.reset(new CalendarModel(mChannel));
+    mInbox.reset(new InboxModel(mChannel));
+    mJournal.reset(new JournalModel(mChannel));
+    mStrategy.reset(new StrategyModel(mChannel));
 }
 
 CalendarModel& MateriaClient::getCalendar()
 {
-   return mCalendar;
+   return *mCalendar;
 }
 
 InboxModel& MateriaClient::getInbox()
 {
-   return mInbox;
+   return *mInbox;
 }
 
 JournalModel& MateriaClient::getJournal()
 {
-   return mJournal;
+   return *mJournal;
 }
 
 StrategyModel& MateriaClient::getStrategy()
 {
-   return mStrategy;
+   return *mStrategy;
 }

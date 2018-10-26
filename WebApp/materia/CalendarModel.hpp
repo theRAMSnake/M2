@@ -1,7 +1,9 @@
 #pragma once
 
 #include <Common/Id.hpp>
+#include <messages/calendar.pb.h>
 #include "ZmqPbChannel.hpp"
+#include "MateriaServiceProxy.hpp"
 
 class CalendarModel
 {
@@ -20,4 +22,7 @@ public:
    materia::Id add(const Item& item);
    void replace(const Item& item);
    void erase(const materia::Id& id);
+
+private:
+   MateriaServiceProxy<calendar::CalendarService> mService;
 };

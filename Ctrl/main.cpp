@@ -17,6 +17,14 @@ void stop()
    std::cout << "Done\n";
 }
 
+void test()
+{
+   system("nohup ./m2server &");
+   system("nohup ./run_wa_test.sh & > wa.log");
+
+   std::cout << "Done\n";
+}
+
 int main(int argc, char *argv[])
 {
    if(argc < 2)
@@ -33,6 +41,10 @@ int main(int argc, char *argv[])
    else if(commandName == "stop")
    {
       stop();
+   }
+   else if(commandName == "test")
+   {
+      test();
    }
    else
    {

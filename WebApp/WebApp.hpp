@@ -17,5 +17,5 @@ private:
 
     Wt::WContainerWidget* mMainScreen;
     Wt::WContainerWidget* mLoginScreen;
-    MateriaClient mClient;
+    std::unique_ptr<MateriaClient> mClient;
 };

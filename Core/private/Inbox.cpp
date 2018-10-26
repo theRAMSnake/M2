@@ -40,19 +40,13 @@ void Inbox::replace(const InboxItem& item)
 
 Id Inbox::add(const InboxItem& item)
 {
-   auto pos = find_by_id(mItems, item.id);
-   if(pos == mItems.end())
-   {
-       auto newItem = item;
-       newItem.id = Id::generate();
+    auto newItem = item;
+    newItem.id = Id::generate();
 
-       mItems.push_back(newItem);
-       mStorage->store(newItem.id, item.text);
+    mItems.push_back(newItem);
+    mStorage->store(newItem.id, item.text);
 
-       return newItem.id;
-   }
-
-   return Id::Invalid;
+    return newItem.id;
 }
 
 }

@@ -22,10 +22,10 @@ private:
    zmq::socket_t mSocket;
    ZmqPbChannel mChannel;
 
-   CalendarModel mCalendar;
-   InboxModel mInbox;
-   JournalModel mJournal;
-   StrategyModel mStrategy;
+   std::unique_ptr<CalendarModel> mCalendar;
+   std::unique_ptr<InboxModel> mInbox;
+   std::unique_ptr<JournalModel> mJournal;
+   std::unique_ptr<StrategyModel> mStrategy;
    /*MateriaServiceProxy<inbox::InboxService> mInbox;
    MateriaServiceProxy<calendar::CalendarService> mCalendar;
    MateriaServiceProxy<journal::JournalService> mJournal;
