@@ -16,6 +16,7 @@ private/Strategy.cpp
 private/Goal.cpp
 private/Measurement.cpp
 private/Objective.cpp
+private/Logger.cpp
 )
 
 find_package(Boost COMPONENTS system REQUIRED)

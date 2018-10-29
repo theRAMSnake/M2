@@ -21,7 +21,7 @@ std::vector<CalendarModel::Item> CalendarModel::query(const std::time_t from, co
    for(auto x : items.items())
    {
       result.push_back({x.id().guid(), x.text(), x.timestamp()});
-      //std::cout << "===" << x.id().guid() << "===";
+      std::cout << "===" << x.id().guid() << "===";
    }
 
    return result;

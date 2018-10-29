@@ -19,6 +19,7 @@ CalendarView.cpp
 TemplateBuilder.cpp
 MateriaClient.cpp
 MainView.cpp
+JournalView.cpp
 materia/ZmqPbChannel.cpp
 materia/StrategyModel.cpp
 materia/CalendarModel.cpp

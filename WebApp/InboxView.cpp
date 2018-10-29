@@ -1,13 +1,12 @@
-/*#include "InboxView.hpp"
+#include "InboxView.hpp"
 #include "CommonDialogManager.hpp"
-#include <Common/ZmqPbChannel.hpp>
-#include <Common/PortLayout.hpp>
 #include <Wt/WText.h>
 #include <Wt/WCssDecorationStyle.h>
 #include <Wt/WPushButton.h>
 #include <Wt/WGroupBox.h>
 
-InboxView::InboxView()
+InboxView::InboxView(InboxModel& model)
+: mModel(model)
 {
    Wt::WPushButton* addButton = new Wt::WPushButton("Add");
    addButton->clicked().connect(std::bind(&InboxView::onAddClick, this));
@@ -24,15 +23,10 @@ InboxView::InboxView()
    mTable->decorationStyle().font().setSize(Wt::WFont::Size::XXLarge);
    gb->addWidget(std::unique_ptr<Wt::WTable>(mTable));
 
-   mService.reset(new MateriaServiceProxy<inbox::InboxService>("WebApp"));
-   mInbox = &mService->getService();
-   
-   common::EmptyMessage msg;
-   mInbox->GetInbox(nullptr, &msg, &mItems, nullptr);
-
-   for(int i = 0; i < mItems.items_size(); ++i)
+   auto items = mModel.get();
+   for(std::size_t i = 0; i < items.size(); ++i)
    {
-      createCellAtRow(i);
+      createCellAtRow(i, items[i]);
    }
 }
 
@@ -62,60 +56,36 @@ void InboxView::onClick(Wt::WMouseEvent ev, Wt::WTableCell* cell, const std::str
 
 void InboxView::commitItemEdit(const std::string& itemId, const std::string& newText)
 {
-   for(int i = 0; i < mItems.items_size(); ++i)
-   {
-      if(mItems.items(i).id().guid() == itemId)
-      {
-         mItems.mutable_items(i)->set_text(newText);
-
-         common::OperationResultMessage dummy;
-         mInbox->EditItem(nullptr, &mItems.items(i), &dummy, nullptr);
-         break;
-      }
-   }
+   mModel.replace({itemId, newText});
 }
 
 void InboxView::commitItemDelete(const std::string& itemId)
 {
-   for(int i = 0; i < mItems.items_size(); ++i)
-   {
-      if(mItems.items(i).id().guid() == itemId)
-      {
-         common::OperationResultMessage dummy;
-         mInbox->DeleteItem(nullptr, &mItems.items(i).id(), &dummy, nullptr);
-         break;
-      }
-   }
+   mModel.erase(itemId);
 }
 
-void InboxView::commitItemAdd(inbox::InboxItemInfo& item)
+materia::Id InboxView::commitItemAdd(const std::string& text)
 {
-   common::UniqueId id;
-   mInbox->AddItem(nullptr, &item, &id, nullptr);
-
-   item.mutable_id()->set_guid(id.guid());
+   return mModel.add({materia::Id::Invalid, text});
 }
 
 void InboxView::onAddClick()
 {
    std::function<void(std::string)> elementAddedFunc = [=] (std::string a) {
-      auto item = mItems.add_items();
-      item->set_text(a);
-
-      commitItemAdd(*item);
-      createCellAtRow(mTable->rowCount());
+      auto id = commitItemAdd(a);
+      createCellAtRow(mTable->rowCount(), {id, a});
    };
 
    CommonDialogManager::showOneLineDialog("Add", "Text", "", elementAddedFunc);
 }
 
-void InboxView::createCellAtRow(const int row)
+void InboxView::createCellAtRow(const int row, const InboxModel::Item& item)
 {
    auto cell = mTable->elementAt(row, 0);
-   auto text = new Wt::WText(mItems.items(row).text());
+   auto text = new Wt::WText(item.text);
    text->setMargin(Wt::WLength(50));
    cell->addWidget(std::unique_ptr<Wt::WText>(text));
 
-   cell->clicked().connect(std::bind(&InboxView::onClick, this, std::placeholders::_1, cell, mItems.items(row).id().guid()));
-   cell->doubleClicked().connect(std::bind(&InboxView::onItemDoubleClick, this, cell, mItems.items(row).id().guid()));
-}*/
+   cell->clicked().connect(std::bind(&InboxView::onClick, this, std::placeholders::_1, cell, item.id));
+   cell->doubleClicked().connect(std::bind(&InboxView::onItemDoubleClick, this, cell, item.id));
+}

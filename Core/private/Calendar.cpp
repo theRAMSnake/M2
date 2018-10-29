@@ -1,4 +1,5 @@
 #include "Calendar.hpp"
+#include "Logger.hpp"
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 
@@ -38,6 +39,8 @@ Calendar::Calendar(Database& db)
 {
     mStorage->foreach([&](std::string id, std::string json) 
     {
+        LOG("Item fetched:" + json);
+        LOG("Id:" + id);
         mItems.insert(createCalendarItemFromJson(json));
     });
 }
@@ -70,7 +73,7 @@ Id Calendar::insertItem(const CalendarItem& item)
     newItem.id = Id::generate();
 
     mItems.insert(newItem);
-    mStorage->store(newItem.id, toJson(item));
+    mStorage->store(newItem.id, toJson(newItem));
 
     return newItem.id;
 }
