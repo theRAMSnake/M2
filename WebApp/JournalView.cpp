@@ -9,12 +9,18 @@ class JournalTreeNode : public Wt::WTreeNode
 {
 public:
    JournalTreeNode(const IndexItem& item, JournalModel& model)
-   : Wt::WTreeNode("Journal")
+   : Wt::WTreeNode(item.id == materia::Id::Invalid ? "Journal" : item.title)
    , mItem(item)
    , mModel(model)
    {
       labelArea()->doubleClicked().connect(std::bind(&JournalTreeNode::onDblClicked, this, std::placeholders::_1));
       labelArea()->clicked().connect(std::bind(&JournalTreeNode::onClick, this, std::placeholders::_1));
+
+      if(!item.isPage)
+      {
+        auto iconName = "resources/Folder.gif";
+        setLabelIcon(std::make_unique<Wt::WIconPair>(iconName, iconName, false));
+      }
    }
 
    void populate() override

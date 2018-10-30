@@ -2,125 +2,10 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <chrono>
+#include "Logger.hpp"
 
 namespace materia
 {
-
-/*
-journal::JournalItem toProto(const materia::JournalItem& x)
-{
-   journal::JournalItem result;
-
-   result.set_title(x.title);
-   result.mutable_folderid()->CopyFrom(toProto(x.parentFolderId));
-   result.mutable_id()->CopyFrom(toProto(x.id));
-
-   return result;
-}
-
-journal::Page toProto(const JournalPage& item)
-{
-   journal::Page result;
-
-   auto base = toProto(static_cast<const JournalItem&>(item));
-
-   result.mutable_journalitem()->CopyFrom(base);
-   result.set_content(item.content);
-
-   return result;
-}
-
-IndexItem fromProto(const journal::IndexItem& src)
-{
-   IndexItem result;
-
-   result.id = fromProto(src.journalitem().id());
-   result.parentFolderId = fromProto(src.journalitem().folderid());
-   result.title = src.journalitem().title();
-   result.modified = src.modifiedtimestamp();
-   result.isPage = src.ispage();
-
-   return result;
-}
-
-JournalPage fromProto(const journal::Page& src)
-{
-   JournalPage result;
-
-   result.id = fromProto(src.journalitem().id());
-   result.parentFolderId = fromProto(src.journalitem().folderid());
-   result.title = src.journalitem().title();
-   result.content = src.content();
-
-   return result;
-}
-*/
-
-/*template<>
-journal::IndexItem fromJson(const std::string& json)
-{
-   journal::IndexItem result;
-
-   boost::property_tree::ptree pt;
-   std::istringstream is (json);
-   read_json (is, pt);
-   
-   result.mutable_journalitem()->mutable_id()->set_guid(pt.get<std::string> ("id"));
-   result.mutable_journalitem()->mutable_folderid()->set_guid(pt.get<std::string> ("folder_parent_id"));
-   result.mutable_journalitem()->set_title(pt.get<std::string> ("title"));
-   result.set_modifiedtimestamp(pt.get<decltype(result.modifiedtimestamp())> ("modified"));
-   result.set_ispage(pt.get<bool> ("isPage"));
-
-   return result;
-}
-
-template<>
-std::string toJson(const journal::IndexItem& from)
-{
-   boost::property_tree::ptree pt;
-
-   pt.put ("id", from.journalitem().id().guid());
-   pt.put ("folder_parent_id", from.journalitem().folderid().guid());
-   pt.put ("title", from.journalitem().title());
-   pt.put ("modified", from.modifiedtimestamp());
-   pt.put ("isPage", from.ispage());
-
-   std::ostringstream buf; 
-   write_json (buf, pt, false);
-   return buf.str();
-}
-
-template<>
-journal::Page fromJson(const std::string& json)
-{
-   journal::Page result;
-
-   boost::property_tree::ptree pt;
-   std::istringstream is (json);
-   read_json (is, pt);
-   
-   result.mutable_journalitem()->mutable_id()->set_guid(pt.get<std::string> ("id"));
-   result.mutable_journalitem()->mutable_folderid()->set_guid(pt.get<std::string> ("folder_parent_id"));
-   result.mutable_journalitem()->set_title(pt.get<std::string> ("title"));
-   result.set_content(pt.get<std::string> ("content"));
-
-   return result;
-}
-
-template<>
-std::string toJson(const journal::Page& from)
-{
-   boost::property_tree::ptree pt;
-
-   pt.put ("id", from.journalitem().id().guid());
-   pt.put ("folder_parent_id", from.journalitem().folderid().guid());
-   pt.put ("title", from.journalitem().title());
-   pt.put ("content", from.content());
-
-   std::ostringstream buf; 
-   write_json (buf, pt, false);
-   return buf.str();
-}*/
 
 std::string toJson(const IndexItem& from)
 {
@@ -149,7 +34,7 @@ IndexItem createIndexItemFromJson(const std::string& json)
    result.parentFolderId = pt.get<std::string> ("parent_folder_id");
    result.title = pt.get<std::string> ("title");
    result.modified = pt.get<std::time_t> ("modified");
-   result.isPage = pt.get<bool> ("is_page");
+   result.isPage = pt.get<bool> ("isPage");
 
    return result;
 }
@@ -158,6 +43,7 @@ Journal::Journal(Database& db)
 : mIndexStorage(db.getTable("journal_index"))
 , mContentStorage(db.getTable("journal_content"))
 {
+    LOG("Initializing journal");
     mIndexStorage->foreach([&](std::string id, std::string json) 
     {
         mIndex.insert({id, createIndexItemFromJson(json)});

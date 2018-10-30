@@ -39,7 +39,7 @@ public:
 
 private:
    std::vector<IndexItem> loadIndex();
-   IndexItem loadIndexItem(const materia::Id& id);
+   std::optional<IndexItem> loadIndexItem(const materia::Id& id);
 
    MateriaServiceProxy<journal::JournalService> mService;
 };

@@ -31,4 +31,5 @@ public:
    
 private:
    static Wt::WDialog* createDialog(const std::string& caption, const std::vector<FieldInfo>& fields, TCallback& callback);
+   static Wt::WDialog* createDialogBase(const std::string& caption);
 };

@@ -5,6 +5,8 @@
 #include <Wt/WPushButton.h>
 #include <Wt/WMessageBox.h>
 #include <Wt/WTextArea.h>
+#include <Wt/WButtonGroup.h>
+#include <Wt/WRadioButton.h>
 #include <boost/range/algorithm/find.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -66,9 +68,31 @@ void CommonDialogManager::showDialog(
    d->show();
 }
 
+Wt::WDialog* CommonDialogManager::createDialogBase(const std::string& caption)
+{
+    Wt::WDialog* dialog = new Wt::WDialog(caption);
+
+    Wt::WPushButton *ok = new Wt::WPushButton("OK");
+    dialog->footer()->addWidget(std::unique_ptr<Wt::WPushButton>(ok));
+    ok->setDefault(true);
+
+    Wt::WPushButton *cancel = new Wt::WPushButton("Cancel");
+    dialog->footer()->addWidget(std::unique_ptr<Wt::WPushButton>(cancel));
+    dialog->rejectWhenEscapePressed();
+
+    ok->clicked().connect(std::bind([=]() {
+        dialog->accept();
+    }));
+
+    cancel->clicked().connect(dialog, &Wt::WDialog::reject);
+    dialog->setWidth(750);
+
+    return dialog;
+}
+
 Wt::WDialog* CommonDialogManager::createDialog(const std::string& caption, const std::vector<FieldInfo>& fields, TCallback& callback)
 {
-   Wt::WDialog* dialog = new Wt::WDialog(caption);
+   Wt::WDialog* dialog = createDialogBase(caption);
 
    std::vector<Wt::WLabel*> labels;
    std::vector<Wt::WLineEdit*> edits;
@@ -85,20 +109,6 @@ Wt::WDialog* CommonDialogManager::createDialog(const std::string& caption, const
         edits.push_back(editName);
     }
 
-    Wt::WPushButton *ok = new Wt::WPushButton("OK");
-    dialog->footer()->addWidget(std::unique_ptr<Wt::WPushButton>(ok));
-    ok->setDefault(true);
-
-    Wt::WPushButton *cancel = new Wt::WPushButton("Cancel");
-    dialog->footer()->addWidget(std::unique_ptr<Wt::WPushButton>(cancel));
-    dialog->rejectWhenEscapePressed();
-
-    ok->clicked().connect(std::bind([=]() {
-        dialog->accept();
-    }));
-
-    cancel->clicked().connect(dialog, &Wt::WDialog::reject);
-
     dialog->finished().connect(std::bind([=]() {
         if (dialog->result() == Wt::DialogCode::Accepted)
         {
@@ -112,14 +122,13 @@ Wt::WDialog* CommonDialogManager::createDialog(const std::string& caption, const
 
         delete dialog;
     }));
-
-    dialog->setWidth(750);
+    
     return dialog;
 }
 
 void CommonDialogManager::showLinesDialog(const std::vector<Wt::WString>& lines, std::function<void(const std::vector<Wt::WString>&)> callback)
 {
-    Wt::WDialog* dialog = new Wt::WDialog();
+    Wt::WDialog* dialog = createDialogBase("");
     
     Wt::WTextArea* linesArea = new Wt::WTextArea;
     dialog->contents()->addWidget(std::unique_ptr<Wt::WTextArea>(linesArea));
@@ -128,19 +137,6 @@ void CommonDialogManager::showLinesDialog(const std::vector<Wt::WString>& lines,
     {
        linesArea->setText(linesArea->text() + "\n" + i); 
     }
-   
-    Wt::WPushButton *ok = new Wt::WPushButton("OK");
-    dialog->footer()->addWidget(std::unique_ptr<Wt::WPushButton>(ok));
-
-    Wt::WPushButton *cancel = new Wt::WPushButton("Cancel");
-    dialog->footer()->addWidget(std::unique_ptr<Wt::WPushButton>(cancel));
-    dialog->rejectWhenEscapePressed();
-
-    ok->clicked().connect(std::bind([=]() {
-        dialog->accept();
-    }));
-
-    cancel->clicked().connect(dialog, &Wt::WDialog::reject);
 
     dialog->finished().connect(std::bind([=]() {
         if (dialog->result() == Wt::DialogCode::Accepted)
@@ -161,6 +157,34 @@ void CommonDialogManager::showLinesDialog(const std::vector<Wt::WString>& lines,
         delete dialog;
     }));
 
-    dialog->setWidth(750);
+    dialog->show();
+}
+
+void CommonDialogManager::showChoiseDialog(const std::vector<std::string>& options, std::function<void(const std::size_t&)> callback)
+{
+    Wt::WDialog* dialog = createDialogBase("");
+
+    auto group = std::make_shared<Wt::WButtonGroup>();
+
+    for(std::size_t i = 0; i < options.size(); ++i)
+    {
+        Wt::WRadioButton *button = dialog->contents()->addWidget(std::make_unique<Wt::WRadioButton>(options[i]));
+        button->setInline(false);
+        group->addButton(button, i);
+    }
+
+    group->setSelectedButtonIndex(0);
+
+    dialog->finished().connect(std::bind([=]() {
+
+        if (dialog->result() == Wt::DialogCode::Accepted)
+        {
+            callback(static_cast<std::size_t>(group->selectedButtonIndex()));
+        }
+        
+        delete dialog;
+
+        }));
+
     dialog->show();
 }

@@ -725,8 +725,8 @@ body.Wt-rtl .Wt-tableview .Wt-plaintable tbody .Wt-tv-c {
 .Wt-tree .Wt-ctrl {
   float: left;
   display: block;
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
 }
 .Wt-tree .Wt-ctrl.Wt-noexpand {
   background: url(../../../line-middle.gif) no-repeat 0 0;
@@ -739,7 +739,8 @@ body.Wt-rtl .Wt-tableview .Wt-plaintable tbody .Wt-tv-c {
 }
 .Wt-tree .Wt-label {
   padding: 0px 2px;
-  line-height: 150%;
+  line-height: 100%;
+  vertical-align: bottom;
 }
 body.Wt-rtl .Wt-tree ul {
   margin: 0;
