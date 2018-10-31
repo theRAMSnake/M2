@@ -48,3 +48,22 @@ namespace materia
       return to_string(generator());
    }
 }
+
+namespace std
+{
+
+std::ostream& operator << (std::ostream& str, const materia::Id& id)
+{
+   str << id.getGuid();
+   return str;
+}
+
+std::istream& operator >> (std::istream& str, materia::Id& id)
+{
+   std::string tmp;
+   str >> tmp;
+   id = tmp;
+   return str;
+}
+
+}

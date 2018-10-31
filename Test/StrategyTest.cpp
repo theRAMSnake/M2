@@ -3,7 +3,6 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include "TestHelpers.hpp"
 #include <Core/ICore.hpp>
 #include <Core/IStrategy.hpp>
 

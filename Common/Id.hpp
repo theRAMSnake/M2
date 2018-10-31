@@ -39,3 +39,11 @@ auto find_by_id(TCollection& col, const Id& id) -> decltype(col.begin())
    return find_by_id(col.begin(), col.end(), id);
 }
 }
+
+namespace std
+{
+
+std::ostream& operator << (std::ostream& str, const materia::Id& id);
+std::istream& operator >> (std::istream& str, materia::Id& id);
+
+}

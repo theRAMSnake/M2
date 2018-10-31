@@ -2,7 +2,6 @@
 #include <boost/test/unit_test.hpp>
 #include <Core/ICore.hpp>
 #include <Core/IJournal.hpp>
-#include "TestHelpers.hpp"
 
 #include <thread>
 

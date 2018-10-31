@@ -9,7 +9,6 @@ include_directories("..")
 add_executable(Test 
 InboxTest.cpp
 CalendarTest.cpp
-TestHelpers.cpp
 StrategyTest.cpp
 JournalTest.cpp
 )

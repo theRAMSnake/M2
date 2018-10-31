@@ -1,47 +1,18 @@
 #include "Calendar.hpp"
 #include "Logger.hpp"
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
+#include "JsonSerializer.hpp"
+
+BIND_JSON3(materia::CalendarItem, id, text, timestamp)
 
 namespace materia
 {
-
-CalendarItem createCalendarItemFromJson(const std::string& json)
-{
-   CalendarItem result;
-
-   boost::property_tree::ptree pt;
-   std::istringstream is (json);
-   read_json (is, pt);
-   
-   result.id = pt.get<std::string> ("id");
-   result.text = pt.get<std::string> ("text");
-   result.timestamp = pt.get<std::time_t> ("timestamp");
-
-   return result;
-}
-
-std::string toJson(const CalendarItem& from)
-{
-   boost::property_tree::ptree pt;
-
-   pt.put ("id", from.id.getGuid());
-   pt.put ("text", from.text);
-   pt.put ("timestamp", from.timestamp);
-
-   std::ostringstream buf; 
-   write_json (buf, pt, false);
-   return buf.str();
-}
 
 Calendar::Calendar(Database& db)
 : mStorage(db.getTable("calendar"))
 {
     mStorage->foreach([&](std::string id, std::string json) 
     {
-        LOG("Item fetched:" + json);
-        LOG("Id:" + id);
-        mItems.insert(createCalendarItemFromJson(json));
+        mItems.insert(readJson<CalendarItem>(json));
     });
 }
 
@@ -63,7 +34,7 @@ void Calendar::replaceItem(const CalendarItem& item)
        mItems.erase(pos);
        mItems.insert(item);
 
-       mStorage->store(item.id, toJson(item));
+       mStorage->store(item.id, writeJson(item));
    }
 }
 
@@ -73,7 +44,7 @@ Id Calendar::insertItem(const CalendarItem& item)
     newItem.id = Id::generate();
 
     mItems.insert(newItem);
-    mStorage->store(newItem.id, toJson(newItem));
+    mStorage->store(newItem.id, writeJson(newItem));
 
     return newItem.id;
 }

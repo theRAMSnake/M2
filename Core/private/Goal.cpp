@@ -1,6 +1,9 @@
 #include "Goal.hpp"
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include "JsonSerializer.hpp"
+
+BIND_JSON5(materia::Goal, id, name, notes, focused, achieved)
 
 namespace materia
 {
@@ -15,15 +18,7 @@ Goal::Goal(const materia::Goal& props)
 
 Goal::Goal(const std::string& json)
 {
-    boost::property_tree::ptree pt;
-    std::istringstream is (json);
-    read_json (is, pt);
-    
-    mImpl.id = pt.get<std::string> ("id");
-    mImpl.name = pt.get<std::string> ("name");
-    mImpl.notes = pt.get<std::string> ("notes");
-    mImpl.focused = pt.get<bool> ("focused");
-    mImpl.achieved = pt.get<bool> ("achieved");
+    mImpl = readJson<materia::Goal>(json);
 }
 
 void Goal::accept(const materia::Goal& props)
@@ -76,21 +71,6 @@ std::vector<Id> Goal::getObjectives()
     return result;  
 }
 
-std::string Goal::toJson() const
-{
-    boost::property_tree::ptree pt;
-
-    pt.put ("id", mImpl.id.getGuid());
-    pt.put ("name", mImpl.name);
-    pt.put ("notes", mImpl.notes);
-    pt.put ("focused", mImpl.focused);
-    pt.put ("achieved", mImpl.achieved);
-
-    std::ostringstream buf; 
-    write_json (buf, pt, false);
-    return buf.str();
-}
-
 void Goal::UpdateAndSaveAchieved()
 {
     if(updateAchieved())
@@ -135,6 +115,11 @@ bool Goal::calculateAchieved()
 Id Goal::getId() const
 {
     return mImpl.id;
+}
+
+std::string Goal::toJson() const
+{
+    return writeJson(mImpl);
 }
 
 }

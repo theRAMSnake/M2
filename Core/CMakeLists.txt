@@ -17,6 +17,7 @@ private/Goal.cpp
 private/Measurement.cpp
 private/Objective.cpp
 private/Logger.cpp
+private/JsonSerializer.cpp
 )
 
 find_package(Boost COMPONENTS system REQUIRED)

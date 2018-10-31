@@ -3,50 +3,20 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <chrono>
 #include "Logger.hpp"
+#include "JsonSerializer.hpp"
+
+BIND_JSON5(materia::IndexItem, id, parentFolderId, title, modified, isPage)
 
 namespace materia
 {
-
-std::string toJson(const IndexItem& from)
-{
-   boost::property_tree::ptree pt;
-
-   pt.put ("id", from.id.getGuid());
-   pt.put ("parent_folder_id", from.parentFolderId.getGuid());
-   pt.put ("title", from.title);
-   pt.put ("modified", from.modified);
-   pt.put ("isPage", from.isPage);
-
-   std::ostringstream buf; 
-   write_json (buf, pt, false);
-   return buf.str();
-}
-
-IndexItem createIndexItemFromJson(const std::string& json)
-{
-   IndexItem result;
-
-   boost::property_tree::ptree pt;
-   std::istringstream is (json);
-   read_json (is, pt);
-   
-   result.id = pt.get<std::string> ("id");
-   result.parentFolderId = pt.get<std::string> ("parent_folder_id");
-   result.title = pt.get<std::string> ("title");
-   result.modified = pt.get<std::time_t> ("modified");
-   result.isPage = pt.get<bool> ("isPage");
-
-   return result;
-}
 
 Journal::Journal(Database& db)
 : mIndexStorage(db.getTable("journal_index"))
 , mContentStorage(db.getTable("journal_content"))
 {
-    LOG("Initializing journal");
     mIndexStorage->foreach([&](std::string id, std::string json) 
     {
-        mIndex.insert({id, createIndexItemFromJson(json)});
+        mIndex.insert({id, readJson<IndexItem>(json)});
     });
 
     mContentStorage->foreach([&](std::string id, std::string json) 
@@ -114,7 +84,7 @@ void Journal::updateIndexItem(const JournalItem& item)
        x.title = item.title;
        x.modified = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-       mIndexStorage->store(x.id, toJson(x));
+       mIndexStorage->store(x.id, writeJson(x));
    }
 }
 
@@ -198,7 +168,7 @@ const Id Journal::insertIndexItem(const Id& parentId, const std::string& title, 
         newItem.isPage = isPage;
 
         mIndex.insert({newItem.id, newItem});
-        mIndexStorage->store(newItem.id, toJson(newItem));
+        mIndexStorage->store(newItem.id, writeJson(newItem));
 
         return newItem.id;   
     }
