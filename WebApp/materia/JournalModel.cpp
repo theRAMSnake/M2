@@ -85,3 +85,48 @@ std::vector<IndexItem> JournalModel::loadIndex()
 
    return result;
 }
+
+void JournalModel::renameIndexItem(const materia::Id& id, const std::string& name)
+{
+   auto newItem = *loadIndexItem(id);
+   newItem.title = name;
+
+   journal::JournalItem params;
+   params.mutable_id()->set_guid(newItem.id.getGuid());
+   params.mutable_folderid()->set_guid(newItem.parentFolderId.getGuid());
+   params.set_title(name);
+
+   common::OperationResultMessage dummy;
+   mService.getService().UpdateIndexItem(nullptr, &params, &dummy, nullptr);
+}
+
+void JournalModel::deleteItem(const materia::Id& id)
+{
+   common::UniqueId request;
+   request.set_guid(id.getGuid());
+   common::OperationResultMessage dummy;
+   mService.getService().DeleteItem(nullptr, &request, &dummy, nullptr);
+}
+
+void JournalModel::saveContent(const materia::Id& id, const std::string& content)
+{
+   common::UniqueId request;
+   request.set_guid(id.getGuid());
+   journal::Page page;
+   mService.getService().GetPage(nullptr, &request, &page, nullptr);
+
+   page.set_content(content);
+
+   common::OperationResultMessage dummy;
+   mService.getService().UpdatePage(nullptr, &page, &dummy, nullptr);
+}
+
+std::string JournalModel::loadContent(const materia::Id& id)
+{
+   common::UniqueId request;
+   request.set_guid(id.getGuid());
+   journal::Page page;
+   mService.getService().GetPage(nullptr, &request, &page, nullptr);
+
+   return page.content();
+}

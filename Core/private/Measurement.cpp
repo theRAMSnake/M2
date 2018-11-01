@@ -1,6 +1,7 @@
 #include "Measurement.hpp"
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
+#include "JsonSerializer.hpp"
+
+BIND_JSON3(materia::Measurement, id, name, value)
 
 namespace materia
 {
@@ -14,13 +15,7 @@ Measurement::Measurement(const materia::Measurement& props)
 
 Measurement::Measurement(const std::string& json)
 {
-    boost::property_tree::ptree pt;
-    std::istringstream is (json);
-    read_json (is, pt);
-    
-    mImpl.id = pt.get<std::string> ("id");
-    mImpl.name = pt.get<std::string> ("name");
-    mImpl.value = pt.get<TValue> ("value");
+    mImpl = readJson<materia::Measurement>(json);
 }
 
 void Measurement::accept(const materia::Measurement& props)
@@ -42,15 +37,7 @@ const materia::Measurement& Measurement::getProps() const
 
 std::string Measurement::toJson() const
 {
-    boost::property_tree::ptree pt;
-
-    pt.put ("id", mImpl.id.getGuid());
-    pt.put ("name", mImpl.name);
-    pt.put ("value", mImpl.value);
-
-    std::ostringstream buf; 
-    write_json (buf, pt, false);
-    return buf.str();
+    return writeJson(mImpl);
 }
 
 Id Measurement::getId() const

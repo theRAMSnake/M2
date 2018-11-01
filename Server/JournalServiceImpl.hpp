@@ -85,12 +85,12 @@ public:
       response->set_success(true);
    }
 
-   virtual void UpdateFolder(::google::protobuf::RpcController* controller,
+   virtual void UpdateIndexItem(::google::protobuf::RpcController* controller,
                        const ::journal::JournalItem* request,
                        ::common::OperationResultMessage* response,
                        ::google::protobuf::Closure* done)
    {
-      mJournal.updateFolder(fromProto(*request));
+      mJournal.updateIndexItem(fromProto(*request));
       response->set_success(true);
    }
 
@@ -99,7 +99,7 @@ public:
                        ::common::OperationResultMessage* response,
                        ::google::protobuf::Closure* done)
    {
-      mJournal.updateFolder(fromProto(*request));
+      mJournal.updatePage(fromProto(*request));
       response->set_success(true);
    }
 

@@ -108,7 +108,7 @@ BOOST_FIXTURE_TEST_CASE( UpdateFolder_NoReparent, JournalTest )
    item.title = "omg";
 
    std::this_thread::sleep_for(1s);
-   mJournal->updateFolder(item);
+   mJournal->updateIndexItem(item);
 
    index = mJournal->getIndex();
    auto updatedItem = *materia::find_by_id(index, mAnimalsId);
@@ -122,7 +122,7 @@ BOOST_FIXTURE_TEST_CASE( UpdateFolder_SelfParent, JournalTest )
    auto item = *materia::find_by_id(index, mMamalsId);
    item.parentFolderId = mMamalsId;
 
-   mJournal->updateFolder(item);
+   mJournal->updateIndexItem(item);
 
    index = mJournal->getIndex();
    auto updatedItem = *materia::find_by_id(index, mMamalsId);

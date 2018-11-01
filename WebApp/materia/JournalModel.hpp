@@ -36,6 +36,11 @@ public:
 
    std::vector<IndexItem> getChildren(const materia::Id& id);
    IndexItem addIndexItem(const bool isPage, const std::string& name, const materia::Id& parentId);
+   void renameIndexItem(const materia::Id& id, const std::string& name);
+   void deleteItem(const materia::Id& id);
+
+   void saveContent(const materia::Id& id, const std::string& content);
+   std::string loadContent(const materia::Id& id);
 
 private:
    std::vector<IndexItem> loadIndex();

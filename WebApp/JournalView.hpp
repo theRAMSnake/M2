@@ -11,5 +11,11 @@ public:
 private:
    Wt::WWidget* createIndexView();
    Wt::WWidget* createPageView();
+   void onSaveClick();
+   void onIndexSelectionChanged();
+
+   Wt::WTree* mIndexTree = nullptr;
+   Wt::WTextEdit* mPageView = nullptr;
+   Wt::WPushButton* mSaveBtn = nullptr;
    JournalModel& mModel;
 };

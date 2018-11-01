@@ -76,23 +76,18 @@ void Journal::deleteItem(const Id& id)
 
 void Journal::updateIndexItem(const JournalItem& item)
 {
-   auto pos = mIndex.find(item.id);
-   if(pos != mIndex.end())
-   {
-       auto& x = pos->second;
-       x.parentFolderId = item.parentFolderId;
-       x.title = item.title;
-       x.modified = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-
-       mIndexStorage->store(x.id, writeJson(x));
-   }
-}
-
-void Journal::updateFolder(const JournalItem& item)
-{
     if(item.parentFolderId != item.id)
     {
-        updateIndexItem(item);
+        auto pos = mIndex.find(item.id);
+        if(pos != mIndex.end())
+        {
+            auto& x = pos->second;
+            x.parentFolderId = item.parentFolderId;
+            x.title = item.title;
+            x.modified = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+            mIndexStorage->store(x.id, writeJson(x));
+        }
     }
 }
 

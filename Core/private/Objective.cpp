@@ -1,6 +1,7 @@
 #include "Objective.hpp"
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
+#include "JsonSerializer.hpp"
+
+BIND_JSON7(materia::Objective, id, parentGoalId, name, notes, measurementId, expectedMeasurementValue, reached)
 
 namespace materia
 {
@@ -14,17 +15,7 @@ Objective::Objective(const materia::Objective& props)
 
 Objective::Objective(const std::string& json)
 {
-    boost::property_tree::ptree pt;
-    std::istringstream is (json);
-    read_json (is, pt);
-    
-    mImpl.id = pt.get<std::string> ("id");
-    mImpl.parentGoalId = pt.get<std::string> ("parent_goal_id");
-    mImpl.name = pt.get<std::string> ("name");
-    mImpl.notes = pt.get<std::string> ("notes");
-    mImpl.measurementId = pt.get<std::string> ("meas_id");
-    mImpl.expectedMeasurementValue = pt.get<Measurement::TValue> ("expected_meas_value");
-    mImpl.reached = pt.get<bool> ("reached");
+    mImpl = readJson<materia::Objective>(json);
 }
 
 void Objective::accept(const materia::Objective& props)
@@ -66,19 +57,7 @@ Objective::~Objective()
 
 std::string Objective::toJson() const
 {
-    boost::property_tree::ptree pt;
-
-    pt.put ("id", mImpl.id.getGuid());
-    pt.put ("parent_goal_id", mImpl.parentGoalId.getGuid());
-    pt.put ("name", mImpl.name);
-    pt.put ("notes", mImpl.notes);
-    pt.put ("meas_id", mImpl.measurementId.getGuid());
-    pt.put ("expected_meas_value", mImpl.expectedMeasurementValue);
-    pt.put ("reached", mImpl.reached);
-
-    std::ostringstream buf; 
-    write_json (buf, pt, false);
-    return buf.str();
+    return writeJson(mImpl);
 }
 
 bool Objective::updateReached(const bool oldReached)

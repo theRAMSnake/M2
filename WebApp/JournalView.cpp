@@ -4,6 +4,8 @@
 #include <Wt/WTree.h>
 #include <Wt/WTreeNode.h>
 #include <Wt/WText.h>
+#include <Wt/WTextEdit.h>
+#include <Wt/WPushButton.h>
 
 class JournalTreeNode : public Wt::WTreeNode
 {
@@ -31,27 +33,37 @@ public:
       }
    }
 
-private:
-    void onDblClicked(Wt::WMouseEvent ev)
+   const IndexItem& getItem()
    {
-      /*auto dlg = new ActionsTreeNodeEditDialog(
-         mActionInfo.title(),
-         mActionInfo.description(),
-         std::bind(&ActionsTreeNode::onDialogOk, this, std::placeholders::_1, std::placeholders::_2));
-      dlg->show();*/
+      return mItem;
+   }
+
+private:
+   void onDblClicked(Wt::WMouseEvent ev)
+   {
+     if(mItem.id != materia::Id::Invalid)
+     {
+       std::function<void(std::string)> nextFunc = [this](std::string newTitle){
+               mModel.renameIndexItem(mItem.id, newTitle);
+               label()->setText(newTitle);
+            };
+
+       CommonDialogManager::showOneLineDialog("Please specify title", "Title", mItem.title, nextFunc);
+     }
    }
 
    void onClick(Wt::WMouseEvent ev)
    {
       if(ev.modifiers().test(Wt::KeyboardModifier::Control))
       {
-         /* std::function<void()> elementDeletedFunc = [=] () {
-            common::OperationResultMessage dummy;
-            mActionsService.DeleteElement(nullptr, &mActionInfo.id(), &dummy, nullptr);
-             parentNode()->removeChildNode(this);
-            delete this;
+        if(mItem.id != materia::Id::Invalid)
+        {
+          std::function<void()> elementDeletedFunc = [=] () {
+              mModel.deleteItem(mItem.id);
+              parentNode()->removeChildNode(this);
             };
-           CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);*/
+          CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
+        }
       }
       else if(ev.modifiers().test(Wt::KeyboardModifier::Shift) && !mItem.isPage)
       {
@@ -103,6 +115,9 @@ Wt::WWidget* JournalView::createIndexView()
    tree->treeRoot()->label()->setTextFormat(Wt::TextFormat::Plain);
    tree->treeRoot()->setLoadPolicy(Wt::ContentLoading::NextLevel);
    tree->treeRoot()->expand();
+   tree->itemSelectionChanged().connect(this, &JournalView::onIndexSelectionChanged);
+
+   mIndexTree = tree.get();
 
    result->addWidget(std::move(tree));
 
@@ -111,5 +126,57 @@ Wt::WWidget* JournalView::createIndexView()
 
 Wt::WWidget* JournalView::createPageView()
 {
-   return new Wt::WContainerWidget();
+   auto result = new Wt::WContainerWidget();
+
+   mPageView = new Wt::WTextEdit();
+   mPageView->setConfigurationSetting("branding", false);
+   mPageView->setConfigurationSetting("elementpath", false);
+   mPageView->setConfigurationSetting("Browser_spellcheck", true);
+   mPageView->setConfigurationSetting("statusbar", false);
+   mPageView->setConfigurationSetting("menubar", "edit format table");
+   
+   mPageView->setExtraPlugins("colorpicker, textcolor, searchreplace, table, lists");
+   mPageView->setToolBar(0, "bold italic | link | forecolor backcolor | fontsizeselect | numlist bullist");
+   mPageView->setHeight(800);
+   mPageView->setEnabled(false);
+   
+   result->addWidget(std::unique_ptr<Wt::WTextEdit>(mPageView));
+
+   mSaveBtn = new Wt::WPushButton("Save");
+   mSaveBtn->clicked().connect(std::bind(&JournalView::onSaveClick, this));
+   mSaveBtn->addStyleClass("btn-primary");
+   mSaveBtn->setMargin(5);
+   mSaveBtn->setEnabled(false);
+   result->addWidget(std::unique_ptr<Wt::WPushButton>(mSaveBtn));
+
+   return result;
+}
+
+void JournalView::onSaveClick()
+{
+   auto node = static_cast<JournalTreeNode*>(*mIndexTree->selectedNodes().begin());
+   auto& item = node->getItem();
+   mModel.saveContent(item.id, mPageView->text().narrow());
+}
+
+void JournalView::onIndexSelectionChanged()
+{
+   auto nodes = mIndexTree->selectedNodes();
+   if(nodes.size())
+   {
+      auto node = static_cast<JournalTreeNode*>(*nodes.begin());
+      auto& item = node->getItem();
+      if(item.isPage)
+      {
+         mSaveBtn->setEnabled(true);
+         mPageView->setEnabled(true);
+         mPageView->setText(mModel.loadContent(item.id));
+      }
+      else
+      {
+         mSaveBtn->setEnabled(false);
+         mPageView->setEnabled(false);
+         mPageView->setText("");
+      }
+   }
 }

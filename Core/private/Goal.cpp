@@ -1,6 +1,4 @@
 #include "Goal.hpp"
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
 #include "JsonSerializer.hpp"
 
 BIND_JSON5(materia::Goal, id, name, notes, focused, achieved)
@@ -101,11 +99,11 @@ bool Goal::calculateAchieved()
         result = true;
         for(auto o : mObjectives)
         {
-        result = result && o.second->get()->getProps().reached;
-        if(!result)
-        {
-            return false;
-        }
+            result = result && o.second->get()->getProps().reached;
+            if(!result)
+            {
+                return false;
+            }
         }
     }
 

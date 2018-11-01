@@ -19,7 +19,7 @@ public:
 
    void deleteItem(const Id& id) override;
 
-   void updateFolder(const JournalItem& item) override;
+   void updateIndexItem(const JournalItem& item) override;
    void updatePage(const JournalPage& item) override;
 
    std::vector<IndexItem> getIndex() override;
@@ -29,7 +29,6 @@ public:
 private:
    const Id insertIndexItem(const Id& parentId, const std::string& title, const bool isPage);
    bool isFolderExist(const Id& id);
-   void updateIndexItem(const JournalItem& item);
 
    std::map<Id, IndexItem> mIndex;
    std::map<Id, std::string> mPageContents;

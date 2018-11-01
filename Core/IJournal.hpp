@@ -42,7 +42,7 @@ public:
 
    virtual void deleteItem(const Id& id) = 0;
 
-   virtual void updateFolder(const JournalItem& item) = 0;
+   virtual void updateIndexItem(const JournalItem& item) = 0;
    virtual void updatePage(const JournalPage& item) = 0;
 
    virtual std::vector<IndexItem> getIndex() = 0;

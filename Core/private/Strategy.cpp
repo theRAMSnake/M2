@@ -1,199 +1,11 @@
 #include "Strategy.hpp"
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
 #include <boost/signals2/signal.hpp>
+#include "JsonSerializer.hpp"
+
+BIND_JSON5(materia::Task, id, parentGoalId, name, notes, done)
 
 namespace materia
 {
-
-/*
-strategy::CommonItemProperties toProto(const materia::StrategyItem& x)
-{
-   strategy::CommonItemProperties result;
-
-   result.mutable_id()->CopyFrom(toProto(x.id));
-   
-
-   result.set_name(x.name);
-   result.set_notes(x.notes);
-   result.mutable_icon_id()->CopyFrom(toProto(x.iconId));
-
-   return result;
-}
-
-template<class T>
-T fromProto(const strategy::CommonItemProperties& x)
-{
-   T result;
-
-   result.id = fromProto(x.id());
-   
-
-
-   result.name = x.name();
-   result.notes = x.notes();
-   result.iconId = fromProto(x.icon_id());
-
-   return result;
-}
-
-strategy::Goal toProto(const materia::Goal& x)
-{
-   strategy::Goal result;
-
-   result.mutable_common_props()->CopyFrom(toProto(static_cast<const materia::StrategyItem&>(x)));
-   result.mutable_affinityid()->CopyFrom(toProto(x.affinityId));
-   result.set_focused(x.focused);
-   result.set_achieved(x.achieved);
-
-   return result;
-}
-
-materia::Goal fromProto(const strategy::Goal& x)
-{
-   materia::Goal result = fromProto<Goal>(x.common_props());
-
-   result.affinityId = fromProto(x.affinityid());
-   result.focused = x.focused();
-   result.achieved = x.achieved();
-
-   return result;
-}
-
-strategy::Task toProto(const materia::Task& x)
-{
-   strategy::Task result;
-
-   result.mutable_common_props()->CopyFrom(toProto(static_cast<const materia::StrategyItem&>(x)));
-   result.set_done(x.done);
-   result.mutable_parent_goal_id()->CopyFrom(toProto(x.parentGoalId));
-   for(auto a : x.requiredTasks)
-   {
-      result.add_required_tasks()->CopyFrom(toProto(a));
-   }
-
-   return result;
-}
-
-materia::Task fromProto(const strategy::Task& x)
-{
-   materia::Task result = fromProto<Task>(x.common_props());
-
-   result.done = x.done();
-   result.parentGoalId = fromProto(x.parent_goal_id());
-   for(auto a : x.required_tasks())
-   {
-      result.requiredTasks.push_back(fromProto(a));
-   }
-
-   return result;
-}
-
-strategy::Objective toProto(const materia::Objective& x)
-{
-   strategy::Objective result;
-
-   result.mutable_common_props()->CopyFrom(toProto(static_cast<const materia::StrategyItem&>(x)));
-   result.mutable_meas_id()->CopyFrom(toProto(x.measurementId));
-   result.mutable_parent_goal_id()->CopyFrom(toProto(x.parentGoalId));
-   result.set_reached(x.reached);
-   result.set_expectedtreshold(x.expected);
-
-   return result;
-}
-
-materia::Objective fromProto(const strategy::Objective& x)
-{
-   materia::Objective result = fromProto<Objective>(x.common_props());
-
-   result.measurementId = fromProto(x.meas_id());
-   result.parentGoalId = fromProto(x.parent_goal_id());
-   result.reached = x.reached();
-   result.expected = x.expectedtreshold();
-
-   return result;
-}
-
-strategy::Measurement toProto(const materia::Measurement& x)
-{
-   strategy::Measurement result;
-
-   result.mutable_id()->CopyFrom(toProto(x.id));
-   result.set_value(x.value);
-   result.set_name(x.name);
-   result.mutable_icon_id()->CopyFrom(toProto(x.iconId));
-
-   return result;
-}
-
-materia::Measurement fromProto(const strategy::Measurement& x)
-{
-   materia::Measurement result;
-
-   result.id = fromProto(x.id());
-   result.name = x.name();
-   result.value = x.value();
-   result.iconId = fromProto(x.icon_id());
-
-   return result;
-}
-
-strategy::Affinity toProto(const materia::Affinity& x)
-{
-   strategy::Affinity result;
-
-   result.mutable_id()->CopyFrom(toProto(x.id));
-   result.set_name(x.name);
-   result.set_colorname(x.colorName);
-   result.mutable_icon_id()->CopyFrom(toProto(x.iconId));
-
-   return result;
-}
-
-materia::Affinity fromProto(const strategy::Affinity& x)
-{
-   materia::Affinity result;
-
-   result.id = fromProto(x.id());
-   result.name = x.name();
-   result.colorName = x.colorname();
-   result.iconId = fromProto(x.icon_id());
-
-   return result;
-}
-*/
-
-Task fromJson(const std::string& content)
-{
-   Task result;
-
-   boost::property_tree::ptree pt;
-   std::istringstream is (content);
-   read_json (is, pt);
-   
-   result.id = pt.get<std::string> ("id");
-   result.parentGoalId = pt.get<std::string> ("parent_goal_id");
-   result.name = pt.get<std::string> ("name");
-   result.notes = pt.get<std::string> ("notes");
-   result.done = pt.get<bool> ("done");
-
-   return result;
-}
-
-std::string toJson(const Task& t)
-{
-   boost::property_tree::ptree pt;
-
-   pt.put ("id", t.id.getGuid());
-   pt.put ("parent_goal_id", t.parentGoalId.getGuid());
-   pt.put ("name", t.name);
-   pt.put ("notes", t.notes);
-   pt.put ("done", t.done);
-
-   std::ostringstream buf; 
-   write_json (buf, pt, false);
-   return buf.str();
-}
 
 Strategy::Strategy(Database& db)
 : mGoalsStorage(db.getTable("goals"))
@@ -207,7 +19,7 @@ Strategy::Strategy(Database& db)
 
    mTasksStorage->foreach([&](std::string id, std::string json) 
    {
-      mTasks.insert({id, fromJson(json)});
+      mTasks.insert({id, readJson<materia::Task>(json)});
    });
 
    connectMeasurementsWithObjectives();
@@ -404,7 +216,7 @@ Id Strategy::addTask(const Task& task)
     t.id = Id::generate();
     
     mTasks.insert({t.id, t});
-    mTasksStorage->store(t.id, toJson(t));
+    mTasksStorage->store(t.id, writeJson(t));
     return t.id;
 }
 
@@ -416,7 +228,7 @@ void Strategy::modifyTask(const Task& task)
        mTasks.erase(pos);
        mTasks.insert({task.id, task});
 
-       mTasksStorage->store(task.id, toJson(task));
+       mTasksStorage->store(task.id, writeJson(task));
    }
 }
 

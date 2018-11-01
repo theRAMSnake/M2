@@ -57,12 +57,10 @@ service JournalService
 
    rpc DeleteItem (common.UniqueId) returns (common.OperationResultMessage);
 
-   rpc UpdateFolder (JournalItem) returns (common.OperationResultMessage);
-   rpc UpdatePage (Page) returns (common.OperationResultMessage); //Don't forget to test timestamp
+   rpc UpdateIndexItem (JournalItem) returns (common.OperationResultMessage);
+   rpc UpdatePage (Page) returns (common.OperationResultMessage);
 
    rpc GetIndex (common.EmptyMessage) returns (Index);
    rpc Search (common.StringMessage) returns (SearchResult);
    rpc GetPage (common.UniqueId) returns (Page);
-
-   rpc Clear(common.EmptyMessage) returns (common.OperationResultMessage);
 }
