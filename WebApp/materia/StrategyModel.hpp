@@ -31,6 +31,9 @@ public:
    void deleteTask(const materia::Id& id);
    std::vector<Task> getActiveTasks();
 
+   std::vector<Goal> getGoals();
+   const Goal& addGoal(const bool focused, const std::string& name);
+
 private:
    void fetchGoals();
 

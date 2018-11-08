@@ -138,7 +138,6 @@ Wt::WWidget* JournalView::createPageView()
    mPageView->setExtraPlugins("colorpicker, textcolor, searchreplace, table, lists");
    mPageView->setToolBar(0, "bold italic | link | forecolor backcolor | fontsizeselect | numlist bullist");
    mPageView->setHeight(800);
-   mPageView->setEnabled(false);
    
    result->addWidget(std::unique_ptr<Wt::WTextEdit>(mPageView));
 
@@ -169,13 +168,11 @@ void JournalView::onIndexSelectionChanged()
       if(item.isPage)
       {
          mSaveBtn->setEnabled(true);
-         mPageView->setEnabled(true);
          mPageView->setText(mModel.loadContent(item.id));
       }
       else
       {
          mSaveBtn->setEnabled(false);
-         mPageView->setEnabled(false);
          mPageView->setText("");
       }
    }

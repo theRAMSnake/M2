@@ -6,34 +6,37 @@ class TemplateBuilder
 {
 public:
    template<class TCtrl>
-   static Wt::WTemplate* makeTable(const unsigned int numRows, const unsigned int numCols)
+   static std::tuple<Wt::WTemplate*, std::vector<TCtrl*>> makeTable(const unsigned int numRows, const unsigned int numCols)
    {
-      std::string result = "<table>";
+      std::string resultHtml = "<table style=\"position: absolute; top: 0; bottom: 0; left: 0; right: 0;\">";
 
-      for(auto r = 0; r < numRows; ++r)
+      for(unsigned int r = 0; r < numRows; ++r)
       {
-         result += "<tr>";
+         resultHtml += "<tr style=\"height:" + std::to_string(100 / numRows) + "%;\">";
 
-         for(auto c = 0; c < numCols; ++c)
+         for(unsigned int c = 0; c < numCols; ++c)
          {
-            result += "<td>${cell" + std::to_string(r) + "_" + std::to_string(c) + "}</td>";
+            resultHtml += "<td style=\"width:" + std::to_string(100 / numCols) + "%;\">${cell" + std::to_string(r) + "_" + std::to_string(c) + "}</td>";
          }
 
-         result += "</tr>";
+         resultHtml += "</tr>";
       }
 
-      result += "</table>";
+      resultHtml += "</table>";
 
-      auto templ = new Wt::WTemplate(result);
-      for(auto r = 0; r < numRows; ++r)
+      auto templ = new Wt::WTemplate(resultHtml);
+      std::vector<TCtrl*> items;
+      for(unsigned int r = 0; r < numRows; ++r)
       {
-         for(auto c = 0; c < numCols; ++c)
+         for(unsigned int c = 0; c < numCols; ++c)
          {
-            auto cell = "cell" + std::to_string(r) + "_" + std::to_string(c) + "}";
-            templ->bindWidget(cell, Wt::cpp14::make_unique<TCtrl>());
+            auto cell = "cell" + std::to_string(r) + "_" + std::to_string(c);
+            auto newItem = std::make_unique<TCtrl>();
+            items.push_back(newItem.get());
+            templ->bindWidget(cell, std::move(newItem));
          }
       }
 
-      return templ;
+      return std::make_tuple(templ, items);
    }
 };

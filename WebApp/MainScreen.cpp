@@ -12,16 +12,16 @@
 
 MainScreen::MainScreen(MateriaClient& client)
 {
-    auto navigation = addWidget(Wt::cpp14::make_unique<Wt::WNavigationBar>());
+    auto navigation = addWidget(std::make_unique<Wt::WNavigationBar>());
     navigation->setTitle("Materia");
 
-    auto contentsStack = addWidget(Wt::cpp14::make_unique<Wt::WStackedWidget>());
+    auto contentsStack = addWidget(std::make_unique<Wt::WStackedWidget>());
     contentsStack->addStyleClass("contents");
     
-    auto menu = Wt::cpp14::make_unique<Wt::WMenu>(contentsStack);
+    auto menu = std::make_unique<Wt::WMenu>(contentsStack);
     auto menu_ = navigation->addMenu(std::move(menu));
 
-    menu_->addItem("MainView", Wt::cpp14::make_unique<MainView>(client.getCalendar(), client.getStrategy(), client.getInbox()));
-    //menu_->addItem("Strategy", Wt::cpp14::make_unique<StrategyView>());
-    menu_->addItem("Journal", Wt::cpp14::make_unique<JournalView>(client.getJournal()));
+    menu_->addItem("MainView", std::make_unique<MainView>(client.getCalendar(), client.getStrategy(), client.getInbox()));
+    menu_->addItem("Journal", std::make_unique<JournalView>(client.getJournal()));
+    menu_->addItem("Strategy", std::make_unique<StrategyView>(client.getStrategy()));
 }

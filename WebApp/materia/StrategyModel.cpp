@@ -74,3 +74,31 @@ void StrategyModel::fetchGoals()
       }
    }
 }
+
+std::vector<StrategyModel::Goal> StrategyModel::getGoals()
+{
+   return mGoals;
+}
+
+const StrategyModel::Goal& StrategyModel::addGoal(const bool focused, const std::string& name)
+{
+   common::UniqueId id;
+   strategy::Goal g;
+
+   g.mutable_common_props()->set_name(name);
+   g.set_focused(focused);
+
+   mService.getService().AddGoal(nullptr, &g, &id, nullptr);
+   mService.getService().GetGoal(nullptr, &id, &g, nullptr);
+
+   mGoals.push_back(
+      { 
+         g.common_props().id().guid(), 
+         g.common_props().name(),
+         g.common_props().notes(),
+         g.focused(),
+         g.achieved()
+      });
+
+   return mGoals.back();
+}

@@ -8,5 +8,8 @@ public:
    StrategyView(StrategyModel& strategy);
 
 private:
-   StrategyModel& mStrategy;
+   void onAddClick();
+   void putGoal(const StrategyModel::Goal& goal);
+
+   StrategyModel& mModel;
 };
