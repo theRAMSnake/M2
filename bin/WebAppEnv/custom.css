@@ -1,5 +1,39 @@
+.GoalViewCtrlEmpty {
+  border-style: solid;
+  border-width: 2px;
+  border-color: black;
+  background-color: darkgrey;
+  height: 25vh;
+}
+
 .GoalViewCtrl {
   border-style: solid;
-  border: 1px;
-  background-color: aqua;
+  border-width: 1px;
+  border-color: black;
+  background-color: lightyellow;
+  height: 25vh;
+}
+
+.GoalViewCtrlSmallEmpty {
+  border-style: solid;
+  border-width: 1px;
+  border-color: black;
+  background-color: darkgrey;
+  height: 35px;
+}
+
+.GoalViewCtrlSmall {
+  border-style: solid;
+  border-width: 2px;
+  border-color: black;
+  background-color: lightyellow;
+  height: 35px;
+}
+
+.GoalViewCtrl_Text {
+  margin-left: 20px;
+  margin-top: 50px; 
+  font-size: 25px;
+  user-select: none;
+  -moz-user-select: none;
 }

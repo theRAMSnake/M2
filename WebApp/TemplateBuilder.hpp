@@ -8,21 +8,27 @@ public:
    template<class TCtrl>
    static std::tuple<Wt::WTemplate*, std::vector<TCtrl*>> makeTable(const unsigned int numRows, const unsigned int numCols)
    {
-      std::string resultHtml = "<table style=\"position: absolute; top: 0; bottom: 0; left: 0; right: 0;\">";
+      if(numCols > 12)
+      {
+         throw -1;
+      }
+
+      std::string resultHtml = "<div class=\"container-fluid\">";
 
       for(unsigned int r = 0; r < numRows; ++r)
       {
-         resultHtml += "<tr style=\"height:" + std::to_string(100 / numRows) + "%;\">";
+         resultHtml += "<span class=\"row\">";
 
          for(unsigned int c = 0; c < numCols; ++c)
          {
-            resultHtml += "<td style=\"width:" + std::to_string(100 / numCols) + "%;\">${cell" + std::to_string(r) + "_" + std::to_string(c) + "}</td>";
+            int styleSize = 12 / numCols;
+            resultHtml += "<span class=\"col-md-" + std::to_string(styleSize) + "\">${cell" + std::to_string(r) + "_" + std::to_string(c) + "}</span>";
          }
 
-         resultHtml += "</tr>";
+         resultHtml += "</span>";
       }
 
-      resultHtml += "</table>";
+      resultHtml += "</div>";
 
       auto templ = new Wt::WTemplate(resultHtml);
       std::vector<TCtrl*> items;
