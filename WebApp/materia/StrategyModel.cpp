@@ -102,3 +102,23 @@ const StrategyModel::Goal& StrategyModel::addGoal(const bool focused, const std:
 
    return mGoals.back();
 }
+
+void StrategyModel::modifyGoal(const Goal& goal)
+{
+   auto iter = materia::find_by_id(mGoals, goal.id);
+
+   if(iter != mGoals.end())
+   {
+      *iter = goal;
+
+      strategy::Goal g;
+      common::OperationResultMessage op;
+
+      g.mutable_common_props()->set_name(goal.title);
+      g.mutable_common_props()->mutable_id()->set_guid(goal.id.getGuid());
+      g.mutable_common_props()->set_notes(goal.notes);
+      g.set_focused(goal.focused);
+
+      mService.getService().ModifyGoal(nullptr, &g, &op, nullptr);
+   }
+}

@@ -33,6 +33,7 @@ public:
 
    std::vector<Goal> getGoals();
    const Goal& addGoal(const bool focused, const std::string& name);
+   void modifyGoal(const Goal& goal);
 
 private:
    void fetchGoals();

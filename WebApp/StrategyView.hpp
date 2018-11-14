@@ -2,7 +2,7 @@
 #include <Wt/WContainerWidget.h>
 #include "materia/StrategyModel.hpp"
 
-class GoalViewCtrl;
+class IGoalViewCtrl;
 class StrategyView : public Wt::WContainerWidget
 {
 public:
@@ -16,5 +16,5 @@ private:
    void putGoal(const StrategyModel::Goal& goal);
 
    StrategyModel& mModel;
-   std::vector<GoalViewCtrl*> mGoalCtrls;
+   std::vector<IGoalViewCtrl*> mGoalCtrls;
 };

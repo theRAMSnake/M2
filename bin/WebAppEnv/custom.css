@@ -32,8 +32,15 @@
 
 .GoalViewCtrl_Text {
   margin-left: 20px;
-  margin-top: 50px; 
+  margin-top: 20px; 
   font-size: 25px;
+  user-select: none;
+  -moz-user-select: none;
+}
+
+.GoalViewCtrl_Notes {
+  font-size: 12px;
+  color: grey; 
   user-select: none;
   -moz-user-select: none;
 }

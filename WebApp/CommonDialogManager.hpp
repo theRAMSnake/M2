@@ -17,6 +17,14 @@ struct FieldInfo
     FieldType fieldType;
 };
 
+class BasicDialog : public Wt::WDialog
+{
+public:
+    BasicDialog(const std::string& caption);
+
+    virtual void onAccepted();
+};
+
 class CommonDialogManager
 {  
 public:

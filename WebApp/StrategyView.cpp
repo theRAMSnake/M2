@@ -8,90 +8,177 @@
 #include "Wt/WCssDecorationStyle.h"
 #include "Wt/WCheckBox.h"
 #include "Wt/WGroupBox.h"
+#include "Wt/WLineEdit.h"
+#include "Wt/WTextArea.h"
 
-class GoalViewCtrl : public Wt::WContainerWidget
+class GoalEditDialog : public BasicDialog
 {
 public:
-   GoalViewCtrl()
+   typedef std::function<void(const StrategyModel::Goal&)> TOnOkCallback;
+   GoalEditDialog(const StrategyModel::Goal& subject, TOnOkCallback cb)
+   : BasicDialog("Goal Edit")
    {
-      setStyleClass("GoalViewCtrlEmpty");
+      mTitle = new Wt::WLineEdit(subject.title);
+      contents()->addWidget(std::unique_ptr<Wt::WLineEdit>(mTitle));
 
-      mText = addWidget(std::make_unique<Wt::WLabel>(""));
-      mText->setStyleClass("GoalViewCtrl_Text");
-   }
+      mNotes = new Wt::WTextArea();
+      mNotes->setHeight(500);
+      mNotes->setText(subject.notes);
+      mNotes->setMargin("5px", Wt::Side::Top);
+      
+      contents()->addWidget(std::unique_ptr<Wt::WTextArea>(mNotes));
 
-   bool isEmpty() const
-   {
-      return !mGoal;
-   }
+      finished().connect(std::bind([=]() {
+        if (result() == Wt::DialogCode::Accepted)
+        {
+           StrategyModel::Goal newGoal = subject;
+           newGoal.title = mTitle->text().narrow();
+           newGoal.notes = mNotes->text().narrow();
+           cb(newGoal);
+        }
 
-   void attach(const StrategyModel::Goal& goal)
-   {
-      setStyleClass("GoalViewCtrl");
-
-      mGoal = goal;
-
-      render();
-   }
-
-   void detach()
-   {
-      setStyleClass("GoalViewCtrlEmpty");
-      mText->setText("");
-      mGoal.reset();
+        delete this;
+      }));
    }
 
 private:
-   void render()
-   {
-      mText->setText(mGoal->title);
-   }
-
-   Wt::WLabel* mText = nullptr;
-   std::optional<StrategyModel::Goal> mGoal;
+   Wt::WLineEdit* mTitle;
+   Wt::WTextArea* mNotes;
 };
 
-//------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------
 
-class GoalViewCtrlSmall : public Wt::WContainerWidget
+class IGoalViewCtrl
 {
 public:
-   GoalViewCtrlSmall()
-   {
-      setStyleClass("GoalViewCtrlSmallEmpty");
+   virtual bool isEmpty() const = 0;
+   virtual void attach(const StrategyModel::Goal& goal) = 0;
+   virtual void detach() = 0;
 
-      mText = addWidget(std::make_unique<Wt::WLabel>(""));
-      mText->setStyleClass("GoalViewCtrl_Text");
+   virtual ~IGoalViewCtrl() {}
+};
+
+template<bool isCompact>
+class GoalViewCtrlTraits
+{
+public:
+
+};
+
+template<>
+class GoalViewCtrlTraits<true>
+{
+public:
+   static constexpr const char* emptyStyleClass = "GoalViewCtrlSmallEmpty";
+   static constexpr const char* nonemptyStyleClass = "GoalViewCtrlSmall";
+   using titleControl = Wt::WLabel;
+
+   static void setTitle(const std::string& title, titleControl& ctrl)
+   {
+      ctrl.setText(title);
    }
 
-   bool isEmpty() const
+   static Wt::WLabel* createNotes(titleControl& ctrl)
+   {
+      throw -1;
+   }
+};
+
+template<>
+class GoalViewCtrlTraits<false>
+{
+public:
+   static constexpr const char* emptyStyleClass = "GoalViewCtrlEmpty";
+   static constexpr const char* nonemptyStyleClass = "GoalViewCtrl";
+   using titleControl = Wt::WGroupBox;
+
+   static void setTitle(const std::string& title, titleControl& ctrl)
+   {
+      ctrl.setTitle(title);
+   }
+
+   static Wt::WLabel* createNotes(titleControl& ctrl)
+   {
+      return ctrl.addWidget(std::make_unique<Wt::WLabel>(""));
+   }
+};
+
+template<bool isCompact>
+class GoalViewCtrl : public Wt::WContainerWidget, public IGoalViewCtrl
+{
+public:
+   GoalViewCtrl(StrategyModel& model)
+   : mModel(model)
+   {
+      setStyleClass(GoalViewCtrlTraits<isCompact>::emptyStyleClass);
+
+      mBound = addWidget(std::make_unique<typename GoalViewCtrlTraits<isCompact>::titleControl>(""));
+      mBound->setStyleClass("GoalViewCtrl_Text");
+      mBound->doubleClicked().connect(this, &GoalViewCtrl<isCompact>::onBoundDoubleClicked);
+
+      if(!isCompact)
+      {
+         mNotes = GoalViewCtrlTraits<isCompact>::createNotes(*mBound);
+         mNotes->setStyleClass("GoalViewCtrl_Notes");
+      }
+   }
+
+   bool isEmpty() const override
    {
       return !mGoal;
    }
 
-   void attach(const StrategyModel::Goal& goal)
+   void attach(const StrategyModel::Goal& goal) override
    {
-      setStyleClass("GoalViewCtrlSmall");
+      setStyleClass(GoalViewCtrlTraits<isCompact>::nonemptyStyleClass);
 
       mGoal = goal;
 
       render();
    }
 
-   void detach()
+   void detach() override
    {
-      setStyleClass("GoalViewCtrlSmallEmpty");
-      mText->setText("");
+      setStyleClass(GoalViewCtrlTraits<isCompact>::emptyStyleClass);
+      GoalViewCtrlTraits<isCompact>::setTitle("", *mBound);
       mGoal.reset();
+      if(!isCompact)
+      {
+         mNotes->setText("");
+      }
    }
 
 private:
-   void render()
+   void onBoundDoubleClicked()
    {
-      mText->setText(mGoal->title);
+      if(mGoal)
+      {
+         GoalEditDialog::TOnOkCallback cb([&] (auto g) {doModifyGoal(g);});
+         GoalEditDialog* dlg = new GoalEditDialog(*mGoal, cb);
+         dlg->show();
+      }
    }
 
-   Wt::WLabel* mText = nullptr;
+   void doModifyGoal(const StrategyModel::Goal& newGoal)
+   {
+      mGoal = newGoal;
+      render();
+
+      mModel.modifyGoal(newGoal);
+   }
+
+   void render()
+   {
+      GoalViewCtrlTraits<isCompact>::setTitle(mGoal->title, *mBound);
+      if(!isCompact)
+      {
+         mNotes->setText(mGoal->notes);
+      }
+   }
+
+   StrategyModel& mModel;
+   typename GoalViewCtrlTraits<isCompact>::titleControl* mBound = nullptr;
+   Wt::WLabel* mNotes;
    std::optional<StrategyModel::Goal> mGoal;
 };
 
@@ -104,7 +191,7 @@ public:
    : mModel(model)
    {
       auto activeGroup = addWidget(std::make_unique<Wt::WGroupBox>("Active"));
-      auto [temp, activeGoalCtrls] = TemplateBuilder::makeTable<GoalViewCtrlSmall>(1u, 6u);
+      auto [temp, activeGoalCtrls] = TemplateBuilder::makeTable<GoalViewCtrl<true>>(1u, 6u, model);
       activeGroup->addWidget(std::unique_ptr<Wt::WTemplate>(temp));
 
       auto items = mModel.getGoals();
@@ -127,7 +214,7 @@ public:
       }
 
       auto inactiveGroup = addWidget(std::make_unique<Wt::WGroupBox>("Inactive"));
-      auto [temp2, inactiveGoalCtrls] = TemplateBuilder::makeTable<GoalViewCtrlSmall>(numUnfocused / 6 + 1, 6u);
+      auto [temp2, inactiveGoalCtrls] = TemplateBuilder::makeTable<GoalViewCtrl<true>>(numUnfocused / 6 + 1, 6u, model);
       inactiveGroup->addWidget(std::unique_ptr<Wt::WTemplate>(temp2));
 
       pos = 0;
@@ -166,8 +253,8 @@ StrategyView::StrategyView(StrategyModel& strategy)
    backlogBtn->clicked().connect(std::bind(&StrategyView::onBacklogClick, this));
    toolBar->addButton(std::move(backlogBtn));
 
-   auto [temp, goalCtrls] = TemplateBuilder::makeTable<GoalViewCtrl>(3u, 2u);
-   mGoalCtrls = goalCtrls;
+   auto [temp, goalCtrls] = TemplateBuilder::makeTable<GoalViewCtrl<false>>(3u, 2u, strategy);
+   std::copy(goalCtrls.begin(), goalCtrls.end(), std::inserter(mGoalCtrls, mGoalCtrls.begin()));
 
    addWidget(std::unique_ptr<Wt::WWidget>(temp));
 

@@ -5,8 +5,8 @@
 class TemplateBuilder
 {
 public:
-   template<class TCtrl>
-   static std::tuple<Wt::WTemplate*, std::vector<TCtrl*>> makeTable(const unsigned int numRows, const unsigned int numCols)
+   template<class TCtrl, class TParam1>
+   static std::tuple<Wt::WTemplate*, std::vector<TCtrl*>> makeTable(const unsigned int numRows, const unsigned int numCols, TParam1& p)
    {
       if(numCols > 12)
       {
@@ -37,7 +37,7 @@ public:
          for(unsigned int c = 0; c < numCols; ++c)
          {
             auto cell = "cell" + std::to_string(r) + "_" + std::to_string(c);
-            auto newItem = std::make_unique<TCtrl>();
+            auto newItem = std::make_unique<TCtrl>(p);
             items.push_back(newItem.get());
             templ->bindWidget(cell, std::move(newItem));
          }

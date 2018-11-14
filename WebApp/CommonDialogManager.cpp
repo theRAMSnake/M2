@@ -68,26 +68,32 @@ void CommonDialogManager::showDialog(
    d->show();
 }
 
-Wt::WDialog* CommonDialogManager::createDialogBase(const std::string& caption)
+BasicDialog::BasicDialog(const std::string& caption)
 {
-    Wt::WDialog* dialog = new Wt::WDialog(caption);
-
     Wt::WPushButton *ok = new Wt::WPushButton("OK");
-    dialog->footer()->addWidget(std::unique_ptr<Wt::WPushButton>(ok));
+    footer()->addWidget(std::unique_ptr<Wt::WPushButton>(ok));
     ok->setDefault(true);
 
     Wt::WPushButton *cancel = new Wt::WPushButton("Cancel");
-    dialog->footer()->addWidget(std::unique_ptr<Wt::WPushButton>(cancel));
-    dialog->rejectWhenEscapePressed();
+    footer()->addWidget(std::unique_ptr<Wt::WPushButton>(cancel));
+    rejectWhenEscapePressed();
 
     ok->clicked().connect(std::bind([=]() {
-        dialog->accept();
+        onAccepted();
     }));
 
-    cancel->clicked().connect(dialog, &Wt::WDialog::reject);
-    dialog->setWidth(750);
+    cancel->clicked().connect(this, &Wt::WDialog::reject);
+    setWidth(750);
+}
 
-    return dialog;
+void BasicDialog::onAccepted()
+{
+    accept();
+}
+
+Wt::WDialog* CommonDialogManager::createDialogBase(const std::string& caption)
+{
+    return new BasicDialog(caption);
 }
 
 Wt::WDialog* CommonDialogManager::createDialog(const std::string& caption, const std::vector<FieldInfo>& fields, TCallback& callback)
