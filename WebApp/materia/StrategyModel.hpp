@@ -34,11 +34,12 @@ public:
    std::vector<Goal> getGoals();
    const Goal& addGoal(const bool focused, const std::string& name);
    void modifyGoal(const Goal& goal);
+   void deleteGoal(const materia::Id& id);
+   std::vector<Task> getGoalTasks(const materia::Id& id);
 
 private:
    void fetchGoals();
 
    std::vector<Goal> mGoals;
-   std::vector<Task> mActiveTasks;
    MateriaServiceProxy<strategy::StrategyService> mService;
 };

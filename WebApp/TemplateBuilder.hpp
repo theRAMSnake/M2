@@ -6,7 +6,7 @@ class TemplateBuilder
 {
 public:
    template<class TCtrl, class TParam1>
-   static std::tuple<Wt::WTemplate*, std::vector<TCtrl*>> makeTable(const unsigned int numRows, const unsigned int numCols, TParam1& p)
+   static std::tuple<Wt::WTemplate*, std::vector<TCtrl*>> makeTable(const unsigned int numRows, const unsigned int numCols, TParam1 p)
    {
       if(numCols > 12)
       {

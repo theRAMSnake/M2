@@ -68,14 +68,15 @@ private:
    Wt::WTextEdit* mDesc;
 };
 
-class ActionItemView : public Wt::WLabel
+class ActionItemView : public Wt::WContainerWidget
 {
 public:
    ActionItemView(const StrategyModel::Task& task, StrategyModel& strategy)
-   : Wt::WLabel(task.title)
-   , mTask(task)
+   : mTask(task)
    , mStrategy(strategy)
    {
+      mLabel = addWidget(std::unique_ptr<Wt::WLabel>(new Wt::WLabel(task.title)));
+      setStyleClass("Task");
       doubleClicked().connect(std::bind(&ActionItemView::onDblClicked, this, std::placeholders::_1));
       clicked().connect(std::bind(&ActionItemView::onClick, this, std::placeholders::_1));
    }
@@ -92,7 +93,7 @@ private:
 
    void onDialogOk(const std::string& title, const std::string& desc)
    {
-      setText(title);
+      mLabel->setText(title);
 
       mTask.title = title;
       mTask.notes = desc;
@@ -112,6 +113,7 @@ private:
       }
    }
 
+   Wt::WLabel* mLabel;
    StrategyModel::Task mTask;
    StrategyModel& mStrategy;
 };
@@ -119,15 +121,15 @@ private:
 ActionsView::ActionsView(StrategyModel& strategy)
 : mStrategy(strategy)
 {
-   addStyleClass("container-fluid");
+   //addStyleClass("container-fluid");
 
-   auto actionsGroup = new Wt::WGroupBox;
-   actionsGroup->addStyleClass("col-md-10");
+   //auto actionsGroup = new Wt::WContainerWidget;
+   //actionsGroup->addStyleClass("col-md-10");
 
    for(auto x : mStrategy.getActiveTasks())
    {
-      actionsGroup->addWidget(std::unique_ptr<Wt::WLabel>(new ActionItemView(x, mStrategy)));
+      /*actionsGroup->*/addWidget(std::unique_ptr<Wt::WContainerWidget>(new ActionItemView(x, mStrategy)));
    }
    
-   addWidget(std::unique_ptr<Wt::WGroupBox>(actionsGroup));
+   //addWidget(std::unique_ptr<Wt::WContainerWidget>(actionsGroup));
 }

@@ -40,7 +40,16 @@
 
 .GoalViewCtrl_Notes {
   font-size: 12px;
+  margin-left: 20px;
   color: grey; 
+  user-select: none;
+  -moz-user-select: none;
+}
+
+.Task {
+  margin-left: 150px;
+  padding-top: 30px;
+  font-size: 25px;
   user-select: none;
   -moz-user-select: none;
 }

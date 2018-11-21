@@ -17,8 +17,6 @@ void StrategyModel::modifyTask(const Task& task)
 
    common::OperationResultMessage opResult;
    mService.getService().ModifyTask(nullptr, &t, &opResult, nullptr);
-
-   *materia::find_by_id(mActiveTasks, task.id) = task;
 }
 
 void StrategyModel::deleteTask(const materia::Id& src)
@@ -28,13 +26,33 @@ void StrategyModel::deleteTask(const materia::Id& src)
 
    common::OperationResultMessage opResult;
    mService.getService().DeleteTask(nullptr, &id, &opResult, nullptr);
+}
 
-   mActiveTasks.erase(materia::find_by_id(mActiveTasks, src));
+void StrategyModel::deleteGoal(const materia::Id& src)
+{
+   common::UniqueId id;
+   id.set_guid(src.getGuid());
+
+   common::OperationResultMessage opResult;
+   mService.getService().DeleteGoal(nullptr, &id, &opResult, nullptr);
+
+   mGoals.erase(materia::find_by_id(mGoals, src));
 }
 
 std::vector<StrategyModel::Task> StrategyModel::getActiveTasks()
 {
-   return mActiveTasks;
+   std::vector<StrategyModel::Task> result;
+
+   for(auto g : mGoals)
+   {
+      if(g.focused)
+      {
+         auto goalTasks = getGoalTasks(g.id);
+         result.insert(result.end(), goalTasks.begin(), goalTasks.end());
+      }
+   }
+
+   return result;
 }
 
 void StrategyModel::fetchGoals()
@@ -47,31 +65,13 @@ void StrategyModel::fetchGoals()
    for(auto g : result.items())
    {
       mGoals.push_back(
-         { 
-            g.common_props().id().guid(), 
-            g.common_props().name(),
-            g.common_props().notes(),
-            g.focused(),
-            g.achieved()
-         });
-
-      if(g.focused())
-      {
-         strategy::GoalItems result;
-
-         mService.getService().GetGoalItems(nullptr, &g.common_props().id(), &result, nullptr);
-
-         for(auto t : result.tasks())
-         {
-            mActiveTasks.push_back(
-               {
-                  t.common_props().id().guid(), 
-                  t.common_props().name(),
-                  t.common_props().notes(),
-                  t.parent_goal_id().guid()
-               });
-         }
-      }
+      { 
+         g.common_props().id().guid(), 
+         g.common_props().name(),
+         g.common_props().notes(),
+         g.focused(),
+         g.achieved()
+      });
    }
 }
 
@@ -121,4 +121,33 @@ void StrategyModel::modifyGoal(const Goal& goal)
 
       mService.getService().ModifyGoal(nullptr, &g, &op, nullptr);
    }
+}
+
+std::vector<StrategyModel::Task> StrategyModel::getGoalTasks(const materia::Id& id)
+{
+   std::vector<Task> result;
+
+   common::UniqueId in;
+   in.set_guid(id.getGuid());
+   strategy::GoalItems items;
+
+   mService.getService().GetGoalItems(nullptr, &in, &items, nullptr);
+
+   for(auto t : items.tasks())
+   {
+      result.push_back(
+         {
+            t.common_props().id().guid(), 
+            t.common_props().name(),
+            t.common_props().notes(),
+            t.parent_goal_id().guid()
+         });
+   }
+
+   //test only
+   result.push_back({id.getGuid() + "_1", "task1", "notes1", id});
+   result.push_back({id.getGuid() + "_2", "task2", "notes2", id});
+   result.push_back({id.getGuid() + "_3", "task3", "notes3", id});
+
+   return result;
 }
