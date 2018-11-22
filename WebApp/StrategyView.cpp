@@ -12,6 +12,7 @@
 #include "Wt/WTextArea.h"
 #include "Wt/WPaintedWidget.h"
 #include "Wt/WPainter.h"
+#include "Wt/WPopupMenu.h"
 
 class GoalEditDialog : public BasicDialog
 {
@@ -89,6 +90,30 @@ struct GoalViewCtrlConstructionParams
    bool isActiveSlot;
 };
 
+class TaskWidget : public Wt::WPaintedWidget
+{
+public:
+   TaskWidget(const StrategyModel::Task& t)
+   : mTask(t)
+   {
+      resize(32, 32);
+      setInline(true);
+      setMargin(5, Wt::Side::Left);
+      setToolTip(t.title);
+   }
+
+protected:
+   void paintEvent(Wt::WPaintDevice *paintDevice) 
+   {
+      Wt::WPainter painter(paintDevice);
+      painter.setBrush(Wt::WBrush(Wt::WColor(Wt::StandardColor::Magenta)));
+      painter.drawRect(0, 0, 32, 32);
+   }
+
+private:
+   StrategyModel::Task mTask;
+};
+
 template<bool isCompact>
 class GoalViewCtrl : public Wt::WContainerWidget, public IGoalViewCtrl
 {
@@ -109,6 +134,7 @@ public:
          addWidget(std::make_unique<Wt::WLabel>("<br></br>"));
 
          mTasks = new Wt::WContainerWidget();
+         addWidget(std::unique_ptr<Wt::WContainerWidget>(mTasks));
 
          mNotes = addWidget(std::make_unique<Wt::WLabel>(""));
          mNotes->setStyleClass("GoalViewCtrl_Notes");
@@ -220,7 +246,7 @@ private:
          mTasks->clear();
          for(auto t : mModel.getGoalTasks(mGoal->id))
          {
-            
+            mTasks->addWidget(std::make_unique<TaskWidget>(t));
          }
 
          mNotes->setText(mGoal->notes);
@@ -297,9 +323,14 @@ StrategyView::StrategyView(StrategyModel& strategy)
    setMargin(5);
 
    auto toolBar = addWidget(std::make_unique<Wt::WToolBar>());
+
+   auto popupPtr = std::make_unique<Wt::WPopupMenu>();
+   popupPtr->addItem("Goal")->triggered().connect(std::bind(&StrategyView::onAddGoalClick, this));
+   popupPtr->addItem("Task")->triggered().connect(std::bind(&StrategyView::onAddTaskClick, this));
+
    auto addBtn = std::make_unique<Wt::WPushButton>("Add");
    addBtn->setStyleClass("btn-primary");
-   addBtn->clicked().connect(std::bind(&StrategyView::onAddClick, this));
+   addBtn->setMenu(std::move(popupPtr));
    toolBar->addButton(std::move(addBtn));
 
    auto backlogBtn = std::make_unique<Wt::WPushButton>("Backlog");
@@ -315,7 +346,7 @@ StrategyView::StrategyView(StrategyModel& strategy)
    layGoals();
 }
 
-void StrategyView::onAddClick()
+void StrategyView::onAddGoalClick()
 {
    bool hasSlots = std::find_if(mGoalCtrls.begin(), mGoalCtrls.end(), [&](auto c)->bool {return c->isEmpty();})
       != mGoalCtrls.end();
@@ -340,6 +371,30 @@ void StrategyView::onAddClick()
       CommonDialogManager::showOneLineDialog("Please specify title", "Title", "", nextFunc);
    });
 }
+
+void StrategyView::onAddTaskClick()
+{
+   std::vector<std::string> choises;
+   for(auto g : mModel.getGoals())
+   {
+      choises.push_back(g.title);
+   }
+
+   CommonDialogManager::showChoiseDialog(choises, [=](auto selected) {
+      
+      std::function<void(std::string)> nextFunc = [=](std::string title){
+         auto item = mModel.addTask(title, mModel.getGoals()[selected].id);
+         
+         for(auto gc : mGoalCtrls)
+         {
+            //Update here
+         }
+      };
+
+      CommonDialogManager::showOneLineDialog("Please specify title", "Title", "", nextFunc);
+   });
+}
+
 
 void StrategyView::putGoal(const StrategyModel::Goal& goal)
 {

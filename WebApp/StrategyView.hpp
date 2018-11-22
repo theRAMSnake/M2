@@ -9,7 +9,8 @@ public:
    StrategyView(StrategyModel& strategy);
 
 private:
-   void onAddClick();
+   void onAddGoalClick();
+   void onAddTaskClick();
    void onBacklogClick();
    void layGoals();
    
