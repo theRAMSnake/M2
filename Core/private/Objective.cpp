@@ -1,7 +1,7 @@
 #include "Objective.hpp"
 #include "JsonSerializer.hpp"
 
-BIND_JSON7(materia::Objective, id, parentGoalId, name, notes, measurementId, expectedMeasurementValue, reached)
+BIND_JSON7(materia::Objective, id, parentGoalId, name, notes, resourceId, expectedResourceValue, reached)
 
 namespace materia
 {
@@ -33,20 +33,20 @@ const materia::Objective& Objective::getProps() const
     return mImpl;
 }
 
-void Objective::connect(Measurement& meas)
+void Objective::connect(Resource& res)
 {
     mMeasConnection.disconnect();
-    mMeasConnection = meas.OnValueChanged.connect(std::bind(&Objective::OnMeasValueChanged, this, std::placeholders::_1));
-    mLastKnowMeasValue = meas.getProps().value;
+    mMeasConnection = res.OnValueChanged.connect(std::bind(&Objective::OnMeasValueChanged, this, std::placeholders::_1));
+    mLastKnowMeasValue = res.getProps().value;
     if(updateReached(mImpl.reached))
     {
         OnChanged(*this);
     }
 }
 
-void Objective::disconnect(const Measurement& meas)
+void Objective::disconnect(const Resource& res)
 {
-    mImpl.measurementId = Id::Invalid;
+    mImpl.resourceId = Id::Invalid;
     mMeasConnection.disconnect();
 }
 
@@ -62,9 +62,9 @@ std::string Objective::toJson() const
 
 bool Objective::updateReached(const bool oldReached)
 {
-    if(mImpl.measurementId != Id::Invalid)
+    if(mImpl.resourceId != Id::Invalid)
     {
-        mImpl.reached = mLastKnowMeasValue >= mImpl.expectedMeasurementValue;
+        mImpl.reached = mLastKnowMeasValue >= mImpl.expectedResourceValue;
     }
     
     if(mImpl.reached != oldReached)
@@ -75,7 +75,7 @@ bool Objective::updateReached(const bool oldReached)
     return mImpl.reached != oldReached;
 }
 
-void Objective::OnMeasValueChanged(const Measurement::TValue value)
+void Objective::OnMeasValueChanged(const Resource::TValue value)
 {
     mLastKnowMeasValue = value;
     if(updateReached(mImpl.reached))

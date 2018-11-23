@@ -26,9 +26,9 @@ struct Goal : public StrategyItem
 struct Objective : public StrategyItem
 {
    bool reached;
-   Id measurementId;
+   Id resourceId;
    Id parentGoalId;
-   int expectedMeasurementValue;
+   int expectedResourceValue;
 
    bool operator == (const Objective& other) const;
    bool operator != (const Objective& other) const;
@@ -43,14 +43,14 @@ struct Task : public StrategyItem
    bool operator != (const Task& other) const;
 };
 
-struct Measurement
+struct Resource
 {
    Id id;
    std::string name;
    int value;
 
-   bool operator == (const Measurement& other) const;
-   bool operator != (const Measurement& other) const;
+   bool operator == (const Resource& other) const;
+   bool operator != (const Resource& other) const;
 };
 
 class IStrategy
@@ -72,10 +72,10 @@ public:
    virtual void modifyTask(const Task& task) = 0;
    virtual void deleteTask(const Id& id) = 0;
 
-   virtual Id addMeasurement(const Measurement& meas) = 0;
-   virtual void modifyMeasurement(const Measurement& meas) = 0;
-   virtual void deleteMeasurement(const Id& id) = 0;
-   virtual std::vector<Measurement> getMeasurements() = 0;
+   virtual Id addResource(const Resource& res) = 0;
+   virtual void modifyResource(const Resource& res) = 0;
+   virtual void deleteResource(const Id& id) = 0;
+   virtual std::vector<Resource> getResources() = 0;
 
    virtual ~IStrategy(){}
 };

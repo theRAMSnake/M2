@@ -28,26 +28,26 @@ Objective fromProto(const strategy::Objective& x)
    Objective result;
 
    static_cast<StrategyItem&>(result) = fromProto(x.common_props());
-   result.expectedMeasurementValue = x.expectedtreshold();
-   result.measurementId = fromProto(x.meas_id());
+   result.expectedResourceValue = x.expectedtreshold();
+   result.resourceId = fromProto(x.res_id());
    result.parentGoalId = fromProto(x.parent_goal_id());
    result.reached = x.reached();
 
    return result;
 }
 
-Measurement fromProto(const strategy::Measurement& x)
+Resource fromProto(const strategy::Resource& x)
 {
    return {fromProto(x.id()), x.name(), x.value()};
 }
 
-strategy::Measurement toProto(const Measurement& meas)
+strategy::Resource toProto(const Resource& res)
 {
-   strategy::Measurement result;
+   strategy::Resource result;
 
-   result.mutable_id()->CopyFrom(toProto(meas.id));
-   result.set_name(meas.name);
-   result.set_value(meas.value);
+   result.mutable_id()->CopyFrom(toProto(res.id));
+   result.set_name(res.name);
+   result.set_value(res.value);
 
    return result;
 }
@@ -92,8 +92,8 @@ strategy::Objective toProto(const Objective& x)
    result.mutable_common_props()->CopyFrom(toProto(static_cast<const StrategyItem&>(x)));
    result.mutable_parent_goal_id()->CopyFrom(toProto(x.parentGoalId));
    result.set_reached(x.reached);
-   result.mutable_meas_id()->CopyFrom(toProto(x.measurementId));
-   result.set_expectedtreshold(x.expectedMeasurementValue);
+   result.mutable_res_id()->CopyFrom(toProto(x.resourceId));
+   result.set_expectedtreshold(x.expectedResourceValue);
 
    return result;
 }
@@ -224,7 +224,7 @@ public:
                        ::strategy::GoalItems* response,
                        ::google::protobuf::Closure* done)
    {
-      auto [os, ts] = mStrategy.getGoalItems(fromProto(*request));
+      auto [ts, os] = mStrategy.getGoalItems(fromProto(*request));
       for(auto x : os)
       {
          response->add_objectives()->CopyFrom(toProto(x));
@@ -235,38 +235,38 @@ public:
       }
    }
 
-   virtual void AddMeasurement(::google::protobuf::RpcController* controller,
-                       const ::strategy::Measurement* request,
+   virtual void AddResource(::google::protobuf::RpcController* controller,
+                       const ::strategy::Resource* request,
                        ::common::UniqueId* response,
                        ::google::protobuf::Closure* done)
    {
-      response->CopyFrom(toProto(mStrategy.addMeasurement(fromProto(*request))));
+      response->CopyFrom(toProto(mStrategy.addResource(fromProto(*request))));
    }
 
-   virtual void ModifyMeasurement(::google::protobuf::RpcController* controller,
-                       const ::strategy::Measurement* request,
+   virtual void ModifyResource(::google::protobuf::RpcController* controller,
+                       const ::strategy::Resource* request,
                        ::common::OperationResultMessage* response,
                        ::google::protobuf::Closure* done)
    {
-      mStrategy.modifyMeasurement(fromProto(*request));
+      mStrategy.modifyResource(fromProto(*request));
       response->set_success(true);
    }
 
-   virtual void DeleteMeasurement(::google::protobuf::RpcController* controller,
+   virtual void DeleteResource(::google::protobuf::RpcController* controller,
                        const ::common::UniqueId* request,
                        ::common::OperationResultMessage* response,
                        ::google::protobuf::Closure* done)
    {
-      mStrategy.deleteMeasurement(fromProto(*request));
+      mStrategy.deleteResource(fromProto(*request));
       response->set_success(true);
    }
 
-   virtual void GetMeasurements(::google::protobuf::RpcController* controller,
+   virtual void GetResources(::google::protobuf::RpcController* controller,
                        const ::common::EmptyMessage* request,
-                       ::strategy::Measurements* response,
+                       ::strategy::Resources* response,
                        ::google::protobuf::Closure* done)
    {
-      for(auto x : mStrategy.getMeasurements())
+      for(auto x : mStrategy.getResources())
       {
          response->add_items()->CopyFrom(toProto(x));
       }

@@ -11,8 +11,10 @@ public:
 private:
    void onAddGoalClick();
    void onAddTaskClick();
+   void onAddResourceClick();
    void onBacklogClick();
    void layGoals();
+   void fillResources(Wt::WToolBar& toolbar);
    
    void putGoal(const StrategyModel::Goal& goal);
 

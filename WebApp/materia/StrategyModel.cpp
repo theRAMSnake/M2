@@ -123,6 +123,19 @@ void StrategyModel::modifyGoal(const Goal& goal)
    }
 }
 
+StrategyModel::Task StrategyModel::addTask(const std::string& title, const materia::Id& parentGoalId)
+{
+   common::UniqueId id;
+   strategy::Task t;
+
+   t.mutable_common_props()->set_name(title);
+   t.mutable_parent_goal_id()->set_guid(parentGoalId.getGuid());
+
+   mService.getService().AddTask(nullptr, &t, &id, nullptr);
+   
+   return StrategyModel::Task {id.guid(), title, "", parentGoalId};
+}
+
 std::vector<StrategyModel::Task> StrategyModel::getGoalTasks(const materia::Id& id)
 {
    std::vector<Task> result;
@@ -144,10 +157,27 @@ std::vector<StrategyModel::Task> StrategyModel::getGoalTasks(const materia::Id& 
          });
    }
 
-   //test only
-   result.push_back({id.getGuid() + "_1", "task1", "notes1", id});
-   result.push_back({id.getGuid() + "_2", "task2", "notes2", id});
-   result.push_back({id.getGuid() + "_3", "task3", "notes3", id});
+   return result;
+}
+
+std::vector<StrategyModel::Resource> StrategyModel::getResources()
+{
+   std::vector<Resource> result;
+
+   common::EmptyMessage e;
+   strategy::Resources res;
+
+   mService.getService().GetResources(nullptr, &e, &res, nullptr);
+
+   for(auto r : res.items())
+   {
+      result.push_back(Resource{r.id().guid(), r.name(), r.value()});
+   }
+
+   //test
+   result.push_back({materia::Id("id1"), "name1", 5});
+   result.push_back({materia::Id("id2"), "name2", 7});
+   result.push_back({materia::Id("id3"), "name3", 3});
 
    return result;
 }

@@ -22,7 +22,7 @@ struct EventProperties<materia::EventType::GoalUpdated>
 };
 
 template<>
-struct EventProperties<materia::EventType::MeasurementUpdated>
+struct EventProperties<materia::EventType::ResourceUpdated>
 {
    typedef materia::Id Value;
 };

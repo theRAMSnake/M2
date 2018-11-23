@@ -7,6 +7,7 @@
 #include <Wt/WTextArea.h>
 #include <Wt/WButtonGroup.h>
 #include <Wt/WRadioButton.h>
+#include <Wt/WComboBox.h>
 #include <boost/range/algorithm/find.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -170,27 +171,51 @@ void CommonDialogManager::showChoiseDialog(const std::vector<std::string>& optio
 {
     Wt::WDialog* dialog = createDialogBase("");
 
-    auto group = std::make_shared<Wt::WButtonGroup>();
-
-    for(std::size_t i = 0; i < options.size(); ++i)
+    if(options.size() < 8)
     {
-        Wt::WRadioButton *button = dialog->contents()->addWidget(std::make_unique<Wt::WRadioButton>(options[i]));
-        button->setInline(false);
-        group->addButton(button, i);
-    }
+        auto group = std::make_shared<Wt::WButtonGroup>();
 
-    group->setSelectedButtonIndex(0);
-
-    dialog->finished().connect(std::bind([=]() {
-
-        if (dialog->result() == Wt::DialogCode::Accepted)
+        for(std::size_t i = 0; i < options.size(); ++i)
         {
-            callback(static_cast<std::size_t>(group->selectedButtonIndex()));
+            Wt::WRadioButton *button = dialog->contents()->addWidget(std::make_unique<Wt::WRadioButton>(options[i]));
+            button->setInline(false);
+            group->addButton(button, i);
         }
-        
-        delete dialog;
+
+        group->setSelectedButtonIndex(0);
+
+        dialog->finished().connect(std::bind([=]() {
+
+            if (dialog->result() == Wt::DialogCode::Accepted)
+            {
+                callback(static_cast<std::size_t>(group->selectedButtonIndex()));
+            }
+            
+            delete dialog;
 
         }));
+    }
+    else
+    {
+        auto cmb = dialog->contents()->addWidget(std::make_unique<Wt::WComboBox>());
+        for(auto x : options)
+        {
+            cmb->addItem(x);
+        }
+
+        cmb->setCurrentIndex(0);
+
+        dialog->finished().connect(std::bind([=]() {
+
+            if (dialog->result() == Wt::DialogCode::Accepted)
+            {
+                callback(cmb->currentIndex());
+            }
+            
+            delete dialog;
+
+        }));
+    }
 
     dialog->show();
 }

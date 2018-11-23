@@ -1,4 +1,5 @@
 #include "Strategy.hpp"
+#include "Logger.hpp"
 #include <boost/signals2/signal.hpp>
 #include "JsonSerializer.hpp"
 
@@ -11,18 +12,18 @@ Strategy::Strategy(Database& db)
 : mGoalsStorage(db.getTable("goals"))
 , mTasksStorage(db.getTable("tasks"))
 , mObjectivesStorage(db.getTable("objectives"))
-, mMeasurementsStorage(db.getTable("measurements"))
+, mResourcesStorage(db.getTable("resources"))
 {
    loadCollection(*mGoalsStorage, mGoals);
    loadCollection(*mObjectivesStorage, mObjectives);
-   loadCollection(*mMeasurementsStorage, mMeasurements);
+   loadCollection(*mResourcesStorage, mResources);
 
    mTasksStorage->foreach([&](std::string id, std::string json) 
    {
       mTasks.insert({id, readJson<materia::Task>(json)});
    });
 
-   connectMeasurementsWithObjectives();
+   connectResourcesWithObjectives();
    connectObjectivesWithGoals();
 }
 
@@ -118,6 +119,8 @@ std::tuple<std::vector<Task>, std::vector<Objective>> Strategy::getGoalItems(con
         }
     }
 
+    LOG("Fetched tasks for goal: " + id.getGuid() + ", " + std::to_string(tasks.size()));
+
     return {tasks, objs};
 }
 
@@ -133,12 +136,12 @@ Id Strategy::addObjective(const Objective& obj)
         std::shared_ptr<strategy::Objective> newObjective(new strategy::Objective(o));
         newObjective->OnChanged.connect(std::bind(&Strategy::saveItem<strategy::Objective>, this, std::placeholders::_1));
 
-        if(o.measurementId != Id::Invalid)
+        if(o.resourceId != Id::Invalid)
         {
-            auto measPos = mMeasurements.find(o.measurementId);
-            if(measPos != mMeasurements.end())
+            auto resPos = mResources.find(o.resourceId);
+            if(resPos != mResources.end())
             {
-                newObjective->connect(*measPos->second);
+                newObjective->connect(*resPos->second);
             }
             else
             {
@@ -167,16 +170,16 @@ void Strategy::modifyObjective(const Objective& obj)
 
         if(newParent != mGoals.end())
         {
-            if(obj.measurementId != Id::Invalid)
+            if(obj.resourceId != Id::Invalid)
             {
-                auto meas = mMeasurements.find(obj.measurementId);
-                if(meas == mMeasurements.end())
+                auto res = mResources.find(obj.resourceId);
+                if(res == mResources.end())
                 {
                     //LOG;
                 }
                 else
                 {
-                    oldObj->second->connect(*meas->second);
+                    oldObj->second->connect(*res->second);
                 }
             }
 
@@ -242,52 +245,52 @@ void Strategy::deleteTask(const Id& id)
    }
 }
 
-Id Strategy::addMeasurement(const Measurement& meas)
+Id Strategy::addResource(const Resource& res)
 {
-    auto m = meas;
+    auto m = res;
     m.id = Id::generate();
 
-    std::shared_ptr<strategy::Measurement> newMeas(new strategy::Measurement(m));
+    std::shared_ptr<strategy::Resource> newMeas(new strategy::Resource(m));
 
-    mMeasurements.insert(std::make_pair(m.id, newMeas));
-    newMeas->OnChanged.connect(std::bind(&Strategy::saveItem<strategy::Measurement>, this, std::placeholders::_1));
+    mResources.insert(std::make_pair(m.id, newMeas));
+    newMeas->OnChanged.connect(std::bind(&Strategy::saveItem<strategy::Resource>, this, std::placeholders::_1));
     saveItem(*newMeas);
 
     return m.id;
 }
 
-void Strategy::modifyMeasurement(const Measurement& meas)
+void Strategy::modifyResource(const Resource& res)
 {
-    auto pos = mMeasurements.find(meas.id);
-    if(pos != mMeasurements.end())
+    auto pos = mResources.find(res.id);
+    if(pos != mResources.end())
     {
-        pos->second->accept(meas);
+        pos->second->accept(res);
     }
 }
 
-void Strategy::deleteMeasurement(const Id& id)
+void Strategy::deleteResource(const Id& id)
 {
-    auto meas = mMeasurements.find(id);
-    if(meas != mMeasurements.end())
+    auto res = mResources.find(id);
+    if(res != mResources.end())
     {
         for(auto o : mObjectives)
         {
-            if(o.second->getProps().measurementId == id)
+            if(o.second->getProps().resourceId == id)
             {
-                o.second->disconnect(*meas->second);
+                o.second->disconnect(*res->second);
             }
         }
 
-        mMeasurements.erase(id);
-        mMeasurementsStorage->erase(id);
+        mResources.erase(id);
+        mResourcesStorage->erase(id);
     }
 }
 
-std::vector<Measurement> Strategy::getMeasurements()
+std::vector<Resource> Strategy::getResources()
 {
-    std::vector<Measurement> result;
+    std::vector<Resource> result;
 
-    for(auto x : mMeasurements)
+    for(auto x : mResources)
     {
         result.push_back(x.second->getProps());
     }
@@ -295,17 +298,17 @@ std::vector<Measurement> Strategy::getMeasurements()
     return result;
 }
 
-void Strategy::connectMeasurementsWithObjectives()
+void Strategy::connectResourcesWithObjectives()
 {
     for(auto o : mObjectives)
     {
-        auto measId = o.second->getProps().measurementId;
-        if(measId != Id::Invalid)
+        auto resId = o.second->getProps().resourceId;
+        if(resId != Id::Invalid)
         {
-            auto measurement = mMeasurements.find(measId);
-            if(measurement != mMeasurements.end())
+            auto resource = mResources.find(resId);
+            if(resource != mResources.end())
             {
-                o.second->connect(*measurement->second);
+                o.second->connect(*resource->second);
             }
         }
     }
@@ -359,22 +362,22 @@ bool Objective::operator == (const Objective& other) const
       && name == other.name
       && notes == other.notes
       && reached == other.reached
-      && measurementId == other.measurementId
-      && expectedMeasurementValue == other.expectedMeasurementValue;
+      && resourceId == other.resourceId
+      && expectedResourceValue == other.expectedResourceValue;
 }
 bool Objective::operator != (const Objective& other) const
 {
    return !operator==(other);
 }
 
-bool Measurement::operator == (const Measurement& other) const
+bool Resource::operator == (const Resource& other) const
 {
    return id == other.id
       && name == other.name
       && value == other.value;
 }
 
-bool Measurement::operator != (const Measurement& other) const
+bool Resource::operator != (const Resource& other) const
 {
    return !operator==(other);
 }
@@ -392,9 +395,9 @@ DatabaseTable& Strategy::getStorage<strategy::Objective>()
 }
 
 template<>
-DatabaseTable& Strategy::getStorage<strategy::Measurement>()
+DatabaseTable& Strategy::getStorage<strategy::Resource>()
 {
-    return *mMeasurementsStorage;
+    return *mResourcesStorage;
 }
 
 }

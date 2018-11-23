@@ -958,13 +958,6 @@ body.Wt-rtl .Wt-treeview .Wt-ctrl.noexpand {
   position: relative;
 }
 /*
- * WToolBar
- */
-.btn-toolbar * {
-  font-size: 14px;
-  background-color: #006dcc;
-}
-/*
  * WCalendar
  */
 .Wt-calendar .form-control {

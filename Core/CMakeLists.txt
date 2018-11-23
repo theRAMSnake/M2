@@ -14,7 +14,7 @@ private/Inbox.cpp
 private/Journal.cpp
 private/Strategy.cpp
 private/Goal.cpp
-private/Measurement.cpp
+private/Resource.cpp
 private/Objective.cpp
 private/Logger.cpp
 private/JsonSerializer.cpp

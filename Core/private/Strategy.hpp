@@ -28,10 +28,10 @@ public:
    void modifyTask(const Task& task) override;
    void deleteTask(const Id& id) override;
 
-   Id addMeasurement(const Measurement& meas) override;
-   void modifyMeasurement(const Measurement& meas) override;
-   void deleteMeasurement(const Id& id) override;
-   std::vector<Measurement> getMeasurements() override;
+   Id addResource(const Resource& res) override;
+   void modifyResource(const Resource& res) override;
+   void deleteResource(const Id& id) override;
+   std::vector<Resource> getResources() override;
 
 private:
    template<class T>
@@ -45,7 +45,7 @@ private:
       });
    }
 
-   void connectMeasurementsWithObjectives();
+   void connectResourcesWithObjectives();
    void connectObjectivesWithGoals();
 
    template<class T>
@@ -64,12 +64,12 @@ private:
    std::unique_ptr<DatabaseTable> mGoalsStorage;
    std::unique_ptr<DatabaseTable> mTasksStorage;
    std::unique_ptr<DatabaseTable> mObjectivesStorage;
-   std::unique_ptr<DatabaseTable> mMeasurementsStorage;
+   std::unique_ptr<DatabaseTable> mResourcesStorage;
 
    std::map<Id, std::shared_ptr<strategy::Goal>> mGoals;
    std::map<Id, Task> mTasks;
    std::map<Id, std::shared_ptr<strategy::Objective>> mObjectives;
-   std::map<Id, std::shared_ptr<strategy::Measurement>> mMeasurements; 
+   std::map<Id, std::shared_ptr<strategy::Resource>> mResources; 
 };
 
 }

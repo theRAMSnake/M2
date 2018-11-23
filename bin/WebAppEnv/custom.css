@@ -53,3 +53,30 @@
   user-select: none;
   -moz-user-select: none;
 }
+
+.ResourceViewCtrl {
+  display: inline;
+  margin-left: 5px; 
+}
+
+.ResourceViewCtrlText {
+  margin-left: 15px;
+  font-size: 24px;
+  color: grey;
+  user-select: none;
+  -moz-user-select: none;
+}
+
+.ResourceViewCtrlValue {
+  margin-left: 5px;
+  display: inline-block;
+  border-style: solid;
+  border-width: 1px;
+  border-color: black;
+  width: 50px;
+  text-align: center;
+  font-size: 24px;
+  background-color: rgb(242, 255, 208); 
+  user-select: none;
+  -moz-user-select: none;
+}

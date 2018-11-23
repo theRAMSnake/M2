@@ -1,6 +1,7 @@
 #include "StrategyView.hpp"
 #include "CommonDialogManager.hpp"
 #include "TemplateBuilder.hpp"
+#include "TaskEditDialog.hpp"
 #include "Wt/WToolBar.h"
 #include "Wt/WPushButton.h"
 #include "Wt/WLabel.h"
@@ -56,7 +57,9 @@ class IGoalViewCtrl
 public:
    virtual bool isEmpty() const = 0;
    virtual void attach(const StrategyModel::Goal& goal) = 0;
+   virtual void addTask(const StrategyModel::Task& task) = 0;
    virtual std::optional<StrategyModel::Goal> detach() = 0;
+   virtual const StrategyModel::Goal& getGoal() const = 0;
 
    virtual ~IGoalViewCtrl() {}
 };
@@ -102,6 +105,12 @@ public:
       setToolTip(t.title);
    }
 
+   void setTask(const StrategyModel::Task& t)
+   {
+      mTask = t;
+      setToolTip(t.title);
+   }
+
 protected:
    void paintEvent(Wt::WPaintDevice *paintDevice) 
    {
@@ -127,7 +136,7 @@ public:
       mName = addWidget(std::make_unique<Wt::WLabel>(""));
       mName->setStyleClass("GoalViewCtrl_Text");
       setAttributeValue("oncontextmenu", "event.cancelBubble = true; event.returnValue = false; return false;");
-      mouseWentDown().connect(this, &GoalViewCtrl<isCompact>::onBoundClicked);
+      mName->mouseWentDown().connect(this, &GoalViewCtrl<isCompact>::onBoundClicked);
 
       if(!isCompact)
       {
@@ -171,6 +180,11 @@ public:
       return !mGoal;
    }
 
+   const StrategyModel::Goal& getGoal() const override
+   {
+      return *mGoal;
+   }
+
    void attach(const StrategyModel::Goal& goal) override
    {
       setStyleClass(GoalViewCtrlTraits<isCompact>::nonemptyStyleClass);
@@ -183,6 +197,14 @@ public:
       {
          mGoal->focused = mIsActiveSlot;
          doModifyGoal(*mGoal);
+      }
+   }
+
+   void addTask(const StrategyModel::Task& task) override
+   {
+      if(mGoal)
+      {
+         addTaskWidget(task);
       }
    }
 
@@ -246,11 +268,55 @@ private:
          mTasks->clear();
          for(auto t : mModel.getGoalTasks(mGoal->id))
          {
-            mTasks->addWidget(std::make_unique<TaskWidget>(t));
+            addTaskWidget(t);
          }
 
          mNotes->setText(mGoal->notes);
       }
+   }
+
+   void addTaskWidget(const StrategyModel::Task& t)
+   {
+      auto w = mTasks->addWidget(std::make_unique<TaskWidget>(t));
+      auto b = std::bind(&GoalViewCtrl<isCompact>::onTaskWidgetClicked, this, w, t, std::placeholders::_1);
+
+      w->mouseWentDown().connect(b);
+   }
+
+   void onTaskWidgetClicked(TaskWidget* w, const StrategyModel::Task t, Wt::WMouseEvent event)
+   {
+      if(event.button() == Wt::MouseButton::Right)
+      {
+         if(event.modifiers().test(Wt::KeyboardModifier::Control))
+         {
+            std::function<void()> elementDeletedFunc = [=] () {
+               mModel.deleteTask(t.id);
+               mTasks->removeChild(w);
+            };
+
+            CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
+         }
+         else
+         {
+            auto dlg = new TaskEditDialog(
+               t.title,
+               t.notes,
+               std::bind(&GoalViewCtrl<isCompact>::onTaskEditDialogOk, this, std::placeholders::_1, std::placeholders::_2, t, w));
+            dlg->show();
+         }
+      }
+   }
+
+   void onTaskEditDialogOk(const std::string& title, const std::string& notes, const StrategyModel::Task src, TaskWidget* w)
+   {
+      auto newTask = src;
+
+      newTask.title = title;
+      newTask.notes = notes;
+
+      w->setTask(newTask);
+
+      mModel.modifyTask(newTask);
    }
 
    static constexpr char MY_MIME_TYPE[] = "GoalViewCtrl";
@@ -315,6 +381,26 @@ private:
    StrategyModel& mModel;
 };
 
+class ResourceViewCtrl : public Wt::WContainerWidget
+{
+public:
+   ResourceViewCtrl(const StrategyModel::Resource& r)
+   : mResource(r)
+   {
+      /*auto text = */addWidget(std::make_unique<Wt::WLabel>(r.name))->setStyleClass("ResourceViewCtrlText");
+      auto valueText = std::to_string(r.value);
+      /*auto value = */addWidget(std::make_unique<Wt::WLabel>(valueText))->setStyleClass("ResourceViewCtrlValue");
+   }
+
+   void updateStyle()
+   {
+      setStyleClass("ResourceViewCtrl");
+   }
+
+private:
+   StrategyModel::Resource mResource;
+};
+
 //------------------------------------------------------------------------------------------------------------
 
 StrategyView::StrategyView(StrategyModel& strategy)
@@ -327,6 +413,7 @@ StrategyView::StrategyView(StrategyModel& strategy)
    auto popupPtr = std::make_unique<Wt::WPopupMenu>();
    popupPtr->addItem("Goal")->triggered().connect(std::bind(&StrategyView::onAddGoalClick, this));
    popupPtr->addItem("Task")->triggered().connect(std::bind(&StrategyView::onAddTaskClick, this));
+   popupPtr->addItem("Resource")->triggered().connect(std::bind(&StrategyView::onAddResourceClick, this));
 
    auto addBtn = std::make_unique<Wt::WPushButton>("Add");
    addBtn->setStyleClass("btn-primary");
@@ -344,6 +431,17 @@ StrategyView::StrategyView(StrategyModel& strategy)
    addWidget(std::unique_ptr<Wt::WWidget>(temp));
 
    layGoals();
+   fillResources(*toolBar);
+}
+
+void StrategyView::fillResources(Wt::WToolBar& toolbar)
+{
+   toolbar.addSeparator();
+
+   for(auto r : mModel.getResources())
+   {
+      toolbar.addWidget(std::make_unique<ResourceViewCtrl>(r), Wt::AlignmentFlag::Right);
+   }
 }
 
 void StrategyView::onAddGoalClick()
@@ -372,6 +470,17 @@ void StrategyView::onAddGoalClick()
    });
 }
 
+void StrategyView::onAddResourceClick()
+{     
+   std::function<void(std::string)> nextFunc = [=](std::string name){
+      //auto item = mModel.addResource(name);
+      
+      
+   };
+
+   CommonDialogManager::showOneLineDialog("Please specify name", "Name", "", nextFunc);
+}
+
 void StrategyView::onAddTaskClick()
 {
    std::vector<std::string> choises;
@@ -387,7 +496,11 @@ void StrategyView::onAddTaskClick()
          
          for(auto gc : mGoalCtrls)
          {
-            //Update here
+            if(!gc->isEmpty() && gc->getGoal().id == mModel.getGoals()[selected].id)
+            {
+               gc->addTask(item);
+               break;
+            }
          }
       };
 

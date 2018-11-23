@@ -27,6 +27,14 @@ public:
       bool achieved;
    };
 
+   struct Resource
+   {
+      materia::Id id;
+      std::string name;
+      int value;
+   };
+
+   Task addTask(const std::string& title, const materia::Id& parentGoalId);
    void modifyTask(const Task& task);
    void deleteTask(const materia::Id& id);
    std::vector<Task> getActiveTasks();
@@ -36,6 +44,8 @@ public:
    void modifyGoal(const Goal& goal);
    void deleteGoal(const materia::Id& id);
    std::vector<Task> getGoalTasks(const materia::Id& id);
+
+   std::vector<Resource> getResources();
 
 private:
    void fetchGoals();

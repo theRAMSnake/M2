@@ -10,13 +10,13 @@ package strategy;
 
 Goal : Item {affinities, focused, achieved} => add/delete/modify (changing of focused -> add/delete corresponding action/calendar items)
 
-Objective : Item {reached, measId.value}} => add/delete/modify
+Objective : Item {reached, resId.value}} => add/delete/modify
 
 Task : Item {done, actionReference, calendarItemReference, count} => add/delete/modify (if parent goal is focused -> add/delete/modify corresponding action/calendar items)
 
  
 
-Measurement : {id, name, iconId, value | Func(containerId)} => add/delete/modify (modify -> recalculate all related objectives) + (container changed event (listen every 5 min) -> recalculate)
+Resource : {id, name, iconId, value | Func(containerId)} => add/delete/modify (modify -> recalculate all related objectives) + (container changed event (listen every 5 min) -> recalculate)
 
 Events
 */
@@ -45,7 +45,7 @@ message Objective
    CommonItemProperties common_props = 1;
    common.UniqueId parent_goal_id = 2;
    bool reached = 3;
-   common.UniqueId meas_id = 4;
+   common.UniqueId res_id = 4;
    int32 expectedtreshold = 5;
 }
 
@@ -62,7 +62,7 @@ message GoalItems
    repeated Task tasks = 2;
 }
 
-message Measurement
+message Resource
 {
    common.UniqueId id = 1;
    string name = 2;
@@ -70,9 +70,9 @@ message Measurement
    int32 value = 4;
 }
 
-message Measurements
+message Resources
 {
-   repeated Measurement items = 1;
+   repeated Resource items = 1;
 }
 
 service StrategyService 
@@ -94,8 +94,8 @@ service StrategyService
 
    rpc GetGoalItems (common.UniqueId) returns (GoalItems);
 
-   rpc AddMeasurement (Measurement) returns (common.UniqueId);
-   rpc ModifyMeasurement (Measurement) returns (common.OperationResultMessage);
-   rpc DeleteMeasurement (common.UniqueId) returns (common.OperationResultMessage);
-   rpc GetMeasurements (common.EmptyMessage) returns (Measurements);;
+   rpc AddResource (Resource) returns (common.UniqueId);
+   rpc ModifyResource (Resource) returns (common.OperationResultMessage);
+   rpc DeleteResource (common.UniqueId) returns (common.OperationResultMessage);
+   rpc GetResources (common.EmptyMessage) returns (Resources);;
 }

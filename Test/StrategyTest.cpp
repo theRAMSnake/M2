@@ -25,12 +25,12 @@ namespace std
    std::ostream& operator << (std::ostream& str, const materia::Objective& o)
    {
       str << "[" << o.id << ", " << o.parentGoalId << ", " 
-         << o.name << ", " << o.notes << ", " << o.reached << ", " << o.measurementId <<
-         ", " << o.expectedMeasurementValue << "]";
+         << o.name << ", " << o.notes << ", " << o.reached << ", " << o.resourceId <<
+         ", " << o.expectedResourceValue << "]";
       return str;
    }
 
-   std::ostream& operator << (std::ostream& str, const materia::Measurement& m)
+   std::ostream& operator << (std::ostream& str, const materia::Resource& m)
    {
       str << "[" << m.id << ", " << m.value << ", " 
          << m.name << "]";
@@ -69,15 +69,15 @@ public:
       mCore = materia::createCore({"Test.db"});
       mStrategy = &mCore->getStrategy();
 
-      //Test data - 4 gls (2, 3, 2 subgoals)(0, 0)(7, 0)(0, 9), 3 affinities, 3 measurements (value, func)
+      //Test data - 4 gls (2, 3, 2 subgoals)(0, 0)(7, 0)(0, 9), 3 affinities, 3 resources (value, func)
       {
-         materia::Measurement meas = {
+         materia::Resource res = {
             materia::Id::Invalid, 
-            "meas_value_inside", 
+            "res_value_inside", 
             0};
 
-         meas.id = mStrategy->addMeasurement(meas);
-         mMeasurements.push_back(meas);
+         res.id = mStrategy->addResource(res);
+         mResources.push_back(res);
       }
       
       {
@@ -184,18 +184,18 @@ protected:
       }
    }
 
-   std::optional<materia::Measurement> getMeasurement(const materia::Id& id)
+   std::optional<materia::Resource> getResource(const materia::Id& id)
    {
-      auto meases = mStrategy->getMeasurements();
-      auto iter = materia::find_by_id(meases, id);
+      auto reses = mStrategy->getResources();
+      auto iter = materia::find_by_id(reses, id);
 
-      if(iter != meases.end())
+      if(iter != reses.end())
       {
          return *iter;
       }
       else
       {
-         return std::optional<materia::Measurement>();
+         return std::optional<materia::Resource>();
       }
    }
 
@@ -205,7 +205,7 @@ protected:
    std::vector<materia::Goal> mGoals;
    std::map<materia::Id, std::vector<materia::Task>> mTasksOfGoals;
    std::map<materia::Id, std::vector<materia::Objective>> mObjectivesOfGoals;
-   std::vector<materia::Measurement> mMeasurements;
+   std::vector<materia::Resource> mResources;
 };
 
 BOOST_FIXTURE_TEST_CASE( ModifyGoal_Unchangable_Id, StrategyTest )  
@@ -330,14 +330,14 @@ BOOST_FIXTURE_TEST_CASE( ModifyObjective, StrategyTest )
    BOOST_CHECK(findObjectiveInGoalItems(o.id, mGoals[0].id)->notes == newNotes);
 }
 
-BOOST_FIXTURE_TEST_CASE( ModifyObjective_Measurements_Already_Achieved, StrategyTest )  
+BOOST_FIXTURE_TEST_CASE( ModifyObjective_Resources_Already_Achieved, StrategyTest )  
 {
    materia::Objective o = mObjectivesOfGoals[mGoals[0].id][0];
-   mMeasurements[0].value = 5;
-   mStrategy->modifyMeasurement(mMeasurements[0]);
+   mResources[0].value = 5;
+   mStrategy->modifyResource(mResources[0]);
 
-   o.measurementId = mMeasurements[0].id;
-   o.expectedMeasurementValue = 4;
+   o.resourceId = mResources[0].id;
+   o.expectedResourceValue = 4;
 
    mStrategy->modifyObjective(o);
 
@@ -347,12 +347,12 @@ BOOST_FIXTURE_TEST_CASE( ModifyObjective_Measurements_Already_Achieved, Strategy
    BOOST_CHECK(findObjectiveInGoalItems(o.id, g.id)->reached);
 }
 
-BOOST_FIXTURE_TEST_CASE( ModifyObjective_Measurements_Achieved_After_Change, StrategyTest )  
+BOOST_FIXTURE_TEST_CASE( ModifyObjective_Resources_Achieved_After_Change, StrategyTest )  
 {
    materia::Objective o = mObjectivesOfGoals[mGoals[0].id][0];
    
-   o.measurementId = mMeasurements[0].id;
-   o.expectedMeasurementValue = 4;
+   o.resourceId = mResources[0].id;
+   o.expectedResourceValue = 4;
 
    mStrategy->modifyObjective(o);
 
@@ -361,8 +361,8 @@ BOOST_FIXTURE_TEST_CASE( ModifyObjective_Measurements_Achieved_After_Change, Str
 
    BOOST_CHECK(!findObjectiveInGoalItems(o.id, g.id)->reached);
 
-   mMeasurements[0].value = 5;
-   mStrategy->modifyMeasurement(mMeasurements[0]);
+   mResources[0].value = 5;
+   mStrategy->modifyResource(mResources[0]);
 
    g = *getGoal(mGoals[0].id);
    BOOST_CHECK(g.achieved);
@@ -370,12 +370,12 @@ BOOST_FIXTURE_TEST_CASE( ModifyObjective_Measurements_Achieved_After_Change, Str
    BOOST_CHECK(findObjectiveInGoalItems(o.id, g.id)->reached);
 }
 
-BOOST_FIXTURE_TEST_CASE( ModifyObjective_Measurements_NotAchieved_After_Change, StrategyTest )  
+BOOST_FIXTURE_TEST_CASE( ModifyObjective_Resources_NotAchieved_After_Change, StrategyTest )  
 {
    materia::Objective o = mObjectivesOfGoals[mGoals[0].id][0];
    
-   o.measurementId = mMeasurements[0].id;
-   o.expectedMeasurementValue = 4;
+   o.resourceId = mResources[0].id;
+   o.expectedResourceValue = 4;
 
    mStrategy->modifyObjective(o);
 
@@ -384,8 +384,8 @@ BOOST_FIXTURE_TEST_CASE( ModifyObjective_Measurements_NotAchieved_After_Change, 
 
    BOOST_CHECK(!findObjectiveInGoalItems(o.id, g.id)->reached);
 
-   mMeasurements[0].value = 3;
-   mStrategy->modifyMeasurement(mMeasurements[0]);
+   mResources[0].value = 3;
+   mStrategy->modifyResource(mResources[0]);
 
    g = *getGoal(g.id);
    BOOST_CHECK(!g.achieved);
@@ -522,45 +522,45 @@ BOOST_FIXTURE_TEST_CASE( GetGoalItems, StrategyTest )
    }
 }
 
-BOOST_FIXTURE_TEST_CASE( AddMeasurement, StrategyTest )  
+BOOST_FIXTURE_TEST_CASE( AddResource, StrategyTest )  
 {
-   materia::Measurement meas = {
+   materia::Resource res = {
       materia::Id::Invalid, 
-      "meas_value_inside",
+      "res_value_inside",
       0};
 
-   meas.id = mStrategy->addMeasurement(meas);
-   BOOST_CHECK(materia::Id::Invalid != meas.id);
+   res.id = mStrategy->addResource(res);
+   BOOST_CHECK(materia::Id::Invalid != res.id);
 }
 
-BOOST_FIXTURE_TEST_CASE( ModifyMeasurement, StrategyTest )  
+BOOST_FIXTURE_TEST_CASE( ModifyResource, StrategyTest )  
 {
    auto newName = "other_name";
    auto newValue = 54;
 
-   auto meas = mMeasurements[0];
-   meas.name = newName;
-   meas.value = newValue;
+   auto res = mResources[0];
+   res.name = newName;
+   res.value = newValue;
 
-   mStrategy->modifyMeasurement(meas);
+   mStrategy->modifyResource(res);
 
-   auto m = getMeasurement(meas.id);
+   auto m = getResource(res.id);
    BOOST_CHECK(m);
 
    BOOST_CHECK_EQUAL(m->name, newName);
    BOOST_CHECK_EQUAL(m->value, newValue);
 }
 
-BOOST_FIXTURE_TEST_CASE( DeleteMeasurement, StrategyTest )  
+BOOST_FIXTURE_TEST_CASE( DeleteResource, StrategyTest )  
 {
-   mStrategy->deleteMeasurement(mMeasurements[0].id);
-   BOOST_CHECK(!getMeasurement(mMeasurements[0].id));
+   mStrategy->deleteResource(mResources[0].id);
+   BOOST_CHECK(!getResource(mResources[0].id));
 }
 
-BOOST_FIXTURE_TEST_CASE( GetMeasurements, StrategyTest )  
+BOOST_FIXTURE_TEST_CASE( GetResources, StrategyTest )  
 {
-   auto expected = mMeasurements;
-   auto got = mStrategy->getMeasurements();
+   auto expected = mResources;
+   auto got = mStrategy->getResources();
 
    BOOST_CHECK_EQUAL_COLLECTIONS(got.begin(), got.end(), 
          expected.begin(), expected.end());
