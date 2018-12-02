@@ -19,5 +19,6 @@ private:
    void putGoal(const StrategyModel::Goal& goal);
 
    StrategyModel& mModel;
+   Wt::WToolBar* mMainToolbar;
    std::vector<IGoalViewCtrl*> mGoalCtrls;
 };

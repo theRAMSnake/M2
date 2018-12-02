@@ -46,6 +46,9 @@ public:
    std::vector<Task> getGoalTasks(const materia::Id& id);
 
    std::vector<Resource> getResources();
+   Resource addResource(const std::string& name);
+   void modifyResource(const Resource& r);
+   void deleteResource(const materia::Id& id);
 
 private:
    void fetchGoals();

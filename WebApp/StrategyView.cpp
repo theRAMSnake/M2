@@ -14,6 +14,7 @@
 #include "Wt/WPaintedWidget.h"
 #include "Wt/WPainter.h"
 #include "Wt/WPopupMenu.h"
+#include "Wt/WDoubleSpinBox.h"
 
 class GoalEditDialog : public BasicDialog
 {
@@ -48,6 +49,42 @@ public:
 private:
    Wt::WLineEdit* mTitle;
    Wt::WTextArea* mNotes;
+};
+
+class ResourceEditDialog : public BasicDialog
+{
+public:
+   typedef std::function<void(const StrategyModel::Resource&)> TOnOkCallback;
+   ResourceEditDialog(const StrategyModel::Resource& subject, TOnOkCallback cb)
+   : BasicDialog("Resource Edit")
+   {
+      mTitle = new Wt::WLineEdit(subject.name);
+      contents()->addWidget(std::unique_ptr<Wt::WLineEdit>(mTitle));
+
+      mValue = new Wt::WDoubleSpinBox();
+      contents()->addWidget(std::unique_ptr<Wt::WDoubleSpinBox>(mValue));
+
+      mValue->setRange(-1000000,1000000);
+      mValue->setValue(subject.value);
+      mValue->setDecimals(0);
+      mValue->setSingleStep(1);
+      
+      finished().connect(std::bind([=]() {
+        if (result() == Wt::DialogCode::Accepted)
+        {
+           StrategyModel::Resource newResource = subject;
+           newResource.name = mTitle->text().narrow();
+           newResource.value = mValue->value();
+           cb(newResource);
+        }
+
+        delete this;
+      }));
+   }
+
+private:
+   Wt::WLineEdit* mTitle;
+   Wt::WDoubleSpinBox* mValue;
 };
 
 //--------------------------------------------------------------------------------------
@@ -384,12 +421,17 @@ private:
 class ResourceViewCtrl : public Wt::WContainerWidget
 {
 public:
-   ResourceViewCtrl(const StrategyModel::Resource& r)
-   : mResource(r)
+   ResourceViewCtrl(const StrategyModel::Resource& r, StrategyModel& model)
+   : mModel(model)
+   , mResource(r)
    {
-      /*auto text = */addWidget(std::make_unique<Wt::WLabel>(r.name))->setStyleClass("ResourceViewCtrlText");
+      mName = addWidget(std::make_unique<Wt::WLabel>(r.name));
+      mName->setStyleClass("ResourceViewCtrlText");
       auto valueText = std::to_string(r.value);
-      /*auto value = */addWidget(std::make_unique<Wt::WLabel>(valueText))->setStyleClass("ResourceViewCtrlValue");
+      mValue = addWidget(std::make_unique<Wt::WLabel>(valueText));
+      mValue->setStyleClass("ResourceViewCtrlValue");
+
+      clicked().connect(this, &ResourceViewCtrl::onClicked);
    }
 
    void updateStyle()
@@ -398,6 +440,42 @@ public:
    }
 
 private:
+   void onClicked(Wt::WMouseEvent event)
+   {
+      if(event.button() == Wt::MouseButton::Left)
+      {
+         if(event.modifiers().test(Wt::KeyboardModifier::Control))
+         {
+            std::function<void()> elementDeletedFunc = [=] () {
+               mModel.deleteResource(mResource.id);
+               parent()->removeChild(this);
+            };
+
+            CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
+         }
+         else
+         {
+            auto dlg = new ResourceEditDialog(
+               mResource,
+               std::bind(&ResourceViewCtrl::onEditDialogOk, this, std::placeholders::_1));
+            dlg->show();
+         }
+      }
+   }
+
+   void onEditDialogOk(const StrategyModel::Resource& newResource)
+   {
+      mName->setText(newResource.name);
+      auto valueText = std::to_string(newResource.value);
+
+      mValue->setText(valueText);
+
+      mModel.modifyResource(newResource);
+   }
+
+   Wt::WLabel* mName;
+   Wt::WLabel* mValue;
+   StrategyModel& mModel;
    StrategyModel::Resource mResource;
 };
 
@@ -408,7 +486,7 @@ StrategyView::StrategyView(StrategyModel& strategy)
 {
    setMargin(5);
 
-   auto toolBar = addWidget(std::make_unique<Wt::WToolBar>());
+   mMainToolbar = addWidget(std::make_unique<Wt::WToolBar>());
 
    auto popupPtr = std::make_unique<Wt::WPopupMenu>();
    popupPtr->addItem("Goal")->triggered().connect(std::bind(&StrategyView::onAddGoalClick, this));
@@ -418,12 +496,12 @@ StrategyView::StrategyView(StrategyModel& strategy)
    auto addBtn = std::make_unique<Wt::WPushButton>("Add");
    addBtn->setStyleClass("btn-primary");
    addBtn->setMenu(std::move(popupPtr));
-   toolBar->addButton(std::move(addBtn));
+   mMainToolbar->addButton(std::move(addBtn));
 
    auto backlogBtn = std::make_unique<Wt::WPushButton>("Backlog");
    backlogBtn->setStyleClass("btn-primary");
    backlogBtn->clicked().connect(std::bind(&StrategyView::onBacklogClick, this));
-   toolBar->addButton(std::move(backlogBtn));
+   mMainToolbar->addButton(std::move(backlogBtn));
 
    auto [temp, goalCtrls] = TemplateBuilder::makeTable<GoalViewCtrl<false>>(3u, 2u, GoalViewCtrlConstructionParams{strategy, true});
    std::copy(goalCtrls.begin(), goalCtrls.end(), std::inserter(mGoalCtrls, mGoalCtrls.begin()));
@@ -431,7 +509,7 @@ StrategyView::StrategyView(StrategyModel& strategy)
    addWidget(std::unique_ptr<Wt::WWidget>(temp));
 
    layGoals();
-   fillResources(*toolBar);
+   fillResources(*mMainToolbar);
 }
 
 void StrategyView::fillResources(Wt::WToolBar& toolbar)
@@ -440,7 +518,7 @@ void StrategyView::fillResources(Wt::WToolBar& toolbar)
 
    for(auto r : mModel.getResources())
    {
-      toolbar.addWidget(std::make_unique<ResourceViewCtrl>(r), Wt::AlignmentFlag::Right);
+      toolbar.addWidget(std::make_unique<ResourceViewCtrl>(r, mModel), Wt::AlignmentFlag::Right);
    }
 }
 
@@ -473,9 +551,9 @@ void StrategyView::onAddGoalClick()
 void StrategyView::onAddResourceClick()
 {     
    std::function<void(std::string)> nextFunc = [=](std::string name){
-      //auto item = mModel.addResource(name);
+      auto item = mModel.addResource(name);
       
-      
+      mMainToolbar->addWidget(std::make_unique<ResourceViewCtrl>(item, mModel), Wt::AlignmentFlag::Right);
    };
 
    CommonDialogManager::showOneLineDialog("Please specify name", "Name", "", nextFunc);

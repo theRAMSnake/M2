@@ -174,10 +174,38 @@ std::vector<StrategyModel::Resource> StrategyModel::getResources()
       result.push_back(Resource{r.id().guid(), r.name(), r.value()});
    }
 
-   //test
-   result.push_back({materia::Id("id1"), "name1", 5});
-   result.push_back({materia::Id("id2"), "name2", 7});
-   result.push_back({materia::Id("id3"), "name3", 3});
-
    return result;
+}
+
+StrategyModel::Resource StrategyModel::addResource(const std::string& name)
+{
+   common::UniqueId id;
+   strategy::Resource r;
+
+   r.set_name(name);
+   r.set_value(0);
+
+   mService.getService().AddResource(nullptr, &r, &id, nullptr);
+   
+   return StrategyModel::Resource {id.guid(), name, 0};
+}
+
+void StrategyModel::deleteResource(const materia::Id& src)
+{
+   common::UniqueId id;
+   id.set_guid(src.getGuid());
+
+   common::OperationResultMessage opResult;
+   mService.getService().DeleteResource(nullptr, &id, &opResult, nullptr);
+}
+
+void StrategyModel::modifyResource(const Resource& r)
+{
+   strategy::Resource res;
+   res.set_name(r.name);
+   res.set_value(r.value);
+   res.mutable_id()->set_guid(r.id.getGuid());
+
+   common::OperationResultMessage opResult;
+   mService.getService().ModifyResource(nullptr, &res, &opResult, nullptr);
 }
