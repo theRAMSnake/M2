@@ -46,6 +46,12 @@
   -moz-user-select: none;
 }
 
+.GoalViewCtrl_Objectives {
+  margin-top: 20px;
+  user-select: none;
+  -moz-user-select: none;
+}
+
 .Task {
   margin-left: 150px;
   padding-top: 30px;

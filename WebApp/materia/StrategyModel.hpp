@@ -18,6 +18,16 @@ public:
       materia::Id parentGoalId;
    };
 
+   struct Objective
+   {
+      materia::Id id;
+      std::string title;
+      bool reached;
+      materia::Id parentGoalId;
+      materia::Id resId;
+      int expectedResValue;
+   };
+
    struct Goal
    {
       materia::Id id;
@@ -44,11 +54,16 @@ public:
    void modifyGoal(const Goal& goal);
    void deleteGoal(const materia::Id& id);
    std::vector<Task> getGoalTasks(const materia::Id& id);
+   std::vector<Objective> getGoalObjectives(const materia::Id& id);
 
    std::vector<Resource> getResources();
    Resource addResource(const std::string& name);
    void modifyResource(const Resource& r);
    void deleteResource(const materia::Id& id);
+
+   Objective addObjective(const std::string& title, const materia::Id& parentGoalId);
+   void deleteObjective(const materia::Id& id);
+   void modifyObjective(const Objective& o);
 
 private:
    void fetchGoals();

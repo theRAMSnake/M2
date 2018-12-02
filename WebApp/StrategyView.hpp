@@ -11,6 +11,7 @@ public:
 private:
    void onAddGoalClick();
    void onAddTaskClick();
+   void onAddObjectiveClick();
    void onAddResourceClick();
    void onBacklogClick();
    void layGoals();

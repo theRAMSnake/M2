@@ -15,6 +15,7 @@
 #include "Wt/WPainter.h"
 #include "Wt/WPopupMenu.h"
 #include "Wt/WDoubleSpinBox.h"
+#include "Wt/WPanel.h"
 
 class GoalEditDialog : public BasicDialog
 {
@@ -87,6 +88,42 @@ private:
    Wt::WDoubleSpinBox* mValue;
 };
 
+class ObjectiveEditDialog : public BasicDialog
+{
+public:
+   typedef std::function<void(const StrategyModel::Objective&)> TOnOkCallback;
+   ObjectiveEditDialog(const StrategyModel::Objective& subject, const std::vector<StrategyModel::Resource>& resources, TOnOkCallback cb)
+   : BasicDialog("Objective Edit")
+   {
+      mTitle = new Wt::WLineEdit(subject.title);
+      contents()->addWidget(std::unique_ptr<Wt::WLineEdit>(mTitle));
+
+      mReached = new Wt::WCheckBox("Reached");
+      mReached->setInline(false);
+      mReached->setChecked(subject.reached);
+      contents()->addWidget(std::unique_ptr<Wt::WCheckBox>(mReached));
+
+      mResources = new Wt::WComboBox
+      
+      finished().connect(std::bind([=]() {
+        if (result() == Wt::DialogCode::Accepted)
+        {
+           StrategyModel::Objective newObjective = subject;
+           newObjective.title = mTitle->text().narrow();
+           newObjective.reached = mReached->isChecked();
+           
+           cb(newObjective);
+        }
+
+        delete this;
+      }));
+   }
+
+private:
+   Wt::WCheckBox* mReached;
+   Wt::WLineEdit* mTitle;
+};
+
 //--------------------------------------------------------------------------------------
 
 class IGoalViewCtrl
@@ -95,6 +132,7 @@ public:
    virtual bool isEmpty() const = 0;
    virtual void attach(const StrategyModel::Goal& goal) = 0;
    virtual void addTask(const StrategyModel::Task& task) = 0;
+   virtual void addObjective(const StrategyModel::Objective& o) = 0;
    virtual std::optional<StrategyModel::Goal> detach() = 0;
    virtual const StrategyModel::Goal& getGoal() const = 0;
 
@@ -160,6 +198,29 @@ private:
    StrategyModel::Task mTask;
 };
 
+class ObjectiveWidget : public Wt::WCheckBox
+{
+public:
+   ObjectiveWidget(const StrategyModel::Objective& o)
+   : mObj(o)
+   {
+      setInline(false);
+
+      setObjective(o);
+   }
+
+   void setObjective(const StrategyModel::Objective& o)
+   {
+      mObj = o;
+      
+      setText(o.title);
+      setChecked(o.reached);
+   }
+
+private:
+   StrategyModel::Objective mObj;
+};
+
 template<bool isCompact>
 class GoalViewCtrl : public Wt::WContainerWidget, public IGoalViewCtrl
 {
@@ -169,21 +230,40 @@ public:
    , mIsActiveSlot(p.isActiveSlot)
    {
       setStyleClass(GoalViewCtrlTraits<isCompact>::emptyStyleClass);
+      addStyleClass("row");
 
-      mName = addWidget(std::make_unique<Wt::WLabel>(""));
+      auto namePtr = std::make_unique<Wt::WLabel>("");
+      mName = namePtr.get();
       mName->setStyleClass("GoalViewCtrl_Text");
       setAttributeValue("oncontextmenu", "event.cancelBubble = true; event.returnValue = false; return false;");
       mName->mouseWentDown().connect(this, &GoalViewCtrl<isCompact>::onBoundClicked);
 
       if(!isCompact)
       {
-         addWidget(std::make_unique<Wt::WLabel>("<br></br>"));
+         WContainerWidget* frame = addWidget(std::make_unique<Wt::WContainerWidget>());
+         frame->setStyleClass("col-md-6");
+         frame->addWidget(std::make_unique<Wt::WLabel>("<br></br>"));
+
+         frame->addWidget(std::move(namePtr));
 
          mTasks = new Wt::WContainerWidget();
-         addWidget(std::unique_ptr<Wt::WContainerWidget>(mTasks));
+         frame->addWidget(std::unique_ptr<Wt::WContainerWidget>(mTasks));
 
-         mNotes = addWidget(std::make_unique<Wt::WLabel>(""));
+         mNotes = frame->addWidget(std::make_unique<Wt::WLabel>(""));
          mNotes->setStyleClass("GoalViewCtrl_Notes");
+
+         WContainerWidget* frameObj = addWidget(std::make_unique<Wt::WContainerWidget>());
+         frameObj->setStyleClass("col-md-6");
+
+         auto panel = frameObj->addWidget(std::make_unique<Wt::WPanel>());
+         panel->addStyleClass("GoalViewCtrl_Objectives");
+
+         mObjs = new Wt::WContainerWidget();
+         panel->setCentralWidget(std::unique_ptr<Wt::WContainerWidget>(mObjs));
+      }
+      else
+      {
+         addWidget(std::move(namePtr));
       }
 
       acceptDrops(MY_MIME_TYPE);
@@ -245,17 +325,27 @@ public:
       }
    }
 
+   void addObjective(const StrategyModel::Objective& o) override
+   {
+      if(mGoal)
+      {
+         addObjectiveWidget(o);
+      }
+   }
+
    std::optional<StrategyModel::Goal> detach() override
    {
       auto result = mGoal;
 
       setStyleClass(GoalViewCtrlTraits<isCompact>::emptyStyleClass);
       mName->setText("");
-      mTasks->clear();
       mGoal.reset();
+
       if(!isCompact)
       {
          mNotes->setText("");
+         mTasks->clear();
+         mObjs->clear();
       }
 
       return result;
@@ -308,6 +398,12 @@ private:
             addTaskWidget(t);
          }
 
+         mObjs->clear();
+         for(auto o : mModel.getGoalObjectives(mGoal->id))
+         {
+            addObjectiveWidget(o);
+         }
+
          mNotes->setText(mGoal->notes);
       }
    }
@@ -317,6 +413,13 @@ private:
       auto w = mTasks->addWidget(std::make_unique<TaskWidget>(t));
       auto b = std::bind(&GoalViewCtrl<isCompact>::onTaskWidgetClicked, this, w, t, std::placeholders::_1);
 
+      w->mouseWentDown().connect(b);
+   }
+
+   void addObjectiveWidget(const StrategyModel::Objective& o)
+   {
+      auto w = mObjs->addWidget(std::make_unique<ObjectiveWidget>(o));
+      auto b = std::bind(&GoalViewCtrl<isCompact>::onObjectiveWidgetClicked, this, w, o, std::placeholders::_1);
       w->mouseWentDown().connect(b);
    }
 
@@ -344,6 +447,29 @@ private:
       }
    }
 
+   void onObjectiveWidgetClicked(ObjectiveWidget* w, const StrategyModel::Objective o, Wt::WMouseEvent event)
+   {
+      if(event.button() == Wt::MouseButton::Right)
+      {
+         if(event.modifiers().test(Wt::KeyboardModifier::Control))
+         {
+            std::function<void()> elementDeletedFunc = [=] () {
+               mModel.deleteObjective(o.id);
+               mObjs->removeChild(w);
+            };
+
+            CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
+         }
+         else
+         {
+            auto dlg = new ObjectiveEditDialog(
+               o,
+               std::bind(&GoalViewCtrl<isCompact>::onObjectiveEditDialogOk, this, std::placeholders::_1, w));
+            dlg->show();
+         }
+      }
+   }
+
    void onTaskEditDialogOk(const std::string& title, const std::string& notes, const StrategyModel::Task src, TaskWidget* w)
    {
       auto newTask = src;
@@ -356,11 +482,21 @@ private:
       mModel.modifyTask(newTask);
    }
 
+   void onObjectiveEditDialogOk(const StrategyModel::Objective src, ObjectiveWidget* w)
+   {
+      auto newObj = src;
+
+      w->setObjective(newObj);
+
+      mModel.modifyObjective(newObj);
+   }
+
    static constexpr char MY_MIME_TYPE[] = "GoalViewCtrl";
    StrategyModel& mModel;
    Wt::WLabel* mName = nullptr;
    Wt::WLabel* mNotes = nullptr;
    Wt::WContainerWidget* mTasks = nullptr;
+   Wt::WContainerWidget* mObjs = nullptr;
    std::optional<StrategyModel::Goal> mGoal;
    bool mIsActiveSlot;
 };
@@ -492,6 +628,7 @@ StrategyView::StrategyView(StrategyModel& strategy)
    popupPtr->addItem("Goal")->triggered().connect(std::bind(&StrategyView::onAddGoalClick, this));
    popupPtr->addItem("Task")->triggered().connect(std::bind(&StrategyView::onAddTaskClick, this));
    popupPtr->addItem("Resource")->triggered().connect(std::bind(&StrategyView::onAddResourceClick, this));
+   popupPtr->addItem("Objective")->triggered().connect(std::bind(&StrategyView::onAddObjectiveClick, this));
 
    auto addBtn = std::make_unique<Wt::WPushButton>("Add");
    addBtn->setStyleClass("btn-primary");
@@ -586,6 +723,32 @@ void StrategyView::onAddTaskClick()
    });
 }
 
+void StrategyView::onAddObjectiveClick()
+{
+   std::vector<std::string> choises;
+   for(auto g : mModel.getGoals())
+   {
+      choises.push_back(g.title);
+   }
+
+   CommonDialogManager::showChoiseDialog(choises, [=](auto selected) {
+      
+      std::function<void(std::string)> nextFunc = [=](std::string title){
+         auto item = mModel.addObjective(title, mModel.getGoals()[selected].id);
+         
+         for(auto gc : mGoalCtrls)
+         {
+            if(!gc->isEmpty() && gc->getGoal().id == mModel.getGoals()[selected].id)
+            {
+               gc->addObjective(item);
+               break;
+            }
+         }
+      };
+
+      CommonDialogManager::showOneLineDialog("Please specify title", "Title", "", nextFunc);
+   });
+}
 
 void StrategyView::putGoal(const StrategyModel::Goal& goal)
 {

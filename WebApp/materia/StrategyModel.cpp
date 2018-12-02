@@ -19,6 +19,20 @@ void StrategyModel::modifyTask(const Task& task)
    mService.getService().ModifyTask(nullptr, &t, &opResult, nullptr);
 }
 
+void StrategyModel::modifyObjective(const Objective& src)
+{
+   strategy::Objective o;
+   o.mutable_common_props()->mutable_id()->set_guid(src.id);
+   o.mutable_common_props()->set_name(src.title);
+   o.set_reached(src.reached);
+   o.mutable_parent_goal_id()->set_guid(src.parentGoalId);
+   o.mutable_res_id()->set_guid(src.resId);
+   o.set_expectedtreshold(src.expectedResValue);
+
+   common::OperationResultMessage opResult;
+   mService.getService().ModifyObjective(nullptr, &o, &opResult, nullptr);
+}
+
 void StrategyModel::deleteTask(const materia::Id& src)
 {
    common::UniqueId id;
@@ -26,6 +40,15 @@ void StrategyModel::deleteTask(const materia::Id& src)
 
    common::OperationResultMessage opResult;
    mService.getService().DeleteTask(nullptr, &id, &opResult, nullptr);
+}
+
+void StrategyModel::deleteObjective(const materia::Id& src)
+{
+   common::UniqueId id;
+   id.set_guid(src.getGuid());
+
+   common::OperationResultMessage opResult;
+   mService.getService().DeleteObjective(nullptr, &id, &opResult, nullptr);
 }
 
 void StrategyModel::deleteGoal(const materia::Id& src)
@@ -136,6 +159,20 @@ StrategyModel::Task StrategyModel::addTask(const std::string& title, const mater
    return StrategyModel::Task {id.guid(), title, "", parentGoalId};
 }
 
+StrategyModel::Objective StrategyModel::addObjective(const std::string& title, const materia::Id& parentGoalId)
+{
+   common::UniqueId id;
+   strategy::Objective o;
+
+   o.mutable_common_props()->set_name(title);
+   o.mutable_parent_goal_id()->set_guid(parentGoalId.getGuid());
+   o.set_reached(false);
+
+   mService.getService().AddObjective(nullptr, &o, &id, nullptr);
+   
+   return StrategyModel::Objective {id.guid(), title, false, parentGoalId};
+}
+
 std::vector<StrategyModel::Task> StrategyModel::getGoalTasks(const materia::Id& id)
 {
    std::vector<Task> result;
@@ -160,6 +197,37 @@ std::vector<StrategyModel::Task> StrategyModel::getGoalTasks(const materia::Id& 
    return result;
 }
 
+std::vector<StrategyModel::Objective> StrategyModel::getGoalObjectives(const materia::Id& id)
+{
+   std::vector<Objective> result;
+
+   common::UniqueId in;
+   in.set_guid(id.getGuid());
+   strategy::GoalItems items;
+
+   mService.getService().GetGoalItems(nullptr, &in, &items, nullptr);
+
+   for(auto o : items.objectives())
+   {
+      result.push_back(
+         {
+            o.common_props().id().guid(), 
+            o.common_props().name(),
+            o.reached(),
+            o.parent_goal_id().guid(),
+            o.res_id().guid(),
+            o.expectedtreshold()
+         });
+   }
+
+   result.push_back({materia::Id("id1"), "obj1", false, id, materia::Id::Invalid, 0});
+   result.push_back({materia::Id("id2"), "obj2", true, id, materia::Id::Invalid, 0});
+   result.push_back({materia::Id("id3"), "obj3", false, id, materia::Id("test_res_id"), 3});
+   result.push_back({materia::Id("id4"), "obj4", true, id, materia::Id("test_res_id"), 5});
+
+   return result;
+}
+
 std::vector<StrategyModel::Resource> StrategyModel::getResources()
 {
    std::vector<Resource> result;
@@ -173,6 +241,8 @@ std::vector<StrategyModel::Resource> StrategyModel::getResources()
    {
       result.push_back(Resource{r.id().guid(), r.name(), r.value()});
    }
+
+   result.push_back({materia::Id("test_meas_id"), "res", 4});
 
    return result;
 }
