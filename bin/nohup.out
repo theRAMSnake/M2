@@ -22635,3 +22635,2325 @@ terminate called after throwing an instance of 'zmq::error_t'
 [2018-Dec-02 23:19:30.274] 6683 - [info] "WebRequest: took 0.273 ms"
 127.0.0.1 - - [2018-Dec-02 23:24:30.275] "POST /?wtd=iqCfivCdynk8tlST HTTP/1.1" 200 50
 [2018-Dec-02 23:24:30.276] 6683 - [info] "WebRequest: took 1.092 ms"
+127.0.0.1 - - [2018-Dec-02 23:29:30.273] "POST /?wtd=iqCfivCdynk8tlST HTTP/1.1" 200 50
+[2018-Dec-02 23:29:30.274] 6683 - [info] "WebRequest: took 0.414 ms"
+[2018-Dec-02 23:31:10.643] 6683 - [info] "WebController: Removing session iqCfivCdynk8tlST"
+127.0.0.1 - - [2018-Dec-02 23:31:10.643] "POST /?wtd=iqCfivCdynk8tlST HTTP/1.1" 200 130
+[2018-Dec-02 23:31:10.643] 6683 - [info] "WebRequest: took 0.37 ms"
+[2018-Dec-02 23:31:10.645] 6683 [/ iqCfivCdynk8tlST] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-21 23:04:35.902] 8935 - [info] "config: reading Wt config file: /etc/wt/wt_config.xml (location = './WebApp')"
+[2018-Dec-21 23:04:35.908] 8935 - [info] "WServer/wthttp: initializing built-in wthttpd"
+[2018-Dec-21 23:04:35.910] 8935 - [info] "wthttp: started server: http://0.0.0.0:80"
+[2018-Dec-21 23:04:43.667] 8935 - [info] "Wt: session created (#sessions = 1)"
+[2018-Dec-21 23:04:43.667] 8935 [/ HRcgY6uMkemce1NE] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-21 23:04:43.677] "GET / HTTP/1.1" 200 2268
+[2018-Dec-21 23:04:43.677] 8935 - [info] "WebRequest: took 10.22 ms"
+127.0.0.1 - - [2018-Dec-21 23:04:43.795] "GET /?wtd=HRcgY6uMkemce1NE&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-21 23:04:43.795] 8935 - [info] "WebRequest: took 55.339 ms"
+127.0.0.1 - - [2018-Dec-21 23:04:43.803] "GET /?wtd=HRcgY6uMkemce1NE&sid=-863528655&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=1958043477 HTTP/1.1" 200 38367
+[2018-Dec-21 23:04:43.803] 8935 - [info] "WebRequest: took 11.082 ms"
+127.0.0.1 - - [2018-Dec-21 23:04:43.832] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 200 122998
+127.0.0.1 - - [2018-Dec-21 23:04:43.838] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 200 20034
+127.0.0.1 - - [2018-Dec-21 23:04:43.838] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-21 23:04:43.840] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-21 23:04:43.846] "GET /custom.css HTTP/1.1" 200 1505
+127.0.0.1 - - [2018-Dec-21 23:04:43.857] "GET /favicon.ico HTTP/1.1" 200 1424
+127.0.0.1 - - [2018-Dec-21 23:04:43.890] "GET /resources/ajax-loading.gif HTTP/1.1" 200 1786
+127.0.0.1 - - [2018-Dec-21 23:04:43.945] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 50
+[2018-Dec-21 23:04:43.945] 8935 - [info] "WebRequest: took 0.331 ms"
+127.0.0.1 - - [2018-Dec-21 23:04:45.339] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 4382
+[2018-Dec-21 23:04:45.339] 8935 - [info] "WebRequest: took 26.177 ms"
+127.0.0.1 - - [2018-Dec-21 23:04:45.346] "GET /resources/tinymce/tinymce.min.js HTTP/1.1" 200 464400
+127.0.0.1 - - [2018-Dec-21 23:04:45.491] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 1214
+[2018-Dec-21 23:04:45.491] 8935 - [info] "WebRequest: took 0.514 ms"
+127.0.0.1 - - [2018-Dec-21 23:04:47.621] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 5720
+[2018-Dec-21 23:04:47.621] 8935 - [info] "WebRequest: took 2.813 ms"
+127.0.0.1 - - [2018-Dec-21 23:04:55.332] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 1253
+[2018-Dec-21 23:04:55.333] 8935 - [info] "WebRequest: took 0.643 ms"
+[2018-Dec-21 23:04:59.154] 8935 [/ HRcgY6uMkemce1NE] [warning] "WApplication: Deploy-path ends with '/', using /?_= for internal paths"
+127.0.0.1 - - [2018-Dec-21 23:04:59.155] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 3359
+[2018-Dec-21 23:04:59.155] 8935 - [info] "WebRequest: took 1.6 ms"
+127.0.0.1 - - [2018-Dec-21 23:05:01.140] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 181
+[2018-Dec-21 23:05:01.140] 8935 - [info] "WebRequest: took 0.566 ms"
+127.0.0.1 - - [2018-Dec-21 23:05:02.150] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 201
+[2018-Dec-21 23:05:02.150] 8935 - [info] "WebRequest: took 0.619 ms"
+127.0.0.1 - - [2018-Dec-21 23:05:02.866] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 1476
+[2018-Dec-21 23:05:02.866] 8935 - [info] "WebRequest: took 1.367 ms"
+127.0.0.1 - - [2018-Dec-21 23:05:04.063] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 182
+[2018-Dec-21 23:05:04.063] 8935 - [info] "WebRequest: took 0.569 ms"
+127.0.0.1 - - [2018-Dec-21 23:05:05.159] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 201
+[2018-Dec-21 23:05:05.159] 8935 - [info] "WebRequest: took 0.563 ms"
+127.0.0.1 - - [2018-Dec-21 23:05:06.641] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 1246
+[2018-Dec-21 23:05:06.641] 8935 - [info] "WebRequest: took 1.102 ms"
+127.0.0.1 - - [2018-Dec-21 23:05:28.728] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 182
+[2018-Dec-21 23:05:28.728] 8935 - [info] "WebRequest: took 0.611 ms"
+127.0.0.1 - - [2018-Dec-21 23:05:32.430] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 1145
+[2018-Dec-21 23:05:32.430] 8935 - [info] "WebRequest: took 0.799 ms"
+127.0.0.1 - - [2018-Dec-21 23:05:38.052] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 182
+[2018-Dec-21 23:05:38.052] 8935 - [info] "WebRequest: took 1.132 ms"
+127.0.0.1 - - [2018-Dec-21 23:05:44.897] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 1143
+[2018-Dec-21 23:05:44.897] 8935 - [info] "WebRequest: took 1.059 ms"
+127.0.0.1 - - [2018-Dec-21 23:05:47.999] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 181
+[2018-Dec-21 23:05:47.999] 8935 - [info] "WebRequest: took 0.495 ms"
+127.0.0.1 - - [2018-Dec-21 23:05:49.574] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 202
+[2018-Dec-21 23:05:49.574] 8935 - [info] "WebRequest: took 0.593 ms"
+127.0.0.1 - - [2018-Dec-21 23:05:50.798] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 1467
+[2018-Dec-21 23:05:50.798] 8935 - [info] "WebRequest: took 1.086 ms"
+127.0.0.1 - - [2018-Dec-21 23:05:54.380] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 1202
+[2018-Dec-21 23:05:54.380] 8935 - [info] "WebRequest: took 0.968 ms"
+127.0.0.1 - - [2018-Dec-21 23:05:57.107] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 485
+[2018-Dec-21 23:05:57.107] 8935 - [info] "WebRequest: took 23.999 ms"
+127.0.0.1 - - [2018-Dec-21 23:05:58.721] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 48
+[2018-Dec-21 23:05:58.721] 8935 - [info] "WebRequest: took 0.524 ms"
+127.0.0.1 - - [2018-Dec-21 23:05:59.633] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 48
+[2018-Dec-21 23:05:59.633] 8935 - [info] "WebRequest: took 0.427 ms"
+127.0.0.1 - - [2018-Dec-21 23:06:01.412] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 1145
+[2018-Dec-21 23:06:01.412] 8935 - [info] "WebRequest: took 0.84 ms"
+127.0.0.1 - - [2018-Dec-21 23:06:03.508] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 185
+[2018-Dec-21 23:06:03.508] 8935 - [info] "WebRequest: took 0.51 ms"
+127.0.0.1 - - [2018-Dec-21 23:09:44.882] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 50
+[2018-Dec-21 23:09:44.882] 8935 - [info] "WebRequest: took 0.368 ms"
+127.0.0.1 - - [2018-Dec-21 23:14:44.884] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 50
+[2018-Dec-21 23:14:44.884] 8935 - [info] "WebRequest: took 0.427 ms"
+[2018-Dec-21 23:16:49.457] 8935 - [info] "WServer/wthttp: shutdown (signal = 15)"
+[2018-Dec-21 23:16:49.457] 8935 - [info] "WebController: shutdown: stopping 1 sessions."
+[2018-Dec-21 23:16:49.458] 8935 [/ HRcgY6uMkemce1NE] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-21 23:16:49.458] 8935 - [info] "WServer/wthttp: Shutdown: stopping web server."
+[2018-Dec-21 23:16:50.737] 32701 - [info] "config: reading Wt config file: /etc/wt/wt_config.xml (location = './WebApp')"
+[2018-Dec-21 23:16:50.739] 32701 - [info] "WServer/wthttp: initializing built-in wthttpd"
+[2018-Dec-21 23:16:50.741] 32701 - [info] "wthttp: started server: http://0.0.0.0:80"
+[2018-Dec-21 23:16:53.618] 32701 - [info] "Wt: session created (#sessions = 1)"
+[2018-Dec-21 23:16:53.618] 32701 [/ 2EMEGc6S4MovlNFP] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-21 23:16:53.619] "GET / HTTP/1.1" 200 2269
+[2018-Dec-21 23:16:53.619] 32701 - [info] "WebRequest: took 1.107 ms"
+[2018-Dec-21 23:16:53.624] 32701 - [info] "Wt: session created (#sessions = 2)"
+[2018-Dec-21 23:16:53.624] 32701 [/ FzOe95kZTNSb91hy] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+[2018-Dec-21 23:16:53.625] 32701 [/ FzOe95kZTNSb91hy] [info] "Wt: signal from dead session, sending reload."
+[2018-Dec-21 23:16:53.625] 32701 - [info] "WebController: Removing session FzOe95kZTNSb91hy"
+[2018-Dec-21 23:16:53.625] 32701 [/ FzOe95kZTNSb91hy] [info] "Wt: session destroyed (#sessions = 1)"
+127.0.0.1 - - [2018-Dec-21 23:16:53.625] "POST /?wtd=HRcgY6uMkemce1NE HTTP/1.1" 200 76
+[2018-Dec-21 23:16:53.625] 32701 - [info] "WebRequest: took 0.743 ms"
+127.0.0.1 - - [2018-Dec-21 23:16:53.666] "GET /?wtd=2EMEGc6S4MovlNFP&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-21 23:16:53.666] 32701 - [info] "WebRequest: took 3.87 ms"
+127.0.0.1 - - [2018-Dec-21 23:16:53.674] "GET /?wtd=2EMEGc6S4MovlNFP&sid=1892434619&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=1650219713 HTTP/1.1" 200 38372
+[2018-Dec-21 23:16:53.674] 32701 - [info] "WebRequest: took 10.82 ms"
+127.0.0.1 - - [2018-Dec-21 23:16:53.690] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-21 23:16:53.691] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-21 23:16:53.700] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 200 122998
+127.0.0.1 - - [2018-Dec-21 23:16:53.709] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 200 20034
+127.0.0.1 - - [2018-Dec-21 23:16:53.716] "GET /custom.css HTTP/1.1" 200 1505
+127.0.0.1 - - [2018-Dec-21 23:16:53.754] "GET /resources/ajax-loading.gif HTTP/1.1" 200 1786127.0.0.1 - - [2018-Dec-21 23:16:53.754] "GET /favicon.ico HTTP/1.1" 200 1424
+
+127.0.0.1 - - [2018-Dec-21 23:16:53.800] "POST /?wtd=2EMEGc6S4MovlNFP HTTP/1.1" 200 50
+[2018-Dec-21 23:16:53.800] 32701 - [info] "WebRequest: took 0.27 ms"
+127.0.0.1 - - [2018-Dec-21 23:16:54.695] "POST /?wtd=2EMEGc6S4MovlNFP HTTP/1.1" 200 4367
+[2018-Dec-21 23:16:54.695] 32701 - [info] "WebRequest: took 63.96 ms"
+127.0.0.1 - - [2018-Dec-21 23:16:54.841] "POST /?wtd=2EMEGc6S4MovlNFP HTTP/1.1" 200 1216
+[2018-Dec-21 23:16:54.841] 32701 - [info] "WebRequest: took 0.443 ms"
+127.0.0.1 - - [2018-Dec-21 23:16:55.669] "POST /?wtd=2EMEGc6S4MovlNFP HTTP/1.1" 200 5737
+[2018-Dec-21 23:16:55.669] 32701 - [info] "WebRequest: took 3.035 ms"
+[2018-Dec-21 23:16:57.497] 32701 [/ 2EMEGc6S4MovlNFP] [warning] "WApplication: Deploy-path ends with '/', using /?_= for internal paths"
+127.0.0.1 - - [2018-Dec-21 23:16:57.498] "POST /?wtd=2EMEGc6S4MovlNFP HTTP/1.1" 200 3199
+[2018-Dec-21 23:16:57.498] 32701 - [info] "WebRequest: took 1.695 ms"
+127.0.0.1 - - [2018-Dec-21 23:17:12.411] "POST /?wtd=2EMEGc6S4MovlNFP HTTP/1.1" 200 182
+[2018-Dec-21 23:17:12.411] 32701 - [info] "WebRequest: took 0.8 ms"
+[2018-Dec-21 23:17:17.832] 32701 - [info] "Wt: session created (#sessions = 2)"
+[2018-Dec-21 23:17:17.832] 32701 [/ ZisUrg2bMnNOaibt] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-21 23:17:17.833] "GET / HTTP/1.1" 200 2266
+[2018-Dec-21 23:17:17.833] 32701 - [info] "WebRequest: took 1.093 ms"
+[2018-Dec-21 23:17:17.838] 32701 - [info] "WebController: Removing session 2EMEGc6S4MovlNFP"
+127.0.0.1 - - [2018-Dec-21 23:17:17.838] "POST /?wtd=2EMEGc6S4MovlNFP HTTP/1.1" 200 131
+[2018-Dec-21 23:17:17.838] 32701 - [info] "WebRequest: took 0.538 ms"
+[2018-Dec-21 23:17:17.840] 32701 [/ 2EMEGc6S4MovlNFP] [info] "Wt: session destroyed (#sessions = 1)"
+127.0.0.1 - - [2018-Dec-21 23:17:17.868] "GET /?wtd=ZisUrg2bMnNOaibt&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-21 23:17:17.868] 32701 - [info] "WebRequest: took 6.483 ms"
+127.0.0.1 - - [2018-Dec-21 23:17:17.878] "GET /?wtd=ZisUrg2bMnNOaibt&sid=1512299616&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=480368296 HTTP/1.1" 200 38365
+[2018-Dec-21 23:17:17.878] 32701 - [info] "WebRequest: took 10.52 ms"
+127.0.0.1 - - [2018-Dec-21 23:17:17.888] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-21 23:17:17.889] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-21 23:17:17.890] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-21 23:17:17.893] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-21 23:17:17.894] "GET /custom.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-21 23:17:17.934] "GET /resources/ajax-loading.gif HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-21 23:17:17.997] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-21 23:17:17.997] 32701 - [info] "WebRequest: took 0.242 ms"
+127.0.0.1 - - [2018-Dec-21 23:22:18.944] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-21 23:22:18.944] 32701 - [info] "WebRequest: took 0.242 ms"
+127.0.0.1 - - [2018-Dec-21 23:27:18.943] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-21 23:27:18.943] 32701 - [info] "WebRequest: took 0.27 ms"
+127.0.0.1 - - [2018-Dec-21 23:32:18.943] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-21 23:32:18.943] 32701 - [info] "WebRequest: took 0.257 ms"
+127.0.0.1 - - [2018-Dec-21 23:37:18.944] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-21 23:37:18.944] 32701 - [info] "WebRequest: took 0.246 ms"
+127.0.0.1 - - [2018-Dec-21 23:42:18.945] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-21 23:42:18.945] 32701 - [info] "WebRequest: took 0.25 ms"
+127.0.0.1 - - [2018-Dec-21 23:47:18.944] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-21 23:47:18.944] 32701 - [info] "WebRequest: took 0.336 ms"
+127.0.0.1 - - [2018-Dec-21 23:52:18.944] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-21 23:52:18.944] 32701 - [info] "WebRequest: took 0.226 ms"
+127.0.0.1 - - [2018-Dec-21 23:57:18.944] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-21 23:57:18.944] 32701 - [info] "WebRequest: took 0.24 ms"
+127.0.0.1 - - [2018-Dec-22 00:02:18.944] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 00:02:18.944] 32701 - [info] "WebRequest: took 0.294 ms"
+127.0.0.1 - - [2018-Dec-22 00:07:18.944] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 00:07:18.944] 32701 - [info] "WebRequest: took 0.235 ms"
+127.0.0.1 - - [2018-Dec-22 00:12:18.945] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 00:12:18.945] 32701 - [info] "WebRequest: took 0.267 ms"
+127.0.0.1 - - [2018-Dec-22 00:17:18.947] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 00:17:18.947] 32701 - [info] "WebRequest: took 0.212 ms"
+127.0.0.1 - - [2018-Dec-22 00:22:18.945] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 00:22:18.945] 32701 - [info] "WebRequest: took 0.249 ms"
+127.0.0.1 - - [2018-Dec-22 00:27:18.945] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 00:27:18.945] 32701 - [info] "WebRequest: took 0.29 ms"
+127.0.0.1 - - [2018-Dec-22 00:32:18.945] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 00:32:18.945] 32701 - [info] "WebRequest: took 0.257 ms"
+127.0.0.1 - - [2018-Dec-22 00:37:18.945] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 00:37:18.945] 32701 - [info] "WebRequest: took 0.253 ms"
+127.0.0.1 - - [2018-Dec-22 00:42:18.945] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 00:42:18.946] 32701 - [info] "WebRequest: took 0.282 ms"
+127.0.0.1 - - [2018-Dec-22 00:47:18.946] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 00:47:18.946] 32701 - [info] "WebRequest: took 0.304 ms"
+127.0.0.1 - - [2018-Dec-22 00:52:18.945] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 00:52:18.945] 32701 - [info] "WebRequest: took 0.236 ms"
+127.0.0.1 - - [2018-Dec-22 00:57:18.946] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 00:57:18.946] 32701 - [info] "WebRequest: took 0.302 ms"
+127.0.0.1 - - [2018-Dec-22 01:02:18.946] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 01:02:18.946] 32701 - [info] "WebRequest: took 0.354 ms"
+127.0.0.1 - - [2018-Dec-22 01:07:18.946] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 01:07:18.946] 32701 - [info] "WebRequest: took 0.297 ms"
+127.0.0.1 - - [2018-Dec-22 01:12:18.947] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 01:12:18.947] 32701 - [info] "WebRequest: took 0.255 ms"
+127.0.0.1 - - [2018-Dec-22 01:17:18.946] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 01:17:18.946] 32701 - [info] "WebRequest: took 0.236 ms"
+127.0.0.1 - - [2018-Dec-22 01:22:18.947] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 01:22:18.947] 32701 - [info] "WebRequest: took 0.268 ms"
+127.0.0.1 - - [2018-Dec-22 01:27:18.947] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 01:27:18.947] 32701 - [info] "WebRequest: took 0.27 ms"
+127.0.0.1 - - [2018-Dec-22 01:32:18.947] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 01:32:18.947] 32701 - [info] "WebRequest: took 0.288 ms"
+127.0.0.1 - - [2018-Dec-22 01:37:18.947] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 01:37:18.947] 32701 - [info] "WebRequest: took 0.239 ms"
+127.0.0.1 - - [2018-Dec-22 01:42:18.947] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 01:42:18.947] 32701 - [info] "WebRequest: took 0.254 ms"
+127.0.0.1 - - [2018-Dec-22 01:47:18.948] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 01:47:18.948] 32701 - [info] "WebRequest: took 0.299 ms"
+127.0.0.1 - - [2018-Dec-22 01:52:18.948] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 01:52:18.948] 32701 - [info] "WebRequest: took 0.264 ms"
+127.0.0.1 - - [2018-Dec-22 01:57:18.948] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 01:57:18.948] 32701 - [info] "WebRequest: took 0.26 ms"
+127.0.0.1 - - [2018-Dec-22 02:02:18.948] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 02:02:18.948] 32701 - [info] "WebRequest: took 0.277 ms"
+127.0.0.1 - - [2018-Dec-22 02:07:18.949] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 02:07:18.949] 32701 - [info] "WebRequest: took 0.236 ms"
+127.0.0.1 - - [2018-Dec-22 02:12:18.949] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 02:12:18.949] 32701 - [info] "WebRequest: took 0.259 ms"
+127.0.0.1 - - [2018-Dec-22 02:17:18.949] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 02:17:18.949] 32701 - [info] "WebRequest: took 0.288 ms"
+127.0.0.1 - - [2018-Dec-22 02:22:18.949] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 02:22:18.949] 32701 - [info] "WebRequest: took 0.288 ms"
+127.0.0.1 - - [2018-Dec-22 02:27:18.949] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 02:27:18.950] 32701 - [info] "WebRequest: took 0.276 ms"
+127.0.0.1 - - [2018-Dec-22 02:32:18.949] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 02:32:18.950] 32701 - [info] "WebRequest: took 0.315 ms"
+127.0.0.1 - - [2018-Dec-22 02:37:18.950] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 02:37:18.950] 32701 - [info] "WebRequest: took 0.28 ms"
+127.0.0.1 - - [2018-Dec-22 02:42:18.950] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 02:42:18.950] 32701 - [info] "WebRequest: took 0.238 ms"
+127.0.0.1 - - [2018-Dec-22 02:47:18.950] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 02:47:18.950] 32701 - [info] "WebRequest: took 0.355 ms"
+127.0.0.1 - - [2018-Dec-22 02:52:18.951] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 02:52:18.951] 32701 - [info] "WebRequest: took 0.28 ms"
+127.0.0.1 - - [2018-Dec-22 02:57:18.951] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 02:57:18.951] 32701 - [info] "WebRequest: took 0.246 ms"
+127.0.0.1 - - [2018-Dec-22 03:02:18.951] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 03:02:18.951] 32701 - [info] "WebRequest: took 0.21 ms"
+127.0.0.1 - - [2018-Dec-22 03:07:18.951] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 03:07:18.951] 32701 - [info] "WebRequest: took 0.246 ms"
+127.0.0.1 - - [2018-Dec-22 03:12:18.951] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 03:12:18.951] 32701 - [info] "WebRequest: took 0.249 ms"
+127.0.0.1 - - [2018-Dec-22 03:17:18.951] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 03:17:18.951] 32701 - [info] "WebRequest: took 0.257 ms"
+127.0.0.1 - - [2018-Dec-22 03:22:18.951] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 03:22:18.951] 32701 - [info] "WebRequest: took 0.278 ms"
+127.0.0.1 - - [2018-Dec-22 03:27:18.952] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 03:27:18.952] 32701 - [info] "WebRequest: took 0.284 ms"
+127.0.0.1 - - [2018-Dec-22 03:32:18.952] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 03:32:18.952] 32701 - [info] "WebRequest: took 0.283 ms"
+127.0.0.1 - - [2018-Dec-22 03:37:18.952] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 03:37:18.952] 32701 - [info] "WebRequest: took 0.248 ms"
+127.0.0.1 - - [2018-Dec-22 03:42:18.952] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 03:42:18.952] 32701 - [info] "WebRequest: took 0.239 ms"
+127.0.0.1 - - [2018-Dec-22 03:47:18.953] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 03:47:18.953] 32701 - [info] "WebRequest: took 0.267 ms"
+127.0.0.1 - - [2018-Dec-22 03:52:18.953] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 03:52:18.953] 32701 - [info] "WebRequest: took 0.298 ms"
+127.0.0.1 - - [2018-Dec-22 03:57:18.953] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 03:57:18.953] 32701 - [info] "WebRequest: took 0.261 ms"
+127.0.0.1 - - [2018-Dec-22 04:02:18.953] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 04:02:18.953] 32701 - [info] "WebRequest: took 0.231 ms"
+127.0.0.1 - - [2018-Dec-22 04:07:18.953] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 04:07:18.953] 32701 - [info] "WebRequest: took 0.231 ms"
+127.0.0.1 - - [2018-Dec-22 04:12:18.953] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 04:12:18.953] 32701 - [info] "WebRequest: took 0.259 ms"
+127.0.0.1 - - [2018-Dec-22 04:17:18.953] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 04:17:18.953] 32701 - [info] "WebRequest: took 0.284 ms"
+127.0.0.1 - - [2018-Dec-22 04:22:18.953] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 04:22:18.953] 32701 - [info] "WebRequest: took 0.297 ms"
+127.0.0.1 - - [2018-Dec-22 04:27:18.954] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 04:27:18.954] 32701 - [info] "WebRequest: took 0.265 ms"
+127.0.0.1 - - [2018-Dec-22 04:32:18.954] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 04:32:18.954] 32701 - [info] "WebRequest: took 0.269 ms"
+127.0.0.1 - - [2018-Dec-22 04:37:18.954] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 04:37:18.954] 32701 - [info] "WebRequest: took 0.306 ms"
+127.0.0.1 - - [2018-Dec-22 04:42:18.954] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 04:42:18.954] 32701 - [info] "WebRequest: took 0.263 ms"
+127.0.0.1 - - [2018-Dec-22 04:47:18.954] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 04:47:18.954] 32701 - [info] "WebRequest: took 0.245 ms"
+127.0.0.1 - - [2018-Dec-22 04:52:18.955] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 04:52:18.955] 32701 - [info] "WebRequest: took 0.244 ms"
+127.0.0.1 - - [2018-Dec-22 04:57:18.955] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 04:57:18.955] 32701 - [info] "WebRequest: took 0.226 ms"
+127.0.0.1 - - [2018-Dec-22 05:02:18.955] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 05:02:18.955] 32701 - [info] "WebRequest: took 0.31 ms"
+127.0.0.1 - - [2018-Dec-22 05:07:18.955] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 05:07:18.955] 32701 - [info] "WebRequest: took 0.236 ms"
+127.0.0.1 - - [2018-Dec-22 05:12:18.955] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 05:12:18.955] 32701 - [info] "WebRequest: took 0.299 ms"
+127.0.0.1 - - [2018-Dec-22 05:17:18.955] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 05:17:18.955] 32701 - [info] "WebRequest: took 0.25 ms"
+127.0.0.1 - - [2018-Dec-22 05:22:18.955] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 05:22:18.955] 32701 - [info] "WebRequest: took 0.24 ms"
+127.0.0.1 - - [2018-Dec-22 05:27:18.956] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 05:27:18.956] 32701 - [info] "WebRequest: took 0.262 ms"
+127.0.0.1 - - [2018-Dec-22 05:32:18.956] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 05:32:18.956] 32701 - [info] "WebRequest: took 0.243 ms"
+127.0.0.1 - - [2018-Dec-22 05:37:18.956] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 05:37:18.956] 32701 - [info] "WebRequest: took 0.244 ms"
+127.0.0.1 - - [2018-Dec-22 05:42:18.956] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 05:42:18.956] 32701 - [info] "WebRequest: took 0.267 ms"
+127.0.0.1 - - [2018-Dec-22 05:47:18.957] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 05:47:18.957] 32701 - [info] "WebRequest: took 0.287 ms"
+127.0.0.1 - - [2018-Dec-22 05:52:18.957] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 05:52:18.957] 32701 - [info] "WebRequest: took 0.259 ms"
+127.0.0.1 - - [2018-Dec-22 05:57:18.957] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 05:57:18.957] 32701 - [info] "WebRequest: took 0.263 ms"
+127.0.0.1 - - [2018-Dec-22 06:02:18.957] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 06:02:18.957] 32701 - [info] "WebRequest: took 0.235 ms"
+127.0.0.1 - - [2018-Dec-22 06:07:18.957] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 06:07:18.957] 32701 - [info] "WebRequest: took 0.217 ms"
+127.0.0.1 - - [2018-Dec-22 06:12:18.957] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 06:12:18.958] 32701 - [info] "WebRequest: took 0.237 ms"
+127.0.0.1 - - [2018-Dec-22 06:17:18.958] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 06:17:18.958] 32701 - [info] "WebRequest: took 0.208 ms"
+127.0.0.1 - - [2018-Dec-22 06:22:18.958] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 06:22:18.958] 32701 - [info] "WebRequest: took 0.26 ms"
+127.0.0.1 - - [2018-Dec-22 06:27:18.958] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 06:27:18.958] 32701 - [info] "WebRequest: took 0.273 ms"
+127.0.0.1 - - [2018-Dec-22 06:32:18.959] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 06:32:18.959] 32701 - [info] "WebRequest: took 0.3 ms"
+127.0.0.1 - - [2018-Dec-22 06:37:18.958] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 06:37:18.958] 32701 - [info] "WebRequest: took 0.268 ms"
+127.0.0.1 - - [2018-Dec-22 06:42:18.959] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 06:42:18.959] 32701 - [info] "WebRequest: took 0.248 ms"
+127.0.0.1 - - [2018-Dec-22 06:47:18.959] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 06:47:18.959] 32701 - [info] "WebRequest: took 0.388 ms"
+127.0.0.1 - - [2018-Dec-22 06:52:18.960] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 06:52:18.960] 32701 - [info] "WebRequest: took 0.324 ms"
+127.0.0.1 - - [2018-Dec-22 06:57:18.959] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 06:57:18.959] 32701 - [info] "WebRequest: took 0.241 ms"
+127.0.0.1 - - [2018-Dec-22 07:02:18.960] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 07:02:18.960] 32701 - [info] "WebRequest: took 0.317 ms"
+127.0.0.1 - - [2018-Dec-22 07:07:18.960] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 07:07:18.960] 32701 - [info] "WebRequest: took 0.207 ms"
+127.0.0.1 - - [2018-Dec-22 07:12:18.960] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 07:12:18.960] 32701 - [info] "WebRequest: took 0.256 ms"
+127.0.0.1 - - [2018-Dec-22 07:17:18.960] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 07:17:18.960] 32701 - [info] "WebRequest: took 0.3 ms"
+127.0.0.1 - - [2018-Dec-22 07:22:18.960] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 07:22:18.960] 32701 - [info] "WebRequest: took 0.23 ms"
+127.0.0.1 - - [2018-Dec-22 07:27:18.961] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 07:27:18.961] 32701 - [info] "WebRequest: took 0.247 ms"
+127.0.0.1 - - [2018-Dec-22 07:32:18.961] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 07:32:18.961] 32701 - [info] "WebRequest: took 0.299 ms"
+127.0.0.1 - - [2018-Dec-22 07:37:18.961] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 07:37:18.961] 32701 - [info] "WebRequest: took 0.316 ms"
+127.0.0.1 - - [2018-Dec-22 07:42:18.961] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 07:42:18.961] 32701 - [info] "WebRequest: took 0.269 ms"
+127.0.0.1 - - [2018-Dec-22 07:47:18.962] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 07:47:18.962] 32701 - [info] "WebRequest: took 0.22 ms"
+127.0.0.1 - - [2018-Dec-22 07:52:18.961] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 07:52:18.961] 32701 - [info] "WebRequest: took 0.237 ms"
+127.0.0.1 - - [2018-Dec-22 07:57:18.961] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 07:57:18.961] 32701 - [info] "WebRequest: took 0.244 ms"
+127.0.0.1 - - [2018-Dec-22 08:02:18.962] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 08:02:18.962] 32701 - [info] "WebRequest: took 0.252 ms"
+127.0.0.1 - - [2018-Dec-22 08:07:18.963] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 08:07:18.963] 32701 - [info] "WebRequest: took 0.279 ms"
+127.0.0.1 - - [2018-Dec-22 08:12:18.963] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 08:12:18.963] 32701 - [info] "WebRequest: took 0.318 ms"
+127.0.0.1 - - [2018-Dec-22 08:17:18.963] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 08:17:18.963] 32701 - [info] "WebRequest: took 0.268 ms"
+127.0.0.1 - - [2018-Dec-22 08:22:18.963] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 08:22:18.963] 32701 - [info] "WebRequest: took 0.337 ms"
+127.0.0.1 - - [2018-Dec-22 08:27:18.963] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 08:27:18.963] 32701 - [info] "WebRequest: took 0.261 ms"
+127.0.0.1 - - [2018-Dec-22 08:32:18.963] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 08:32:18.963] 32701 - [info] "WebRequest: took 0.315 ms"
+127.0.0.1 - - [2018-Dec-22 08:37:18.963] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 08:37:18.963] 32701 - [info] "WebRequest: took 0.274 ms"
+127.0.0.1 - - [2018-Dec-22 08:42:18.963] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 08:42:18.964] 32701 - [info] "WebRequest: took 0.237 ms"
+127.0.0.1 - - [2018-Dec-22 08:47:18.963] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 08:47:18.964] 32701 - [info] "WebRequest: took 0.312 ms"
+127.0.0.1 - - [2018-Dec-22 08:52:18.965] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 08:52:18.965] 32701 - [info] "WebRequest: took 0.258 ms"
+127.0.0.1 - - [2018-Dec-22 08:57:18.964] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 08:57:18.964] 32701 - [info] "WebRequest: took 0.283 ms"
+127.0.0.1 - - [2018-Dec-22 09:02:18.964] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 09:02:18.964] 32701 - [info] "WebRequest: took 0.244 ms"
+127.0.0.1 - - [2018-Dec-22 09:07:18.964] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 09:07:18.964] 32701 - [info] "WebRequest: took 0.2 ms"
+127.0.0.1 - - [2018-Dec-22 09:12:18.964] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 09:12:18.964] 32701 - [info] "WebRequest: took 0.205 ms"
+127.0.0.1 - - [2018-Dec-22 09:17:18.964] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 09:17:18.965] 32701 - [info] "WebRequest: took 0.205 ms"
+127.0.0.1 - - [2018-Dec-22 09:22:18.965] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 09:22:18.965] 32701 - [info] "WebRequest: took 0.226 ms"
+127.0.0.1 - - [2018-Dec-22 09:27:18.965] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 09:27:18.965] 32701 - [info] "WebRequest: took 0.275 ms"
+127.0.0.1 - - [2018-Dec-22 09:32:18.966] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 09:32:18.966] 32701 - [info] "WebRequest: took 0.26 ms"
+127.0.0.1 - - [2018-Dec-22 09:37:18.966] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 09:37:18.966] 32701 - [info] "WebRequest: took 0.24 ms"
+127.0.0.1 - - [2018-Dec-22 09:42:18.966] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 09:42:18.966] 32701 - [info] "WebRequest: took 0.211 ms"
+127.0.0.1 - - [2018-Dec-22 09:47:18.966] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 09:47:18.966] 32701 - [info] "WebRequest: took 0.305 ms"
+127.0.0.1 - - [2018-Dec-22 09:52:18.970] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 09:52:18.970] 32701 - [info] "WebRequest: took 0.279 ms"
+127.0.0.1 - - [2018-Dec-22 09:57:18.967] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 09:57:18.967] 32701 - [info] "WebRequest: took 0.266 ms"
+127.0.0.1 - - [2018-Dec-22 10:02:18.968] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 10:02:18.968] 32701 - [info] "WebRequest: took 0.252 ms"
+127.0.0.1 - - [2018-Dec-22 10:07:18.968] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 10:07:18.968] 32701 - [info] "WebRequest: took 0.276 ms"
+127.0.0.1 - - [2018-Dec-22 10:12:18.968] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 10:12:18.968] 32701 - [info] "WebRequest: took 0.282 ms"
+127.0.0.1 - - [2018-Dec-22 10:17:18.967] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 10:17:18.967] 32701 - [info] "WebRequest: took 0.278 ms"
+127.0.0.1 - - [2018-Dec-22 10:22:18.967] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 10:22:18.968] 32701 - [info] "WebRequest: took 0.297 ms"
+127.0.0.1 - - [2018-Dec-22 10:27:18.968] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 10:27:18.968] 32701 - [info] "WebRequest: took 0.245 ms"
+127.0.0.1 - - [2018-Dec-22 10:32:18.968] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 10:32:18.968] 32701 - [info] "WebRequest: took 0.233 ms"
+127.0.0.1 - - [2018-Dec-22 10:37:18.970] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 10:37:18.970] 32701 - [info] "WebRequest: took 0.266 ms"
+127.0.0.1 - - [2018-Dec-22 10:42:18.968] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 10:42:18.969] 32701 - [info] "WebRequest: took 0.287 ms"
+127.0.0.1 - - [2018-Dec-22 10:47:18.968] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 10:47:18.968] 32701 - [info] "WebRequest: took 0.221 ms"
+127.0.0.1 - - [2018-Dec-22 10:52:18.968] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 10:52:18.968] 32701 - [info] "WebRequest: took 0.233 ms"
+127.0.0.1 - - [2018-Dec-22 10:57:18.969] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 10:57:18.969] 32701 - [info] "WebRequest: took 0.303 ms"
+127.0.0.1 - - [2018-Dec-22 11:02:18.969] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 11:02:18.969] 32701 - [info] "WebRequest: took 0.298 ms"
+127.0.0.1 - - [2018-Dec-22 11:07:18.971] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 11:07:18.971] 32701 - [info] "WebRequest: took 0.808 ms"
+127.0.0.1 - - [2018-Dec-22 11:12:18.969] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 11:12:18.969] 32701 - [info] "WebRequest: took 0.297 ms"
+127.0.0.1 - - [2018-Dec-22 11:17:18.969] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 11:17:18.969] 32701 - [info] "WebRequest: took 0.258 ms"
+127.0.0.1 - - [2018-Dec-22 11:22:18.971] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 11:22:18.971] 32701 - [info] "WebRequest: took 0.467 ms"
+127.0.0.1 - - [2018-Dec-22 11:27:18.972] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 11:27:18.973] 32701 - [info] "WebRequest: took 0.383 ms"
+127.0.0.1 - - [2018-Dec-22 11:32:18.971] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 11:32:18.971] 32701 - [info] "WebRequest: took 0.442 ms"
+127.0.0.1 - - [2018-Dec-22 11:37:18.970] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 11:37:18.970] 32701 - [info] "WebRequest: took 0.249 ms"
+127.0.0.1 - - [2018-Dec-22 11:42:18.974] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 11:42:18.974] 32701 - [info] "WebRequest: took 0.336 ms"
+127.0.0.1 - - [2018-Dec-22 11:47:18.970] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 11:47:18.971] 32701 - [info] "WebRequest: took 0.279 ms"
+127.0.0.1 - - [2018-Dec-22 11:52:18.971] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 11:52:18.971] 32701 - [info] "WebRequest: took 0.232 ms"
+127.0.0.1 - - [2018-Dec-22 11:57:18.970] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 11:57:18.970] 32701 - [info] "WebRequest: took 0.205 ms"
+127.0.0.1 - - [2018-Dec-22 12:02:18.970] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 12:02:18.970] 32701 - [info] "WebRequest: took 0.216 ms"
+127.0.0.1 - - [2018-Dec-22 12:07:18.973] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 12:07:18.973] 32701 - [info] "WebRequest: took 0.284 ms"
+127.0.0.1 - - [2018-Dec-22 12:12:18.971] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 12:12:18.971] 32701 - [info] "WebRequest: took 0.22 ms"
+127.0.0.1 - - [2018-Dec-22 12:17:18.971] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 12:17:18.971] 32701 - [info] "WebRequest: took 0.24 ms"
+127.0.0.1 - - [2018-Dec-22 12:22:18.972] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 12:22:18.972] 32701 - [info] "WebRequest: took 0.255 ms"
+127.0.0.1 - - [2018-Dec-22 12:27:18.971] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 12:27:18.971] 32701 - [info] "WebRequest: took 0.305 ms"
+127.0.0.1 - - [2018-Dec-22 12:32:18.972] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 12:32:18.972] 32701 - [info] "WebRequest: took 0.263 ms"
+127.0.0.1 - - [2018-Dec-22 12:37:18.973] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 12:37:18.973] 32701 - [info] "WebRequest: took 0.272 ms"
+127.0.0.1 - - [2018-Dec-22 12:42:18.972] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 12:42:18.972] 32701 - [info] "WebRequest: took 0.308 ms"
+127.0.0.1 - - [2018-Dec-22 12:47:18.976] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 12:47:18.976] 32701 - [info] "WebRequest: took 0.442 ms"
+127.0.0.1 - - [2018-Dec-22 12:52:18.972] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 12:52:18.972] 32701 - [info] "WebRequest: took 0.254 ms"
+127.0.0.1 - - [2018-Dec-22 12:57:18.973] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 12:57:18.973] 32701 - [info] "WebRequest: took 0.251 ms"
+127.0.0.1 - - [2018-Dec-22 13:02:18.976] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 13:02:18.976] 32701 - [info] "WebRequest: took 0.895 ms"
+127.0.0.1 - - [2018-Dec-22 13:07:18.973] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 13:07:18.973] 32701 - [info] "WebRequest: took 0.252 ms"
+127.0.0.1 - - [2018-Dec-22 13:12:18.973] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 13:12:18.973] 32701 - [info] "WebRequest: took 0.324 ms"
+127.0.0.1 - - [2018-Dec-22 13:17:18.973] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 13:17:18.973] 32701 - [info] "WebRequest: took 0.249 ms"
+127.0.0.1 - - [2018-Dec-22 13:22:18.973] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 13:22:18.973] 32701 - [info] "WebRequest: took 0.245 ms"
+127.0.0.1 - - [2018-Dec-22 13:27:18.973] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 13:27:18.973] 32701 - [info] "WebRequest: took 0.268 ms"
+127.0.0.1 - - [2018-Dec-22 13:32:18.973] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 13:32:18.973] 32701 - [info] "WebRequest: took 0.24 ms"
+127.0.0.1 - - [2018-Dec-22 13:37:18.974] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 13:37:18.974] 32701 - [info] "WebRequest: took 0.224 ms"
+127.0.0.1 - - [2018-Dec-22 13:42:18.974] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 13:42:18.974] 32701 - [info] "WebRequest: took 0.246 ms"
+127.0.0.1 - - [2018-Dec-22 13:47:18.974] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 13:47:18.974] 32701 - [info] "WebRequest: took 0.352 ms"
+127.0.0.1 - - [2018-Dec-22 13:52:18.974] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 13:52:18.974] 32701 - [info] "WebRequest: took 0.254 ms"
+127.0.0.1 - - [2018-Dec-22 13:57:18.974] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 13:57:18.974] 32701 - [info] "WebRequest: took 0.251 ms"
+127.0.0.1 - - [2018-Dec-22 14:02:18.974] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 14:02:18.974] 32701 - [info] "WebRequest: took 0.211 ms"
+127.0.0.1 - - [2018-Dec-22 14:07:18.975] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 14:07:18.975] 32701 - [info] "WebRequest: took 0.273 ms"
+127.0.0.1 - - [2018-Dec-22 14:12:18.975] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 14:12:18.975] 32701 - [info] "WebRequest: took 0.266 ms"
+127.0.0.1 - - [2018-Dec-22 14:17:18.975] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 14:17:18.975] 32701 - [info] "WebRequest: took 0.273 ms"
+127.0.0.1 - - [2018-Dec-22 14:22:18.975] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 14:22:18.975] 32701 - [info] "WebRequest: took 0.26 ms"
+127.0.0.1 - - [2018-Dec-22 14:27:18.976] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 14:27:18.976] 32701 - [info] "WebRequest: took 0.251 ms"
+127.0.0.1 - - [2018-Dec-22 14:32:18.976] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 14:32:18.976] 32701 - [info] "WebRequest: took 0.264 ms"
+127.0.0.1 - - [2018-Dec-22 14:37:18.975] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 14:37:18.975] 32701 - [info] "WebRequest: took 0.24 ms"
+127.0.0.1 - - [2018-Dec-22 14:42:18.976] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 14:42:18.976] 32701 - [info] "WebRequest: took 0.266 ms"
+127.0.0.1 - - [2018-Dec-22 14:47:18.976] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 14:47:18.976] 32701 - [info] "WebRequest: took 0.294 ms"
+127.0.0.1 - - [2018-Dec-22 14:52:18.976] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 14:52:18.976] 32701 - [info] "WebRequest: took 0.283 ms"
+127.0.0.1 - - [2018-Dec-22 14:57:18.976] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 14:57:18.977] 32701 - [info] "WebRequest: took 0.258 ms"
+127.0.0.1 - - [2018-Dec-22 15:02:18.976] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 15:02:18.976] 32701 - [info] "WebRequest: took 0.237 ms"
+127.0.0.1 - - [2018-Dec-22 15:07:18.977] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 15:07:18.977] 32701 - [info] "WebRequest: took 0.285 ms"
+127.0.0.1 - - [2018-Dec-22 15:12:18.977] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 15:12:18.977] 32701 - [info] "WebRequest: took 0.224 ms"
+127.0.0.1 - - [2018-Dec-22 15:17:18.977] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 15:17:18.977] 32701 - [info] "WebRequest: took 0.284 ms"
+127.0.0.1 - - [2018-Dec-22 15:22:18.977] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 15:22:18.977] 32701 - [info] "WebRequest: took 0.223 ms"
+127.0.0.1 - - [2018-Dec-22 15:27:18.978] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 15:27:18.978] 32701 - [info] "WebRequest: took 0.27 ms"
+127.0.0.1 - - [2018-Dec-22 15:32:18.977] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 15:32:18.977] 32701 - [info] "WebRequest: took 0.27 ms"
+127.0.0.1 - - [2018-Dec-22 15:37:18.978] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 15:37:18.978] 32701 - [info] "WebRequest: took 0.274 ms"
+127.0.0.1 - - [2018-Dec-22 15:42:18.978] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 15:42:18.978] 32701 - [info] "WebRequest: took 0.285 ms"
+127.0.0.1 - - [2018-Dec-22 15:47:18.978] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 15:47:18.978] 32701 - [info] "WebRequest: took 0.227 ms"
+127.0.0.1 - - [2018-Dec-22 15:52:18.978] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 15:52:18.978] 32701 - [info] "WebRequest: took 0.244 ms"
+127.0.0.1 - - [2018-Dec-22 15:57:18.979] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 15:57:18.979] 32701 - [info] "WebRequest: took 0.309 ms"
+127.0.0.1 - - [2018-Dec-22 16:02:18.979] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 16:02:18.979] 32701 - [info] "WebRequest: took 0.286 ms"
+127.0.0.1 - - [2018-Dec-22 16:07:18.979] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 16:07:18.979] 32701 - [info] "WebRequest: took 0.225 ms"
+127.0.0.1 - - [2018-Dec-22 16:12:18.979] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 16:12:18.979] 32701 - [info] "WebRequest: took 0.246 ms"
+127.0.0.1 - - [2018-Dec-22 16:17:18.979] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 16:17:18.979] 32701 - [info] "WebRequest: took 0.22 ms"
+127.0.0.1 - - [2018-Dec-22 16:22:18.979] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 16:22:18.979] 32701 - [info] "WebRequest: took 0.305 ms"
+127.0.0.1 - - [2018-Dec-22 16:27:18.979] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 16:27:18.979] 32701 - [info] "WebRequest: took 0.343 ms"
+127.0.0.1 - - [2018-Dec-22 16:32:18.979] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 16:32:18.979] 32701 - [info] "WebRequest: took 0.266 ms"
+127.0.0.1 - - [2018-Dec-22 16:37:18.980] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 16:37:18.980] 32701 - [info] "WebRequest: took 0.237 ms"
+127.0.0.1 - - [2018-Dec-22 16:42:18.980] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 16:42:18.980] 32701 - [info] "WebRequest: took 0.304 ms"
+127.0.0.1 - - [2018-Dec-22 16:47:18.980] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 16:47:18.980] 32701 - [info] "WebRequest: took 0.281 ms"
+127.0.0.1 - - [2018-Dec-22 16:52:18.980] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 16:52:18.980] 32701 - [info] "WebRequest: took 0.28 ms"
+127.0.0.1 - - [2018-Dec-22 16:57:18.980] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 16:57:18.980] 32701 - [info] "WebRequest: took 0.274 ms"
+127.0.0.1 - - [2018-Dec-22 17:02:18.980] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 17:02:18.980] 32701 - [info] "WebRequest: took 0.265 ms"
+127.0.0.1 - - [2018-Dec-22 17:07:18.981] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 17:07:18.981] 32701 - [info] "WebRequest: took 0.311 ms"
+127.0.0.1 - - [2018-Dec-22 17:12:18.981] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 17:12:18.981] 32701 - [info] "WebRequest: took 0.256 ms"
+127.0.0.1 - - [2018-Dec-22 17:17:18.981] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 17:17:18.981] 32701 - [info] "WebRequest: took 0.341 ms"
+127.0.0.1 - - [2018-Dec-22 17:22:18.981] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 17:22:18.981] 32701 - [info] "WebRequest: took 0.305 ms"
+127.0.0.1 - - [2018-Dec-22 17:27:18.981] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 17:27:18.981] 32701 - [info] "WebRequest: took 0.247 ms"
+127.0.0.1 - - [2018-Dec-22 17:32:18.982] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 17:32:18.982] 32701 - [info] "WebRequest: took 0.246 ms"
+127.0.0.1 - - [2018-Dec-22 17:37:18.981] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 17:37:18.981] 32701 - [info] "WebRequest: took 0.239 ms"
+127.0.0.1 - - [2018-Dec-22 17:42:18.982] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 17:42:18.982] 32701 - [info] "WebRequest: took 0.248 ms"
+127.0.0.1 - - [2018-Dec-22 17:47:18.982] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 17:47:18.982] 32701 - [info] "WebRequest: took 0.261 ms"
+127.0.0.1 - - [2018-Dec-22 17:52:18.982] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 17:52:18.982] 32701 - [info] "WebRequest: took 0.26 ms"
+127.0.0.1 - - [2018-Dec-22 17:57:18.983] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 17:57:18.983] 32701 - [info] "WebRequest: took 0.26 ms"
+127.0.0.1 - - [2018-Dec-22 18:02:18.982] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 18:02:18.983] 32701 - [info] "WebRequest: took 0.272 ms"
+127.0.0.1 - - [2018-Dec-22 18:07:18.983] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 18:07:18.983] 32701 - [info] "WebRequest: took 0.225 ms"
+127.0.0.1 - - [2018-Dec-22 18:12:18.982] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 18:12:18.982] 32701 - [info] "WebRequest: took 0.24 ms"
+127.0.0.1 - - [2018-Dec-22 18:17:18.982] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 18:17:18.983] 32701 - [info] "WebRequest: took 0.218 ms"
+127.0.0.1 - - [2018-Dec-22 18:22:18.983] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 18:22:18.983] 32701 - [info] "WebRequest: took 0.24 ms"
+127.0.0.1 - - [2018-Dec-22 18:27:18.984] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 18:27:18.984] 32701 - [info] "WebRequest: took 0.289 ms"
+127.0.0.1 - - [2018-Dec-22 18:32:18.983] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 18:32:18.984] 32701 - [info] "WebRequest: took 0.307 ms"
+127.0.0.1 - - [2018-Dec-22 18:37:18.983] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 18:37:18.984] 32701 - [info] "WebRequest: took 0.24 ms"
+127.0.0.1 - - [2018-Dec-22 18:42:18.983] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 18:42:18.984] 32701 - [info] "WebRequest: took 0.217 ms"
+127.0.0.1 - - [2018-Dec-22 18:47:18.987] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 18:47:18.987] 32701 - [info] "WebRequest: took 0.224 ms"
+127.0.0.1 - - [2018-Dec-22 18:52:18.984] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 18:52:18.984] 32701 - [info] "WebRequest: took 0.252 ms"
+127.0.0.1 - - [2018-Dec-22 18:57:18.984] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 18:57:18.984] 32701 - [info] "WebRequest: took 0.257 ms"
+127.0.0.1 - - [2018-Dec-22 19:02:18.985] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 19:02:18.985] 32701 - [info] "WebRequest: took 0.216 ms"
+127.0.0.1 - - [2018-Dec-22 19:07:18.986] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 19:07:18.986] 32701 - [info] "WebRequest: took 0.258 ms"
+127.0.0.1 - - [2018-Dec-22 19:12:18.985] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 19:12:18.985] 32701 - [info] "WebRequest: took 0.252 ms"
+127.0.0.1 - - [2018-Dec-22 19:17:18.985] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 19:17:18.985] 32701 - [info] "WebRequest: took 0.277 ms"
+127.0.0.1 - - [2018-Dec-22 19:22:18.986] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 19:22:18.986] 32701 - [info] "WebRequest: took 0.319 ms"
+127.0.0.1 - - [2018-Dec-22 19:27:18.985] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 19:27:18.985] 32701 - [info] "WebRequest: took 0.293 ms"
+127.0.0.1 - - [2018-Dec-22 19:32:18.985] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 19:32:18.985] 32701 - [info] "WebRequest: took 0.23 ms"
+127.0.0.1 - - [2018-Dec-22 19:37:18.986] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 19:37:18.986] 32701 - [info] "WebRequest: took 0.273 ms"
+127.0.0.1 - - [2018-Dec-22 19:42:18.987] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 19:42:18.987] 32701 - [info] "WebRequest: took 0.226 ms"
+127.0.0.1 - - [2018-Dec-22 19:47:18.986] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 19:47:18.986] 32701 - [info] "WebRequest: took 0.308 ms"
+127.0.0.1 - - [2018-Dec-22 19:52:18.987] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 19:52:18.987] 32701 - [info] "WebRequest: took 0.238 ms"
+127.0.0.1 - - [2018-Dec-22 19:57:18.987] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 19:57:18.987] 32701 - [info] "WebRequest: took 0.229 ms"
+127.0.0.1 - - [2018-Dec-22 20:02:18.993] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 20:02:18.993] 32701 - [info] "WebRequest: took 0.291 ms"
+127.0.0.1 - - [2018-Dec-22 20:07:18.987] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 20:07:18.987] 32701 - [info] "WebRequest: took 0.223 ms"
+127.0.0.1 - - [2018-Dec-22 20:12:18.987] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 20:12:18.987] 32701 - [info] "WebRequest: took 0.259 ms"
+127.0.0.1 - - [2018-Dec-22 20:17:18.989] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 20:17:18.989] 32701 - [info] "WebRequest: took 0.459 ms"
+127.0.0.1 - - [2018-Dec-22 20:22:19.008] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 20:22:19.009] 32701 - [info] "WebRequest: took 0.993 ms"
+127.0.0.1 - - [2018-Dec-22 20:27:18.991] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 20:27:18.992] 32701 - [info] "WebRequest: took 0.258 ms"
+127.0.0.1 - - [2018-Dec-22 20:32:18.990] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 20:32:18.990] 32701 - [info] "WebRequest: took 0.314 ms"
+127.0.0.1 - - [2018-Dec-22 20:37:18.998] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 20:37:18.999] 32701 - [info] "WebRequest: took 0.736 ms"
+127.0.0.1 - - [2018-Dec-22 20:42:18.995] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 20:42:18.995] 32701 - [info] "WebRequest: took 0.683 ms"
+127.0.0.1 - - [2018-Dec-22 20:47:18.989] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 20:47:18.989] 32701 - [info] "WebRequest: took 0.401 ms"
+127.0.0.1 - - [2018-Dec-22 20:52:19.007] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 20:52:19.011] 32701 - [info] "WebRequest: took 5.049 ms"
+127.0.0.1 - - [2018-Dec-22 20:57:18.992] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 20:57:18.992] 32701 - [info] "WebRequest: took 0.27 ms"
+127.0.0.1 - - [2018-Dec-22 21:02:18.990] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 21:02:18.990] 32701 - [info] "WebRequest: took 0.303 ms"
+127.0.0.1 - - [2018-Dec-22 21:07:18.989] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 21:07:18.990] 32701 - [info] "WebRequest: took 0.22 ms"
+127.0.0.1 - - [2018-Dec-22 21:12:18.990] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 21:12:18.990] 32701 - [info] "WebRequest: took 0.265 ms"
+127.0.0.1 - - [2018-Dec-22 21:17:18.041] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 21:17:18.041] 32701 - [info] "WebRequest: took 0.239 ms"
+127.0.0.1 - - [2018-Dec-22 21:22:18.042] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 21:22:18.042] 32701 - [info] "WebRequest: took 0.27 ms"
+127.0.0.1 - - [2018-Dec-22 21:27:18.042] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 21:27:18.042] 32701 - [info] "WebRequest: took 0.263 ms"
+127.0.0.1 - - [2018-Dec-22 21:32:18.042] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 21:32:18.042] 32701 - [info] "WebRequest: took 0.227 ms"
+127.0.0.1 - - [2018-Dec-22 21:37:18.044] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 21:37:18.044] 32701 - [info] "WebRequest: took 0.291 ms"
+127.0.0.1 - - [2018-Dec-22 21:42:18.991] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 21:42:18.991] 32701 - [info] "WebRequest: took 0.232 ms"
+127.0.0.1 - - [2018-Dec-22 21:47:18.992] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 21:47:18.992] 32701 - [info] "WebRequest: took 0.314 ms"
+127.0.0.1 - - [2018-Dec-22 21:52:18.994] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 21:52:18.994] 32701 - [info] "WebRequest: took 0.271 ms"
+127.0.0.1 - - [2018-Dec-22 21:57:18.992] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 21:57:18.992] 32701 - [info] "WebRequest: took 0.368 ms"
+127.0.0.1 - - [2018-Dec-22 22:02:18.992] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 22:02:18.992] 32701 - [info] "WebRequest: took 0.306 ms"
+127.0.0.1 - - [2018-Dec-22 22:07:18.993] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 22:07:18.993] 32701 - [info] "WebRequest: took 0.256 ms"
+127.0.0.1 - - [2018-Dec-22 22:12:18.993] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 22:12:18.993] 32701 - [info] "WebRequest: took 0.309 ms"
+127.0.0.1 - - [2018-Dec-22 22:17:18.994] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 22:17:18.994] 32701 - [info] "WebRequest: took 0.282 ms"
+127.0.0.1 - - [2018-Dec-22 22:22:18.993] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 22:22:18.993] 32701 - [info] "WebRequest: took 0.234 ms"
+127.0.0.1 - - [2018-Dec-22 22:27:18.993] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 22:27:18.993] 32701 - [info] "WebRequest: took 0.223 ms"
+127.0.0.1 - - [2018-Dec-22 22:32:18.994] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 22:32:18.994] 32701 - [info] "WebRequest: took 0.259 ms"
+127.0.0.1 - - [2018-Dec-22 22:37:18.993] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 22:37:18.993] 32701 - [info] "WebRequest: took 0.25 ms"
+127.0.0.1 - - [2018-Dec-22 22:42:18.994] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 22:42:18.994] 32701 - [info] "WebRequest: took 0.299 ms"
+127.0.0.1 - - [2018-Dec-22 22:47:18.993] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 22:47:18.993] 32701 - [info] "WebRequest: took 0.212 ms"
+127.0.0.1 - - [2018-Dec-22 22:52:18.993] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 22:52:18.993] 32701 - [info] "WebRequest: took 0.253 ms"
+127.0.0.1 - - [2018-Dec-22 22:57:18.993] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 22:57:18.993] 32701 - [info] "WebRequest: took 0.18 ms"
+127.0.0.1 - - [2018-Dec-22 23:02:18.994] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 23:02:18.994] 32701 - [info] "WebRequest: took 0.27 ms"
+127.0.0.1 - - [2018-Dec-22 23:07:18.996] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 23:07:18.996] 32701 - [info] "WebRequest: took 0.254 ms"
+127.0.0.1 - - [2018-Dec-22 23:12:18.994] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 23:12:18.994] 32701 - [info] "WebRequest: took 0.228 ms"
+127.0.0.1 - - [2018-Dec-22 23:17:18.994] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 23:17:18.994] 32701 - [info] "WebRequest: took 0.209 ms"
+127.0.0.1 - - [2018-Dec-22 23:22:18.994] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 23:22:18.994] 32701 - [info] "WebRequest: took 0.246 ms"
+127.0.0.1 - - [2018-Dec-22 23:27:18.994] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 23:27:18.994] 32701 - [info] "WebRequest: took 0.237 ms"
+127.0.0.1 - - [2018-Dec-22 23:32:18.995] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 23:32:18.995] 32701 - [info] "WebRequest: took 0.341 ms"
+127.0.0.1 - - [2018-Dec-22 23:37:18.995] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 23:37:18.995] 32701 - [info] "WebRequest: took 0.253 ms"
+127.0.0.1 - - [2018-Dec-22 23:42:18.995] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 23:42:18.995] 32701 - [info] "WebRequest: took 0.273 ms"
+127.0.0.1 - - [2018-Dec-22 23:47:18.996] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 23:47:18.996] 32701 - [info] "WebRequest: took 0.266 ms"
+127.0.0.1 - - [2018-Dec-22 23:52:18.996] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 23:52:18.996] 32701 - [info] "WebRequest: took 0.286 ms"
+127.0.0.1 - - [2018-Dec-22 23:57:18.996] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-22 23:57:18.996] 32701 - [info] "WebRequest: took 0.23 ms"
+127.0.0.1 - - [2018-Dec-23 00:02:18.996] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 00:02:18.996] 32701 - [info] "WebRequest: took 0.211 ms"
+127.0.0.1 - - [2018-Dec-23 00:07:18.997] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 00:07:18.997] 32701 - [info] "WebRequest: took 0.241 ms"
+127.0.0.1 - - [2018-Dec-23 00:12:18.997] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 00:12:18.997] 32701 - [info] "WebRequest: took 0.316 ms"
+127.0.0.1 - - [2018-Dec-23 00:17:18.997] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 00:17:18.997] 32701 - [info] "WebRequest: took 0.254 ms"
+127.0.0.1 - - [2018-Dec-23 00:22:18.996] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 00:22:18.997] 32701 - [info] "WebRequest: took 0.241 ms"
+127.0.0.1 - - [2018-Dec-23 00:27:18.998] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 00:27:18.998] 32701 - [info] "WebRequest: took 0.285 ms"
+127.0.0.1 - - [2018-Dec-23 00:32:18.997] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 00:32:18.997] 32701 - [info] "WebRequest: took 0.238 ms"
+127.0.0.1 - - [2018-Dec-23 00:37:18.997] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 00:37:18.997] 32701 - [info] "WebRequest: took 0.236 ms"
+127.0.0.1 - - [2018-Dec-23 00:42:18.997] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 00:42:18.997] 32701 - [info] "WebRequest: took 0.235 ms"
+127.0.0.1 - - [2018-Dec-23 00:47:18.997] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 00:47:18.997] 32701 - [info] "WebRequest: took 0.24 ms"
+127.0.0.1 - - [2018-Dec-23 00:52:18.999] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 00:52:18.999] 32701 - [info] "WebRequest: took 0.243 ms"
+127.0.0.1 - - [2018-Dec-23 00:57:18.997] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 00:57:18.997] 32701 - [info] "WebRequest: took 0.256 ms"
+127.0.0.1 - - [2018-Dec-23 01:02:18.998] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 01:02:18.998] 32701 - [info] "WebRequest: took 0.317 ms"
+127.0.0.1 - - [2018-Dec-23 01:07:18.998] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 01:07:18.998] 32701 - [info] "WebRequest: took 0.259 ms"
+127.0.0.1 - - [2018-Dec-23 01:12:18.998] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 01:12:18.998] 32701 - [info] "WebRequest: took 0.266 ms"
+127.0.0.1 - - [2018-Dec-23 01:17:18.998] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 01:17:18.998] 32701 - [info] "WebRequest: took 0.244 ms"
+127.0.0.1 - - [2018-Dec-23 01:22:18.998] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 01:22:18.998] 32701 - [info] "WebRequest: took 0.275 ms"
+127.0.0.1 - - [2018-Dec-23 01:27:18.999] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 01:27:18.999] 32701 - [info] "WebRequest: took 0.252 ms"
+127.0.0.1 - - [2018-Dec-23 01:32:18.999] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 01:32:18.999] 32701 - [info] "WebRequest: took 0.257 ms"
+127.0.0.1 - - [2018-Dec-23 01:37:18.999] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 01:37:18.999] 32701 - [info] "WebRequest: took 0.221 ms"
+127.0.0.1 - - [2018-Dec-23 01:42:19.000] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 01:42:19.000] 32701 - [info] "WebRequest: took 0.237 ms"
+127.0.0.1 - - [2018-Dec-23 01:47:18.999] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 01:47:18.999] 32701 - [info] "WebRequest: took 0.229 ms"
+127.0.0.1 - - [2018-Dec-23 01:52:19.000] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 01:52:19.000] 32701 - [info] "WebRequest: took 0.25 ms"
+127.0.0.1 - - [2018-Dec-23 01:57:19.000] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 01:57:19.000] 32701 - [info] "WebRequest: took 0.264 ms"
+127.0.0.1 - - [2018-Dec-23 02:02:19.000] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 02:02:19.000] 32701 - [info] "WebRequest: took 0.288 ms"
+127.0.0.1 - - [2018-Dec-23 02:07:19.000] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 02:07:19.000] 32701 - [info] "WebRequest: took 0.242 ms"
+127.0.0.1 - - [2018-Dec-23 02:12:19.000] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 02:12:19.000] 32701 - [info] "WebRequest: took 0.262 ms"
+127.0.0.1 - - [2018-Dec-23 02:17:19.002] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 02:17:19.002] 32701 - [info] "WebRequest: took 0.21 ms"
+127.0.0.1 - - [2018-Dec-23 02:22:19.000] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 02:22:19.000] 32701 - [info] "WebRequest: took 0.22 ms"
+127.0.0.1 - - [2018-Dec-23 02:27:19.000] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 02:27:19.000] 32701 - [info] "WebRequest: took 0.24 ms"
+127.0.0.1 - - [2018-Dec-23 02:32:19.000] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 02:32:19.000] 32701 - [info] "WebRequest: took 0.234 ms"
+127.0.0.1 - - [2018-Dec-23 02:37:19.001] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 02:37:19.001] 32701 - [info] "WebRequest: took 0.256 ms"
+127.0.0.1 - - [2018-Dec-23 02:42:19.001] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 02:42:19.001] 32701 - [info] "WebRequest: took 0.27 ms"
+127.0.0.1 - - [2018-Dec-23 02:47:19.001] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 02:47:19.001] 32701 - [info] "WebRequest: took 0.256 ms"
+127.0.0.1 - - [2018-Dec-23 02:52:19.001] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 02:52:19.001] 32701 - [info] "WebRequest: took 0.236 ms"
+127.0.0.1 - - [2018-Dec-23 02:57:19.001] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 02:57:19.001] 32701 - [info] "WebRequest: took 0.226 ms"
+127.0.0.1 - - [2018-Dec-23 03:02:19.002] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 03:02:19.002] 32701 - [info] "WebRequest: took 0.253 ms"
+127.0.0.1 - - [2018-Dec-23 03:07:19.002] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 03:07:19.002] 32701 - [info] "WebRequest: took 0.26 ms"
+127.0.0.1 - - [2018-Dec-23 03:12:19.002] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 03:12:19.002] 32701 - [info] "WebRequest: took 0.242 ms"
+127.0.0.1 - - [2018-Dec-23 03:17:19.002] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 03:17:19.002] 32701 - [info] "WebRequest: took 0.241 ms"
+127.0.0.1 - - [2018-Dec-23 03:22:19.002] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 03:22:19.002] 32701 - [info] "WebRequest: took 0.249 ms"
+127.0.0.1 - - [2018-Dec-23 03:27:19.002] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 03:27:19.002] 32701 - [info] "WebRequest: took 0.234 ms"
+127.0.0.1 - - [2018-Dec-23 03:32:19.003] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 03:32:19.003] 32701 - [info] "WebRequest: took 0.242 ms"
+127.0.0.1 - - [2018-Dec-23 03:37:19.003] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 03:37:19.003] 32701 - [info] "WebRequest: took 0.325 ms"
+127.0.0.1 - - [2018-Dec-23 03:42:19.003] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 03:42:19.003] 32701 - [info] "WebRequest: took 0.358 ms"
+127.0.0.1 - - [2018-Dec-23 03:47:19.003] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 03:47:19.003] 32701 - [info] "WebRequest: took 0.281 ms"
+127.0.0.1 - - [2018-Dec-23 03:52:19.004] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 03:52:19.004] 32701 - [info] "WebRequest: took 0.382 ms"
+127.0.0.1 - - [2018-Dec-23 03:57:19.003] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 03:57:19.004] 32701 - [info] "WebRequest: took 0.317 ms"
+127.0.0.1 - - [2018-Dec-23 04:02:19.004] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 04:02:19.004] 32701 - [info] "WebRequest: took 0.323 ms"
+127.0.0.1 - - [2018-Dec-23 04:07:19.004] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 04:07:19.004] 32701 - [info] "WebRequest: took 0.233 ms"
+127.0.0.1 - - [2018-Dec-23 04:12:19.004] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 04:12:19.004] 32701 - [info] "WebRequest: took 0.245 ms"
+127.0.0.1 - - [2018-Dec-23 04:17:19.004] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 04:17:19.004] 32701 - [info] "WebRequest: took 0.236 ms"
+127.0.0.1 - - [2018-Dec-23 04:22:19.005] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 04:22:19.005] 32701 - [info] "WebRequest: took 0.207 ms"
+127.0.0.1 - - [2018-Dec-23 04:27:19.005] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 04:27:19.005] 32701 - [info] "WebRequest: took 0.322 ms"
+127.0.0.1 - - [2018-Dec-23 04:32:19.005] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 04:32:19.005] 32701 - [info] "WebRequest: took 0.279 ms"
+127.0.0.1 - - [2018-Dec-23 04:37:19.005] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 04:37:19.005] 32701 - [info] "WebRequest: took 0.299 ms"
+127.0.0.1 - - [2018-Dec-23 04:42:19.005] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 04:42:19.005] 32701 - [info] "WebRequest: took 0.248 ms"
+127.0.0.1 - - [2018-Dec-23 04:47:19.005] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 04:47:19.005] 32701 - [info] "WebRequest: took 0.246 ms"
+127.0.0.1 - - [2018-Dec-23 04:52:19.005] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 04:52:19.005] 32701 - [info] "WebRequest: took 0.285 ms"
+127.0.0.1 - - [2018-Dec-23 04:57:19.006] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 04:57:19.006] 32701 - [info] "WebRequest: took 0.312 ms"
+127.0.0.1 - - [2018-Dec-23 05:02:19.006] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 05:02:19.006] 32701 - [info] "WebRequest: took 0.245 ms"
+127.0.0.1 - - [2018-Dec-23 05:07:19.006] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 05:07:19.006] 32701 - [info] "WebRequest: took 0.237 ms"
+127.0.0.1 - - [2018-Dec-23 05:12:19.006] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 05:12:19.006] 32701 - [info] "WebRequest: took 0.264 ms"
+127.0.0.1 - - [2018-Dec-23 05:17:19.006] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 05:17:19.006] 32701 - [info] "WebRequest: took 0.22 ms"
+127.0.0.1 - - [2018-Dec-23 05:22:19.006] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 05:22:19.006] 32701 - [info] "WebRequest: took 0.292 ms"
+127.0.0.1 - - [2018-Dec-23 05:27:19.006] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 05:27:19.006] 32701 - [info] "WebRequest: took 0.289 ms"
+127.0.0.1 - - [2018-Dec-23 05:32:19.008] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 05:32:19.008] 32701 - [info] "WebRequest: took 0.294 ms"
+127.0.0.1 - - [2018-Dec-23 05:37:19.006] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 05:37:19.007] 32701 - [info] "WebRequest: took 0.246 ms"
+127.0.0.1 - - [2018-Dec-23 05:42:19.007] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 05:42:19.007] 32701 - [info] "WebRequest: took 0.268 ms"
+127.0.0.1 - - [2018-Dec-23 05:47:19.007] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 05:47:19.007] 32701 - [info] "WebRequest: took 0.233 ms"
+127.0.0.1 - - [2018-Dec-23 05:52:19.007] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 05:52:19.007] 32701 - [info] "WebRequest: took 0.204 ms"
+127.0.0.1 - - [2018-Dec-23 05:57:19.007] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 05:57:19.007] 32701 - [info] "WebRequest: took 0.242 ms"
+127.0.0.1 - - [2018-Dec-23 06:02:19.007] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 06:02:19.007] 32701 - [info] "WebRequest: took 0.232 ms"
+127.0.0.1 - - [2018-Dec-23 06:07:19.008] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 06:07:19.008] 32701 - [info] "WebRequest: took 0.248 ms"
+127.0.0.1 - - [2018-Dec-23 06:12:19.008] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 06:12:19.008] 32701 - [info] "WebRequest: took 0.246 ms"
+127.0.0.1 - - [2018-Dec-23 06:17:19.008] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 48
+[2018-Dec-23 06:17:19.008] 32701 - [info] "WebRequest: took 0.268 ms"
+127.0.0.1 - - [2018-Dec-23 06:22:19.008] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 48
+[2018-Dec-23 06:22:19.008] 32701 - [info] "WebRequest: took 0.23 ms"
+127.0.0.1 - - [2018-Dec-23 06:27:19.008] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 48
+[2018-Dec-23 06:27:19.008] 32701 - [info] "WebRequest: took 0.253 ms"
+127.0.0.1 - - [2018-Dec-23 06:32:19.008] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 48
+[2018-Dec-23 06:32:19.008] 32701 - [info] "WebRequest: took 0.267 ms"
+127.0.0.1 - - [2018-Dec-23 06:37:19.009] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 48
+[2018-Dec-23 06:37:19.009] 32701 - [info] "WebRequest: took 0.241 ms"
+127.0.0.1 - - [2018-Dec-23 06:42:19.009] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 48
+[2018-Dec-23 06:42:19.009] 32701 - [info] "WebRequest: took 0.315 ms"
+127.0.0.1 - - [2018-Dec-23 06:47:19.009] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 48
+[2018-Dec-23 06:47:19.009] 32701 - [info] "WebRequest: took 0.245 ms"
+127.0.0.1 - - [2018-Dec-23 06:52:19.009] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 48
+[2018-Dec-23 06:52:19.009] 32701 - [info] "WebRequest: took 0.345 ms"
+127.0.0.1 - - [2018-Dec-23 06:57:19.010] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 48
+[2018-Dec-23 06:57:19.010] 32701 - [info] "WebRequest: took 0.267 ms"
+127.0.0.1 - - [2018-Dec-23 07:02:19.010] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 47
+[2018-Dec-23 07:02:19.010] 32701 - [info] "WebRequest: took 0.276 ms"
+127.0.0.1 - - [2018-Dec-23 07:07:19.010] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 47
+[2018-Dec-23 07:07:19.010] 32701 - [info] "WebRequest: took 0.248 ms"
+127.0.0.1 - - [2018-Dec-23 07:12:19.010] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 48
+[2018-Dec-23 07:12:19.010] 32701 - [info] "WebRequest: took 0.242 ms"
+127.0.0.1 - - [2018-Dec-23 07:17:19.010] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 48
+[2018-Dec-23 07:17:19.010] 32701 - [info] "WebRequest: took 0.235 ms"
+127.0.0.1 - - [2018-Dec-23 07:22:19.010] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 48
+[2018-Dec-23 07:22:19.010] 32701 - [info] "WebRequest: took 0.232 ms"
+127.0.0.1 - - [2018-Dec-23 07:27:19.010] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 48
+[2018-Dec-23 07:27:19.010] 32701 - [info] "WebRequest: took 0.265 ms"
+127.0.0.1 - - [2018-Dec-23 07:32:19.010] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 48
+[2018-Dec-23 07:32:19.010] 32701 - [info] "WebRequest: took 0.226 ms"
+127.0.0.1 - - [2018-Dec-23 07:37:19.011] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 48
+[2018-Dec-23 07:37:19.011] 32701 - [info] "WebRequest: took 0.248 ms"
+127.0.0.1 - - [2018-Dec-23 07:42:19.010] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 48
+[2018-Dec-23 07:42:19.011] 32701 - [info] "WebRequest: took 0.247 ms"
+127.0.0.1 - - [2018-Dec-23 07:47:19.011] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 48
+[2018-Dec-23 07:47:19.011] 32701 - [info] "WebRequest: took 0.306 ms"
+127.0.0.1 - - [2018-Dec-23 07:52:19.011] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 48
+[2018-Dec-23 07:52:19.011] 32701 - [info] "WebRequest: took 0.242 ms"
+127.0.0.1 - - [2018-Dec-23 07:57:19.011] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 07:57:19.011] 32701 - [info] "WebRequest: took 0.232 ms"
+127.0.0.1 - - [2018-Dec-23 08:02:19.011] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 08:02:19.011] 32701 - [info] "WebRequest: took 0.242 ms"
+127.0.0.1 - - [2018-Dec-23 08:07:19.012] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 08:07:19.012] 32701 - [info] "WebRequest: took 0.372 ms"
+127.0.0.1 - - [2018-Dec-23 08:12:19.012] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 08:12:19.012] 32701 - [info] "WebRequest: took 0.256 ms"
+127.0.0.1 - - [2018-Dec-23 08:17:19.012] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 08:17:19.012] 32701 - [info] "WebRequest: took 0.259 ms"
+127.0.0.1 - - [2018-Dec-23 08:22:19.012] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 08:22:19.012] 32701 - [info] "WebRequest: took 0.25 ms"
+127.0.0.1 - - [2018-Dec-23 08:27:19.012] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 08:27:19.012] 32701 - [info] "WebRequest: took 0.294 ms"
+127.0.0.1 - - [2018-Dec-23 08:32:19.012] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 08:32:19.013] 32701 - [info] "WebRequest: took 0.28 ms"
+127.0.0.1 - - [2018-Dec-23 08:37:19.013] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 08:37:19.013] 32701 - [info] "WebRequest: took 0.313 ms"
+127.0.0.1 - - [2018-Dec-23 08:42:19.013] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 08:42:19.013] 32701 - [info] "WebRequest: took 0.271 ms"
+127.0.0.1 - - [2018-Dec-23 08:47:19.013] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 08:47:19.013] 32701 - [info] "WebRequest: took 0.233 ms"
+127.0.0.1 - - [2018-Dec-23 08:52:19.013] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 08:52:19.013] 32701 - [info] "WebRequest: took 0.242 ms"
+127.0.0.1 - - [2018-Dec-23 08:57:19.014] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 08:57:19.014] 32701 - [info] "WebRequest: took 0.291 ms"
+127.0.0.1 - - [2018-Dec-23 09:02:19.013] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 09:02:19.013] 32701 - [info] "WebRequest: took 0.258 ms"
+127.0.0.1 - - [2018-Dec-23 09:07:19.013] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 09:07:19.014] 32701 - [info] "WebRequest: took 0.272 ms"
+127.0.0.1 - - [2018-Dec-23 09:12:19.014] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 09:12:19.014] 32701 - [info] "WebRequest: took 0.248 ms"
+127.0.0.1 - - [2018-Dec-23 09:17:19.014] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 09:17:19.014] 32701 - [info] "WebRequest: took 0.235 ms"
+127.0.0.1 - - [2018-Dec-23 09:22:19.014] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 09:22:19.014] 32701 - [info] "WebRequest: took 0.244 ms"
+127.0.0.1 - - [2018-Dec-23 09:27:19.014] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 09:27:19.014] 32701 - [info] "WebRequest: took 0.228 ms"
+127.0.0.1 - - [2018-Dec-23 09:32:19.014] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 09:32:19.014] 32701 - [info] "WebRequest: took 0.221 ms"
+127.0.0.1 - - [2018-Dec-23 09:37:19.015] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 09:37:19.015] 32701 - [info] "WebRequest: took 0.293 ms"
+127.0.0.1 - - [2018-Dec-23 09:42:19.015] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 09:42:19.015] 32701 - [info] "WebRequest: took 0.249 ms"
+127.0.0.1 - - [2018-Dec-23 09:47:19.015] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 09:47:19.015] 32701 - [info] "WebRequest: took 0.378 ms"
+127.0.0.1 - - [2018-Dec-23 09:52:19.016] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 09:52:19.016] 32701 - [info] "WebRequest: took 0.238 ms"
+127.0.0.1 - - [2018-Dec-23 09:57:19.017] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 09:57:19.017] 32701 - [info] "WebRequest: took 0.235 ms"
+127.0.0.1 - - [2018-Dec-23 10:02:19.016] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 10:02:19.016] 32701 - [info] "WebRequest: took 0.25 ms"
+127.0.0.1 - - [2018-Dec-23 10:07:19.018] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 10:07:19.018] 32701 - [info] "WebRequest: took 0.224 ms"
+127.0.0.1 - - [2018-Dec-23 10:12:19.016] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 10:12:19.016] 32701 - [info] "WebRequest: took 0.28 ms"
+127.0.0.1 - - [2018-Dec-23 10:17:19.016] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 10:17:19.016] 32701 - [info] "WebRequest: took 0.265 ms"
+127.0.0.1 - - [2018-Dec-23 10:22:19.016] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 10:22:19.016] 32701 - [info] "WebRequest: took 0.248 ms"
+127.0.0.1 - - [2018-Dec-23 10:27:19.016] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 10:27:19.016] 32701 - [info] "WebRequest: took 0.241 ms"
+127.0.0.1 - - [2018-Dec-23 10:32:19.016] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 10:32:19.016] 32701 - [info] "WebRequest: took 0.198 ms"
+127.0.0.1 - - [2018-Dec-23 10:37:19.016] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 10:37:19.016] 32701 - [info] "WebRequest: took 0.22 ms"
+127.0.0.1 - - [2018-Dec-23 10:42:19.017] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 10:42:19.017] 32701 - [info] "WebRequest: took 0.264 ms"
+127.0.0.1 - - [2018-Dec-23 10:47:19.017] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 10:47:19.017] 32701 - [info] "WebRequest: took 0.303 ms"
+127.0.0.1 - - [2018-Dec-23 10:52:19.017] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 10:52:19.017] 32701 - [info] "WebRequest: took 0.232 ms"
+127.0.0.1 - - [2018-Dec-23 10:57:19.017] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 10:57:19.017] 32701 - [info] "WebRequest: took 0.237 ms"
+127.0.0.1 - - [2018-Dec-23 11:02:19.017] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 11:02:19.017] 32701 - [info] "WebRequest: took 0.272 ms"
+127.0.0.1 - - [2018-Dec-23 11:07:19.018] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 11:07:19.018] 32701 - [info] "WebRequest: took 0.238 ms"
+127.0.0.1 - - [2018-Dec-23 11:12:19.019] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 11:12:19.019] 32701 - [info] "WebRequest: took 0.282 ms"
+127.0.0.1 - - [2018-Dec-23 11:17:19.022] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 11:17:19.022] 32701 - [info] "WebRequest: took 0.24 ms"
+127.0.0.1 - - [2018-Dec-23 11:22:19.018] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 11:22:19.018] 32701 - [info] "WebRequest: took 0.292 ms"
+127.0.0.1 - - [2018-Dec-23 11:27:19.019] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 11:27:19.019] 32701 - [info] "WebRequest: took 0.253 ms"
+127.0.0.1 - - [2018-Dec-23 11:32:19.018] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 11:32:19.018] 32701 - [info] "WebRequest: took 0.381 ms"
+127.0.0.1 - - [2018-Dec-23 11:37:19.018] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 11:37:19.018] 32701 - [info] "WebRequest: took 0.253 ms"
+127.0.0.1 - - [2018-Dec-23 11:42:19.019] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 11:42:19.019] 32701 - [info] "WebRequest: took 0.375 ms"
+127.0.0.1 - - [2018-Dec-23 11:47:19.019] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 11:47:19.019] 32701 - [info] "WebRequest: took 0.286 ms"
+127.0.0.1 - - [2018-Dec-23 11:52:19.019] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 11:52:19.019] 32701 - [info] "WebRequest: took 0.295 ms"
+127.0.0.1 - - [2018-Dec-23 11:57:19.019] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 11:57:19.019] 32701 - [info] "WebRequest: took 0.231 ms"
+127.0.0.1 - - [2018-Dec-23 12:02:19.020] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 12:02:19.020] 32701 - [info] "WebRequest: took 0.278 ms"
+127.0.0.1 - - [2018-Dec-23 12:07:19.020] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 12:07:19.020] 32701 - [info] "WebRequest: took 0.3 ms"
+127.0.0.1 - - [2018-Dec-23 12:12:19.020] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 12:12:19.020] 32701 - [info] "WebRequest: took 0.306 ms"
+127.0.0.1 - - [2018-Dec-23 12:17:19.020] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 12:17:19.020] 32701 - [info] "WebRequest: took 0.283 ms"
+127.0.0.1 - - [2018-Dec-23 12:22:19.020] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 12:22:19.020] 32701 - [info] "WebRequest: took 0.298 ms"
+127.0.0.1 - - [2018-Dec-23 12:27:19.020] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 12:27:19.020] 32701 - [info] "WebRequest: took 0.291 ms"
+127.0.0.1 - - [2018-Dec-23 12:32:19.020] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 12:32:19.021] 32701 - [info] "WebRequest: took 0.305 ms"
+127.0.0.1 - - [2018-Dec-23 12:37:19.020] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 12:37:19.020] 32701 - [info] "WebRequest: took 0.352 ms"
+127.0.0.1 - - [2018-Dec-23 12:42:19.021] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 12:42:19.021] 32701 - [info] "WebRequest: took 0.277 ms"
+127.0.0.1 - - [2018-Dec-23 12:47:19.021] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 12:47:19.021] 32701 - [info] "WebRequest: took 0.257 ms"
+127.0.0.1 - - [2018-Dec-23 12:52:19.021] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 12:52:19.021] 32701 - [info] "WebRequest: took 0.275 ms"
+127.0.0.1 - - [2018-Dec-23 12:57:19.021] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 12:57:19.021] 32701 - [info] "WebRequest: took 0.312 ms"
+127.0.0.1 - - [2018-Dec-23 13:02:19.021] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 13:02:19.021] 32701 - [info] "WebRequest: took 0.246 ms"
+127.0.0.1 - - [2018-Dec-23 13:07:19.021] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 13:07:19.021] 32701 - [info] "WebRequest: took 0.236 ms"
+127.0.0.1 - - [2018-Dec-23 13:12:19.022] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 13:12:19.022] 32701 - [info] "WebRequest: took 0.289 ms"
+127.0.0.1 - - [2018-Dec-23 13:17:19.022] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 13:17:19.022] 32701 - [info] "WebRequest: took 0.275 ms"
+127.0.0.1 - - [2018-Dec-23 13:22:19.021] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 13:22:19.021] 32701 - [info] "WebRequest: took 0.25 ms"
+127.0.0.1 - - [2018-Dec-23 13:27:19.022] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 13:27:19.022] 32701 - [info] "WebRequest: took 0.249 ms"
+127.0.0.1 - - [2018-Dec-23 13:32:19.021] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 13:32:19.022] 32701 - [info] "WebRequest: took 0.223 ms"
+127.0.0.1 - - [2018-Dec-23 13:37:19.021] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 13:37:19.022] 32701 - [info] "WebRequest: took 0.24 ms"
+127.0.0.1 - - [2018-Dec-23 13:42:19.022] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 13:42:19.022] 32701 - [info] "WebRequest: took 0.286 ms"
+127.0.0.1 - - [2018-Dec-23 13:47:19.022] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 13:47:19.022] 32701 - [info] "WebRequest: took 0.262 ms"
+127.0.0.1 - - [2018-Dec-23 13:52:19.022] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 13:52:19.022] 32701 - [info] "WebRequest: took 0.249 ms"
+127.0.0.1 - - [2018-Dec-23 13:57:19.022] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 13:57:19.022] 32701 - [info] "WebRequest: took 0.311 ms"
+127.0.0.1 - - [2018-Dec-23 14:02:19.022] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 14:02:19.022] 32701 - [info] "WebRequest: took 0.293 ms"
+127.0.0.1 - - [2018-Dec-23 14:07:19.022] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 14:07:19.023] 32701 - [info] "WebRequest: took 0.265 ms"
+127.0.0.1 - - [2018-Dec-23 14:12:19.023] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 14:12:19.023] 32701 - [info] "WebRequest: took 0.239 ms"
+127.0.0.1 - - [2018-Dec-23 14:17:19.023] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 14:17:19.023] 32701 - [info] "WebRequest: took 0.238 ms"
+127.0.0.1 - - [2018-Dec-23 14:22:19.023] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 14:22:19.023] 32701 - [info] "WebRequest: took 0.276 ms"
+127.0.0.1 - - [2018-Dec-23 14:27:19.023] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 14:27:19.023] 32701 - [info] "WebRequest: took 0.307 ms"
+127.0.0.1 - - [2018-Dec-23 14:32:19.023] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 14:32:19.023] 32701 - [info] "WebRequest: took 0.268 ms"
+127.0.0.1 - - [2018-Dec-23 14:37:19.023] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 14:37:19.023] 32701 - [info] "WebRequest: took 0.245 ms"
+127.0.0.1 - - [2018-Dec-23 14:42:19.023] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 14:42:19.023] 32701 - [info] "WebRequest: took 0.235 ms"
+127.0.0.1 - - [2018-Dec-23 14:47:19.023] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 14:47:19.023] 32701 - [info] "WebRequest: took 0.274 ms"
+127.0.0.1 - - [2018-Dec-23 14:52:19.024] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 14:52:19.024] 32701 - [info] "WebRequest: took 0.293 ms"
+127.0.0.1 - - [2018-Dec-23 14:57:19.024] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 14:57:19.024] 32701 - [info] "WebRequest: took 0.248 ms"
+127.0.0.1 - - [2018-Dec-23 15:02:19.024] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 15:02:19.024] 32701 - [info] "WebRequest: took 0.242 ms"
+127.0.0.1 - - [2018-Dec-23 15:07:19.025] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 15:07:19.025] 32701 - [info] "WebRequest: took 0.262 ms"
+127.0.0.1 - - [2018-Dec-23 15:12:19.024] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 15:12:19.024] 32701 - [info] "WebRequest: took 0.248 ms"
+127.0.0.1 - - [2018-Dec-23 15:17:19.025] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 15:17:19.025] 32701 - [info] "WebRequest: took 0.245 ms"
+127.0.0.1 - - [2018-Dec-23 15:22:19.025] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 15:22:19.025] 32701 - [info] "WebRequest: took 0.238 ms"
+127.0.0.1 - - [2018-Dec-23 15:27:19.025] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 15:27:19.025] 32701 - [info] "WebRequest: took 0.234 ms"
+127.0.0.1 - - [2018-Dec-23 15:32:19.026] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 15:32:19.026] 32701 - [info] "WebRequest: took 0.275 ms"
+127.0.0.1 - - [2018-Dec-23 15:37:19.025] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 15:37:19.025] 32701 - [info] "WebRequest: took 0.223 ms"
+127.0.0.1 - - [2018-Dec-23 15:42:19.025] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 15:42:19.026] 32701 - [info] "WebRequest: took 0.238 ms"
+127.0.0.1 - - [2018-Dec-23 15:47:19.026] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 15:47:19.026] 32701 - [info] "WebRequest: took 0.29 ms"
+127.0.0.1 - - [2018-Dec-23 15:52:19.026] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 15:52:19.026] 32701 - [info] "WebRequest: took 0.273 ms"
+127.0.0.1 - - [2018-Dec-23 15:57:19.026] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 15:57:19.026] 32701 - [info] "WebRequest: took 0.25 ms"
+127.0.0.1 - - [2018-Dec-23 16:02:19.026] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 16:02:19.027] 32701 - [info] "WebRequest: took 0.304 ms"
+127.0.0.1 - - [2018-Dec-23 16:07:19.026] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 16:07:19.026] 32701 - [info] "WebRequest: took 0.263 ms"
+127.0.0.1 - - [2018-Dec-23 16:12:19.026] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 16:12:19.026] 32701 - [info] "WebRequest: took 0.243 ms"
+127.0.0.1 - - [2018-Dec-23 16:17:19.026] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 16:17:19.027] 32701 - [info] "WebRequest: took 0.286 ms"
+127.0.0.1 - - [2018-Dec-23 16:22:19.026] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 16:22:19.026] 32701 - [info] "WebRequest: took 0.199 ms"
+127.0.0.1 - - [2018-Dec-23 16:27:19.027] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 16:27:19.027] 32701 - [info] "WebRequest: took 0.245 ms"
+127.0.0.1 - - [2018-Dec-23 16:32:19.027] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 16:32:19.027] 32701 - [info] "WebRequest: took 0.271 ms"
+127.0.0.1 - - [2018-Dec-23 16:37:19.027] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 16:37:19.027] 32701 - [info] "WebRequest: took 0.266 ms"
+127.0.0.1 - - [2018-Dec-23 16:42:19.027] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 16:42:19.027] 32701 - [info] "WebRequest: took 0.228 ms"
+127.0.0.1 - - [2018-Dec-23 16:47:19.027] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 16:47:19.027] 32701 - [info] "WebRequest: took 0.24 ms"
+127.0.0.1 - - [2018-Dec-23 16:52:19.027] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 16:52:19.027] 32701 - [info] "WebRequest: took 0.254 ms"
+127.0.0.1 - - [2018-Dec-23 16:57:19.028] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 16:57:19.028] 32701 - [info] "WebRequest: took 0.243 ms"
+127.0.0.1 - - [2018-Dec-23 17:02:19.028] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 17:02:19.028] 32701 - [info] "WebRequest: took 0.302 ms"
+127.0.0.1 - - [2018-Dec-23 17:07:19.028] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 17:07:19.028] 32701 - [info] "WebRequest: took 0.263 ms"
+127.0.0.1 - - [2018-Dec-23 17:12:19.028] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 17:12:19.028] 32701 - [info] "WebRequest: took 0.249 ms"
+127.0.0.1 - - [2018-Dec-23 17:17:19.030] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 17:17:19.030] 32701 - [info] "WebRequest: took 0.256 ms"
+127.0.0.1 - - [2018-Dec-23 17:22:19.028] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 48
+[2018-Dec-23 17:22:19.028] 32701 - [info] "WebRequest: took 0.234 ms"
+127.0.0.1 - - [2018-Dec-23 17:27:19.028] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 17:27:19.028] 32701 - [info] "WebRequest: took 0.246 ms"
+127.0.0.1 - - [2018-Dec-23 17:32:19.029] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 17:32:19.029] 32701 - [info] "WebRequest: took 0.263 ms"
+127.0.0.1 - - [2018-Dec-23 17:37:19.028] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 17:37:19.029] 32701 - [info] "WebRequest: took 0.257 ms"
+127.0.0.1 - - [2018-Dec-23 17:42:19.029] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 17:42:19.029] 32701 - [info] "WebRequest: took 0.36 ms"
+127.0.0.1 - - [2018-Dec-23 17:47:19.030] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 17:47:19.030] 32701 - [info] "WebRequest: took 0.698 ms"
+127.0.0.1 - - [2018-Dec-23 17:52:19.032] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 17:52:19.032] 32701 - [info] "WebRequest: took 0.329 ms"
+127.0.0.1 - - [2018-Dec-23 17:57:19.031] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 17:57:19.031] 32701 - [info] "WebRequest: took 0.237 ms"
+127.0.0.1 - - [2018-Dec-23 18:02:19.034] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 18:02:19.034] 32701 - [info] "WebRequest: took 0.246 ms"
+127.0.0.1 - - [2018-Dec-23 18:07:19.030] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 18:07:19.035] 32701 - [info] "WebRequest: took 4.729 ms"
+127.0.0.1 - - [2018-Dec-23 18:12:19.031] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 18:12:19.031] 32701 - [info] "WebRequest: took 0.261 ms"
+127.0.0.1 - - [2018-Dec-23 18:17:19.030] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 18:17:19.030] 32701 - [info] "WebRequest: took 0.241 ms"
+127.0.0.1 - - [2018-Dec-23 18:22:19.032] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 18:22:19.032] 32701 - [info] "WebRequest: took 0.293 ms"
+127.0.0.1 - - [2018-Dec-23 18:27:19.031] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 18:27:19.031] 32701 - [info] "WebRequest: took 0.277 ms"
+127.0.0.1 - - [2018-Dec-23 18:32:19.032] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 18:32:19.032] 32701 - [info] "WebRequest: took 0.25 ms"
+127.0.0.1 - - [2018-Dec-23 18:37:19.035] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 18:37:19.035] 32701 - [info] "WebRequest: took 0.497 ms"
+127.0.0.1 - - [2018-Dec-23 18:42:19.033] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 18:42:19.033] 32701 - [info] "WebRequest: took 0.468 ms"
+127.0.0.1 - - [2018-Dec-23 18:47:19.034] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 18:47:19.034] 32701 - [info] "WebRequest: took 0.249 ms"
+127.0.0.1 - - [2018-Dec-23 18:52:19.034] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 18:52:19.034] 32701 - [info] "WebRequest: took 0.269 ms"
+127.0.0.1 - - [2018-Dec-23 18:57:19.032] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 18:57:19.032] 32701 - [info] "WebRequest: took 0.249 ms"
+127.0.0.1 - - [2018-Dec-23 19:02:19.032] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 19:02:19.032] 32701 - [info] "WebRequest: took 0.255 ms"
+127.0.0.1 - - [2018-Dec-23 19:07:19.034] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 19:07:19.034] 32701 - [info] "WebRequest: took 0.257 ms"
+127.0.0.1 - - [2018-Dec-23 19:12:19.033] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 19:12:19.033] 32701 - [info] "WebRequest: took 0.291 ms"
+127.0.0.1 - - [2018-Dec-23 19:17:19.036] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 19:17:19.036] 32701 - [info] "WebRequest: took 0.277 ms"
+127.0.0.1 - - [2018-Dec-23 19:22:19.039] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 19:22:19.039] 32701 - [info] "WebRequest: took 0.36 ms"
+127.0.0.1 - - [2018-Dec-23 19:27:19.036] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 19:27:19.036] 32701 - [info] "WebRequest: took 0.229 ms"
+127.0.0.1 - - [2018-Dec-23 19:32:19.034] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 19:32:19.034] 32701 - [info] "WebRequest: took 0.382 ms"
+127.0.0.1 - - [2018-Dec-23 19:37:19.034] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 19:37:19.034] 32701 - [info] "WebRequest: took 0.289 ms"
+127.0.0.1 - - [2018-Dec-23 19:42:19.035] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 48
+[2018-Dec-23 19:42:19.035] 32701 - [info] "WebRequest: took 0.287 ms"
+127.0.0.1 - - [2018-Dec-23 19:47:19.036] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 19:47:19.036] 32701 - [info] "WebRequest: took 0.258 ms"
+127.0.0.1 - - [2018-Dec-23 19:52:19.035] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 19:52:19.035] 32701 - [info] "WebRequest: took 0.33 ms"
+127.0.0.1 - - [2018-Dec-23 19:57:19.035] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 19:57:19.036] 32701 - [info] "WebRequest: took 0.245 ms"
+127.0.0.1 - - [2018-Dec-23 20:02:19.034] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 20:02:19.034] 32701 - [info] "WebRequest: took 0.292 ms"
+127.0.0.1 - - [2018-Dec-23 20:07:19.035] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 20:07:19.035] 32701 - [info] "WebRequest: took 0.275 ms"
+127.0.0.1 - - [2018-Dec-23 20:12:19.035] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 20:12:19.035] 32701 - [info] "WebRequest: took 0.287 ms"
+127.0.0.1 - - [2018-Dec-23 20:17:19.035] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 20:17:19.035] 32701 - [info] "WebRequest: took 0.247 ms"
+127.0.0.1 - - [2018-Dec-23 20:22:19.035] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 20:22:19.035] 32701 - [info] "WebRequest: took 0.24 ms"
+127.0.0.1 - - [2018-Dec-23 20:27:19.035] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 20:27:19.035] 32701 - [info] "WebRequest: took 0.305 ms"
+127.0.0.1 - - [2018-Dec-23 20:32:19.036] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 20:32:19.036] 32701 - [info] "WebRequest: took 0.294 ms"
+127.0.0.1 - - [2018-Dec-23 20:37:19.035] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 20:37:19.035] 32701 - [info] "WebRequest: took 0.233 ms"
+127.0.0.1 - - [2018-Dec-23 20:42:19.036] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 20:42:19.036] 32701 - [info] "WebRequest: took 0.264 ms"
+127.0.0.1 - - [2018-Dec-23 20:47:19.036] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 20:47:19.036] 32701 - [info] "WebRequest: took 0.235 ms"
+127.0.0.1 - - [2018-Dec-23 20:52:19.036] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 20:52:19.036] 32701 - [info] "WebRequest: took 0.285 ms"
+127.0.0.1 - - [2018-Dec-23 20:57:19.036] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 20:57:19.036] 32701 - [info] "WebRequest: took 0.241 ms"
+127.0.0.1 - - [2018-Dec-23 21:02:19.036] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 21:02:19.036] 32701 - [info] "WebRequest: took 0.241 ms"
+127.0.0.1 - - [2018-Dec-23 21:07:19.036] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 21:07:19.036] 32701 - [info] "WebRequest: took 0.219 ms"
+127.0.0.1 - - [2018-Dec-23 21:12:19.037] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 21:12:19.037] 32701 - [info] "WebRequest: took 0.251 ms"
+127.0.0.1 - - [2018-Dec-23 21:17:19.037] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 21:17:19.037] 32701 - [info] "WebRequest: took 0.23 ms"
+127.0.0.1 - - [2018-Dec-23 21:22:19.037] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 21:22:19.037] 32701 - [info] "WebRequest: took 0.239 ms"
+127.0.0.1 - - [2018-Dec-23 21:27:19.037] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 21:27:19.037] 32701 - [info] "WebRequest: took 0.257 ms"
+127.0.0.1 - - [2018-Dec-23 21:32:19.037] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 21:32:19.037] 32701 - [info] "WebRequest: took 0.261 ms"
+127.0.0.1 - - [2018-Dec-23 21:37:19.037] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 21:37:19.037] 32701 - [info] "WebRequest: took 0.205 ms"
+127.0.0.1 - - [2018-Dec-23 21:42:19.038] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 21:42:19.038] 32701 - [info] "WebRequest: took 0.201 ms"
+127.0.0.1 - - [2018-Dec-23 21:47:19.038] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 21:47:19.038] 32701 - [info] "WebRequest: took 0.239 ms"
+127.0.0.1 - - [2018-Dec-23 21:52:19.038] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 21:52:19.038] 32701 - [info] "WebRequest: took 0.306 ms"
+127.0.0.1 - - [2018-Dec-23 21:57:19.038] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 21:57:19.038] 32701 - [info] "WebRequest: took 0.253 ms"
+127.0.0.1 - - [2018-Dec-23 22:02:19.038] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 22:02:19.038] 32701 - [info] "WebRequest: took 0.241 ms"
+127.0.0.1 - - [2018-Dec-23 22:07:19.038] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 22:07:19.038] 32701 - [info] "WebRequest: took 0.185 ms"
+127.0.0.1 - - [2018-Dec-23 22:12:19.038] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 22:12:19.038] 32701 - [info] "WebRequest: took 0.219 ms"
+127.0.0.1 - - [2018-Dec-23 22:17:19.039] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 22:17:19.039] 32701 - [info] "WebRequest: took 0.279 ms"
+127.0.0.1 - - [2018-Dec-23 22:22:19.038] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 22:22:19.038] 32701 - [info] "WebRequest: took 0.24 ms"
+127.0.0.1 - - [2018-Dec-23 22:27:19.039] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 22:27:19.039] 32701 - [info] "WebRequest: took 0.261 ms"
+127.0.0.1 - - [2018-Dec-23 22:32:19.039] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 22:32:19.039] 32701 - [info] "WebRequest: took 0.216 ms"
+127.0.0.1 - - [2018-Dec-23 22:37:19.039] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 22:37:19.039] 32701 - [info] "WebRequest: took 0.247 ms"
+127.0.0.1 - - [2018-Dec-23 22:42:19.039] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 22:42:19.039] 32701 - [info] "WebRequest: took 0.267 ms"
+127.0.0.1 - - [2018-Dec-23 22:47:19.040] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 22:47:19.040] 32701 - [info] "WebRequest: took 0.269 ms"
+127.0.0.1 - - [2018-Dec-23 22:52:19.040] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 22:52:19.040] 32701 - [info] "WebRequest: took 0.274 ms"
+127.0.0.1 - - [2018-Dec-23 22:57:19.040] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 22:57:19.040] 32701 - [info] "WebRequest: took 0.269 ms"
+127.0.0.1 - - [2018-Dec-23 23:02:19.040] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 23:02:19.040] 32701 - [info] "WebRequest: took 0.304 ms"
+127.0.0.1 - - [2018-Dec-23 23:07:19.040] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 23:07:19.040] 32701 - [info] "WebRequest: took 0.287 ms"
+127.0.0.1 - - [2018-Dec-23 23:12:19.040] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 23:12:19.040] 32701 - [info] "WebRequest: took 0.244 ms"
+127.0.0.1 - - [2018-Dec-23 23:17:19.040] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 23:17:19.040] 32701 - [info] "WebRequest: took 0.239 ms"
+127.0.0.1 - - [2018-Dec-23 23:22:19.040] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 23:22:19.040] 32701 - [info] "WebRequest: took 0.248 ms"
+127.0.0.1 - - [2018-Dec-23 23:27:19.041] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 23:27:19.041] 32701 - [info] "WebRequest: took 0.289 ms"
+127.0.0.1 - - [2018-Dec-23 23:32:19.041] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 23:32:19.041] 32701 - [info] "WebRequest: took 0.332 ms"
+127.0.0.1 - - [2018-Dec-23 23:37:19.042] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 23:37:19.042] 32701 - [info] "WebRequest: took 0.278 ms"
+127.0.0.1 - - [2018-Dec-23 23:42:19.041] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 23:42:19.041] 32701 - [info] "WebRequest: took 0.238 ms"
+127.0.0.1 - - [2018-Dec-23 23:47:19.042] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 23:47:19.042] 32701 - [info] "WebRequest: took 0.231 ms"
+127.0.0.1 - - [2018-Dec-23 23:52:19.042] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 23:52:19.042] 32701 - [info] "WebRequest: took 0.252 ms"
+127.0.0.1 - - [2018-Dec-23 23:57:19.043] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-23 23:57:19.043] 32701 - [info] "WebRequest: took 0.287 ms"
+127.0.0.1 - - [2018-Dec-24 00:02:19.042] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 00:02:19.042] 32701 - [info] "WebRequest: took 0.289 ms"
+127.0.0.1 - - [2018-Dec-24 00:07:19.043] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 00:07:19.043] 32701 - [info] "WebRequest: took 0.233 ms"
+127.0.0.1 - - [2018-Dec-24 00:12:19.043] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 00:12:19.043] 32701 - [info] "WebRequest: took 0.254 ms"
+127.0.0.1 - - [2018-Dec-24 00:17:19.042] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 00:17:19.042] 32701 - [info] "WebRequest: took 0.261 ms"
+127.0.0.1 - - [2018-Dec-24 00:22:19.043] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 00:22:19.043] 32701 - [info] "WebRequest: took 0.304 ms"
+127.0.0.1 - - [2018-Dec-24 00:27:19.043] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 00:27:19.043] 32701 - [info] "WebRequest: took 0.242 ms"
+127.0.0.1 - - [2018-Dec-24 00:32:19.045] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 00:32:19.045] 32701 - [info] "WebRequest: took 0.223 ms"
+127.0.0.1 - - [2018-Dec-24 00:37:19.043] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 00:37:19.043] 32701 - [info] "WebRequest: took 0.272 ms"
+127.0.0.1 - - [2018-Dec-24 00:42:19.043] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 00:42:19.043] 32701 - [info] "WebRequest: took 0.282 ms"
+127.0.0.1 - - [2018-Dec-24 00:47:19.043] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 00:47:19.043] 32701 - [info] "WebRequest: took 0.249 ms"
+127.0.0.1 - - [2018-Dec-24 00:52:19.043] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 00:52:19.044] 32701 - [info] "WebRequest: took 0.27 ms"
+127.0.0.1 - - [2018-Dec-24 00:57:19.044] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 00:57:19.044] 32701 - [info] "WebRequest: took 0.278 ms"
+127.0.0.1 - - [2018-Dec-24 01:02:19.044] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 01:02:19.044] 32701 - [info] "WebRequest: took 0.223 ms"
+127.0.0.1 - - [2018-Dec-24 01:07:19.044] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 01:07:19.044] 32701 - [info] "WebRequest: took 0.305 ms"
+127.0.0.1 - - [2018-Dec-24 01:12:19.045] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 01:12:19.045] 32701 - [info] "WebRequest: took 0.289 ms"
+127.0.0.1 - - [2018-Dec-24 01:17:19.045] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 01:17:19.045] 32701 - [info] "WebRequest: took 0.253 ms"
+127.0.0.1 - - [2018-Dec-24 01:22:19.045] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 01:22:19.045] 32701 - [info] "WebRequest: took 0.24 ms"
+127.0.0.1 - - [2018-Dec-24 01:27:19.045] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 01:27:19.045] 32701 - [info] "WebRequest: took 0.286 ms"
+127.0.0.1 - - [2018-Dec-24 01:32:19.045] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 01:32:19.045] 32701 - [info] "WebRequest: took 0.247 ms"
+127.0.0.1 - - [2018-Dec-24 01:37:19.045] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 01:37:19.045] 32701 - [info] "WebRequest: took 0.222 ms"
+127.0.0.1 - - [2018-Dec-24 01:42:19.045] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 01:42:19.045] 32701 - [info] "WebRequest: took 0.244 ms"
+127.0.0.1 - - [2018-Dec-24 01:47:19.045] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 01:47:19.045] 32701 - [info] "WebRequest: took 0.287 ms"
+127.0.0.1 - - [2018-Dec-24 01:52:19.045] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 01:52:19.045] 32701 - [info] "WebRequest: took 0.241 ms"
+127.0.0.1 - - [2018-Dec-24 01:57:19.046] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 01:57:19.046] 32701 - [info] "WebRequest: took 0.268 ms"
+127.0.0.1 - - [2018-Dec-24 02:02:19.046] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 02:02:19.046] 32701 - [info] "WebRequest: took 0.249 ms"
+127.0.0.1 - - [2018-Dec-24 02:07:19.046] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 02:07:19.046] 32701 - [info] "WebRequest: took 0.232 ms"
+127.0.0.1 - - [2018-Dec-24 02:12:19.046] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 02:12:19.046] 32701 - [info] "WebRequest: took 0.252 ms"
+127.0.0.1 - - [2018-Dec-24 02:17:19.046] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 48
+[2018-Dec-24 02:17:19.046] 32701 - [info] "WebRequest: took 0.263 ms"
+127.0.0.1 - - [2018-Dec-24 02:22:19.046] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 02:22:19.047] 32701 - [info] "WebRequest: took 0.239 ms"
+127.0.0.1 - - [2018-Dec-24 02:27:19.046] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 02:27:19.046] 32701 - [info] "WebRequest: took 0.224 ms"
+127.0.0.1 - - [2018-Dec-24 02:32:19.047] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 02:32:19.047] 32701 - [info] "WebRequest: took 0.294 ms"
+127.0.0.1 - - [2018-Dec-24 02:37:19.047] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 02:37:19.047] 32701 - [info] "WebRequest: took 0.274 ms"
+127.0.0.1 - - [2018-Dec-24 02:42:19.047] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 02:42:19.047] 32701 - [info] "WebRequest: took 0.283 ms"
+127.0.0.1 - - [2018-Dec-24 02:47:19.047] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 02:47:19.047] 32701 - [info] "WebRequest: took 0.224 ms"
+127.0.0.1 - - [2018-Dec-24 02:52:19.047] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 02:52:19.047] 32701 - [info] "WebRequest: took 0.239 ms"
+127.0.0.1 - - [2018-Dec-24 02:57:19.047] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 02:57:19.048] 32701 - [info] "WebRequest: took 0.243 ms"
+127.0.0.1 - - [2018-Dec-24 03:02:19.048] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 03:02:19.048] 32701 - [info] "WebRequest: took 0.239 ms"
+127.0.0.1 - - [2018-Dec-24 03:07:19.048] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 03:07:19.048] 32701 - [info] "WebRequest: took 0.245 ms"
+127.0.0.1 - - [2018-Dec-24 03:12:19.048] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 03:12:19.048] 32701 - [info] "WebRequest: took 0.261 ms"
+127.0.0.1 - - [2018-Dec-24 03:17:19.048] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 03:17:19.048] 32701 - [info] "WebRequest: took 0.295 ms"
+127.0.0.1 - - [2018-Dec-24 03:22:19.049] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 03:22:19.049] 32701 - [info] "WebRequest: took 0.291 ms"
+127.0.0.1 - - [2018-Dec-24 03:27:19.049] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 03:27:19.049] 32701 - [info] "WebRequest: took 0.247 ms"
+127.0.0.1 - - [2018-Dec-24 03:32:19.049] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 03:32:19.049] 32701 - [info] "WebRequest: took 0.246 ms"
+127.0.0.1 - - [2018-Dec-24 03:37:19.049] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 03:37:19.049] 32701 - [info] "WebRequest: took 0.237 ms"
+127.0.0.1 - - [2018-Dec-24 03:42:19.049] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 03:42:19.049] 32701 - [info] "WebRequest: took 0.261 ms"
+127.0.0.1 - - [2018-Dec-24 03:47:19.049] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 03:47:19.049] 32701 - [info] "WebRequest: took 0.222 ms"
+127.0.0.1 - - [2018-Dec-24 03:52:19.049] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 03:52:19.049] 32701 - [info] "WebRequest: took 0.229 ms"
+127.0.0.1 - - [2018-Dec-24 03:57:19.049] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 03:57:19.049] 32701 - [info] "WebRequest: took 0.239 ms"
+127.0.0.1 - - [2018-Dec-24 04:02:19.050] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 04:02:19.050] 32701 - [info] "WebRequest: took 0.239 ms"
+127.0.0.1 - - [2018-Dec-24 04:07:19.050] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 04:07:19.050] 32701 - [info] "WebRequest: took 0.231 ms"
+127.0.0.1 - - [2018-Dec-24 04:12:19.050] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 04:12:19.050] 32701 - [info] "WebRequest: took 0.275 ms"
+127.0.0.1 - - [2018-Dec-24 04:17:19.050] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 04:17:19.050] 32701 - [info] "WebRequest: took 0.25 ms"
+127.0.0.1 - - [2018-Dec-24 04:22:19.051] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 04:22:19.051] 32701 - [info] "WebRequest: took 0.308 ms"
+127.0.0.1 - - [2018-Dec-24 04:27:19.051] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 04:27:19.051] 32701 - [info] "WebRequest: took 0.263 ms"
+127.0.0.1 - - [2018-Dec-24 04:32:19.051] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 04:32:19.051] 32701 - [info] "WebRequest: took 0.209 ms"
+127.0.0.1 - - [2018-Dec-24 04:37:19.050] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 04:37:19.051] 32701 - [info] "WebRequest: took 0.276 ms"
+127.0.0.1 - - [2018-Dec-24 04:42:19.051] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 04:42:19.051] 32701 - [info] "WebRequest: took 0.256 ms"
+127.0.0.1 - - [2018-Dec-24 04:47:19.051] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 04:47:19.051] 32701 - [info] "WebRequest: took 0.319 ms"
+127.0.0.1 - - [2018-Dec-24 04:52:19.051] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 04:52:19.051] 32701 - [info] "WebRequest: took 0.223 ms"
+127.0.0.1 - - [2018-Dec-24 04:57:19.052] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 04:57:19.052] 32701 - [info] "WebRequest: took 0.282 ms"
+127.0.0.1 - - [2018-Dec-24 05:02:19.051] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 05:02:19.051] 32701 - [info] "WebRequest: took 0.237 ms"
+127.0.0.1 - - [2018-Dec-24 05:07:19.052] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 05:07:19.052] 32701 - [info] "WebRequest: took 0.246 ms"
+127.0.0.1 - - [2018-Dec-24 05:12:19.052] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 05:12:19.052] 32701 - [info] "WebRequest: took 0.238 ms"
+127.0.0.1 - - [2018-Dec-24 05:17:19.053] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 05:17:19.053] 32701 - [info] "WebRequest: took 0.318 ms"
+127.0.0.1 - - [2018-Dec-24 05:22:19.052] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 05:22:19.052] 32701 - [info] "WebRequest: took 0.267 ms"
+127.0.0.1 - - [2018-Dec-24 05:27:19.052] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 05:27:19.052] 32701 - [info] "WebRequest: took 0.277 ms"
+127.0.0.1 - - [2018-Dec-24 05:32:19.052] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 05:32:19.052] 32701 - [info] "WebRequest: took 0.259 ms"
+127.0.0.1 - - [2018-Dec-24 05:37:19.053] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 05:37:19.053] 32701 - [info] "WebRequest: took 0.277 ms"
+127.0.0.1 - - [2018-Dec-24 05:42:19.052] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 05:42:19.052] 32701 - [info] "WebRequest: took 0.223 ms"
+127.0.0.1 - - [2018-Dec-24 05:47:19.053] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 05:47:19.053] 32701 - [info] "WebRequest: took 0.274 ms"
+127.0.0.1 - - [2018-Dec-24 05:52:19.053] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 05:52:19.053] 32701 - [info] "WebRequest: took 0.184 ms"
+127.0.0.1 - - [2018-Dec-24 05:57:19.053] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 05:57:19.053] 32701 - [info] "WebRequest: took 0.233 ms"
+127.0.0.1 - - [2018-Dec-24 06:02:19.053] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 06:02:19.053] 32701 - [info] "WebRequest: took 0.284 ms"
+127.0.0.1 - - [2018-Dec-24 06:07:19.053] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 06:07:19.053] 32701 - [info] "WebRequest: took 0.252 ms"
+127.0.0.1 - - [2018-Dec-24 06:12:19.053] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 06:12:19.053] 32701 - [info] "WebRequest: took 0.23 ms"
+127.0.0.1 - - [2018-Dec-24 06:17:19.054] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 06:17:19.054] 32701 - [info] "WebRequest: took 0.281 ms"
+127.0.0.1 - - [2018-Dec-24 06:22:19.053] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 06:22:19.053] 32701 - [info] "WebRequest: took 0.243 ms"
+127.0.0.1 - - [2018-Dec-24 06:27:19.054] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 06:27:19.054] 32701 - [info] "WebRequest: took 0.293 ms"
+127.0.0.1 - - [2018-Dec-24 06:32:19.054] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 06:32:19.054] 32701 - [info] "WebRequest: took 0.253 ms"
+127.0.0.1 - - [2018-Dec-24 06:37:19.055] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 06:37:19.055] 32701 - [info] "WebRequest: took 0.296 ms"
+127.0.0.1 - - [2018-Dec-24 06:42:19.054] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 06:42:19.054] 32701 - [info] "WebRequest: took 0.293 ms"
+127.0.0.1 - - [2018-Dec-24 06:47:19.055] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 06:47:19.055] 32701 - [info] "WebRequest: took 0.291 ms"
+127.0.0.1 - - [2018-Dec-24 06:52:19.054] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 06:52:19.055] 32701 - [info] "WebRequest: took 0.237 ms"
+127.0.0.1 - - [2018-Dec-24 06:57:19.054] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 06:57:19.055] 32701 - [info] "WebRequest: took 0.237 ms"
+127.0.0.1 - - [2018-Dec-24 07:02:19.055] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 07:02:19.055] 32701 - [info] "WebRequest: took 0.254 ms"
+127.0.0.1 - - [2018-Dec-24 07:07:19.055] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 07:07:19.055] 32701 - [info] "WebRequest: took 0.252 ms"
+127.0.0.1 - - [2018-Dec-24 07:12:19.055] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 07:12:19.055] 32701 - [info] "WebRequest: took 0.242 ms"
+127.0.0.1 - - [2018-Dec-24 07:17:19.056] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 07:17:19.056] 32701 - [info] "WebRequest: took 0.251 ms"
+127.0.0.1 - - [2018-Dec-24 07:22:19.055] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 07:22:19.056] 32701 - [info] "WebRequest: took 0.228 ms"
+127.0.0.1 - - [2018-Dec-24 07:27:19.056] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 07:27:19.056] 32701 - [info] "WebRequest: took 0.244 ms"
+127.0.0.1 - - [2018-Dec-24 07:32:19.056] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 07:32:19.057] 32701 - [info] "WebRequest: took 0.307 ms"
+127.0.0.1 - - [2018-Dec-24 07:37:19.057] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 07:37:19.057] 32701 - [info] "WebRequest: took 0.274 ms"
+127.0.0.1 - - [2018-Dec-24 07:42:19.057] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 07:42:19.057] 32701 - [info] "WebRequest: took 0.265 ms"
+127.0.0.1 - - [2018-Dec-24 07:47:19.058] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 07:47:19.058] 32701 - [info] "WebRequest: took 0.282 ms"
+127.0.0.1 - - [2018-Dec-24 07:52:19.057] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 07:52:19.057] 32701 - [info] "WebRequest: took 0.277 ms"
+127.0.0.1 - - [2018-Dec-24 07:57:19.058] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 07:57:19.058] 32701 - [info] "WebRequest: took 0.239 ms"
+127.0.0.1 - - [2018-Dec-24 08:02:19.057] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 08:02:19.057] 32701 - [info] "WebRequest: took 0.281 ms"
+127.0.0.1 - - [2018-Dec-24 08:07:19.058] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 48
+[2018-Dec-24 08:07:19.058] 32701 - [info] "WebRequest: took 0.277 ms"
+127.0.0.1 - - [2018-Dec-24 08:12:19.058] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 08:12:19.058] 32701 - [info] "WebRequest: took 0.221 ms"
+127.0.0.1 - - [2018-Dec-24 08:17:19.058] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 08:17:19.058] 32701 - [info] "WebRequest: took 0.214 ms"
+127.0.0.1 - - [2018-Dec-24 08:22:19.059] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 08:22:19.060] 32701 - [info] "WebRequest: took 0.253 ms"
+127.0.0.1 - - [2018-Dec-24 08:27:19.058] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 08:27:19.058] 32701 - [info] "WebRequest: took 0.22 ms"
+127.0.0.1 - - [2018-Dec-24 08:32:19.058] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 08:32:19.058] 32701 - [info] "WebRequest: took 0.205 ms"
+127.0.0.1 - - [2018-Dec-24 08:37:19.058] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 08:37:19.058] 32701 - [info] "WebRequest: took 0.255 ms"
+127.0.0.1 - - [2018-Dec-24 08:42:19.058] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 08:42:19.058] 32701 - [info] "WebRequest: took 0.288 ms"
+127.0.0.1 - - [2018-Dec-24 08:47:19.058] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 08:47:19.058] 32701 - [info] "WebRequest: took 0.176 ms"
+127.0.0.1 - - [2018-Dec-24 08:52:19.058] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 08:52:19.058] 32701 - [info] "WebRequest: took 0.232 ms"
+127.0.0.1 - - [2018-Dec-24 08:57:19.059] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 08:57:19.059] 32701 - [info] "WebRequest: took 0.231 ms"
+127.0.0.1 - - [2018-Dec-24 09:02:19.059] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 09:02:19.059] 32701 - [info] "WebRequest: took 0.252 ms"
+127.0.0.1 - - [2018-Dec-24 09:07:19.059] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 09:07:19.059] 32701 - [info] "WebRequest: took 0.268 ms"
+127.0.0.1 - - [2018-Dec-24 09:12:19.059] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 09:12:19.059] 32701 - [info] "WebRequest: took 0.294 ms"
+127.0.0.1 - - [2018-Dec-24 09:17:19.059] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 09:17:19.059] 32701 - [info] "WebRequest: took 0.239 ms"
+127.0.0.1 - - [2018-Dec-24 09:22:19.060] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 09:22:19.060] 32701 - [info] "WebRequest: took 0.25 ms"
+127.0.0.1 - - [2018-Dec-24 09:27:19.061] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 09:27:19.061] 32701 - [info] "WebRequest: took 0.244 ms"
+127.0.0.1 - - [2018-Dec-24 09:32:19.062] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 09:32:19.062] 32701 - [info] "WebRequest: took 0.401 ms"
+127.0.0.1 - - [2018-Dec-24 09:37:19.064] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 09:37:19.064] 32701 - [info] "WebRequest: took 0.427 ms"
+127.0.0.1 - - [2018-Dec-24 09:42:19.062] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 09:42:19.062] 32701 - [info] "WebRequest: took 0.27 ms"
+127.0.0.1 - - [2018-Dec-24 09:47:19.063] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 09:47:19.063] 32701 - [info] "WebRequest: took 0.289 ms"
+127.0.0.1 - - [2018-Dec-24 09:52:19.061] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 09:52:19.061] 32701 - [info] "WebRequest: took 0.239 ms"
+127.0.0.1 - - [2018-Dec-24 09:57:19.062] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 09:57:19.062] 32701 - [info] "WebRequest: took 0.309 ms"
+127.0.0.1 - - [2018-Dec-24 10:02:19.061] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 10:02:19.062] 32701 - [info] "WebRequest: took 0.259 ms"
+127.0.0.1 - - [2018-Dec-24 10:07:19.061] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 10:07:19.061] 32701 - [info] "WebRequest: took 0.264 ms"
+127.0.0.1 - - [2018-Dec-24 10:12:19.061] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 10:12:19.061] 32701 - [info] "WebRequest: took 0.27 ms"
+127.0.0.1 - - [2018-Dec-24 10:17:19.061] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 10:17:19.061] 32701 - [info] "WebRequest: took 0.287 ms"
+127.0.0.1 - - [2018-Dec-24 10:22:19.064] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 10:22:19.064] 32701 - [info] "WebRequest: took 0.245 ms"
+127.0.0.1 - - [2018-Dec-24 10:27:19.063] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 10:27:19.063] 32701 - [info] "WebRequest: took 0.259 ms"
+127.0.0.1 - - [2018-Dec-24 10:32:19.062] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 10:32:19.062] 32701 - [info] "WebRequest: took 0.279 ms"
+127.0.0.1 - - [2018-Dec-24 10:37:19.062] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 10:37:19.062] 32701 - [info] "WebRequest: took 0.226 ms"
+127.0.0.1 - - [2018-Dec-24 10:42:19.062] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 10:42:19.062] 32701 - [info] "WebRequest: took 0.235 ms"
+127.0.0.1 - - [2018-Dec-24 10:47:19.062] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 10:47:19.062] 32701 - [info] "WebRequest: took 0.236 ms"
+127.0.0.1 - - [2018-Dec-24 10:52:19.062] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 10:52:19.062] 32701 - [info] "WebRequest: took 0.182 ms"
+127.0.0.1 - - [2018-Dec-24 10:57:19.063] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 10:57:19.063] 32701 - [info] "WebRequest: took 0.259 ms"
+127.0.0.1 - - [2018-Dec-24 11:02:19.063] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 11:02:19.063] 32701 - [info] "WebRequest: took 0.234 ms"
+127.0.0.1 - - [2018-Dec-24 11:07:19.062] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 11:07:19.063] 32701 - [info] "WebRequest: took 0.235 ms"
+127.0.0.1 - - [2018-Dec-24 11:12:19.063] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 11:12:19.063] 32701 - [info] "WebRequest: took 0.249 ms"
+127.0.0.1 - - [2018-Dec-24 11:17:19.063] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 11:17:19.063] 32701 - [info] "WebRequest: took 0.293 ms"
+127.0.0.1 - - [2018-Dec-24 11:22:19.063] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 11:22:19.068] 32701 - [info] "WebRequest: took 4.725 ms"
+127.0.0.1 - - [2018-Dec-24 11:27:19.064] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 11:27:19.064] 32701 - [info] "WebRequest: took 0.257 ms"
+127.0.0.1 - - [2018-Dec-24 11:32:19.063] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 11:32:19.063] 32701 - [info] "WebRequest: took 0.24 ms"
+127.0.0.1 - - [2018-Dec-24 11:37:19.064] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 11:37:19.064] 32701 - [info] "WebRequest: took 0.27 ms"
+127.0.0.1 - - [2018-Dec-24 11:42:19.064] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 11:42:19.064] 32701 - [info] "WebRequest: took 0.255 ms"
+127.0.0.1 - - [2018-Dec-24 11:47:19.064] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 11:47:19.064] 32701 - [info] "WebRequest: took 0.249 ms"
+127.0.0.1 - - [2018-Dec-24 11:52:19.064] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 11:52:19.064] 32701 - [info] "WebRequest: took 0.244 ms"
+127.0.0.1 - - [2018-Dec-24 11:57:19.064] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 11:57:19.064] 32701 - [info] "WebRequest: took 0.285 ms"
+127.0.0.1 - - [2018-Dec-24 12:02:19.064] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 12:02:19.064] 32701 - [info] "WebRequest: took 0.275 ms"
+127.0.0.1 - - [2018-Dec-24 12:07:19.064] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 12:07:19.064] 32701 - [info] "WebRequest: took 0.223 ms"
+127.0.0.1 - - [2018-Dec-24 12:12:19.065] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 12:12:19.065] 32701 - [info] "WebRequest: took 0.253 ms"
+127.0.0.1 - - [2018-Dec-24 12:17:19.068] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 12:17:19.068] 32701 - [info] "WebRequest: took 0.356 ms"
+127.0.0.1 - - [2018-Dec-24 12:22:19.066] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 12:22:19.066] 32701 - [info] "WebRequest: took 0.27 ms"
+127.0.0.1 - - [2018-Dec-24 12:27:19.067] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 12:27:19.068] 32701 - [info] "WebRequest: took 0.41 ms"
+127.0.0.1 - - [2018-Dec-24 12:32:19.070] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 12:32:19.070] 32701 - [info] "WebRequest: took 0.289 ms"
+127.0.0.1 - - [2018-Dec-24 12:37:19.067] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 12:37:19.067] 32701 - [info] "WebRequest: took 0.237 ms"
+127.0.0.1 - - [2018-Dec-24 12:42:19.069] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 12:42:19.069] 32701 - [info] "WebRequest: took 0.246 ms"
+127.0.0.1 - - [2018-Dec-24 12:47:19.066] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 12:47:19.066] 32701 - [info] "WebRequest: took 0.634 ms"
+127.0.0.1 - - [2018-Dec-24 12:52:19.066] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 12:52:19.066] 32701 - [info] "WebRequest: took 0.251 ms"
+127.0.0.1 - - [2018-Dec-24 12:57:19.069] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 12:57:19.069] 32701 - [info] "WebRequest: took 0.358 ms"
+127.0.0.1 - - [2018-Dec-24 13:02:19.066] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 13:02:19.066] 32701 - [info] "WebRequest: took 0.264 ms"
+127.0.0.1 - - [2018-Dec-24 13:07:19.069] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 13:07:19.069] 32701 - [info] "WebRequest: took 0.29 ms"
+127.0.0.1 - - [2018-Dec-24 13:12:19.070] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 13:12:19.070] 32701 - [info] "WebRequest: took 0.242 ms"
+127.0.0.1 - - [2018-Dec-24 13:17:19.070] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 13:17:19.071] 32701 - [info] "WebRequest: took 0.326 ms"
+127.0.0.1 - - [2018-Dec-24 13:22:19.074] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 13:22:19.075] 32701 - [info] "WebRequest: took 0.515 ms"
+127.0.0.1 - - [2018-Dec-24 13:27:19.071] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 13:27:19.071] 32701 - [info] "WebRequest: took 0.26 ms"
+127.0.0.1 - - [2018-Dec-24 13:32:19.068] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 13:32:19.068] 32701 - [info] "WebRequest: took 0.411 ms"
+127.0.0.1 - - [2018-Dec-24 13:37:19.068] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 13:37:19.068] 32701 - [info] "WebRequest: took 0.356 ms"
+127.0.0.1 - - [2018-Dec-24 13:42:19.073] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 13:42:19.073] 32701 - [info] "WebRequest: took 0.245 ms"
+127.0.0.1 - - [2018-Dec-24 13:47:19.069] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 13:47:19.069] 32701 - [info] "WebRequest: took 0.232 ms"
+127.0.0.1 - - [2018-Dec-24 13:52:19.069] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 13:52:19.069] 32701 - [info] "WebRequest: took 0.249 ms"
+127.0.0.1 - - [2018-Dec-24 13:57:19.069] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 13:57:19.069] 32701 - [info] "WebRequest: took 0.216 ms"
+127.0.0.1 - - [2018-Dec-24 14:02:19.070] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 14:02:19.070] 32701 - [info] "WebRequest: took 0.299 ms"
+127.0.0.1 - - [2018-Dec-24 14:07:19.069] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 14:07:19.070] 32701 - [info] "WebRequest: took 0.333 ms"
+127.0.0.1 - - [2018-Dec-24 14:12:19.070] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 14:12:19.070] 32701 - [info] "WebRequest: took 0.293 ms"
+127.0.0.1 - - [2018-Dec-24 14:17:19.070] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 14:17:19.070] 32701 - [info] "WebRequest: took 0.262 ms"
+127.0.0.1 - - [2018-Dec-24 14:22:19.070] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 14:22:19.070] 32701 - [info] "WebRequest: took 0.244 ms"
+127.0.0.1 - - [2018-Dec-24 14:27:19.070] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 14:27:19.070] 32701 - [info] "WebRequest: took 0.262 ms"
+127.0.0.1 - - [2018-Dec-24 14:32:19.071] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 14:32:19.071] 32701 - [info] "WebRequest: took 0.285 ms"
+127.0.0.1 - - [2018-Dec-24 14:37:19.070] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 14:37:19.070] 32701 - [info] "WebRequest: took 0.282 ms"
+127.0.0.1 - - [2018-Dec-24 14:42:19.070] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 14:42:19.071] 32701 - [info] "WebRequest: took 0.269 ms"
+127.0.0.1 - - [2018-Dec-24 14:47:19.070] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 14:47:19.075] 32701 - [info] "WebRequest: took 4.66 ms"
+127.0.0.1 - - [2018-Dec-24 14:52:19.071] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 14:52:19.071] 32701 - [info] "WebRequest: took 0.258 ms"
+127.0.0.1 - - [2018-Dec-24 14:57:19.071] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 14:57:19.071] 32701 - [info] "WebRequest: took 0.277 ms"
+127.0.0.1 - - [2018-Dec-24 15:02:19.071] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 15:02:19.071] 32701 - [info] "WebRequest: took 0.268 ms"
+127.0.0.1 - - [2018-Dec-24 15:07:19.072] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 15:07:19.072] 32701 - [info] "WebRequest: took 0.32 ms"
+127.0.0.1 - - [2018-Dec-24 15:12:19.071] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 15:12:19.071] 32701 - [info] "WebRequest: took 0.32 ms"
+127.0.0.1 - - [2018-Dec-24 15:17:19.071] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 15:17:19.071] 32701 - [info] "WebRequest: took 0.241 ms"
+127.0.0.1 - - [2018-Dec-24 15:22:19.072] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 15:22:19.072] 32701 - [info] "WebRequest: took 0.261 ms"
+127.0.0.1 - - [2018-Dec-24 15:27:19.072] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 15:27:19.072] 32701 - [info] "WebRequest: took 0.293 ms"
+127.0.0.1 - - [2018-Dec-24 15:32:19.072] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 15:32:19.072] 32701 - [info] "WebRequest: took 0.306 ms"
+127.0.0.1 - - [2018-Dec-24 15:37:19.073] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 15:37:19.073] 32701 - [info] "WebRequest: took 0.314 ms"
+127.0.0.1 - - [2018-Dec-24 15:42:19.072] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 15:42:19.072] 32701 - [info] "WebRequest: took 0.256 ms"
+127.0.0.1 - - [2018-Dec-24 15:47:19.072] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 15:47:19.072] 32701 - [info] "WebRequest: took 0.259 ms"
+127.0.0.1 - - [2018-Dec-24 15:52:19.072] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 15:52:19.072] 32701 - [info] "WebRequest: took 0.299 ms"
+127.0.0.1 - - [2018-Dec-24 15:57:19.073] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 15:57:19.073] 32701 - [info] "WebRequest: took 0.306 ms"
+127.0.0.1 - - [2018-Dec-24 16:02:19.073] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 16:02:19.073] 32701 - [info] "WebRequest: took 0.29 ms"
+127.0.0.1 - - [2018-Dec-24 16:07:19.089] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 16:07:19.089] 32701 - [info] "WebRequest: took 0.261 ms"
+127.0.0.1 - - [2018-Dec-24 16:12:19.076] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 16:12:19.077] 32701 - [info] "WebRequest: took 0.317 ms"
+127.0.0.1 - - [2018-Dec-24 16:17:19.077] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 16:17:19.077] 32701 - [info] "WebRequest: took 0.337 ms"
+127.0.0.1 - - [2018-Dec-24 16:22:19.076] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 16:22:19.076] 32701 - [info] "WebRequest: took 0.273 ms"
+127.0.0.1 - - [2018-Dec-24 16:27:19.077] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 16:27:19.077] 32701 - [info] "WebRequest: took 0.315 ms"
+127.0.0.1 - - [2018-Dec-24 16:32:19.078] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 16:32:19.078] 32701 - [info] "WebRequest: took 0.293 ms"
+127.0.0.1 - - [2018-Dec-24 16:37:19.084] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 16:37:19.084] 32701 - [info] "WebRequest: took 0.425 ms"
+127.0.0.1 - - [2018-Dec-24 16:42:19.077] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 16:42:19.077] 32701 - [info] "WebRequest: took 0.248 ms"
+127.0.0.1 - - [2018-Dec-24 16:47:19.076] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 16:47:19.076] 32701 - [info] "WebRequest: took 0.231 ms"
+127.0.0.1 - - [2018-Dec-24 16:52:19.077] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 16:52:19.077] 32701 - [info] "WebRequest: took 0.346 ms"
+127.0.0.1 - - [2018-Dec-24 16:57:19.077] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 16:57:19.077] 32701 - [info] "WebRequest: took 0.255 ms"
+127.0.0.1 - - [2018-Dec-24 17:02:19.077] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 17:02:19.077] 32701 - [info] "WebRequest: took 0.289 ms"
+127.0.0.1 - - [2018-Dec-24 17:07:19.078] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 17:07:19.078] 32701 - [info] "WebRequest: took 0.316 ms"
+127.0.0.1 - - [2018-Dec-24 17:12:19.079] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 17:12:19.079] 32701 - [info] "WebRequest: took 0.294 ms"
+127.0.0.1 - - [2018-Dec-24 17:17:19.079] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 17:17:19.079] 32701 - [info] "WebRequest: took 0.296 ms"
+127.0.0.1 - - [2018-Dec-24 17:22:19.079] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 17:22:19.080] 32701 - [info] "WebRequest: took 0.273 ms"
+127.0.0.1 - - [2018-Dec-24 17:27:19.081] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 17:27:19.081] 32701 - [info] "WebRequest: took 0.301 ms"
+127.0.0.1 - - [2018-Dec-24 17:32:19.078] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 17:32:19.078] 32701 - [info] "WebRequest: took 0.225 ms"
+127.0.0.1 - - [2018-Dec-24 17:37:19.089] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 17:37:19.090] 32701 - [info] "WebRequest: took 0.423 ms"
+127.0.0.1 - - [2018-Dec-24 17:42:19.088] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 17:42:19.089] 32701 - [info] "WebRequest: took 0.476 ms"
+127.0.0.1 - - [2018-Dec-24 17:47:19.080] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 17:47:19.080] 32701 - [info] "WebRequest: took 0.307 ms"
+127.0.0.1 - - [2018-Dec-24 17:52:19.080] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 17:52:19.080] 32701 - [info] "WebRequest: took 0.241 ms"
+127.0.0.1 - - [2018-Dec-24 17:57:19.081] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 17:57:19.086] 32701 - [info] "WebRequest: took 4.73 ms"
+127.0.0.1 - - [2018-Dec-24 18:02:19.082] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 18:02:19.082] 32701 - [info] "WebRequest: took 0.26 ms"
+127.0.0.1 - - [2018-Dec-24 18:07:19.085] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 18:07:19.085] 32701 - [info] "WebRequest: took 0.298 ms"
+127.0.0.1 - - [2018-Dec-24 18:12:19.082] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 18:12:19.082] 32701 - [info] "WebRequest: took 0.286 ms"
+127.0.0.1 - - [2018-Dec-24 18:17:19.081] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 18:17:19.081] 32701 - [info] "WebRequest: took 0.272 ms"
+127.0.0.1 - - [2018-Dec-24 18:22:19.082] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 18:22:19.082] 32701 - [info] "WebRequest: took 0.331 ms"
+127.0.0.1 - - [2018-Dec-24 18:27:19.082] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 18:27:19.082] 32701 - [info] "WebRequest: took 0.27 ms"
+127.0.0.1 - - [2018-Dec-24 18:32:19.082] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 18:32:19.082] 32701 - [info] "WebRequest: took 0.324 ms"
+127.0.0.1 - - [2018-Dec-24 18:37:19.082] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 18:37:19.082] 32701 - [info] "WebRequest: took 0.295 ms"
+127.0.0.1 - - [2018-Dec-24 18:42:19.081] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 18:42:19.082] 32701 - [info] "WebRequest: took 0.266 ms"
+127.0.0.1 - - [2018-Dec-24 18:47:19.081] "POST /?wtd=ZisUrg2bMnNOaibt HTTP/1.1" 200 50
+[2018-Dec-24 18:47:19.082] 32701 - [info] "WebRequest: took 0.27 ms"
+[2018-Dec-24 18:48:39.029] 32701 - [info] "WServer/wthttp: shutdown (signal = 15)"
+[2018-Dec-24 18:48:39.030] 32701 - [info] "WebController: shutdown: stopping 1 sessions."
+[2018-Dec-24 18:48:39.051] 32701 [/ ZisUrg2bMnNOaibt] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-24 18:48:39.051] 32701 - [info] "WServer/wthttp: Shutdown: stopping web server."
+[2018-Dec-24 18:48:40.622] 30965 - [info] "config: reading Wt config file: /etc/wt/wt_config.xml (location = './WebApp')"
+[2018-Dec-24 18:48:40.625] 30965 - [info] "WServer/wthttp: initializing built-in wthttpd"
+[2018-Dec-24 18:48:40.627] 30965 - [info] "wthttp: started server: http://0.0.0.0:80"
+[2018-Dec-24 18:48:46.536] 30965 - [info] "Wt: session created (#sessions = 1)"
+[2018-Dec-24 18:48:46.537] 30965 [/ sRNwAnfCQmCC0khI] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-24 18:48:46.537] "GET / HTTP/1.1" 200 2264
+[2018-Dec-24 18:48:46.538] 30965 - [info] "WebRequest: took 1.246 ms"
+127.0.0.1 - - [2018-Dec-24 18:48:46.581] "GET /?wtd=sRNwAnfCQmCC0khI&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-24 18:48:46.581] 30965 - [info] "WebRequest: took 10.414 ms"
+127.0.0.1 - - [2018-Dec-24 18:48:46.592] "GET /?wtd=sRNwAnfCQmCC0khI&sid=-63152777&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=1017652590 HTTP/1.1" 200 38367
+[2018-Dec-24 18:48:46.592] 30965 - [info] "WebRequest: took 14.701 ms"
+127.0.0.1 - - [2018-Dec-24 18:48:46.601] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 200 122998
+127.0.0.1 - - [2018-Dec-24 18:48:46.605] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-24 18:48:46.605] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-24 18:48:46.609] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 200 20034
+127.0.0.1 - - [2018-Dec-24 18:48:46.617] "GET /custom.css HTTP/1.1" 200 1505
+127.0.0.1 - - [2018-Dec-24 18:48:46.662] "GET /favicon.ico HTTP/1.1" 200 1424
+127.0.0.1 - - [2018-Dec-24 18:48:46.671] "GET /resources/ajax-loading.gif HTTP/1.1" 200 1786
+127.0.0.1 - - [2018-Dec-24 18:48:46.726] "POST /?wtd=sRNwAnfCQmCC0khI HTTP/1.1" 200 49
+[2018-Dec-24 18:48:46.726] 30965 - [info] "WebRequest: took 0.351 ms"
+127.0.0.1 - - [2018-Dec-24 18:48:47.851] "POST /?wtd=sRNwAnfCQmCC0khI HTTP/1.1" 200 4381
+[2018-Dec-24 18:48:47.851] 30965 - [info] "WebRequest: took 51.894 ms"
+127.0.0.1 - - [2018-Dec-24 18:48:47.862] "GET /resources/tinymce/tinymce.min.js HTTP/1.1" 200 464400
+127.0.0.1 - - [2018-Dec-24 18:48:48.063] "POST /?wtd=sRNwAnfCQmCC0khI HTTP/1.1" 200 1219
+[2018-Dec-24 18:48:48.063] 30965 - [info] "WebRequest: took 0.558 ms"
+127.0.0.1 - - [2018-Dec-24 18:48:49.193] "POST /?wtd=sRNwAnfCQmCC0khI HTTP/1.1" 200 5749
+[2018-Dec-24 18:48:49.193] 30965 - [info] "WebRequest: took 3.177 ms"
+[2018-Dec-24 18:48:50.791] 30965 [/ sRNwAnfCQmCC0khI] [warning] "WApplication: Deploy-path ends with '/', using /?_= for internal paths"
+127.0.0.1 - - [2018-Dec-24 18:48:50.793] "POST /?wtd=sRNwAnfCQmCC0khI HTTP/1.1" 200 3199
+[2018-Dec-24 18:48:50.793] 30965 - [info] "WebRequest: took 1.827 ms"
+127.0.0.1 - - [2018-Dec-24 18:48:54.916] "POST /?wtd=sRNwAnfCQmCC0khI HTTP/1.1" 200 184
+[2018-Dec-24 18:48:54.916] 30965 - [info] "WebRequest: took 0.862 ms"
+127.0.0.1 - - [2018-Dec-24 18:48:56.622] "POST /?wtd=sRNwAnfCQmCC0khI HTTP/1.1" 200 1313
+[2018-Dec-24 18:48:56.622] 30965 - [info] "WebRequest: took 1.686 ms"
+127.0.0.1 - - [2018-Dec-24 18:49:12.698] "POST /?wtd=sRNwAnfCQmCC0khI HTTP/1.1" 200 185
+[2018-Dec-24 18:49:12.699] 30965 - [info] "WebRequest: took 0.598 ms"
+[2018-Dec-24 18:49:13.910] 30965 - [info] "Wt: session created (#sessions = 2)"
+[2018-Dec-24 18:49:13.910] 30965 [/ BqE3M6E5RVbasWm8] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-24 18:49:13.911] "GET / HTTP/1.1" 200 2269
+[2018-Dec-24 18:49:13.911] 30965 - [info] "WebRequest: took 1.249 ms"
+127.0.0.1 - - [2018-Dec-24 18:49:14.063] "GET /?wtd=BqE3M6E5RVbasWm8&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-24 18:49:14.065] 30965 - [info] "WebRequest: took 102.829 ms"
+127.0.0.1 - - [2018-Dec-24 18:49:14.068] "GET /?wtd=BqE3M6E5RVbasWm8&sid=-1269330534&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=3253476130 HTTP/1.1" 200 38369
+[2018-Dec-24 18:49:14.068] 30965 - [info] "WebRequest: took 10.775 ms"
+127.0.0.1 - - [2018-Dec-24 18:49:14.175] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 18:49:14.177] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 18:49:14.178] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-24 18:49:14.179] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-24 18:49:14.179] "GET /custom.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 18:49:14.649] "GET /resources/ajax-loading.gif HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 18:49:14.706] "POST /?wtd=BqE3M6E5RVbasWm8 HTTP/1.1" 200 51
+[2018-Dec-24 18:49:14.706] 30965 - [info] "WebRequest: took 0.391 ms"
+[2018-Dec-24 18:50:33.758] 30965 - [info] "WServer/wthttp: shutdown (signal = 15)"
+[2018-Dec-24 18:50:33.758] 30965 - [info] "WebController: shutdown: stopping 2 sessions."
+[2018-Dec-24 18:50:33.758] 30965 [/ BqE3M6E5RVbasWm8] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-24 18:50:33.760] 30965 [/ sRNwAnfCQmCC0khI] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-24 18:50:33.760] 30965 - [info] "WServer/wthttp: Shutdown: stopping web server."
+[2018-Dec-24 18:50:34.925] 31162 - [info] "config: reading Wt config file: /etc/wt/wt_config.xml (location = './WebApp')"
+[2018-Dec-24 18:50:34.925] 31162 - [info] "WServer/wthttp: initializing built-in wthttpd"
+[2018-Dec-24 18:50:34.928] 31162 - [info] "wthttp: started server: http://0.0.0.0:80"
+[2018-Dec-24 18:50:38.173] 31162 - [info] "Wt: session created (#sessions = 1)"
+[2018-Dec-24 18:50:38.173] 31162 [/ rf4WsG7uDA6Dt4MW] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-24 18:50:38.174] "GET / HTTP/1.1" 200 2269
+[2018-Dec-24 18:50:38.174] 31162 - [info] "WebRequest: took 1.277 ms"
+127.0.0.1 - - [2018-Dec-24 18:50:38.248] "GET /?wtd=rf4WsG7uDA6Dt4MW&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-24 18:50:38.248] 31162 - [info] "WebRequest: took 11.277 ms"
+127.0.0.1 - - [2018-Dec-24 18:50:38.253] "GET /?wtd=rf4WsG7uDA6Dt4MW&sid=2101686522&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=1567506893 HTTP/1.1" 200 38365
+[2018-Dec-24 18:50:38.254] 31162 - [info] "WebRequest: took 10.674 ms"
+127.0.0.1 - - [2018-Dec-24 18:50:38.277] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 18:50:38.278] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 18:50:38.279] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-24 18:50:38.279] "GET /custom.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 18:50:38.282] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-24 18:50:38.339] "GET /resources/ajax-loading.gif HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 18:50:38.411] "POST /?wtd=rf4WsG7uDA6Dt4MW HTTP/1.1" 200 50
+[2018-Dec-24 18:50:38.412] 31162 - [info] "WebRequest: took 0.335 ms"
+127.0.0.1 - - [2018-Dec-24 18:50:39.284] "POST /?wtd=rf4WsG7uDA6Dt4MW HTTP/1.1" 200 4361
+[2018-Dec-24 18:50:39.285] 31162 - [info] "WebRequest: took 38.948 ms"
+127.0.0.1 - - [2018-Dec-24 18:50:39.486] "POST /?wtd=rf4WsG7uDA6Dt4MW HTTP/1.1" 200 1210
+[2018-Dec-24 18:50:39.486] 31162 - [info] "WebRequest: took 0.548 ms"
+127.0.0.1 - - [2018-Dec-24 18:50:40.567] "POST /?wtd=rf4WsG7uDA6Dt4MW HTTP/1.1" 200 5736
+[2018-Dec-24 18:50:40.567] 31162 - [info] "WebRequest: took 3.036 ms"
+[2018-Dec-24 18:50:41.624] 31162 [/ rf4WsG7uDA6Dt4MW] [warning] "WApplication: Deploy-path ends with '/', using /?_= for internal paths"
+127.0.0.1 - - [2018-Dec-24 18:50:41.626] "POST /?wtd=rf4WsG7uDA6Dt4MW HTTP/1.1" 200 3213
+[2018-Dec-24 18:50:41.626] 31162 - [info] "WebRequest: took 2.187 ms"
+127.0.0.1 - - [2018-Dec-24 18:50:43.147] "POST /?wtd=rf4WsG7uDA6Dt4MW HTTP/1.1" 200 183
+[2018-Dec-24 18:50:43.147] 31162 - [info] "WebRequest: took 0.924 ms"
+127.0.0.1 - - [2018-Dec-24 18:50:44.102] "POST /?wtd=rf4WsG7uDA6Dt4MW HTTP/1.1" 200 1314
+[2018-Dec-24 18:50:44.102] 31162 - [info] "WebRequest: took 1.925 ms"
+127.0.0.1 - - [2018-Dec-24 18:50:57.401] "POST /?wtd=rf4WsG7uDA6Dt4MW HTTP/1.1" 200 182
+[2018-Dec-24 18:50:57.401] 31162 - [info] "WebRequest: took 120.83 ms"
+127.0.0.1 - - [2018-Dec-24 18:50:59.063] "POST /?wtd=rf4WsG7uDA6Dt4MW HTTP/1.1" 200 1321
+[2018-Dec-24 18:50:59.064] 31162 - [info] "WebRequest: took 1.683 ms"
+127.0.0.1 - - [2018-Dec-24 18:51:01.012] "POST /?wtd=rf4WsG7uDA6Dt4MW HTTP/1.1" 200 184
+[2018-Dec-24 18:51:01.012] 31162 - [info] "WebRequest: took 0.604 ms"
+[2018-Dec-24 18:51:03.495] 31162 - [info] "Wt: session created (#sessions = 2)"
+[2018-Dec-24 18:51:03.496] 31162 [/ fYD4LX78FujxEl76] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-24 18:51:03.497] "GET / HTTP/1.1" 200 2268
+[2018-Dec-24 18:51:03.497] 31162 - [info] "WebRequest: took 1.325 ms"
+127.0.0.1 - - [2018-Dec-24 18:51:03.506] "POST /?wtd=rf4WsG7uDA6Dt4MW HTTP/1.1" 200 131
+[2018-Dec-24 18:51:03.506] 31162 - [info] "WebRequest: took 0.489 ms"
+[2018-Dec-24 18:51:03.507] 31162 - [info] "WebController: Removing session rf4WsG7uDA6Dt4MW"
+[2018-Dec-24 18:51:03.508] 31162 [/ rf4WsG7uDA6Dt4MW] [info] "Wt: session destroyed (#sessions = 1)"
+127.0.0.1 - - [2018-Dec-24 18:51:03.562] "GET /?wtd=fYD4LX78FujxEl76&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-24 18:51:03.562] 31162 - [info] "WebRequest: took 16.401 ms"
+127.0.0.1 - - [2018-Dec-24 18:51:03.572] "GET /?wtd=fYD4LX78FujxEl76&sid=-747228775&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=617020502 HTTP/1.1" 200 38370
+[2018-Dec-24 18:51:03.572] 31162 - [info] "WebRequest: took 10.793 ms"
+127.0.0.1 - - [2018-Dec-24 18:51:03.579] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 18:51:03.583] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 18:51:03.586] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-24 18:51:03.594] "GET /custom.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 18:51:03.594] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-24 18:51:03.666] "GET /resources/ajax-loading.gif HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 18:51:03.733] "POST /?wtd=fYD4LX78FujxEl76 HTTP/1.1" 200 50
+[2018-Dec-24 18:51:03.733] 31162 - [info] "WebRequest: took 0.345 ms"
+127.0.0.1 - - [2018-Dec-24 18:51:04.765] "POST /?wtd=fYD4LX78FujxEl76 HTTP/1.1" 200 4364
+[2018-Dec-24 18:51:04.765] 31162 - [info] "WebRequest: took 12.508 ms"
+127.0.0.1 - - [2018-Dec-24 18:51:04.903] "POST /?wtd=fYD4LX78FujxEl76 HTTP/1.1" 200 1215
+[2018-Dec-24 18:51:04.903] 31162 - [info] "WebRequest: took 0.4 ms"
+127.0.0.1 - - [2018-Dec-24 18:51:06.418] "POST /?wtd=fYD4LX78FujxEl76 HTTP/1.1" 200 5751
+[2018-Dec-24 18:51:06.418] 31162 - [info] "WebRequest: took 3.249 ms"
+[2018-Dec-24 18:51:07.544] 31162 [/ fYD4LX78FujxEl76] [warning] "WApplication: Deploy-path ends with '/', using /?_= for internal paths"
+127.0.0.1 - - [2018-Dec-24 18:51:07.545] "POST /?wtd=fYD4LX78FujxEl76 HTTP/1.1" 200 3201
+[2018-Dec-24 18:51:07.545] 31162 - [info] "WebRequest: took 2.043 ms"
+127.0.0.1 - - [2018-Dec-24 18:51:29.733] "POST /?wtd=fYD4LX78FujxEl76 HTTP/1.1" 200 183
+[2018-Dec-24 18:51:29.733] 31162 - [info] "WebRequest: took 0.54 ms"
+[2018-Dec-24 18:51:31.638] 31162 - [info] "Wt: session created (#sessions = 2)"
+[2018-Dec-24 18:51:31.639] 31162 [/ Ewl92MYHClXVowUc] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-24 18:51:31.639] "GET / HTTP/1.1" 200 2269
+[2018-Dec-24 18:51:31.640] 31162 - [info] "WebRequest: took 1.226 ms"
+127.0.0.1 - - [2018-Dec-24 18:51:31.711] "GET /?wtd=Ewl92MYHClXVowUc&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-24 18:51:31.711] 31162 - [info] "WebRequest: took 32.182 ms"
+127.0.0.1 - - [2018-Dec-24 18:51:31.726] "GET /?wtd=Ewl92MYHClXVowUc&sid=1919328677&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=3977244851 HTTP/1.1" 200 38368
+[2018-Dec-24 18:51:31.726] 31162 - [info] "WebRequest: took 16.816 ms"
+127.0.0.1 - - [2018-Dec-24 18:51:31.738] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 200 122998
+127.0.0.1 - - [2018-Dec-24 18:51:31.739] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 18:51:31.739] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-24 18:51:31.740] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-24 18:51:31.746] "GET /custom.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 18:51:31.827] "GET /resources/ajax-loading.gif HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 18:51:31.897] "POST /?wtd=Ewl92MYHClXVowUc HTTP/1.1" 200 50
+[2018-Dec-24 18:51:31.897] 31162 - [info] "WebRequest: took 0.288 ms"
+127.0.0.1 - - [2018-Dec-24 18:51:33.101] "POST /?wtd=Ewl92MYHClXVowUc HTTP/1.1" 200 4386
+[2018-Dec-24 18:51:33.101] 31162 - [info] "WebRequest: took 17.651 ms"
+127.0.0.1 - - [2018-Dec-24 18:51:33.301] "POST /?wtd=Ewl92MYHClXVowUc HTTP/1.1" 200 1215
+[2018-Dec-24 18:51:33.301] 31162 - [info] "WebRequest: took 0.497 ms"
+127.0.0.1 - - [2018-Dec-24 18:51:34.339] "POST /?wtd=Ewl92MYHClXVowUc HTTP/1.1" 200 5755
+[2018-Dec-24 18:51:34.339] 31162 - [info] "WebRequest: took 3.157 ms"
+[2018-Dec-24 18:51:35.473] 31162 [/ Ewl92MYHClXVowUc] [warning] "WApplication: Deploy-path ends with '/', using /?_= for internal paths"
+127.0.0.1 - - [2018-Dec-24 18:51:35.474] "POST /?wtd=Ewl92MYHClXVowUc HTTP/1.1" 200 3209
+[2018-Dec-24 18:51:35.474] 31162 - [info] "WebRequest: took 1.886 ms"
+127.0.0.1 - - [2018-Dec-24 18:51:37.716] "POST /?wtd=Ewl92MYHClXVowUc HTTP/1.1" 200 183
+[2018-Dec-24 18:51:37.716] 31162 - [info] "WebRequest: took 0.599 ms"
+terminate called after throwing an instance of 'zmq::error_t'
+  what():  Address already in use
+[2018-Dec-24 18:55:20.946] 31389 - [info] "config: reading Wt config file: /etc/wt/wt_config.xml (location = './WebApp')"
+[2018-Dec-24 18:55:20.947] 31389 - [info] "WServer/wthttp: initializing built-in wthttpd"
+[2018-Dec-24 18:55:20.949] 31389 - [warning] "wthttp: Error occurred when binding to 0.0.0.0:80
+Address already in use"
+[2018-Dec-24 18:55:20.949] 31389 - [info] "WServer/wthttp: fatal: Error: Could not bind to address 0.0.0.0 port 80: Could not listen on address."
+[2018-Dec-24 18:55:24.322] 31162 - [info] "WServer/wthttp: shutdown (signal = 15)"
+[2018-Dec-24 18:55:24.323] 31162 - [info] "WebController: shutdown: stopping 2 sessions."
+[2018-Dec-24 18:55:24.324] 31162 [/ Ewl92MYHClXVowUc] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-24 18:55:24.329] 31162 [/ fYD4LX78FujxEl76] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-24 18:55:24.330] 31162 - [info] "WServer/wthttp: Shutdown: stopping web server."
+[2018-Dec-24 18:55:26.375] 31482 - [info] "config: reading Wt config file: /etc/wt/wt_config.xml (location = './WebApp')"
+[2018-Dec-24 18:55:26.375] 31482 - [info] "WServer/wthttp: initializing built-in wthttpd"
+[2018-Dec-24 18:55:26.380] 31482 - [info] "wthttp: started server: http://0.0.0.0:80"
+[2018-Dec-24 18:55:29.205] 31482 - [info] "Wt: session created (#sessions = 1)"
+[2018-Dec-24 18:55:29.206] 31482 [/ Me4tUYRlVo0rdG4G] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-24 18:55:29.207] "GET / HTTP/1.1" 200 2265
+[2018-Dec-24 18:55:29.207] 31482 - [info] "WebRequest: took 1.311 ms"
+127.0.0.1 - - [2018-Dec-24 18:55:29.250] "GET /?wtd=Me4tUYRlVo0rdG4G&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-24 18:55:29.250] 31482 - [info] "WebRequest: took 12.902 ms"
+127.0.0.1 - - [2018-Dec-24 18:55:29.261] "GET /?wtd=Me4tUYRlVo0rdG4G&sid=-530940518&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=34309191 HTTP/1.1" 200 38364
+[2018-Dec-24 18:55:29.261] 31482 - [info] "WebRequest: took 11.82 ms"
+127.0.0.1 - - [2018-Dec-24 18:55:29.276] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 200 122998
+127.0.0.1 - - [2018-Dec-24 18:55:29.277] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 200 20034
+127.0.0.1 - - [2018-Dec-24 18:55:29.277] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-24 18:55:29.278] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-24 18:55:29.279] "GET /custom.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 18:55:29.335] "GET /resources/ajax-loading.gif HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 18:55:29.393] "POST /?wtd=Me4tUYRlVo0rdG4G HTTP/1.1" 200 50
+[2018-Dec-24 18:55:29.393] 31482 - [info] "WebRequest: took 0.283 ms"
+127.0.0.1 - - [2018-Dec-24 18:55:30.174] "POST /?wtd=Me4tUYRlVo0rdG4G HTTP/1.1" 200 4365
+[2018-Dec-24 18:55:30.174] 31482 - [info] "WebRequest: took 19.655 ms"
+127.0.0.1 - - [2018-Dec-24 18:55:30.350] "POST /?wtd=Me4tUYRlVo0rdG4G HTTP/1.1" 200 1215
+[2018-Dec-24 18:55:30.350] 31482 - [info] "WebRequest: took 0.662 ms"
+127.0.0.1 - - [2018-Dec-24 18:55:31.509] "POST /?wtd=Me4tUYRlVo0rdG4G HTTP/1.1" 200 5734
+[2018-Dec-24 18:55:31.509] 31482 - [info] "WebRequest: took 3.276 ms"
+[2018-Dec-24 18:55:32.877] 31482 [/ Me4tUYRlVo0rdG4G] [warning] "WApplication: Deploy-path ends with '/', using /?_= for internal paths"
+127.0.0.1 - - [2018-Dec-24 18:55:32.879] "POST /?wtd=Me4tUYRlVo0rdG4G HTTP/1.1" 200 3203
+[2018-Dec-24 18:55:32.879] 31482 - [info] "WebRequest: took 1.692 ms"
+127.0.0.1 - - [2018-Dec-24 18:56:01.709] "POST /?wtd=Me4tUYRlVo0rdG4G HTTP/1.1" 200 182
+[2018-Dec-24 18:56:01.709] 31482 - [info] "WebRequest: took 0.763 ms"
+[2018-Dec-24 18:56:05.793] 31482 - [info] "WServer/wthttp: shutdown (signal = 15)"
+[2018-Dec-24 18:56:05.793] 31482 - [info] "WebController: shutdown: stopping 1 sessions."
+[2018-Dec-24 18:56:05.794] 31482 [/ Me4tUYRlVo0rdG4G] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-24 18:56:05.794] 31482 - [info] "WServer/wthttp: Shutdown: stopping web server."
+[2018-Dec-24 20:43:32.684] 662 - [info] "config: reading Wt config file: /etc/wt/wt_config.xml (location = './WebApp')"
+[2018-Dec-24 20:43:32.690] 662 - [info] "WServer/wthttp: initializing built-in wthttpd"
+[2018-Dec-24 20:43:32.699] 662 - [info] "wthttp: started server: http://0.0.0.0:80"
+[2018-Dec-24 20:43:36.715] 662 - [info] "Wt: session created (#sessions = 1)"
+[2018-Dec-24 20:43:36.715] 662 [/ IHbkTd0lfDB9vSq7] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-24 20:43:36.734] "GET / HTTP/1.1" 200 2267
+[2018-Dec-24 20:43:36.734] 662 - [info] "WebRequest: took 18.898 ms"
+[2018-Dec-24 20:43:36.761] 662 - [info] "Wt: session created (#sessions = 2)"
+[2018-Dec-24 20:43:36.761] 662 [/ 3MbpvGIoGhhhg1Wp] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+[2018-Dec-24 20:43:36.761] 662 [/ 3MbpvGIoGhhhg1Wp] [info] "Wt: signal from dead session, sending reload."
+[2018-Dec-24 20:43:36.761] 662 - [info] "WebController: Removing session 3MbpvGIoGhhhg1Wp"
+[2018-Dec-24 20:43:36.761] 662 [/ 3MbpvGIoGhhhg1Wp] [info] "Wt: session destroyed (#sessions = 1)"
+127.0.0.1 - - [2018-Dec-24 20:43:36.761] "POST /?wtd=Me4tUYRlVo0rdG4G HTTP/1.1" 200 76
+[2018-Dec-24 20:43:36.761] 662 - [info] "WebRequest: took 0.767 ms"
+127.0.0.1 - - [2018-Dec-24 20:43:36.999] "GET /?wtd=IHbkTd0lfDB9vSq7&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-24 20:43:36.999] 662 - [info] "WebRequest: took 177.926 ms"
+127.0.0.1 - - [2018-Dec-24 20:43:37.008] "GET /?wtd=IHbkTd0lfDB9vSq7&sid=-1401495222&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=233458070 HTTP/1.1" 200 38364
+[2018-Dec-24 20:43:37.009] 662 - [info] "WebRequest: took 19.994 ms"
+127.0.0.1 - - [2018-Dec-24 20:43:37.020] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-24 20:43:37.022] "GET /custom.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 20:43:37.022] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-24 20:43:37.048] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 200 20034
+127.0.0.1 - - [2018-Dec-24 20:43:37.050] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 200 122998
+127.0.0.1 - - [2018-Dec-24 20:43:37.108] "GET /favicon.ico HTTP/1.1" 200 1424
+127.0.0.1 - - [2018-Dec-24 20:43:37.109] "GET /resources/ajax-loading.gif HTTP/1.1" 200 1786
+127.0.0.1 - - [2018-Dec-24 20:43:37.206] "POST /?wtd=IHbkTd0lfDB9vSq7 HTTP/1.1" 200 51
+[2018-Dec-24 20:43:37.206] 662 - [info] "WebRequest: took 0.288 ms"
+127.0.0.1 - - [2018-Dec-24 20:43:38.114] "POST /?wtd=IHbkTd0lfDB9vSq7 HTTP/1.1" 200 4362
+[2018-Dec-24 20:43:38.114] 662 - [info] "WebRequest: took 51.015 ms"
+127.0.0.1 - - [2018-Dec-24 20:43:38.121] "GET /resources/tinymce/tinymce.min.js HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 20:43:38.263] "POST /?wtd=IHbkTd0lfDB9vSq7 HTTP/1.1" 200 1212
+[2018-Dec-24 20:43:38.263] 662 - [info] "WebRequest: took 0.492 ms"
+127.0.0.1 - - [2018-Dec-24 20:43:39.485] "POST /?wtd=IHbkTd0lfDB9vSq7 HTTP/1.1" 200 5734
+[2018-Dec-24 20:43:39.485] 662 - [info] "WebRequest: took 2.554 ms"
+[2018-Dec-24 20:43:41.638] 662 [/ IHbkTd0lfDB9vSq7] [warning] "WApplication: Deploy-path ends with '/', using /?_= for internal paths"
+127.0.0.1 - - [2018-Dec-24 20:43:41.639] "POST /?wtd=IHbkTd0lfDB9vSq7 HTTP/1.1" 200 3204
+[2018-Dec-24 20:43:41.640] 662 - [info] "WebRequest: took 2.085 ms"
+127.0.0.1 - - [2018-Dec-24 20:43:47.353] "POST /?wtd=IHbkTd0lfDB9vSq7 HTTP/1.1" 200 184
+[2018-Dec-24 20:43:47.353] 662 - [info] "WebRequest: took 19.361 ms"
+127.0.0.1 - - [2018-Dec-24 20:44:52.734] "POST /?wtd=IHbkTd0lfDB9vSq7 HTTP/1.1" 200 1251
+[2018-Dec-24 20:44:52.734] 662 - [info] "WebRequest: took 0.937 ms"
+127.0.0.1 - - [2018-Dec-24 20:44:58.012] "POST /?wtd=IHbkTd0lfDB9vSq7 HTTP/1.1" 200 1244
+[2018-Dec-24 20:44:58.012] 662 - [info] "WebRequest: took 1.133 ms"
+127.0.0.1 - - [2018-Dec-24 20:45:03.916] "POST /?wtd=IHbkTd0lfDB9vSq7 HTTP/1.1" 200 484
+[2018-Dec-24 20:45:03.916] 662 - [info] "WebRequest: took 15.599 ms"
+127.0.0.1 - - [2018-Dec-24 20:45:06.103] "POST /?wtd=IHbkTd0lfDB9vSq7 HTTP/1.1" 200 3104
+[2018-Dec-24 20:45:06.103] 662 - [info] "WebRequest: took 1.911 ms"
+127.0.0.1 - - [2018-Dec-24 20:45:06.132] "GET /resources/themes/bootstrap/3/spin-buttons.png HTTP/1.1" 200 557
+127.0.0.1 - - [2018-Dec-24 20:45:09.234] "POST /?wtd=IHbkTd0lfDB9vSq7 HTTP/1.1" 200 217
+[2018-Dec-24 20:45:09.234] 662 - [info] "WebRequest: took 24.701 ms"
+127.0.0.1 - - [2018-Dec-24 20:45:10.202] "POST /?wtd=IHbkTd0lfDB9vSq7 HTTP/1.1" 200 1324
+[2018-Dec-24 20:45:10.202] 662 - [info] "WebRequest: took 1.677 ms"
+127.0.0.1 - - [2018-Dec-24 20:45:16.475] "POST /?wtd=IHbkTd0lfDB9vSq7 HTTP/1.1" 200 184
+[2018-Dec-24 20:45:16.475] 662 - [info] "WebRequest: took 35.206 ms"
+[2018-Dec-24 20:45:18.381] 662 - [info] "Wt: session created (#sessions = 2)"
+[2018-Dec-24 20:45:18.381] 662 [/ i9gEi42PW1FlbVNx] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-24 20:45:18.382] "GET / HTTP/1.1" 200 2269
+[2018-Dec-24 20:45:18.382] 662 - [info] "WebRequest: took 1.291 ms"
+[2018-Dec-24 20:45:18.391] 662 - [info] "WebController: Removing session IHbkTd0lfDB9vSq7"
+127.0.0.1 - - [2018-Dec-24 20:45:18.391] "POST /?wtd=IHbkTd0lfDB9vSq7 HTTP/1.1" 200 131
+[2018-Dec-24 20:45:18.391] 662 - [info] "WebRequest: took 0.536 ms"
+[2018-Dec-24 20:45:18.392] 662 [/ IHbkTd0lfDB9vSq7] [info] "Wt: session destroyed (#sessions = 1)"
+127.0.0.1 - - [2018-Dec-24 20:45:18.441] "GET /?wtd=i9gEi42PW1FlbVNx&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-24 20:45:18.441] 662 - [info] "WebRequest: took 22.279 ms"
+127.0.0.1 - - [2018-Dec-24 20:45:18.449] "GET /?wtd=i9gEi42PW1FlbVNx&sid=-196644039&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=2394614446 HTTP/1.1" 200 38368
+[2018-Dec-24 20:45:18.450] 662 - [info] "WebRequest: took 11.447 ms"
+127.0.0.1 - - [2018-Dec-24 20:45:18.505] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 200 122998
+127.0.0.1 - - [2018-Dec-24 20:45:18.506] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 200 20034
+127.0.0.1 - - [2018-Dec-24 20:45:18.509] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-24 20:45:18.510] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-24 20:45:18.512] "GET /custom.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 20:45:18.549] "GET /resources/ajax-loading.gif HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 20:45:18.609] "POST /?wtd=i9gEi42PW1FlbVNx HTTP/1.1" 200 50
+[2018-Dec-24 20:45:18.609] 662 - [info] "WebRequest: took 0.257 ms"
+127.0.0.1 - - [2018-Dec-24 20:45:19.589] "POST /?wtd=i9gEi42PW1FlbVNx HTTP/1.1" 200 4359
+[2018-Dec-24 20:45:19.589] 662 - [info] "WebRequest: took 9.631 ms"
+127.0.0.1 - - [2018-Dec-24 20:45:19.698] "POST /?wtd=i9gEi42PW1FlbVNx HTTP/1.1" 200 1210
+[2018-Dec-24 20:45:19.698] 662 - [info] "WebRequest: took 0.607 ms"
+127.0.0.1 - - [2018-Dec-24 20:45:20.957] "POST /?wtd=i9gEi42PW1FlbVNx HTTP/1.1" 200 5771
+[2018-Dec-24 20:45:20.957] 662 - [info] "WebRequest: took 3.511 ms"
+[2018-Dec-24 20:45:23.084] 662 [/ i9gEi42PW1FlbVNx] [warning] "WApplication: Deploy-path ends with '/', using /?_= for internal paths"
+127.0.0.1 - - [2018-Dec-24 20:45:23.085] "POST /?wtd=i9gEi42PW1FlbVNx HTTP/1.1" 200 3219
+[2018-Dec-24 20:45:23.085] 662 - [info] "WebRequest: took 1.979 ms"
+127.0.0.1 - - [2018-Dec-24 20:45:28.283] "POST /?wtd=i9gEi42PW1FlbVNx HTTP/1.1" 200 183
+[2018-Dec-24 20:45:28.283] 662 - [info] "WebRequest: took 42.532 ms"
+[2018-Dec-24 20:45:29.105] 662 - [info] "Wt: session created (#sessions = 2)"
+[2018-Dec-24 20:45:29.106] 662 [/ pLFerCzEJ8CglQRh] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-24 20:45:29.108] "GET / HTTP/1.1" 200 2268
+[2018-Dec-24 20:45:29.108] 662 - [info] "WebRequest: took 3.314 ms"
+127.0.0.1 - - [2018-Dec-24 20:45:29.160] "GET /?wtd=pLFerCzEJ8CglQRh&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-24 20:45:29.160] 662 - [info] "WebRequest: took 21.639 ms"
+127.0.0.1 - - [2018-Dec-24 20:45:29.169] "GET /?wtd=pLFerCzEJ8CglQRh&sid=-998665262&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=3071709818 HTTP/1.1" 200 38367
+[2018-Dec-24 20:45:29.169] 662 - [info] "WebRequest: took 10.205 ms"
+127.0.0.1 - - [2018-Dec-24 20:45:29.220] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 200 122998
+127.0.0.1 - - [2018-Dec-24 20:45:29.226] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 20:45:29.227] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-24 20:45:29.227] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-24 20:45:29.228] "GET /custom.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 20:45:29.257] "GET /resources/ajax-loading.gif HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 20:45:29.345] "POST /?wtd=pLFerCzEJ8CglQRh HTTP/1.1" 200 50
+[2018-Dec-24 20:45:29.345] 662 - [info] "WebRequest: took 0.294 ms"
+127.0.0.1 - - [2018-Dec-24 20:45:30.244] "POST /?wtd=pLFerCzEJ8CglQRh HTTP/1.1" 200 4384
+[2018-Dec-24 20:45:30.244] 662 - [info] "WebRequest: took 12.13 ms"
+127.0.0.1 - - [2018-Dec-24 20:45:30.361] "POST /?wtd=pLFerCzEJ8CglQRh HTTP/1.1" 200 1221
+[2018-Dec-24 20:45:30.361] 662 - [info] "WebRequest: took 0.587 ms"
+127.0.0.1 - - [2018-Dec-24 20:45:31.320] "POST /?wtd=pLFerCzEJ8CglQRh HTTP/1.1" 200 5802
+[2018-Dec-24 20:45:31.321] 662 - [info] "WebRequest: took 3.085 ms"
+[2018-Dec-24 20:45:36.965] 662 - [info] "WServer/wthttp: shutdown (signal = 15)"
+[2018-Dec-24 20:45:36.965] 662 - [info] "WebController: shutdown: stopping 2 sessions."
+[2018-Dec-24 20:45:36.967] 662 [/ i9gEi42PW1FlbVNx] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-24 20:45:36.973] 662 [/ pLFerCzEJ8CglQRh] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-24 20:45:36.973] 662 - [info] "WServer/wthttp: Shutdown: stopping web server."
+[2018-Dec-24 21:10:55.606] 1489 - [info] "config: reading Wt config file: /etc/wt/wt_config.xml (location = './WebApp')"
+[2018-Dec-24 21:10:55.607] 1489 - [info] "WServer/wthttp: initializing built-in wthttpd"
+[2018-Dec-24 21:10:55.610] 1489 - [info] "wthttp: started server: http://0.0.0.0:80"
+[2018-Dec-24 21:10:59.624] 1489 - [info] "Wt: session created (#sessions = 1)"
+[2018-Dec-24 21:10:59.625] 1489 [/ OYZ2k8s7b1W00cCV] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-24 21:10:59.626] "GET / HTTP/1.1" 200 2268
+[2018-Dec-24 21:10:59.626] 1489 - [info] "WebRequest: took 1.252 ms"
+127.0.0.1 - - [2018-Dec-24 21:10:59.689] "GET /?wtd=OYZ2k8s7b1W00cCV&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-24 21:10:59.689] 1489 - [info] "WebRequest: took 9.048 ms"
+127.0.0.1 - - [2018-Dec-24 21:10:59.694] "GET /?wtd=OYZ2k8s7b1W00cCV&sid=-954083099&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=4036169890 HTTP/1.1" 200 38366
+[2018-Dec-24 21:10:59.694] 1489 - [info] "WebRequest: took 12.027 ms"
+127.0.0.1 - - [2018-Dec-24 21:10:59.699] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 21:10:59.700] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 21:10:59.707] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-24 21:10:59.708] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-24 21:10:59.708] "GET /custom.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 21:10:59.776] "GET /resources/ajax-loading.gif HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-24 21:10:59.858] "POST /?wtd=OYZ2k8s7b1W00cCV HTTP/1.1" 200 50
+[2018-Dec-24 21:10:59.858] 1489 - [info] "WebRequest: took 0.328 ms"
+127.0.0.1 - - [2018-Dec-24 21:11:00.822] "POST /?wtd=OYZ2k8s7b1W00cCV HTTP/1.1" 200 4371
+[2018-Dec-24 21:11:00.823] 1489 - [info] "WebRequest: took 18.366 ms"
+127.0.0.1 - - [2018-Dec-24 21:11:01.067] "POST /?wtd=OYZ2k8s7b1W00cCV HTTP/1.1" 200 1211
+[2018-Dec-24 21:11:01.067] 1489 - [info] "WebRequest: took 0.631 ms"
+127.0.0.1 - - [2018-Dec-24 21:11:02.178] "POST /?wtd=OYZ2k8s7b1W00cCV HTTP/1.1" 200 5280
+[2018-Dec-24 21:11:02.178] 1489 - [info] "WebRequest: took 2.799 ms"
+[2018-Dec-24 21:11:06.443] 1489 [/ OYZ2k8s7b1W00cCV] [warning] "WApplication: Deploy-path ends with '/', using /?_= for internal paths"
+127.0.0.1 - - [2018-Dec-24 21:11:06.444] "POST /?wtd=OYZ2k8s7b1W00cCV HTTP/1.1" 200 3176
+[2018-Dec-24 21:11:06.444] 1489 - [info] "WebRequest: took 2.214 ms"
+[2018-Dec-24 21:11:12.695] 1489 [/ OYZ2k8s7b1W00cCV] [error] "Wt: error during event handling: std::bad_alloc"
+[2018-Dec-24 21:11:12.695] 1489 [/ OYZ2k8s7b1W00cCV] [error] "Wt: fatal error: std::bad_alloc"
+[2018-Dec-24 21:11:12.695] 1489 - [info] "WebController: Removing session OYZ2k8s7b1W00cCV"
+127.0.0.1 - - [2018-Dec-24 21:11:12.695] "POST /?wtd=OYZ2k8s7b1W00cCV HTTP/1.1" 200 122
+[2018-Dec-24 21:11:12.695] 1489 - [info] "WebRequest: took 11.236 ms"
+[2018-Dec-24 21:11:12.697] 1489 [/ OYZ2k8s7b1W00cCV] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-24 21:11:14.059] 1489 - [info] "Wt: session created (#sessions = 1)"
+[2018-Dec-24 21:11:14.059] 1489 [/ r5RlRv4NzqIP0Kwe] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+[2018-Dec-24 21:11:14.059] 1489 [/ r5RlRv4NzqIP0Kwe] [info] "Wt: signal from dead session, sending reload."
+[2018-Dec-24 21:11:14.059] 1489 - [info] "WebController: Removing session r5RlRv4NzqIP0Kwe"
+[2018-Dec-24 21:11:14.059] 1489 [/ r5RlRv4NzqIP0Kwe] [info] "Wt: session destroyed (#sessions = 0)"
+127.0.0.1 - - [2018-Dec-24 21:11:14.060] "POST /?wtd=OYZ2k8s7b1W00cCV HTTP/1.1" 200 76
+[2018-Dec-24 21:11:14.060] 1489 - [info] "WebRequest: took 0.665 ms"
+[2018-Dec-24 21:11:14.082] 1489 - [info] "Wt: session created (#sessions = 1)"
+[2018-Dec-24 21:11:14.082] 1489 [/ CRcRzmKOdnQnavsE] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-24 21:11:14.084] "GET / HTTP/1.1" 200 2267
+[2018-Dec-24 21:11:14.084] 1489 - [info] "WebRequest: took 1.348 ms"
+127.0.0.1 - - [2018-Dec-24 21:11:14.183] "GET /?wtd=CRcRzmKOdnQnavsE&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-24 21:11:14.183] 1489 - [info] "WebRequest: took 12.683 ms"
+127.0.0.1 - - [2018-Dec-24 21:11:14.194] "GET /?wtd=CRcRzmKOdnQnavsE&sid=-603105091&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=3398194401 HTTP/1.1" 200 38367
+[2018-Dec-24 21:11:14.194] 1489 - [info] "WebRequest: took 12.797 ms"
+127.0.0.1 - - [2018-Dec-24 21:11:14.261] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 200 122998
+127.0.0.1 - - [2018-Dec-24 21:11:14.283] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 200 20034
+127.0.0.1 - - [2018-Dec-24 21:11:14.284] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-24 21:11:14.293] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-24 21:11:14.301] "GET /custom.css HTTP/1.1" 200 1505
+127.0.0.1 - - [2018-Dec-24 21:11:14.342] "GET /favicon.ico HTTP/1.1" 200 1424
+127.0.0.1 - - [2018-Dec-24 21:11:14.362] "GET /resources/ajax-loading.gif HTTP/1.1" 200 1786
+127.0.0.1 - - [2018-Dec-24 21:11:14.378] "POST /?wtd=CRcRzmKOdnQnavsE HTTP/1.1" 200 50
+[2018-Dec-24 21:11:14.378] 1489 - [info] "WebRequest: took 0.306 ms"
+127.0.0.1 - - [2018-Dec-24 21:11:17.153] "POST /?wtd=CRcRzmKOdnQnavsE HTTP/1.1" 200 4377
+[2018-Dec-24 21:11:17.153] 1489 - [info] "WebRequest: took 13.466 ms"
+127.0.0.1 - - [2018-Dec-24 21:11:17.270] "POST /?wtd=CRcRzmKOdnQnavsE HTTP/1.1" 200 1210
+[2018-Dec-24 21:11:17.270] 1489 - [info] "WebRequest: took 0.608 ms"
+127.0.0.1 - - [2018-Dec-24 21:11:18.203] "POST /?wtd=CRcRzmKOdnQnavsE HTTP/1.1" 200 5281
+[2018-Dec-24 21:11:18.204] 1489 - [info] "WebRequest: took 2.869 ms"
+[2018-Dec-24 21:11:20.702] 1489 [/ CRcRzmKOdnQnavsE] [warning] "WApplication: Deploy-path ends with '/', using /?_= for internal paths"
+127.0.0.1 - - [2018-Dec-24 21:11:20.704] "POST /?wtd=CRcRzmKOdnQnavsE HTTP/1.1" 200 3172
+[2018-Dec-24 21:11:20.704] 1489 - [info] "WebRequest: took 2.049 ms"
+127.0.0.1 - - [2018-Dec-24 21:11:24.204] "POST /?wtd=CRcRzmKOdnQnavsE HTTP/1.1" 200 155
+[2018-Dec-24 21:11:24.204] 1489 - [info] "WebRequest: took 0.671 ms"
+[2018-Dec-24 21:11:26.973] 1489 - [info] "WServer/wthttp: shutdown (signal = 15)"
+[2018-Dec-24 21:11:26.973] 1489 - [info] "WebController: shutdown: stopping 1 sessions."
+[2018-Dec-24 21:11:26.975] 1489 [/ CRcRzmKOdnQnavsE] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-24 21:11:26.975] 1489 - [info] "WServer/wthttp: Shutdown: stopping web server."
+[2018-Dec-25 15:00:53.390] 7957 - [info] "config: reading Wt config file: /etc/wt/wt_config.xml (location = './WebApp')"
+[2018-Dec-25 15:00:53.396] 7957 - [info] "WServer/wthttp: initializing built-in wthttpd"
+[2018-Dec-25 15:00:53.404] 7957 - [info] "wthttp: started server: http://0.0.0.0:80"
+[2018-Dec-25 15:01:12.636] 7957 - [info] "Wt: session created (#sessions = 1)"
+[2018-Dec-25 15:01:12.637] 7957 [/ JfYKKTFrnzRrWrVS] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-25 15:01:12.648] "GET / HTTP/1.1" 200 2271
+[2018-Dec-25 15:01:12.648] 7957 - [info] "WebRequest: took 11.346 ms"
+127.0.0.1 - - [2018-Dec-25 15:01:13.061] "GET /?wtd=JfYKKTFrnzRrWrVS&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-25 15:01:13.061] 7957 - [info] "WebRequest: took 338.561 ms"
+127.0.0.1 - - [2018-Dec-25 15:01:13.072] "GET /?wtd=JfYKKTFrnzRrWrVS&sid=-1874565933&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=3430677986 HTTP/1.1" 200 38365
+[2018-Dec-25 15:01:13.072] 7957 - [info] "WebRequest: took 23.472 ms"
+127.0.0.1 - - [2018-Dec-25 15:01:13.276] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:01:13.281] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:01:13.281] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-25 15:01:13.283] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-25 15:01:13.292] "GET /custom.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:01:13.367] "GET /resources/ajax-loading.gif HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:01:13.497] "POST /?wtd=JfYKKTFrnzRrWrVS HTTP/1.1" 200 51
+[2018-Dec-25 15:01:13.497] 7957 - [info] "WebRequest: took 0.325 ms"
+[2018-Dec-25 15:02:13.769] 7957 - [info] "Wt: session created (#sessions = 2)"
+[2018-Dec-25 15:02:13.769] 7957 [/ xelrWmG1ftUMfO3T] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+[2018-Dec-25 15:02:13.769] 7957 [/ xelrWmG1ftUMfO3T] [info] "Wt: signal from dead session, sending reload."
+[2018-Dec-25 15:02:13.769] 7957 - [info] "WebController: Removing session xelrWmG1ftUMfO3T"
+[2018-Dec-25 15:02:13.769] 7957 [/ xelrWmG1ftUMfO3T] [info] "Wt: session destroyed (#sessions = 1)"
+127.0.0.1 - - [2018-Dec-25 15:02:13.769] "POST /?wtd=CRcRzmKOdnQnavsE HTTP/1.1" 200 76
+[2018-Dec-25 15:02:13.769] 7957 - [info] "WebRequest: took 0.642 ms"
+[2018-Dec-25 15:02:13.787] 7957 - [info] "Wt: session created (#sessions = 2)"
+[2018-Dec-25 15:02:13.787] 7957 [/ gjYsc29vKiMptDFM] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-25 15:02:13.788] "GET / HTTP/1.1" 200 2269
+[2018-Dec-25 15:02:13.788] 7957 - [info] "WebRequest: took 1.242 ms"
+127.0.0.1 - - [2018-Dec-25 15:02:15.108] "GET /?wtd=gjYsc29vKiMptDFM&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-25 15:02:15.108] 7957 - [info] "WebRequest: took 1288.14 ms"
+127.0.0.1 - - [2018-Dec-25 15:02:15.119] "GET /?wtd=gjYsc29vKiMptDFM&sid=-1349015946&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=3302651293 HTTP/1.1" 200 38365
+[2018-Dec-25 15:02:15.122] 7957 - [info] "WebRequest: took 15.006 ms"
+127.0.0.1 - - [2018-Dec-25 15:02:15.122] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 200 20034
+127.0.0.1 - - [2018-Dec-25 15:02:15.126] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-25 15:02:15.132] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 200 122998
+127.0.0.1 - - [2018-Dec-25 15:02:15.133] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-25 15:02:15.141] "GET /custom.css HTTP/1.1" 200 1505
+127.0.0.1 - - [2018-Dec-25 15:02:15.241] "GET /favicon.ico HTTP/1.1" 200 1424
+127.0.0.1 - - [2018-Dec-25 15:02:15.253] "GET /resources/ajax-loading.gif HTTP/1.1" 200 1786
+127.0.0.1 - - [2018-Dec-25 15:02:16.225] "POST /?wtd=gjYsc29vKiMptDFM HTTP/1.1" 200 51
+[2018-Dec-25 15:02:16.225] 7957 - [info] "WebRequest: took 0.348 ms"
+127.0.0.1 - - [2018-Dec-25 15:02:20.528] "POST /?wtd=JfYKKTFrnzRrWrVS HTTP/1.1" 200 4380
+[2018-Dec-25 15:02:20.528] 7957 - [info] "WebRequest: took 32.98 ms"
+127.0.0.1 - - [2018-Dec-25 15:02:20.536] "GET /resources/tinymce/tinymce.min.js HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:02:21.238] "POST /?wtd=JfYKKTFrnzRrWrVS HTTP/1.1" 200 1211
+[2018-Dec-25 15:02:21.238] 7957 - [info] "WebRequest: took 0.762 ms"
+127.0.0.1 - - [2018-Dec-25 15:02:22.463] "POST /?wtd=JfYKKTFrnzRrWrVS HTTP/1.1" 200 5292
+[2018-Dec-25 15:02:22.463] 7957 - [info] "WebRequest: took 3.054 ms"
+[2018-Dec-25 15:02:24.159] 7957 [/ JfYKKTFrnzRrWrVS] [warning] "WApplication: Deploy-path ends with '/', using /?_= for internal paths"
+127.0.0.1 - - [2018-Dec-25 15:02:24.161] "POST /?wtd=JfYKKTFrnzRrWrVS HTTP/1.1" 200 3172
+[2018-Dec-25 15:02:24.161] 7957 - [info] "WebRequest: took 2.212 ms"
+127.0.0.1 - - [2018-Dec-25 15:02:32.552] "POST /?wtd=JfYKKTFrnzRrWrVS HTTP/1.1" 200 197
+[2018-Dec-25 15:02:32.552] 7957 - [info] "WebRequest: took 37.512 ms"
+127.0.0.1 - - [2018-Dec-25 15:02:34.034] "POST /?wtd=JfYKKTFrnzRrWrVS HTTP/1.1" 200 1295
+[2018-Dec-25 15:02:34.034] 7957 - [info] "WebRequest: took 1.592 ms"
+127.0.0.1 - - [2018-Dec-25 15:02:40.504] "POST /?wtd=JfYKKTFrnzRrWrVS HTTP/1.1" 200 156
+[2018-Dec-25 15:02:40.504] 7957 - [info] "WebRequest: took 0.751 ms"
+127.0.0.1 - - [2018-Dec-25 15:02:41.281] "POST /?wtd=JfYKKTFrnzRrWrVS HTTP/1.1" 200 1292
+[2018-Dec-25 15:02:41.281] 7957 - [info] "WebRequest: took 1.774 ms"
+127.0.0.1 - - [2018-Dec-25 15:02:45.440] "POST /?wtd=JfYKKTFrnzRrWrVS HTTP/1.1" 200 157
+[2018-Dec-25 15:02:45.440] 7957 - [info] "WebRequest: took 0.613 ms"
+[2018-Dec-25 15:02:46.274] 7957 - [info] "Wt: session created (#sessions = 3)"
+[2018-Dec-25 15:02:46.274] 7957 [/ kI9fSBljK4SWM5tc] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-25 15:02:46.275] "GET / HTTP/1.1" 200 2267
+[2018-Dec-25 15:02:46.275] 7957 - [info] "WebRequest: took 1.118 ms"
+127.0.0.1 - - [2018-Dec-25 15:02:46.379] "GET /?wtd=kI9fSBljK4SWM5tc&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-25 15:02:46.379] 7957 - [info] "WebRequest: took 9.942 ms"
+127.0.0.1 - - [2018-Dec-25 15:02:46.389] "GET /?wtd=kI9fSBljK4SWM5tc&sid=-336408463&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=800867208 HTTP/1.1" 200 38370
+[2018-Dec-25 15:02:46.389] 7957 - [info] "WebRequest: took 13.688 ms"
+127.0.0.1 - - [2018-Dec-25 15:02:46.420] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:02:46.420] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:02:46.422] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-25 15:02:46.422] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-25 15:02:46.423] "GET /custom.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:02:46.500] "GET /resources/ajax-loading.gif HTTP/1.1" 200 1786
+127.0.0.1 - - [2018-Dec-25 15:02:46.637] "POST /?wtd=kI9fSBljK4SWM5tc HTTP/1.1" 200 50
+[2018-Dec-25 15:02:46.637] 7957 - [info] "WebRequest: took 0.322 ms"
+[2018-Dec-25 15:02:49.687] 7957 - [info] "WServer/wthttp: shutdown (signal = 15)"
+[2018-Dec-25 15:02:49.687] 7957 - [info] "WebController: shutdown: stopping 3 sessions."
+[2018-Dec-25 15:02:49.689] 7957 [/ JfYKKTFrnzRrWrVS] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-25 15:02:49.690] 7957 [/ gjYsc29vKiMptDFM] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-25 15:02:49.690] 7957 [/ kI9fSBljK4SWM5tc] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-25 15:02:49.690] 7957 - [info] "WServer/wthttp: Shutdown: stopping web server."
+[2018-Dec-25 15:08:15.083] 8452 - [info] "config: reading Wt config file: /etc/wt/wt_config.xml (location = './WebApp')"
+[2018-Dec-25 15:08:15.084] 8452 - [info] "WServer/wthttp: initializing built-in wthttpd"
+[2018-Dec-25 15:08:15.086] 8452 - [info] "wthttp: started server: http://0.0.0.0:80"
+[2018-Dec-25 15:08:20.917] 8452 - [info] "Wt: session created (#sessions = 1)"
+[2018-Dec-25 15:08:20.917] 8452 [/ eZsvslpz1cxjtp2O] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-25 15:08:20.918] "GET / HTTP/1.1" 200 2267
+[2018-Dec-25 15:08:20.918] 8452 - [info] "WebRequest: took 1.301 ms"
+[2018-Dec-25 15:08:20.926] 8452 - [info] "Wt: session created (#sessions = 2)"
+[2018-Dec-25 15:08:20.927] 8452 [/ 1qcdoVuWrK6V9Jrz] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+[2018-Dec-25 15:08:20.927] 8452 [/ 1qcdoVuWrK6V9Jrz] [info] "Wt: signal from dead session, sending reload."
+[2018-Dec-25 15:08:20.927] 8452 - [info] "WebController: Removing session 1qcdoVuWrK6V9Jrz"
+[2018-Dec-25 15:08:20.927] 8452 [/ 1qcdoVuWrK6V9Jrz] [info] "Wt: session destroyed (#sessions = 1)"
+127.0.0.1 - - [2018-Dec-25 15:08:20.927] "POST /?wtd=gjYsc29vKiMptDFM HTTP/1.1" 200 76
+[2018-Dec-25 15:08:20.927] 8452 - [info] "WebRequest: took 0.748 ms"
+127.0.0.1 - - [2018-Dec-25 15:08:20.966] "GET /?wtd=eZsvslpz1cxjtp2O&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-25 15:08:20.966] 8452 - [info] "WebRequest: took 10.9 ms"
+127.0.0.1 - - [2018-Dec-25 15:08:20.971] "GET /?wtd=eZsvslpz1cxjtp2O&sid=979660247&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=1170010224 HTTP/1.1" 200 38366
+[2018-Dec-25 15:08:20.971] 8452 - [info] "WebRequest: took 13.729 ms"
+127.0.0.1 - - [2018-Dec-25 15:08:21.028] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:08:21.028] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:08:21.028] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-25 15:08:21.031] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-25 15:08:21.033] "GET /custom.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:08:21.065] "GET /resources/ajax-loading.gif HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:08:21.134] "POST /?wtd=eZsvslpz1cxjtp2O HTTP/1.1" 200 49
+[2018-Dec-25 15:08:21.135] 8452 - [info] "WebRequest: took 0.946 ms"
+127.0.0.1 - - [2018-Dec-25 15:08:22.139] "POST /?wtd=eZsvslpz1cxjtp2O HTTP/1.1" 200 4371
+[2018-Dec-25 15:08:22.139] 8452 - [info] "WebRequest: took 11.534 ms"
+127.0.0.1 - - [2018-Dec-25 15:08:22.253] "POST /?wtd=eZsvslpz1cxjtp2O HTTP/1.1" 200 1210
+[2018-Dec-25 15:08:22.253] 8452 - [info] "WebRequest: took 0.578 ms"
+127.0.0.1 - - [2018-Dec-25 15:08:23.279] "POST /?wtd=eZsvslpz1cxjtp2O HTTP/1.1" 200 5281
+[2018-Dec-25 15:08:23.279] 8452 - [info] "WebRequest: took 2.914 ms"
+[2018-Dec-25 15:08:24.865] 8452 [/ eZsvslpz1cxjtp2O] [warning] "WApplication: Deploy-path ends with '/', using /?_= for internal paths"
+127.0.0.1 - - [2018-Dec-25 15:08:24.866] "POST /?wtd=eZsvslpz1cxjtp2O HTTP/1.1" 200 3180
+[2018-Dec-25 15:08:24.867] 8452 - [info] "WebRequest: took 2.274 ms"
+127.0.0.1 - - [2018-Dec-25 15:08:28.992] "POST /?wtd=eZsvslpz1cxjtp2O HTTP/1.1" 200 192
+[2018-Dec-25 15:08:28.992] 8452 - [info] "WebRequest: took 41.521 ms"
+127.0.0.1 - - [2018-Dec-25 15:08:29.900] "POST /?wtd=eZsvslpz1cxjtp2O HTTP/1.1" 200 1288
+[2018-Dec-25 15:08:29.900] 8452 - [info] "WebRequest: took 1.49 ms"
+[2018-Dec-25 15:08:29.944] 8452 - [info] "Wt: session created (#sessions = 2)"
+[2018-Dec-25 15:08:29.944] 8452 [/ xa5OgqHurYrEGJtt] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+[2018-Dec-25 15:08:29.944] 8452 [/ xa5OgqHurYrEGJtt] [info] "Wt: signal from dead session, sending reload."
+[2018-Dec-25 15:08:29.945] 8452 - [info] "WebController: Removing session xa5OgqHurYrEGJtt"
+[2018-Dec-25 15:08:29.945] 8452 [/ xa5OgqHurYrEGJtt] [info] "Wt: session destroyed (#sessions = 1)"
+127.0.0.1 - - [2018-Dec-25 15:08:29.945] "POST /?wtd=kI9fSBljK4SWM5tc HTTP/1.1" 200 76
+[2018-Dec-25 15:08:29.945] 8452 - [info] "WebRequest: took 0.655 ms"
+[2018-Dec-25 15:08:29.962] 8452 - [info] "Wt: session created (#sessions = 2)"
+[2018-Dec-25 15:08:29.962] 8452 [/ 9kk6VfFvrZd1qWDj] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-25 15:08:29.963] "GET / HTTP/1.1" 200 2269
+[2018-Dec-25 15:08:29.963] 8452 - [info] "WebRequest: took 1.269 ms"
+127.0.0.1 - - [2018-Dec-25 15:08:31.003] "GET /?wtd=9kk6VfFvrZd1qWDj&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-25 15:08:31.003] 8452 - [info] "WebRequest: took 1017.51 ms"
+127.0.0.1 - - [2018-Dec-25 15:08:31.013] "GET /?wtd=9kk6VfFvrZd1qWDj&sid=1754708946&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=2187838415 HTTP/1.1" 200 38370
+[2018-Dec-25 15:08:31.013] 8452 - [info] "WebRequest: took 10.683 ms"
+127.0.0.1 - - [2018-Dec-25 15:08:31.016] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 200 122998
+127.0.0.1 - - [2018-Dec-25 15:08:31.020] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 200 20034
+127.0.0.1 - - [2018-Dec-25 15:08:31.023] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-25 15:08:31.024] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-25 15:08:31.024] "GET /custom.css HTTP/1.1" 200 1505
+127.0.0.1 - - [2018-Dec-25 15:08:31.097] "POST /?wtd=eZsvslpz1cxjtp2O HTTP/1.1" 200 153
+[2018-Dec-25 15:08:31.097] 8452 - [info] "WebRequest: took 0.655 ms"
+127.0.0.1 - - [2018-Dec-25 15:08:31.104] "GET /favicon.ico HTTP/1.1" 200 1424
+127.0.0.1 - - [2018-Dec-25 15:08:31.137] "GET /resources/ajax-loading.gif HTTP/1.1" 200 1786
+[2018-Dec-25 15:08:31.413] 8452 - [info] "Wt: session created (#sessions = 3)"
+[2018-Dec-25 15:08:31.413] 8452 [/ y0lWayOMcma1W3Vg] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-25 15:08:31.414] "GET / HTTP/1.1" 200 2266
+[2018-Dec-25 15:08:31.414] 8452 - [info] "WebRequest: took 1.085 ms"
+127.0.0.1 - - [2018-Dec-25 15:08:31.468] "GET /?wtd=y0lWayOMcma1W3Vg&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-25 15:08:31.468] 8452 - [info] "WebRequest: took 10.479 ms"
+127.0.0.1 - - [2018-Dec-25 15:08:31.478] "GET /?wtd=y0lWayOMcma1W3Vg&sid=-2005940001&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=1722797342 HTTP/1.1" 200 38367
+[2018-Dec-25 15:08:31.478] 8452 - [info] "WebRequest: took 14.475 ms"
+127.0.0.1 - - [2018-Dec-25 15:08:31.495] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:08:31.496] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:08:31.496] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-25 15:08:31.497] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-25 15:08:31.497] "GET /custom.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:08:31.563] "GET /resources/ajax-loading.gif HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:08:31.643] "POST /?wtd=y0lWayOMcma1W3Vg HTTP/1.1" 200 49
+[2018-Dec-25 15:08:31.643] 8452 - [info] "WebRequest: took 0.256 ms"
+127.0.0.1 - - [2018-Dec-25 15:08:32.087] "POST /?wtd=9kk6VfFvrZd1qWDj HTTP/1.1" 200 50
+[2018-Dec-25 15:08:32.087] 8452 - [info] "WebRequest: took 0.322 ms"
+[2018-Dec-25 15:08:33.642] 8452 - [info] "WServer/wthttp: shutdown (signal = 15)"
+[2018-Dec-25 15:08:33.642] 8452 - [info] "WebController: shutdown: stopping 3 sessions."
+[2018-Dec-25 15:08:33.642] 8452 [/ 9kk6VfFvrZd1qWDj] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-25 15:08:33.644] 8452 [/ eZsvslpz1cxjtp2O] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-25 15:08:33.645] 8452 [/ y0lWayOMcma1W3Vg] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-25 15:08:33.645] 8452 - [info] "WServer/wthttp: Shutdown: stopping web server."

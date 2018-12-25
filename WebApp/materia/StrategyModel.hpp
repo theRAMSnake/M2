@@ -63,7 +63,7 @@ public:
 
    Objective addObjective(const std::string& title, const materia::Id& parentGoalId);
    void deleteObjective(const materia::Id& id);
-   void modifyObjective(const Objective& o);
+   Objective modifyObjective(const Objective& o);
 
 private:
    void fetchGoals();

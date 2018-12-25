@@ -16,6 +16,7 @@
 #include "Wt/WPopupMenu.h"
 #include "Wt/WDoubleSpinBox.h"
 #include "Wt/WPanel.h"
+#include "Wt/WComboBox.h"
 
 class GoalEditDialog : public BasicDialog
 {
@@ -103,16 +104,46 @@ public:
       mReached->setChecked(subject.reached);
       contents()->addWidget(std::unique_ptr<Wt::WCheckBox>(mReached));
 
-      mResources = new Wt::WComboBox
+      mResources = new Wt::WComboBox();
+      mResources->setInline(false);
+      mResources->addItem("None");
+      mResourceRequirement = new Wt::WLineEdit();
+      for(auto x : resources)
+      {
+         mResources->addItem(x.name.c_str());
+         if(subject.resId == x.id)
+         {
+            mResources->setCurrentIndex(mResources->count() - 1);
+            mResourceRequirement->setText(std::to_string(subject.expectedResValue));
+         }
+      }
+      contents()->addWidget(std::unique_ptr<Wt::WComboBox>(mResources));
+      contents()->addWidget(std::unique_ptr<Wt::WLineEdit>(mResourceRequirement));
       
       finished().connect(std::bind([=]() {
         if (result() == Wt::DialogCode::Accepted)
         {
-           StrategyModel::Objective newObjective = subject;
-           newObjective.title = mTitle->text().narrow();
-           newObjective.reached = mReached->isChecked();
+            StrategyModel::Objective newObjective = subject;
+            newObjective.title = mTitle->text().narrow();
+            newObjective.reached = mReached->isChecked();
            
-           cb(newObjective);
+            auto pos = std::find_if(resources.begin(), resources.end(), [=](auto x){
+               return x.name == mResources->currentText().narrow();
+            }); 
+
+            if(pos != resources.end())
+            {
+               newObjective.resId = pos->id;
+               newObjective.expectedResValue = std::stoi(mResourceRequirement->text().narrow());
+            }
+
+            else
+            {
+               newObjective.resId = materia::Id::Invalid;
+               newObjective.expectedResValue = 0;
+            }
+           
+            cb(newObjective);
         }
 
         delete this;
@@ -120,8 +151,10 @@ public:
    }
 
 private:
+   Wt::WComboBox* mResources;
    Wt::WCheckBox* mReached;
    Wt::WLineEdit* mTitle;
+   Wt::WLineEdit* mResourceRequirement;
 };
 
 //--------------------------------------------------------------------------------------
@@ -215,6 +248,11 @@ public:
       
       setText(o.title);
       setChecked(o.reached);
+   }
+
+   const StrategyModel::Objective& getObjective() const
+   {
+      return mObj;
    }
 
 private:
@@ -419,7 +457,7 @@ private:
    void addObjectiveWidget(const StrategyModel::Objective& o)
    {
       auto w = mObjs->addWidget(std::make_unique<ObjectiveWidget>(o));
-      auto b = std::bind(&GoalViewCtrl<isCompact>::onObjectiveWidgetClicked, this, w, o, std::placeholders::_1);
+      auto b = std::bind(&GoalViewCtrl<isCompact>::onObjectiveWidgetClicked, this, w, std::placeholders::_1);
       w->mouseWentDown().connect(b);
    }
 
@@ -447,14 +485,14 @@ private:
       }
    }
 
-   void onObjectiveWidgetClicked(ObjectiveWidget* w, const StrategyModel::Objective o, Wt::WMouseEvent event)
+   void onObjectiveWidgetClicked(ObjectiveWidget* w, Wt::WMouseEvent event)
    {
       if(event.button() == Wt::MouseButton::Right)
       {
          if(event.modifiers().test(Wt::KeyboardModifier::Control))
          {
             std::function<void()> elementDeletedFunc = [=] () {
-               mModel.deleteObjective(o.id);
+               mModel.deleteObjective(w->getObjective().id);
                mObjs->removeChild(w);
             };
 
@@ -463,7 +501,8 @@ private:
          else
          {
             auto dlg = new ObjectiveEditDialog(
-               o,
+               w->getObjective(),
+               mModel.getResources(),
                std::bind(&GoalViewCtrl<isCompact>::onObjectiveEditDialogOk, this, std::placeholders::_1, w));
             dlg->show();
          }
@@ -486,9 +525,7 @@ private:
    {
       auto newObj = src;
 
-      w->setObjective(newObj);
-
-      mModel.modifyObjective(newObj);
+      w->setObjective(mModel.modifyObjective(newObj));
    }
 
    static constexpr char MY_MIME_TYPE[] = "GoalViewCtrl";

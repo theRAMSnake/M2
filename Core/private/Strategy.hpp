@@ -4,6 +4,7 @@
 #include "Database.hpp"
 #include "Goal.hpp"
 #include "Objective.hpp"
+#include "Logger.hpp"
 
 namespace materia
 {
@@ -51,7 +52,10 @@ private:
    template<class T>
    void saveItem(const T& item)
    {
-      getStorage<T>().store(item.getId(), item.toJson());
+      auto json = item.toJson();
+      getStorage<T>().store(item.getId(), json);
+
+      LOG("Strategy item was saved: " + json);
    }
 
    template<class T>

@@ -19,7 +19,7 @@ void StrategyModel::modifyTask(const Task& task)
    mService.getService().ModifyTask(nullptr, &t, &opResult, nullptr);
 }
 
-void StrategyModel::modifyObjective(const Objective& src)
+StrategyModel::Objective StrategyModel::modifyObjective(const Objective& src)
 {
    strategy::Objective o;
    o.mutable_common_props()->mutable_id()->set_guid(src.id);
@@ -31,6 +31,18 @@ void StrategyModel::modifyObjective(const Objective& src)
 
    common::OperationResultMessage opResult;
    mService.getService().ModifyObjective(nullptr, &o, &opResult, nullptr);
+
+   auto objs = getGoalObjectives(src.parentGoalId);
+   auto pos = materia::find_by_id(objs, src.id);
+
+   if(pos != objs.end())
+   {
+      return *pos;
+   }
+   else
+   {
+      throw -1;
+   }
 }
 
 void StrategyModel::deleteTask(const materia::Id& src)
@@ -220,11 +232,6 @@ std::vector<StrategyModel::Objective> StrategyModel::getGoalObjectives(const mat
          });
    }
 
-   result.push_back({materia::Id("id1"), "obj1", false, id, materia::Id::Invalid, 0});
-   result.push_back({materia::Id("id2"), "obj2", true, id, materia::Id::Invalid, 0});
-   result.push_back({materia::Id("id3"), "obj3", false, id, materia::Id("test_res_id"), 3});
-   result.push_back({materia::Id("id4"), "obj4", true, id, materia::Id("test_res_id"), 5});
-
    return result;
 }
 
@@ -241,8 +248,6 @@ std::vector<StrategyModel::Resource> StrategyModel::getResources()
    {
       result.push_back(Resource{r.id().guid(), r.name(), r.value()});
    }
-
-   result.push_back({materia::Id("test_meas_id"), "res", 4});
 
    return result;
 }
