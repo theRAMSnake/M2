@@ -10,6 +10,7 @@
 #include "CalendarServiceImpl.hpp"
 #include "StrategyServiceImpl.hpp"
 #include "JournalServiceImpl.hpp"
+#include "AdminServiceImpl.hpp"
 
 class DoubleLogger
 {
@@ -85,12 +86,13 @@ int main()
     clientSocket.bind ("tcp://*:5757");
 
     logger << "Creating core\n";
-    auto core = materia::createCore({"materia.db"});
+    auto core = materia::createCore({"/materia/materia.db"});
 
     gServices.insert({"InboxService", std::make_shared<materia::ServiceWrapper<materia::InboxServiceImpl>>((*core))});
     gServices.insert({"CalendarService", std::make_shared<materia::ServiceWrapper<materia::CalendarServiceImpl>>((*core))});
     gServices.insert({"JournalService", std::make_shared<materia::ServiceWrapper<materia::JournalServiceImpl>>((*core))});
     gServices.insert({"StrategyService", std::make_shared<materia::ServiceWrapper<materia::StrategyServiceImpl>>((*core))});
+    gServices.insert({"AdminService", std::make_shared<materia::ServiceWrapper<materia::AdminServiceImpl>>((*core))});
     
     logger << "Start listening\n";
     while(true)

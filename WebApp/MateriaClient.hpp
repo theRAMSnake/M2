@@ -26,8 +26,4 @@ private:
    std::unique_ptr<InboxModel> mInbox;
    std::unique_ptr<JournalModel> mJournal;
    std::unique_ptr<StrategyModel> mStrategy;
-   /*MateriaServiceProxy<inbox::InboxService> mInbox;
-   MateriaServiceProxy<calendar::CalendarService> mCalendar;
-   MateriaServiceProxy<journal::JournalService> mJournal;
-   */
 };

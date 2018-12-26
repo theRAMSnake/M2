@@ -6,6 +6,7 @@ include_directories("..")
 
 add_executable(m2backup 
 main.cpp 
+../WebApp/materia/ZmqPbChannel.cpp
 )
 
 LIST(APPEND CMAKE_MODULE_PATH "..")
@@ -13,7 +14,7 @@ LIST(APPEND CMAKE_MODULE_PATH "..")
 find_package(ZeroMQ REQUIRED)
 find_package(Boost COMPONENTS system date_time filesystem REQUIRED)
 
-target_link_libraries(m2backup m2common m2client ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread dl)
+target_link_libraries(m2backup m2common ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread dl)
 
 add_custom_command(
         TARGET m2backup POST_BUILD

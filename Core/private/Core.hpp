@@ -6,6 +6,7 @@
 #include "Journal.hpp"
 #include "Inbox.hpp"
 #include "Calendar.hpp"
+#include "Backuper.hpp"
 
 namespace materia
 {
@@ -19,6 +20,7 @@ public:
     ICalendar& getCalendar() override;
     IStrategy& getStrategy() override;
     IJournal& getJournal() override;
+    IBackuper& getBackuper() override;
 
 private:
     Database mDb;
@@ -26,6 +28,7 @@ private:
     Calendar mCalendar;
     Journal mJournal;
     Strategy mStrategy;
+    Backuper mBackuper;
 };
 
 std::shared_ptr<ICore> createCore(const CoreConfig& config);

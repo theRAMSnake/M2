@@ -24957,3 +24957,235 @@ Address already in use"
 [2018-Dec-25 15:08:33.644] 8452 [/ eZsvslpz1cxjtp2O] [info] "Wt: session destroyed (#sessions = 0)"
 [2018-Dec-25 15:08:33.645] 8452 [/ y0lWayOMcma1W3Vg] [info] "Wt: session destroyed (#sessions = 0)"
 [2018-Dec-25 15:08:33.645] 8452 - [info] "WServer/wthttp: Shutdown: stopping web server."
+[2018-Dec-25 15:14:15.635] 9063 - [info] "config: reading Wt config file: /etc/wt/wt_config.xml (location = './WebApp')"
+[2018-Dec-25 15:14:15.636] 9063 - [info] "WServer/wthttp: initializing built-in wthttpd"
+[2018-Dec-25 15:14:15.638] 9063 - [info] "wthttp: started server: http://0.0.0.0:80"
+[2018-Dec-25 15:14:19.310] 9063 - [info] "Wt: session created (#sessions = 1)"
+[2018-Dec-25 15:14:19.311] 9063 [/ 8F8ZMxWzQR3ew4QR] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-25 15:14:19.312] "GET / HTTP/1.1" 200 2269
+[2018-Dec-25 15:14:19.312] 9063 - [info] "WebRequest: took 2.32 ms"
+127.0.0.1 - - [2018-Dec-25 15:14:19.366] "GET /?wtd=8F8ZMxWzQR3ew4QR&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-25 15:14:19.366] 9063 - [info] "WebRequest: took 2.809 ms"
+127.0.0.1 - - [2018-Dec-25 15:14:19.377] "GET /?wtd=8F8ZMxWzQR3ew4QR&sid=-77752746&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=3536315104 HTTP/1.1" 200 38362
+[2018-Dec-25 15:14:19.377] 9063 - [info] "WebRequest: took 11.278 ms"
+127.0.0.1 - - [2018-Dec-25 15:14:19.448] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 200 122998
+127.0.0.1 - - [2018-Dec-25 15:14:19.450] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 200 20034
+127.0.0.1 - - [2018-Dec-25 15:14:19.452] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-25 15:14:19.453] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-25 15:14:19.453] "GET /custom.css HTTP/1.1" 200 1505
+127.0.0.1 - - [2018-Dec-25 15:14:19.481] "GET /resources/ajax-loading.gif HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:14:19.546] "POST /?wtd=8F8ZMxWzQR3ew4QR HTTP/1.1" 200 49
+[2018-Dec-25 15:14:19.546] 9063 - [info] "WebRequest: took 0.383 ms"
+127.0.0.1 - - [2018-Dec-25 15:14:20.344] "POST /?wtd=8F8ZMxWzQR3ew4QR HTTP/1.1" 200 4176
+[2018-Dec-25 15:14:20.344] 9063 - [info] "WebRequest: took 10.258 ms"
+127.0.0.1 - - [2018-Dec-25 15:14:20.471] "POST /?wtd=8F8ZMxWzQR3ew4QR HTTP/1.1" 200 1210
+[2018-Dec-25 15:14:20.471] 9063 - [info] "WebRequest: took 0.714 ms"
+127.0.0.1 - - [2018-Dec-25 15:14:21.485] "POST /?wtd=8F8ZMxWzQR3ew4QR HTTP/1.1" 200 1662
+[2018-Dec-25 15:14:21.485] 9063 - [info] "WebRequest: took 2.003 ms"
+127.0.0.1 - - [2018-Dec-25 15:14:23.397] "POST /?wtd=8F8ZMxWzQR3ew4QR HTTP/1.1" 200 1838
+[2018-Dec-25 15:14:23.397] 9063 - [info] "WebRequest: took 1.761 ms"
+127.0.0.1 - - [2018-Dec-25 15:14:23.406] "GET /resources/line-last.gif HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-25 15:14:23.406] "GET /resources/line-middle.gif HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-25 15:14:23.406] "GET /resources/themes/bootstrap/nav-plus.gif HTTP/1.1" 200 190
+127.0.0.1 - - [2018-Dec-25 15:14:23.416] "GET /resources/themes/bootstrap/nav-minus.gif HTTP/1.1" 200 180
+127.0.0.1 - - [2018-Dec-25 15:14:23.417] "GET /resources/Folder.gif HTTP/1.1" 200 991
+127.0.0.1 - - [2018-Dec-25 15:14:23.425] "GET /resources/tinymce/themes/modern/theme.min.js HTTP/1.1" 200 14360
+127.0.0.1 - - [2018-Dec-25 15:14:23.425] "GET /resources/tinymce/plugins/textcolor/plugin.min.js HTTP/1.1" 200 5168
+127.0.0.1 - - [2018-Dec-25 15:14:23.434] "GET /resources/tinymce/plugins/colorpicker/plugin.min.js HTTP/1.1" 200 2143
+127.0.0.1 - - [2018-Dec-25 15:14:23.442] "GET /resources/tinymce/plugins/searchreplace/plugin.min.js HTTP/1.1" 200 7468
+127.0.0.1 - - [2018-Dec-25 15:14:23.442] "GET /resources/tinymce/plugins/lists/plugin.min.js HTTP/1.1" 200 14999
+127.0.0.1 - - [2018-Dec-25 15:14:23.442] "GET /resources/tinymce/plugins/table/plugin.min.js HTTP/1.1" 200 47683
+127.0.0.1 - - [2018-Dec-25 15:14:23.491] "GET /resources/tinymce/skins/lightgray/skin.min.css HTTP/1.1" 200 39404
+127.0.0.1 - - [2018-Dec-25 15:14:23.594] "GET /resources/tinymce/skins/lightgray/content.min.css HTTP/1.1" 200 3327
+[2018-Dec-25 15:14:23.622] 9063 [/ 8F8ZMxWzQR3ew4QR] [error] "Wt: decodeSignal(): signal 'oubtrcs.render' not exposed"
+127.0.0.1 - - [2018-Dec-25 15:14:23.622] "POST /?wtd=8F8ZMxWzQR3ew4QR HTTP/1.1" 200 49
+[2018-Dec-25 15:14:23.622] 9063 - [info] "WebRequest: took 0.516 ms"
+127.0.0.1 - - [2018-Dec-25 15:14:23.648] "GET /resources/tinymce/skins/lightgray/fonts/tinymce.woff HTTP/1.1" 200 17484
+127.0.0.1 - - [2018-Dec-25 15:14:25.199] "POST /?wtd=8F8ZMxWzQR3ew4QR HTTP/1.1" 200 165
+[2018-Dec-25 15:14:25.199] 9063 - [info] "WebRequest: took 0.734 ms"
+[2018-Dec-25 15:14:26.078] 9063 [/ 8F8ZMxWzQR3ew4QR] [warning] "WApplication: Deploy-path ends with '/', using /?_= for internal paths"
+127.0.0.1 - - [2018-Dec-25 15:14:26.079] "POST /?wtd=8F8ZMxWzQR3ew4QR HTTP/1.1" 200 3026
+[2018-Dec-25 15:14:26.079] 9063 - [info] "WebRequest: took 2.035 ms"
+127.0.0.1 - - [2018-Dec-25 15:14:27.051] "POST /?wtd=8F8ZMxWzQR3ew4QR HTTP/1.1" 200 1123
+[2018-Dec-25 15:14:27.051] 9063 - [info] "WebRequest: took 1.409 ms"
+127.0.0.1 - - [2018-Dec-25 15:14:28.515] "POST /?wtd=8F8ZMxWzQR3ew4QR HTTP/1.1" 200 662
+[2018-Dec-25 15:14:28.515] 9063 - [info] "WebRequest: took 23.553 ms"
+127.0.0.1 - - [2018-Dec-25 15:14:29.316] "POST /?wtd=8F8ZMxWzQR3ew4QR HTTP/1.1" 200 171
+[2018-Dec-25 15:14:29.316] 9063 - [info] "WebRequest: took 1.183 ms"
+[2018-Dec-25 15:14:29.743] 9063 - [info] "Wt: session created (#sessions = 2)"
+[2018-Dec-25 15:14:29.744] 9063 [/ YndZDyQwuIxFHxQC] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-25 15:14:29.744] "GET / HTTP/1.1" 200 2268
+[2018-Dec-25 15:14:29.744] 9063 - [info] "WebRequest: took 1.176 ms"
+127.0.0.1 - - [2018-Dec-25 15:14:29.851] "GET /?wtd=YndZDyQwuIxFHxQC&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-25 15:14:29.851] 9063 - [info] "WebRequest: took 18.524 ms"
+127.0.0.1 - - [2018-Dec-25 15:14:29.856] "GET /?wtd=YndZDyQwuIxFHxQC&sid=1679117587&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=793465588 HTTP/1.1" 200 38365
+[2018-Dec-25 15:14:29.856] 9063 - [info] "WebRequest: took 11.018 ms"
+127.0.0.1 - - [2018-Dec-25 15:14:29.878] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:14:29.878] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:14:29.879] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-25 15:14:29.879] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-25 15:14:29.879] "GET /custom.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:14:29.944] "GET /resources/ajax-loading.gif HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:14:30.014] "POST /?wtd=YndZDyQwuIxFHxQC HTTP/1.1" 200 50
+[2018-Dec-25 15:14:30.014] 9063 - [info] "WebRequest: took 0.335 ms"
+[2018-Dec-25 15:14:35.598] 9063 - [info] "WServer/wthttp: shutdown (signal = 15)"
+[2018-Dec-25 15:14:35.598] 9063 - [info] "WebController: shutdown: stopping 2 sessions."
+[2018-Dec-25 15:14:35.599] 9063 [/ 8F8ZMxWzQR3ew4QR] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-25 15:14:35.599] 9063 [/ YndZDyQwuIxFHxQC] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-25 15:14:35.599] 9063 - [info] "WServer/wthttp: Shutdown: stopping web server."
+[2018-Dec-25 15:14:36.638] 9136 - [info] "config: reading Wt config file: /etc/wt/wt_config.xml (location = './WebApp')"
+[2018-Dec-25 15:14:36.639] 9136 - [info] "WServer/wthttp: initializing built-in wthttpd"
+[2018-Dec-25 15:14:36.641] 9136 - [info] "wthttp: started server: http://0.0.0.0:80"
+[2018-Dec-25 15:14:37.743] 9136 - [info] "Wt: session created (#sessions = 1)"
+[2018-Dec-25 15:14:37.743] 9136 [/ JhsgwPDmr2d7P6T4] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-25 15:14:37.744] "GET / HTTP/1.1" 200 2268
+[2018-Dec-25 15:14:37.744] 9136 - [info] "WebRequest: took 1.276 ms"
+[2018-Dec-25 15:14:37.755] 9136 - [info] "Wt: session created (#sessions = 2)"
+[2018-Dec-25 15:14:37.755] 9136 [/ uSQPOhA1Gdgh54o5] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+[2018-Dec-25 15:14:37.755] 9136 [/ uSQPOhA1Gdgh54o5] [info] "Wt: signal from dead session, sending reload."
+[2018-Dec-25 15:14:37.756] 9136 - [info] "WebController: Removing session uSQPOhA1Gdgh54o5"
+[2018-Dec-25 15:14:37.756] 9136 [/ uSQPOhA1Gdgh54o5] [info] "Wt: session destroyed (#sessions = 1)"
+127.0.0.1 - - [2018-Dec-25 15:14:37.756] "POST /?wtd=YndZDyQwuIxFHxQC HTTP/1.1" 200 76
+[2018-Dec-25 15:14:37.756] 9136 - [info] "WebRequest: took 0.731 ms"
+127.0.0.1 - - [2018-Dec-25 15:14:37.800] "GET /?wtd=JhsgwPDmr2d7P6T4&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-25 15:14:37.800] 9136 - [info] "WebRequest: took 7.984 ms"
+127.0.0.1 - - [2018-Dec-25 15:14:37.810] "GET /?wtd=JhsgwPDmr2d7P6T4&sid=-1215777834&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=3447304863 HTTP/1.1" 200 38365
+[2018-Dec-25 15:14:37.816] 9136 - [info] "WebRequest: took 17.769 ms"
+127.0.0.1 - - [2018-Dec-25 15:14:37.824] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-25 15:14:37.825] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-25 15:14:37.826] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:14:37.826] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:14:37.827] "GET /custom.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:14:37.874] "GET /resources/ajax-loading.gif HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-25 15:14:37.928] "POST /?wtd=JhsgwPDmr2d7P6T4 HTTP/1.1" 200 51
+[2018-Dec-25 15:14:37.928] 9136 - [info] "WebRequest: took 0.256 ms"
+127.0.0.1 - - [2018-Dec-25 15:14:39.703] "POST /?wtd=JhsgwPDmr2d7P6T4 HTTP/1.1" 200 4184
+[2018-Dec-25 15:14:39.703] 9136 - [info] "WebRequest: took 11.003 ms"
+127.0.0.1 - - [2018-Dec-25 15:14:39.819] "POST /?wtd=JhsgwPDmr2d7P6T4 HTTP/1.1" 200 1211
+[2018-Dec-25 15:14:39.819] 9136 - [info] "WebRequest: took 0.638 ms"
+[2018-Dec-25 15:14:44.372] 9136 - [info] "WServer/wthttp: shutdown (signal = 15)"
+[2018-Dec-25 15:14:44.372] 9136 - [info] "WebController: shutdown: stopping 1 sessions."
+[2018-Dec-25 15:14:44.373] 9136 [/ JhsgwPDmr2d7P6T4] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-25 15:14:44.373] 9136 - [info] "WServer/wthttp: Shutdown: stopping web server."
+[2018-Dec-26 19:20:26.488] 28247 - [info] "config: reading Wt config file: /etc/wt/wt_config.xml (location = './WebApp')"
+[2018-Dec-26 19:20:26.493] 28247 - [info] "WServer/wthttp: initializing built-in wthttpd"
+[2018-Dec-26 19:20:26.495] 28247 - [info] "wthttp: started server: http://0.0.0.0:80"
+[libprotobuf ERROR google/protobuf/wire_format_lite.cc:626] String field 'admin.BackupChunk.bytes' contains invalid UTF-8 data when serializing a protocol buffer. Use the 'bytes' type if you intend to send raw bytes. 
+[2018-Dec-26 19:22:06.724] 28247 - [info] "WServer/wthttp: shutdown (signal = 15)"
+[2018-Dec-26 19:22:06.724] 28247 - [info] "WebController: shutdown: stopping 0 sessions."
+[2018-Dec-26 19:22:06.724] 28247 - [info] "WServer/wthttp: Shutdown: stopping web server."
+[2018-Dec-26 19:22:14.546] 28679 - [info] "config: reading Wt config file: /etc/wt/wt_config.xml (location = './WebApp')"
+[2018-Dec-26 19:22:14.547] 28679 - [info] "WServer/wthttp: initializing built-in wthttpd"
+[2018-Dec-26 19:22:14.555] 28679 - [info] "wthttp: started server: http://0.0.0.0:80"
+[2018-Dec-26 19:23:03.985] 28679 - [info] "Wt: session created (#sessions = 1)"
+[2018-Dec-26 19:23:03.985] 28679 [/ ExcZEcgh6utbOkHE] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-26 19:23:03.988] "GET / HTTP/1.1" 200 2268
+[2018-Dec-26 19:23:03.989] 28679 - [info] "WebRequest: took 4.072 ms"
+127.0.0.1 - - [2018-Dec-26 19:23:04.135] "GET /?wtd=ExcZEcgh6utbOkHE&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-26 19:23:04.135] 28679 - [info] "WebRequest: took 68.093 ms"
+127.0.0.1 - - [2018-Dec-26 19:23:04.144] "GET /?wtd=ExcZEcgh6utbOkHE&sid=753238590&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=3286453684 HTTP/1.1" 200 38364
+[2018-Dec-26 19:23:04.144] 28679 - [info] "WebRequest: took 12.09 ms"
+127.0.0.1 - - [2018-Dec-26 19:23:04.151] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-26 19:23:04.152] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-26 19:23:04.312] "POST /?wtd=ExcZEcgh6utbOkHE HTTP/1.1" 200 49
+[2018-Dec-26 19:23:04.312] 28679 - [info] "WebRequest: took 0.414 ms"
+127.0.0.1 - - [2018-Dec-26 19:23:05.686] "POST /?wtd=ExcZEcgh6utbOkHE HTTP/1.1" 200 4189
+[2018-Dec-26 19:23:05.686] 28679 - [info] "WebRequest: took 15.951 ms"
+127.0.0.1 - - [2018-Dec-26 19:23:05.692] "GET /resources/tinymce/tinymce.min.js HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-26 19:23:05.808] "POST /?wtd=ExcZEcgh6utbOkHE HTTP/1.1" 200 1216
+[2018-Dec-26 19:23:05.808] 28679 - [info] "WebRequest: took 0.366 ms"
+[2018-Dec-26 19:23:18.699] 28679 - [info] "WServer/wthttp: shutdown (signal = 15)"
+[2018-Dec-26 19:23:18.699] 28679 - [info] "WebController: shutdown: stopping 1 sessions."
+[2018-Dec-26 19:23:18.700] 28679 [/ ExcZEcgh6utbOkHE] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-26 19:23:18.700] 28679 - [info] "WServer/wthttp: Shutdown: stopping web server."
+[2018-Dec-26 19:23:43.050] 28869 - [info] "config: reading Wt config file: /etc/wt/wt_config.xml (location = './WebApp')"
+[2018-Dec-26 19:23:43.051] 28869 - [info] "WServer/wthttp: initializing built-in wthttpd"
+[2018-Dec-26 19:23:43.053] 28869 - [info] "wthttp: started server: http://0.0.0.0:80"
+[2018-Dec-26 19:23:44.943] 28869 - [info] "Wt: session created (#sessions = 1)"
+[2018-Dec-26 19:23:44.943] 28869 [/ TMVfW26cHPIYEv5h] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-26 19:23:44.944] "GET / HTTP/1.1" 200 2270
+[2018-Dec-26 19:23:44.944] 28869 - [info] "WebRequest: took 1.345 ms"
+127.0.0.1 - - [2018-Dec-26 19:23:45.016] "GET /?wtd=TMVfW26cHPIYEv5h&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-26 19:23:45.016] 28869 - [info] "WebRequest: took 27.771 ms"
+127.0.0.1 - - [2018-Dec-26 19:23:45.022] "GET /?wtd=TMVfW26cHPIYEv5h&sid=1446258941&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=3250028373 HTTP/1.1" 200 38365
+[2018-Dec-26 19:23:45.022] 28869 - [info] "WebRequest: took 12.399 ms"
+127.0.0.1 - - [2018-Dec-26 19:23:45.094] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-26 19:23:45.100] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-26 19:23:45.108] "GET /custom.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-26 19:23:45.118] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-26 19:23:45.134] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 200 20034
+127.0.0.1 - - [2018-Dec-26 19:23:45.154] "GET /favicon.ico HTTP/1.1" 200 1424
+127.0.0.1 - - [2018-Dec-26 19:23:45.163] "GET /resources/ajax-loading.gif HTTP/1.1" 200 1786
+127.0.0.1 - - [2018-Dec-26 19:23:45.244] "POST /?wtd=TMVfW26cHPIYEv5h HTTP/1.1" 200 50
+[2018-Dec-26 19:23:45.244] 28869 - [info] "WebRequest: took 0.374 ms"
+127.0.0.1 - - [2018-Dec-26 19:23:46.612] "POST /?wtd=TMVfW26cHPIYEv5h HTTP/1.1" 200 4180
+[2018-Dec-26 19:23:46.612] 28869 - [info] "WebRequest: took 10.441 ms"
+127.0.0.1 - - [2018-Dec-26 19:23:46.731] "POST /?wtd=TMVfW26cHPIYEv5h HTTP/1.1" 200 1214
+[2018-Dec-26 19:23:46.731] 28869 - [info] "WebRequest: took 0.575 ms"
+[2018-Dec-26 19:23:47.987] 28869 [/ TMVfW26cHPIYEv5h] [warning] "WApplication: Deploy-path ends with '/', using /?_= for internal paths"
+127.0.0.1 - - [2018-Dec-26 19:23:47.988] "POST /?wtd=TMVfW26cHPIYEv5h HTTP/1.1" 200 3189
+[2018-Dec-26 19:23:47.988] 28869 - [info] "WebRequest: took 2.01 ms"
+127.0.0.1 - - [2018-Dec-26 19:23:50.961] "POST /?wtd=TMVfW26cHPIYEv5h HTTP/1.1" 200 1126
+[2018-Dec-26 19:23:50.962] 28869 - [info] "WebRequest: took 1.089 ms"
+127.0.0.1 - - [2018-Dec-26 19:23:52.174] "POST /?wtd=TMVfW26cHPIYEv5h HTTP/1.1" 200 564
+[2018-Dec-26 19:23:52.174] 28869 - [info] "WebRequest: took 15.301 ms"
+127.0.0.1 - - [2018-Dec-26 19:23:53.442] "POST /?wtd=TMVfW26cHPIYEv5h HTTP/1.1" 200 171
+[2018-Dec-26 19:23:53.443] 28869 - [info] "WebRequest: took 1.074 ms"
+[2018-Dec-26 19:23:53.883] 28869 - [info] "Wt: session created (#sessions = 2)"
+[2018-Dec-26 19:23:53.883] 28869 [/ 0BPzUHwLUB2fd51K] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-26 19:23:53.884] "GET / HTTP/1.1" 200 2269
+[2018-Dec-26 19:23:53.884] 28869 - [info] "WebRequest: took 1.18 ms"
+[2018-Dec-26 19:23:53.888] 28869 - [info] "WebController: Removing session TMVfW26cHPIYEv5h"
+127.0.0.1 - - [2018-Dec-26 19:23:53.888] "POST /?wtd=TMVfW26cHPIYEv5h HTTP/1.1" 200 131
+[2018-Dec-26 19:23:53.888] 28869 - [info] "WebRequest: took 0.38 ms"
+[2018-Dec-26 19:23:53.888] 28869 [/ TMVfW26cHPIYEv5h] [info] "Wt: session destroyed (#sessions = 1)"
+127.0.0.1 - - [2018-Dec-26 19:23:53.916] "GET /?wtd=0BPzUHwLUB2fd51K&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-26 19:23:53.916] 28869 - [info] "WebRequest: took 1.735 ms"
+127.0.0.1 - - [2018-Dec-26 19:23:53.925] "GET /?wtd=0BPzUHwLUB2fd51K&sid=1160433065&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=1585068682 HTTP/1.1" 200 38367
+[2018-Dec-26 19:23:53.925] 28869 - [info] "WebRequest: took 10.042 ms"
+127.0.0.1 - - [2018-Dec-26 19:23:53.934] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-26 19:23:53.935] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-26 19:23:53.937] "GET /custom.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-26 19:23:53.939] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-26 19:23:53.940] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-26 19:23:53.986] "GET /resources/ajax-loading.gif HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-26 19:23:54.040] "POST /?wtd=0BPzUHwLUB2fd51K HTTP/1.1" 200 50
+[2018-Dec-26 19:23:54.040] 28869 - [info] "WebRequest: took 0.275 ms"
+[2018-Dec-26 19:23:58.558] 28869 - [info] "WServer/wthttp: shutdown (signal = 15)"
+[2018-Dec-26 19:23:58.558] 28869 - [info] "WebController: shutdown: stopping 1 sessions."
+[2018-Dec-26 19:23:58.559] 28869 [/ 0BPzUHwLUB2fd51K] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-26 19:23:58.559] 28869 - [info] "WServer/wthttp: Shutdown: stopping web server."
+[2018-Dec-26 19:24:01.617] 28962 - [info] "config: reading Wt config file: /etc/wt/wt_config.xml (location = './WebApp')"
+[2018-Dec-26 19:24:01.618] 28962 - [info] "WServer/wthttp: initializing built-in wthttpd"
+[2018-Dec-26 19:24:01.622] 28962 - [info] "wthttp: started server: http://0.0.0.0:80"
+[2018-Dec-26 19:24:02.977] 28962 - [info] "Wt: session created (#sessions = 1)"
+[2018-Dec-26 19:24:02.977] 28962 [/ JmFcynAQkGUpP3lU] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2018-Dec-26 19:24:02.979] "GET / HTTP/1.1" 200 2267
+[2018-Dec-26 19:24:02.979] 28962 - [info] "WebRequest: took 1.294 ms"
+[2018-Dec-26 19:24:02.984] 28962 - [info] "Wt: session created (#sessions = 2)"
+[2018-Dec-26 19:24:02.984] 28962 [/ UwDNzfFlIJzvOsoh] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+[2018-Dec-26 19:24:02.984] 28962 [/ UwDNzfFlIJzvOsoh] [info] "Wt: signal from dead session, sending reload."
+[2018-Dec-26 19:24:02.985] 28962 - [info] "WebController: Removing session UwDNzfFlIJzvOsoh"
+[2018-Dec-26 19:24:02.985] 28962 [/ UwDNzfFlIJzvOsoh] [info] "Wt: session destroyed (#sessions = 1)"
+127.0.0.1 - - [2018-Dec-26 19:24:02.985] "POST /?wtd=0BPzUHwLUB2fd51K HTTP/1.1" 200 76
+[2018-Dec-26 19:24:02.985] 28962 - [info] "WebRequest: took 0.51 ms"
+127.0.0.1 - - [2018-Dec-26 19:24:03.011] "GET /?wtd=JmFcynAQkGUpP3lU&request=style&page=1 HTTP/1.1" 200 104
+[2018-Dec-26 19:24:03.011] 28962 - [info] "WebRequest: took 7.393 ms"
+127.0.0.1 - - [2018-Dec-26 19:24:03.020] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-26 19:24:03.021] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-26 19:24:03.023] "GET /?wtd=JmFcynAQkGUpP3lU&sid=-270265820&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=742147179 HTTP/1.1" 200 38368
+[2018-Dec-26 19:24:03.023] 28962 - [info] "WebRequest: took 13.371 ms"
+127.0.0.1 - - [2018-Dec-26 19:24:03.026] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-26 19:24:03.027] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2018-Dec-26 19:24:03.029] "GET /custom.css HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-26 19:24:03.075] "GET /resources/ajax-loading.gif HTTP/1.1" 304 0
+127.0.0.1 - - [2018-Dec-26 19:24:03.133] "POST /?wtd=JmFcynAQkGUpP3lU HTTP/1.1" 200 50
+[2018-Dec-26 19:24:03.133] 28962 - [info] "WebRequest: took 0.605 ms"
+127.0.0.1 - - [2018-Dec-26 19:24:03.972] "POST /?wtd=JmFcynAQkGUpP3lU HTTP/1.1" 200 4201
+[2018-Dec-26 19:24:03.972] 28962 - [info] "WebRequest: took 24.516 ms"
+127.0.0.1 - - [2018-Dec-26 19:24:04.092] "POST /?wtd=JmFcynAQkGUpP3lU HTTP/1.1" 200 1215
+[2018-Dec-26 19:24:04.092] 28962 - [info] "WebRequest: took 0.46 ms"
+[2018-Dec-26 19:24:07.383] 28962 - [info] "WServer/wthttp: shutdown (signal = 15)"
+[2018-Dec-26 19:24:07.383] 28962 - [info] "WebController: shutdown: stopping 1 sessions."
+[2018-Dec-26 19:24:07.384] 28962 [/ JmFcynAQkGUpP3lU] [info] "Wt: session destroyed (#sessions = 0)"
+[2018-Dec-26 19:24:07.384] 28962 - [info] "WServer/wthttp: Shutdown: stopping web server."

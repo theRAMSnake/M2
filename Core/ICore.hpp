@@ -9,6 +9,7 @@ class IInbox;
 class ICalendar;
 class IStrategy;
 class IJournal;
+class IBackuper;
 
 struct CoreConfig
 {
@@ -22,6 +23,7 @@ public:
     virtual ICalendar& getCalendar() = 0;
     virtual IStrategy& getStrategy() = 0;
     virtual IJournal& getJournal() = 0;
+    virtual IBackuper& getBackuper() = 0;
 
     virtual ~ICore(){}
 };

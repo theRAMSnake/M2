@@ -18,6 +18,7 @@ private/Resource.cpp
 private/Objective.cpp
 private/Logger.cpp
 private/JsonSerializer.cpp
+private/Backuper.cpp
 )
 
 find_package(Boost COMPONENTS system REQUIRED)

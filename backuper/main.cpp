@@ -1,22 +1,37 @@
 #include <iostream>
-
-#include <Client/MateriaClient.hpp>
-#include <Client/IContainer.hpp>
-#include <Common/PortLayout.hpp>
-
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
-
-#include <boost/filesystem.hpp>
-#include <boost/date_time.hpp>
+#include <fstream>
+#include "WebApp/materia/ZmqPbChannel.hpp"
+#include "WebApp/materia/MateriaServiceProxy.hpp"
+#include <messages/admin.pb.h>
 
 int main(int argc,  char** argv)
 {
-   materia::MateriaClient client("backuper", "188.116.57.62");
+   zmq::context_t context(1);
+   zmq::socket_t socket(context, ZMQ_REQ);
+   ZmqPbChannel channel(socket, "backuper");
 
+   const std::string ip = "localhost";
+   socket.connect("tcp://localhost:5757");
+
+   MateriaServiceProxy<admin::AdminService> service(channel);
+
+   common::EmptyMessage empty;
+   admin::BackupChunk chunk;
+   service.getService().StartBackup(nullptr, &empty, &chunk, nullptr);
+
+   std::ofstream stream;
+   stream.open("materia.backup", std::ios::out | std::ios::binary | std::ios::trunc);
+
+   stream.write(&chunk.bytes().front(), chunk.bytes().size());
+   std::cout << "Chunk: " << chunk.bytes().size() << "\n";
+
+   while(chunk.has_more())
    {
-      auto ctr = client.getContainer().fetch();
-      std::ofstream f(boost::posix_time::to_iso_string(boost::posix_time::second_clock::local_time()) + ".db", std::ios::out | std::ofstream::binary);
-      std::copy(ctr.begin(), ctr.end(), std::ostreambuf_iterator<char>(f));
+      service.getService().Next(nullptr, &empty, &chunk, nullptr);
+      stream.write(&chunk.bytes().front(), chunk.bytes().size());
+      std::cout << "Chunk: " << chunk.bytes().size() << "\n";
    }
-}
+
+   stream.close();
+   std::cout << "Done";
+} 

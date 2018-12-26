@@ -9,6 +9,7 @@ Core::Core(const CoreConfig& config)
 , mCalendar(mDb)
 , mJournal(mDb)
 , mStrategy(mDb)
+, mBackuper(config.dbFileName)
 {
 
 }
@@ -26,6 +27,11 @@ ICalendar& Core::getCalendar()
 IStrategy& Core::getStrategy()
 {
    return mStrategy;
+}
+
+IBackuper& Core::getBackuper()
+{
+   return mBackuper;
 }
 
 IJournal& Core::getJournal()
