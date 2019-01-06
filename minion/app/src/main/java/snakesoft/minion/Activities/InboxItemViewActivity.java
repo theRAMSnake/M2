@@ -1,19 +1,19 @@
-package snakesoft.minion;
+package snakesoft.minion.Activities;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import common.Common;
 import inbox.Inbox;
+import snakesoft.minion.Models.GlobalModel;
+import snakesoft.minion.R;
 
 public class InboxItemViewActivity extends AppCompatActivity implements View.OnClickListener{
 

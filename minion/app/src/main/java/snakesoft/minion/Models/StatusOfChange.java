@@ -1,4 +1,4 @@
-package snakesoft.minion;
+package snakesoft.minion.Models;
 
 public class StatusOfChange implements java.io.Serializable
 {

@@ -1,4 +1,4 @@
-package snakesoft.minion;
+package snakesoft.minion.Models;
 
 import android.content.Context;
 

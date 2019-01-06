@@ -1,9 +1,17 @@
-package snakesoft.minion;
+package snakesoft.minion.Activities;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import snakesoft.minion.Models.GlobalModel;
+import snakesoft.minion.Models.SyncObserver;
+import snakesoft.minion.R;
 
 public class SyncActivity extends AppCompatActivity implements SyncListener
 {
@@ -13,12 +21,20 @@ public class SyncActivity extends AppCompatActivity implements SyncListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sync);
 
+        final EditText txtView = (EditText) findViewById(R.id.syncText);
+        txtView.setEnabled(false);
         GlobalModel.sync(this);
     }
 
     public void onSyncComplete()
     {
-        finish();
+        SyncObserver obs = GlobalModel.getSyncObserver();
+
+        final ProgressBar pb = (ProgressBar) findViewById(R.id.pbSync);
+        pb.setVisibility(View.INVISIBLE);
+
+        final EditText txtView = (EditText) findViewById(R.id.syncText);
+        txtView.setText(obs.getLog());
     }
 
     @Override

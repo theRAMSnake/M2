@@ -1,21 +1,14 @@
-package snakesoft.minion;
+package snakesoft.minion.Activities;
 
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.constraint.ConstraintLayout;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.TextView;
+import android.support.constraint.ConstraintLayout;
+import android.support.v7.app.AppCompatActivity;
 
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
-import actions.Actions;
-import common.Common;
+import snakesoft.minion.R;
 
 public class ActionsActivity extends AppCompatActivity implements TreeNode.TreeNodeLongClickListener
 {
@@ -26,7 +19,7 @@ public class ActionsActivity extends AppCompatActivity implements TreeNode.TreeN
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_actions);
 
-        final String mode = getIntent().getStringExtra("Mode");
+        /*final String mode = getIntent().getStringExtra("Mode");
 
         TreeNode root = TreeNode.root();
         GlobalModel.getActionsModel().fillTreeRoot(root, mode.equals("Normal")
@@ -38,12 +31,12 @@ public class ActionsActivity extends AppCompatActivity implements TreeNode.TreeN
         tView.setDefaultContainerStyle(R.style.TreeNodeStyleCustom);
         tView.setDefaultNodeLongClickListener(this);
 
-        ((ConstraintLayout) findViewById(R.id.actionsLayout)).addView(tView.getView());
+        ((ConstraintLayout) findViewById(R.id.actionsLayout)).addView(tView.getView());*/
     }
 
     public boolean onLongClick(TreeNode node, Object value)
     {
-        if(value != null)
+        /*if(value != null)
         {
             Actions.ActionInfo item = (Actions.ActionInfo)value;
 
@@ -76,7 +69,8 @@ public class ActionsActivity extends AppCompatActivity implements TreeNode.TreeN
 
             ActionsActivity.this.startActivityForResult(myIntent, 1);
             return true;
-        }
+        }*/
+        return true;
     }
 
     @Override

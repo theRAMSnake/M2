@@ -1,4 +1,4 @@
-package snakesoft.minion;
+package snakesoft.minion.Materia;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 

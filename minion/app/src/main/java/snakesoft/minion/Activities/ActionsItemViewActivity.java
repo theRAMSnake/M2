@@ -1,19 +1,16 @@
-package snakesoft.minion;
+package snakesoft.minion.Activities;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Html;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
 
-import actions.Actions;
-import common.Common;
+import snakesoft.minion.R;
 
 public class ActionsItemViewActivity extends AppCompatActivity implements View.OnClickListener
 {
@@ -65,7 +62,7 @@ public class ActionsItemViewActivity extends AppCompatActivity implements View.O
 
     public void onClick(View v)
     {
-        final String guid = getIntent().getStringExtra("Id");
+        /*final String guid = getIntent().getStringExtra("Id");
         final String parentGuid = getIntent().getStringExtra("ParentId");
         final int itemType = getIntent().getBooleanExtra("IsNewItem", false)
                 ? mNewItemType
@@ -112,7 +109,7 @@ public class ActionsItemViewActivity extends AppCompatActivity implements View.O
 
             dlgAlert.setCancelable(true);
             dlgAlert.create().show();
-        }
+        }*/
     }
 
     private int mNewItemType = 1;

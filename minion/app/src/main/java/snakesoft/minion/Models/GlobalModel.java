@@ -1,10 +1,17 @@
-package snakesoft.minion;
+package snakesoft.minion.Models;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Vector;
+
+import snakesoft.minion.Materia.InboxServiceProxy;
+import snakesoft.minion.Materia.CalendarServiceProxy;
+import snakesoft.minion.Materia.MateriaConnection;
+import snakesoft.minion.Materia.MateriaUnreachableException;
+import snakesoft.minion.Activities.SyncListener;
 
 /**
  * Created by snake on 4/28/17.
@@ -12,6 +19,11 @@ import java.io.UnsupportedEncodingException;
 
 public class GlobalModel
 {
+    public static SyncObserver getSyncObserver()
+    {
+        return mSyncObserver;
+    }
+
     static class SyncAllTask extends AsyncTask<SyncListener, Void, SyncListener>
     {
         protected SyncListener doInBackground(SyncListener... p)
@@ -39,9 +51,10 @@ public class GlobalModel
     {
         try
         {
-            mInboxModel.sync();
-            mActionsModel.sync();
-            mCalendarModel.sync();
+            mSyncObserver = new SyncObserver();
+
+            mInboxModel.sync(mSyncObserver);
+            mCalendarModel.sync(mSyncObserver);
 
             return true;
         }
@@ -75,7 +88,6 @@ public class GlobalModel
         }
 
         mInboxModel = new InboxModel(new InboxServiceProxy(mConnection));
-        mActionsModel = new ActionsModel(new ActionsServiceProxy(mConnection));
         mWpModel = new WpModel();
         mCalendarModel = new CalendarModel(
                 new CalendarServiceProxy(mConnection));
@@ -89,13 +101,6 @@ public class GlobalModel
         try
         {
             mInboxModel.loadState(mLocalDatabase);
-        } catch (Exception e)
-        {
-            dbok = false;
-        }
-        try
-        {
-            mActionsModel.loadState(mLocalDatabase);
         } catch (Exception e)
         {
             dbok = false;
@@ -131,7 +136,6 @@ public class GlobalModel
     {
         return mInboxModel;
     }
-    public static ActionsModel getActionsModel() {return mActionsModel; }
     public static CalendarModel getCalendarModel() {return mCalendarModel; }
     public static WpModel getWpModel() {return mWpModel;}
 
@@ -143,7 +147,6 @@ public class GlobalModel
     public static void reset()
     {
         mInboxModel.resetChanges();
-        mActionsModel.resetChanges();
         mCalendarModel.resetChanges();
     }
 
@@ -160,7 +163,7 @@ public class GlobalModel
     static private MateriaConnection mConnection;
     static private LocalDatabase mLocalDatabase;
     static private InboxModel mInboxModel;
-    static private ActionsModel mActionsModel;
     static private CalendarModel mCalendarModel;
     static private WpModel mWpModel;
+    static private SyncObserver mSyncObserver;
 }

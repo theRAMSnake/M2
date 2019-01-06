@@ -1,4 +1,4 @@
-package snakesoft.minion;
+package snakesoft.minion.Activities;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import calendar.Calendar;
+import snakesoft.minion.Models.GlobalModel;
+import snakesoft.minion.R;
 
 public class CalendarActivity extends AppCompatActivity {
 

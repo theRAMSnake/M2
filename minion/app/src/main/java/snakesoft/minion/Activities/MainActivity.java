@@ -1,16 +1,13 @@
-package snakesoft.minion;
+package snakesoft.minion.Activities;
 
-import android.content.ContentUris;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.provider.CalendarContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
+import snakesoft.minion.Models.GlobalModel;
+import snakesoft.minion.R;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
@@ -36,9 +33,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mCalendarBtn = (Button) findViewById(R.id.btnCalendar);
         mCalendarBtn.setOnClickListener(MainActivity.this);
-
-        mBacklogBtn = (Button) findViewById(R.id.btnBacklog);
-        mBacklogBtn.setOnClickListener(MainActivity.this);
 
         mWpBtn = (Button) findViewById(R.id.btnWp);
         mWpBtn.setOnClickListener(MainActivity.this);
