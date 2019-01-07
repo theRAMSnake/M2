@@ -19,6 +19,8 @@ private:
    
    void putGoal(const StrategyModel::Goal& goal);
 
+   void refreshGoalCtrl(const materia::Id& id);
+
    StrategyModel& mModel;
    Wt::WToolBar* mMainToolbar;
    std::vector<IGoalViewCtrl*> mGoalCtrls;

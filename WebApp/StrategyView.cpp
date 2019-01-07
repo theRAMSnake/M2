@@ -17,6 +17,7 @@
 #include "Wt/WDoubleSpinBox.h"
 #include "Wt/WPanel.h"
 #include "Wt/WComboBox.h"
+#include <boost/signals2/signal.hpp>
 
 class GoalEditDialog : public BasicDialog
 {
@@ -162,6 +163,8 @@ private:
 class IGoalViewCtrl
 {
 public:
+   boost::signals2::signal<void (const materia::Id)> onRefreshOtherGoalRequest;
+
    virtual bool isEmpty() const = 0;
    virtual void attach(const StrategyModel::Goal& goal) = 0;
    virtual void addTask(const StrategyModel::Task& task) = 0;
@@ -185,6 +188,7 @@ class GoalViewCtrlTraits<true>
 public:
    static constexpr const char* emptyStyleClass = "GoalViewCtrlSmallEmpty";
    static constexpr const char* nonemptyStyleClass = "GoalViewCtrlSmall";
+   static constexpr bool isMovable = true;
 };
 
 template<>
@@ -193,6 +197,7 @@ class GoalViewCtrlTraits<false>
 public:
    static constexpr const char* emptyStyleClass = "GoalViewCtrlEmpty";
    static constexpr const char* nonemptyStyleClass = "GoalViewCtrl";
+   static constexpr bool isMovable = false;
 };
 
 struct GoalViewCtrlConstructionParams
@@ -225,6 +230,10 @@ protected:
       Wt::WPainter painter(paintDevice);
       painter.setBrush(Wt::WBrush(Wt::WColor(Wt::StandardColor::Magenta)));
       painter.drawRect(0, 0, 32, 32);
+      if(!mTask.title.empty())
+      {
+         painter.drawText(Wt::WRectF(0, 0, 32, 32), Wt::AlignmentFlag::Middle | Wt::AlignmentFlag::Center, mTask.title.substr(0, 1));
+      }
    }
 
 private:
@@ -304,8 +313,11 @@ public:
          addWidget(std::move(namePtr));
       }
 
-      acceptDrops(MY_MIME_TYPE);
-      setDraggable(MY_MIME_TYPE);
+      if(GoalViewCtrlTraits<isCompact>::isMovable)
+      {
+         acceptDrops(MY_MIME_TYPE);
+         setDraggable(MY_MIME_TYPE);
+      }
    }
 
    void dropEvent(Wt::WDropEvent dropEvent) override
@@ -397,7 +409,7 @@ public:
 private:
    void onBoundClicked(Wt::WMouseEvent event)
    {
-      if(event.button() == Wt::MouseButton::Right && mGoal)
+      if(event.button() == Wt::MouseButton::Left && mGoal)
       {
          if(event.modifiers().test(Wt::KeyboardModifier::Control))
          {
@@ -463,7 +475,7 @@ private:
 
    void onTaskWidgetClicked(TaskWidget* w, const StrategyModel::Task t, Wt::WMouseEvent event)
    {
-      if(event.button() == Wt::MouseButton::Right)
+      if(event.button() == Wt::MouseButton::Left)
       {
          if(event.modifiers().test(Wt::KeyboardModifier::Control))
          {
@@ -479,7 +491,9 @@ private:
             auto dlg = new TaskEditDialog(
                t.title,
                t.notes,
-               std::bind(&GoalViewCtrl<isCompact>::onTaskEditDialogOk, this, std::placeholders::_1, std::placeholders::_2, t, w));
+               t.parentGoalId,
+               mModel.getGoals(),
+               std::bind(&GoalViewCtrl<isCompact>::onTaskEditDialogOk, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, t, w));
             dlg->show();
          }
       }
@@ -487,7 +501,7 @@ private:
 
    void onObjectiveWidgetClicked(ObjectiveWidget* w, Wt::WMouseEvent event)
    {
-      if(event.button() == Wt::MouseButton::Right)
+      if(event.button() == Wt::MouseButton::Left)
       {
          if(event.modifiers().test(Wt::KeyboardModifier::Control))
          {
@@ -509,16 +523,23 @@ private:
       }
    }
 
-   void onTaskEditDialogOk(const std::string& title, const std::string& notes, const StrategyModel::Task src, TaskWidget* w)
+   void onTaskEditDialogOk(const std::string& title, const std::string& notes, const materia::Id& goalId, const StrategyModel::Task src, TaskWidget* w)
    {
       auto newTask = src;
 
       newTask.title = title;
       newTask.notes = notes;
+      newTask.parentGoalId = goalId;
 
       w->setTask(newTask);
 
       mModel.modifyTask(newTask);
+
+      if(newTask.parentGoalId != mGoal->id)
+      {
+         mTasks->removeChild(w);
+         onRefreshOtherGoalRequest(newTask.parentGoalId);
+      }
    }
 
    void onObjectiveEditDialogOk(const StrategyModel::Objective src, ObjectiveWidget* w)
@@ -680,10 +701,26 @@ StrategyView::StrategyView(StrategyModel& strategy)
    auto [temp, goalCtrls] = TemplateBuilder::makeTable<GoalViewCtrl<false>>(3u, 2u, GoalViewCtrlConstructionParams{strategy, true});
    std::copy(goalCtrls.begin(), goalCtrls.end(), std::inserter(mGoalCtrls, mGoalCtrls.begin()));
 
+   for(auto x : mGoalCtrls)
+   {
+      x->onRefreshOtherGoalRequest.connect(std::bind(&StrategyView::refreshGoalCtrl, this, std::placeholders::_1));
+   }
+
    addWidget(std::unique_ptr<Wt::WWidget>(temp));
 
    layGoals();
    fillResources(*mMainToolbar);
+}
+
+void StrategyView::refreshGoalCtrl(const materia::Id& id)
+{
+   for(auto x : mGoalCtrls)
+   {
+      if(!x->isEmpty() && x->getGoal().id == id)
+      {
+         x->attach(*x->detach());
+      }
+   }
 }
 
 void StrategyView::fillResources(Wt::WToolBar& toolbar)
@@ -733,10 +770,23 @@ void StrategyView::onAddResourceClick()
    CommonDialogManager::showOneLineDialog("Please specify name", "Name", "", nextFunc);
 }
 
+inline bool goalsSorter(const StrategyModel::Goal &a, const StrategyModel::Goal &b)
+{
+   if(a.focused == b.focused)
+   {
+      return a.title < b.title;
+   }
+
+   return a.focused > b.focused;
+}
+
 void StrategyView::onAddTaskClick()
 {
+   auto goals = mModel.getGoals();
+   std::sort(goals.begin(), goals.end(), goalsSorter);
+
    std::vector<std::string> choises;
-   for(auto g : mModel.getGoals())
+   for(auto g : goals)
    {
       choises.push_back(g.title);
    }
@@ -744,11 +794,11 @@ void StrategyView::onAddTaskClick()
    CommonDialogManager::showChoiseDialog(choises, [=](auto selected) {
       
       std::function<void(std::string)> nextFunc = [=](std::string title){
-         auto item = mModel.addTask(title, mModel.getGoals()[selected].id);
+         auto item = mModel.addTask(title, goals[selected].id);
          
          for(auto gc : mGoalCtrls)
          {
-            if(!gc->isEmpty() && gc->getGoal().id == mModel.getGoals()[selected].id)
+            if(!gc->isEmpty() && gc->getGoal().id == goals[selected].id)
             {
                gc->addTask(item);
                break;
@@ -762,8 +812,11 @@ void StrategyView::onAddTaskClick()
 
 void StrategyView::onAddObjectiveClick()
 {
+   auto goals = mModel.getGoals();
+   std::sort(goals.begin(), goals.end(), goalsSorter);
+
    std::vector<std::string> choises;
-   for(auto g : mModel.getGoals())
+   for(auto g : goals)
    {
       choises.push_back(g.title);
    }
@@ -771,11 +824,11 @@ void StrategyView::onAddObjectiveClick()
    CommonDialogManager::showChoiseDialog(choises, [=](auto selected) {
       
       std::function<void(std::string)> nextFunc = [=](std::string title){
-         auto item = mModel.addObjective(title, mModel.getGoals()[selected].id);
+         auto item = mModel.addObjective(title, goals[selected].id);
          
          for(auto gc : mGoalCtrls)
          {
-            if(!gc->isEmpty() && gc->getGoal().id == mModel.getGoals()[selected].id)
+            if(!gc->isEmpty() && gc->getGoal().id == goals[selected].id)
             {
                gc->addObjective(item);
                break;

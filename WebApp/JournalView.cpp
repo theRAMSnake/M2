@@ -7,6 +7,16 @@
 #include <Wt/WTextEdit.h>
 #include <Wt/WPushButton.h>
 
+inline bool journalSorter(const IndexItem &a, const IndexItem& b)
+{
+   if(a.isPage == b.isPage)
+   {
+      return a.title < b.title;
+   }
+
+   return a.isPage > b.isPage;
+}
+
 class JournalTreeNode : public Wt::WTreeNode
 {
 public:
@@ -27,7 +37,9 @@ public:
 
    void populate() override
    {
-      for(auto x : mModel.getChildren(mItem.id))
+      auto ch = mModel.getChildren(mItem.id);
+
+      for(auto x : ch)
       {
          addChildNode(std::make_unique<JournalTreeNode>(x, mModel));
       }

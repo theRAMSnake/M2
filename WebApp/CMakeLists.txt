@@ -20,6 +20,7 @@ TemplateBuilder.cpp
 MateriaClient.cpp
 MainView.cpp
 JournalView.cpp
+GoalsComboBox.cpp
 materia/ZmqPbChannel.cpp
 materia/StrategyModel.cpp
 materia/CalendarModel.cpp
