@@ -818,7 +818,7 @@ void StrategyView::onBacklogClick()
          delete dialog;
    }));
 
-   dialog->setWidth(Wt::WLength("85%"));
+   dialog->setWidth(Wt::WLength("95%"));
    dialog->setHeight(Wt::WLength("85%"));
    dialog->show();
 }
