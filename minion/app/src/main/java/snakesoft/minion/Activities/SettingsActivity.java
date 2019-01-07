@@ -1,4 +1,4 @@
-package snakesoft.minion;
+package snakesoft.minion.Activities;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -8,6 +8,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import snakesoft.minion.Models.GlobalModel;
+import snakesoft.minion.R;
 
 public class SettingsActivity extends AppCompatActivity {
 

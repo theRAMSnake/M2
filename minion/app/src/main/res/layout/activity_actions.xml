@@ -5,6 +5,6 @@
     android:id="@+id/actionsLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="snakesoft.minion.ActionsActivity">
+    tools:context="snakesoft.minion.Activities.ActionsActivity">
 
 </android.support.constraint.ConstraintLayout>

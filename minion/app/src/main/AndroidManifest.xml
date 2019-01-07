@@ -15,23 +15,23 @@
         android:roundIcon="@mipmap/m104"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".Activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".InboxActivity" />
-        <activity android:name=".SyncActivity" />
-        <activity android:name=".InboxItemViewActivity" />
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".ActionsActivity" />
-        <activity android:name=".ActionsItemViewActivity" />
-        <activity android:name=".CalendarActivity" />
-        <activity android:name=".CalendarDayViewActivity" />
-        <activity android:name=".CalendarItemViewActivity" />
-        <activity android:name=".WpActivity"></activity>
+        <activity android:name=".Activities.InboxActivity" />
+        <activity android:name=".Activities.SyncActivity" />
+        <activity android:name=".Activities.InboxItemViewActivity" />
+        <activity android:name=".Activities.SettingsActivity" />
+        <activity android:name=".Activities.ActionsActivity" />
+        <activity android:name=".Activities.ActionsItemViewActivity" />
+        <activity android:name=".Activities.CalendarActivity" />
+        <activity android:name=".Activities.CalendarDayViewActivity" />
+        <activity android:name=".Activities.CalendarItemViewActivity" />
+        <activity android:name=".Activities.WpActivity"></activity>
     </application>
 
 </manifest>

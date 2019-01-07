@@ -1,8 +1,6 @@
-package snakesoft.minion;
+package snakesoft.minion.Materia;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-
-import java.util.List;
 
 import common.Common;
 import inbox.Inbox;

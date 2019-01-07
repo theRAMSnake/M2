@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="snakesoft.minion.WpActivity">
+    tools:context="snakesoft.minion.Activities.WpActivity">
 
     <GridLayout
         android:layout_width="match_parent"

@@ -1,4 +1,4 @@
-package snakesoft.minion;
+package snakesoft.minion.Activities;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import calendar.Calendar;
 import common.Common;
+import snakesoft.minion.Models.GlobalModel;
+import snakesoft.minion.R;
 
 public class CalendarItemViewActivity extends AppCompatActivity implements View.OnClickListener {
 

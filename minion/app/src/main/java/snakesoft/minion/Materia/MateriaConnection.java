@@ -1,19 +1,8 @@
-package snakesoft.minion;
-
-import android.util.Log;
+package snakesoft.minion.Materia;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.google.protobuf.MessageLite;
 
 import org.zeromq.ZMQ;
-
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
-
-import common.Common;
 
 public class MateriaConnection
 {
@@ -39,7 +28,7 @@ public class MateriaConnection
     {
         mContext = ZMQ.context(1);
         mSocket = mContext.socket(ZMQ.REQ);
-        mSocket.connect("tcp://" + mIp + ":5910");
+        mSocket.connect("tcp://" + mIp + ":5757");
         mSocket.setReceiveTimeOut(30000);
         mConnected = true;
     }

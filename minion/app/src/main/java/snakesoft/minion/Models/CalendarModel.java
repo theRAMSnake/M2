@@ -1,49 +1,63 @@
-package snakesoft.minion;
+package snakesoft.minion.Models;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import inbox.Inbox;
-import inbox.Inbox.InboxItems;
+import calendar.Calendar;
+import snakesoft.minion.Materia.CalendarServiceProxy;
+import snakesoft.minion.Materia.MateriaUnreachableException;
 
-public class InboxModel
+/**
+ * Created by snake on 11/24/17.
+ */
+
+public class CalendarModel
 {
-    public InboxModel(InboxServiceProxy proxy)
+    public CalendarModel(CalendarServiceProxy proxy)
     {
         mProxy = proxy;
         mItemsChanges = new Vector<>();
     }
 
-    public void sync() throws MateriaUnreachableException {
+    public void sync(SyncObserver observer) throws MateriaUnreachableException
+    {
         try
         {
+            observer.beginSync("Calendar");
+
             for(int i = 0; i < mItemsChanges.size(); ++i)
             {
                 if(mItemsChanges.get(i).type == StatusOfChange.Type.Edit)
                 {
                     mProxy.editItem(mItems.getItems(i));
+                    observer.itemChanged();
                 }
                 else if(mItemsChanges.get(i).type == StatusOfChange.Type.Delete)
                 {
                     mProxy.deleteItem(mItems.getItems(i).getId());
+                    observer.itemDeleted();
                 }
                 else if(mItemsChanges.get(i).type == StatusOfChange.Type.Add)
                 {
                     mProxy.addItem(mItems.getItems(i));
+                    observer.itemAdded();
                 }
             }
 
             mItemsChanges.clear();
 
-            mItems = mProxy.getInbox();
+            mItems = queryAllItems();
             for(int i = 0; i < mItems.getItemsCount(); ++i)
             {
                 mItemsChanges.addElement(new StatusOfChange());
             }
+
+            observer.itemLoaded(mItems.getItemsCount());
         }
         catch (InvalidProtocolBufferException ex)
         {
@@ -51,6 +65,8 @@ public class InboxModel
         }
 
         saveState();
+
+        observer.endSync();
     }
 
     public void resetChanges()
@@ -58,29 +74,41 @@ public class InboxModel
         mItemsChanges.clear();
     }
 
-    public List<Inbox.InboxItemInfo> getItems()
+    /* Returns values in range [timestampFrom, timestampTo) */
+    public List<Calendar.CalendarItem> getItems(long timestampFrom, long timestampTo)
     {
-        List<Inbox.InboxItemInfo> result = new Vector<>();
+        System.out.print(timestampFrom);
+        System.out.print(timestampTo);
+        List<Calendar.CalendarItem> result = new Vector<>();
 
         for(int i = 0; i < mItems.getItemsCount(); ++i)
         {
-            if(mItemsChanges.get(i).type != StatusOfChange.Type.Delete &&
-                    mItemsChanges.get(i).type != StatusOfChange.Type.Junk)
+            Calendar.CalendarItem curItem = mItems.getItems(i);
+            if(curItem.getTimestamp() >= timestampFrom && curItem.getTimestamp() < timestampTo)
             {
-                result.add(mItems.getItems(i));
+                if(mItemsChanges.get(i).type != StatusOfChange.Type.Delete &&
+                        mItemsChanges.get(i).type != StatusOfChange.Type.Junk)
+                {
+                    result.add(curItem);
+                }
             }
         }
 
         return result;
     }
 
-    public void modifyItem(Inbox.InboxItemInfo item)
+    public List<Calendar.CalendarItem> getAllItems()
+    {
+        return new ArrayList<Calendar.CalendarItem>(mItems.getItemsList());
+    }
+
+    public void modifyItem(Calendar.CalendarItem item)
     {
         for(int i = 0; i < mItems.getItemsCount(); ++i)
         {
             if(mItems.getItems(i).getId().getGuid().equals(item.getId().getGuid()))
             {
-                mItems = InboxItems.newBuilder(mItems).setItems(i, item).build();
+                mItems = Calendar.CalendarItems.newBuilder(mItems).setItems(i, item).build();
 
                 if(mItemsChanges.get(i).type != StatusOfChange.Type.Add)
                 {
@@ -116,9 +144,9 @@ public class InboxModel
         saveState();
     }
 
-    public void addItem(Inbox.InboxItemInfo item)
+    public void addItem(Calendar.CalendarItem item)
     {
-        mItems = InboxItems.newBuilder(mItems).addItems(item).build();
+        mItems = Calendar.CalendarItems.newBuilder(mItems).addItems(item).build();
 
         StatusOfChange ch = new StatusOfChange();
         ch.type = StatusOfChange.Type.Add;
@@ -131,8 +159,8 @@ public class InboxModel
         mLocalDb = localDb;
         try
         {
-            mItems = InboxItems.parseFrom(localDb.get("InboxItems"));
-            ByteArrayInputStream byteStream = new ByteArrayInputStream(localDb.get("InboxItemsStatus"));
+            mItems = Calendar.CalendarItems.parseFrom(localDb.get("CalendarItems"));
+            ByteArrayInputStream byteStream = new ByteArrayInputStream(localDb.get("CalendarItemsStatus"));
             int next = byteStream.read();
             while(next != -1)
             {
@@ -163,6 +191,11 @@ public class InboxModel
         }
         catch (NullPointerException ex)
         {
+            if(mItems == null)
+            {
+                mItems = Calendar.CalendarItems.newBuilder().build();
+            }
+
             //no data in db case
             if(mItems.getItemsCount() != mItemsChanges.size())
             {
@@ -180,30 +213,44 @@ public class InboxModel
         }
     }
 
-    public void saveState()
-    {
-        mLocalDb.put("InboxItems", mItems.toByteArray());
-
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-        for(StatusOfChange x : mItemsChanges)
+        public void saveState()
         {
-            bos.write(x.type.ordinal());
-        }
+            mLocalDb.put("CalendarItems", mItems.toByteArray());
 
-        mLocalDb.put("InboxItemsStatus", bos.toByteArray());
-    }
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+            for(StatusOfChange x : mItemsChanges)
+            {
+                bos.write(x.type.ordinal());
+            }
+
+            mLocalDb.put("CalendarItemsStatus", bos.toByteArray());
+        }
 
     public String getNewId()
     {
         return Integer.toString(++mLastVirtualId);
     }
 
+    private Calendar.CalendarItems queryAllItems() throws MateriaUnreachableException
+    {
+        final long threeYears = 94670778;
+
+        try
+        {
+            return mProxy.query(Calendar.TimeRange.newBuilder().
+                    setTimestampFrom(System.currentTimeMillis() / 1000 - threeYears).
+                    setTimestampTo(System.currentTimeMillis() / 1000 + threeYears).build());
+        } catch (InvalidProtocolBufferException e)
+        {
+            e.printStackTrace();
+            return Calendar.CalendarItems.newBuilder().build();
+        }
+    }
+
     private int mLastVirtualId = 0;
-    private InboxServiceProxy mProxy;
-    private InboxItems mItems;
+    private CalendarServiceProxy mProxy;
+    private Calendar.CalendarItems mItems;
     private LocalDatabase mLocalDb;
     private Vector<StatusOfChange> mItemsChanges;
-
-
 }

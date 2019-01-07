@@ -1,8 +1,6 @@
-package snakesoft.minion;
+package snakesoft.minion.Activities;
 
 import android.content.Intent;
-import android.icu.util.TimeZone;
-import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +12,8 @@ import java.util.List;
 import java.util.Vector;
 
 import calendar.Calendar;
+import snakesoft.minion.Models.GlobalModel;
+import snakesoft.minion.R;
 
 public class CalendarDayViewActivity extends AppCompatActivity implements AdapterView.OnItemClickListener
 {

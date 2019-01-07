@@ -1,4 +1,4 @@
-package snakesoft.minion;
+package snakesoft.minion.Activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -6,6 +6,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import snakesoft.minion.Models.GlobalModel;
+import snakesoft.minion.R;
 
 public class WpActivity extends AppCompatActivity implements View.OnClickListener {
 
