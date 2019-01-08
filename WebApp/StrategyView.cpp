@@ -409,7 +409,7 @@ public:
 private:
    void onBoundClicked(Wt::WMouseEvent event)
    {
-      if(event.button() == Wt::MouseButton::Left && mGoal)
+      if(event.button() == Wt::MouseButton::Right && mGoal)
       {
          if(event.modifiers().test(Wt::KeyboardModifier::Control))
          {
