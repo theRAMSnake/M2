@@ -5,18 +5,6 @@ import com.google.protobuf.InvalidProtocolBufferException
 import calendar.Calendar
 import common.Common
 
-/**
- * Created by snake on 11/24/17.
- */
-
-/*
-   rpc Query (TimeRange) returns (CalendarItems);
-   rpc Next (NextQueryParameters) returns (CalendarItems);
-   rpc DeleteItem (common.UniqueId) returns (common.OperationResultMessage);
-   rpc EditItem (CalendarItem) returns (common.OperationResultMessage);
-   rpc AddItem (CalendarItem) returns (common.UniqueId);
-*/
-
 class CalendarServiceProxy(private val mMateriaConnection: MateriaConnection) {
 
     @Throws(InvalidProtocolBufferException::class, MateriaUnreachableException::class)

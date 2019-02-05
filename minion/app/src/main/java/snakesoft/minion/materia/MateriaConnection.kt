@@ -3,7 +3,7 @@ package snakesoft.minion.materia
 import org.zeromq.ZMQ
 
 //Encapsulates ZMQ communication with materia server
-class MateriaConnection(ip: String)
+class MateriaConnection(Ip: String)
 {
     private var mSocket: ZMQ.Socket
     private var mContext: ZMQ.Context = ZMQ.context(1)
@@ -11,7 +11,7 @@ class MateriaConnection(ip: String)
     init
     {
         mSocket = mContext.socket(ZMQ.REQ)
-        mSocket.connect("tcp://$ip:5757")
+        mSocket.connect("tcp://$Ip:5757")
         mSocket.receiveTimeOut = 30000
     }
 

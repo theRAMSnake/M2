@@ -4,135 +4,117 @@ import com.google.protobuf.InvalidProtocolBufferException
 
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.util.ArrayList
-import java.util.Vector
 
 import calendar.Calendar
 import snakesoft.minion.materia.CalendarServiceProxy
+import snakesoft.minion.materia.MateriaConnection
 import snakesoft.minion.materia.MateriaUnreachableException
+import java.util.*
 
-/**
- * Created by snake on 11/24/17.
- */
+data class CalendarItem(
+        val id: java.util.UUID,
+        var text: String,
+        var timestamp: Long,
+        var trackingInfo: StatusOfChange = StatusOfChange.None
+    )
 
-class CalendarModel(private val mProxy: CalendarServiceProxy) {
+class CalendarModel(private val Db: LocalDatabase)
+{
+    private var Items: MutableMap<java.util.UUID, CalendarItem> = mutableMapOf()
 
-    val allItems: List<Calendar.CalendarItem>
-        get() = ArrayList(mItems!!.itemsList)
+    init
+    {
 
-    val newId: String
-        get() = Integer.toString(++mLastVirtualId)
-
-    private var mLastVirtualId = 0
-    private var mItems: Calendar.CalendarItems? = null
-    private var mLocalDb: LocalDatabase? = null
-    private val mItemsChanges: Vector<StatusOfChange>
-
-    init {
-        mItemsChanges = Vector()
     }
 
     @Throws(MateriaUnreachableException::class)
-    fun sync(observer: SyncObserver) {
-        try {
-            observer.beginSync("Calendar")
+    fun sync(observer: SyncObserver, connection: MateriaConnection)
+    {
+        observer.beginSync("Calendar")
 
-            for (i in mItemsChanges.indices) {
-                if (mItemsChanges[i].type == StatusOfChange.Type.Edit) {
-                    mProxy.editItem(mItems!!.getItems(i))
+        val proxy = CalendarServiceProxy(connection)
+
+        for (i in Items)
+        {
+            when(i.value.trackingInfo)
+            {
+                StatusOfChange.Edit ->
+                {
+                    proxy.editItem(toProto(i.value))
                     observer.itemChanged()
-                } else if (mItemsChanges[i].type == StatusOfChange.Type.Delete) {
-                    mProxy.deleteItem(mItems!!.getItems(i).id)
+                }
+                StatusOfChange.Delete ->
+                {
+                    proxy.deleteItem(toProto(i.key))
                     observer.itemDeleted()
-                } else if (mItemsChanges[i].type == StatusOfChange.Type.Add) {
-                    mProxy.addItem(mItems!!.getItems(i))
+                }
+                StatusOfChange.Add ->
+                {
+                    proxy.addItem(toProto(i.value))
                     observer.itemAdded()
                 }
             }
-
-            mItemsChanges.clear()
-
-            mItems = queryAllItems()
-            for (i in 0 until mItems!!.itemsCount) {
-                mItemsChanges.addElement(StatusOfChange())
-            }
-
-            observer.itemLoaded(mItems!!.itemsCount)
-        } catch (ex: InvalidProtocolBufferException) {
-
         }
+
+        Items = queryAllItems()
+
+        observer.itemLoaded(Items.size)
 
         saveState()
 
         observer.endSync()
     }
 
-    fun resetChanges() {
-        mItemsChanges.clear()
-    }
+    fun replaceItem(item: CalendarItem)
+    {
+        var newItem = item
 
-    /* Returns values in range [timestampFrom, timestampTo) */
-    fun getItems(timestampFrom: Long, timestampTo: Long): List<Calendar.CalendarItem> {
-        print(timestampFrom)
-        print(timestampTo)
-        val result = Vector<Calendar.CalendarItem>()
-
-        for (i in 0 until mItems!!.itemsCount) {
-            val curItem = mItems!!.getItems(i)
-            if (curItem.timestamp >= timestampFrom && curItem.timestamp < timestampTo) {
-                if (mItemsChanges[i].type != StatusOfChange.Type.Delete && mItemsChanges[i].type != StatusOfChange.Type.Junk) {
-                    result.add(curItem)
-                }
-            }
+        if(newItem.trackingInfo != StatusOfChange.Add)
+        {
+            newItem.trackingInfo = StatusOfChange.Edit
         }
 
-        return result
-    }
-
-    fun modifyItem(item: Calendar.CalendarItem) {
-        for (i in 0 until mItems!!.itemsCount) {
-            if (mItems!!.getItems(i).id.guid == item.id.guid) {
-                mItems = Calendar.CalendarItems.newBuilder(mItems).setItems(i, item).build()
-
-                if (mItemsChanges[i].type != StatusOfChange.Type.Add) {
-                    val ch = StatusOfChange()
-                    ch.type = StatusOfChange.Type.Edit
-                    mItemsChanges[i] = ch
-                }
-
-                break
-            }
-        }
+        Items[newItem.id] = newItem
 
         saveState()
     }
 
-    fun deleteItem(guid: String) {
-        for (i in 0 until mItems!!.itemsCount) {
-            if (mItems!!.getItems(i).id.guid == guid) {
-                val newStatus = StatusOfChange()
-
-                newStatus.type = if (mItemsChanges[i].type == StatusOfChange.Type.Add)
-                    StatusOfChange.Type.Junk
-                else
-                    StatusOfChange.Type.Delete
-
-                mItemsChanges[i] = newStatus
-                break
-            }
-        }
+    fun deleteItem(id: java.util.UUID)
+    {
+        Items[id]!!.trackingInfo = StatusOfChange.Delete
 
         saveState()
     }
 
-    fun addItem(item: Calendar.CalendarItem) {
-        mItems = Calendar.CalendarItems.newBuilder(mItems).addItems(item).build()
+    fun addItem(item: CalendarItem)
+    {
+        val newItem = CalendarItem(UUID.randomUUID(), item.text, item.timestamp, StatusOfChange.Add)
 
-        val ch = StatusOfChange()
-        ch.type = StatusOfChange.Type.Add
-        mItemsChanges.add(ch)
+        Items[newItem.id] = newItem
 
         saveState()
+    }
+
+    private fun saveState()
+    {
+        val bos = ByteArrayOutputStream()
+
+        //save here
+
+        Db.put("CalendarItems", bos.toByteArray())
+    }
+
+    @Throws(MateriaUnreachableException::class)
+    private fun queryAllItems(): Calendar.CalendarItems {
+        val threeYears: Long = 94670778
+
+        try {
+            return mProxy.query(Calendar.TimeRange.newBuilder().setTimestampFrom(System.currentTimeMillis() / 1000 - threeYears).setTimestampTo(System.currentTimeMillis() / 1000 + threeYears).build())
+        } catch (e: InvalidProtocolBufferException) {
+            e.printStackTrace()
+            return Calendar.CalendarItems.newBuilder().build()
+        }
+
     }
 
     @Throws(Exception::class)
@@ -179,30 +161,5 @@ class CalendarModel(private val mProxy: CalendarServiceProxy) {
         if (mItems!!.itemsCount != mItemsChanges.size) {
             throw Exception("Inconsistent DB!")
         }
-    }
-
-    fun saveState() {
-        mLocalDb!!.put("CalendarItems", mItems!!.toByteArray())
-
-        val bos = ByteArrayOutputStream()
-
-        for (x in mItemsChanges) {
-            bos.write(x.type.ordinal)
-        }
-
-        mLocalDb!!.put("CalendarItemsStatus", bos.toByteArray())
-    }
-
-    @Throws(MateriaUnreachableException::class)
-    private fun queryAllItems(): Calendar.CalendarItems {
-        val threeYears: Long = 94670778
-
-        try {
-            return mProxy.query(Calendar.TimeRange.newBuilder().setTimestampFrom(System.currentTimeMillis() / 1000 - threeYears).setTimestampTo(System.currentTimeMillis() / 1000 + threeYears).build())
-        } catch (e: InvalidProtocolBufferException) {
-            e.printStackTrace()
-            return Calendar.CalendarItems.newBuilder().build()
-        }
-
     }
 }
