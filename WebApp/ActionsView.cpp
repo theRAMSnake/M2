@@ -36,16 +36,19 @@ private:
       auto dlg = new TaskEditDialog(
          mTask.title,
          mTask.notes,
-         std::bind(&ActionItemView::onDialogOk, this, std::placeholders::_1, std::placeholders::_2));
+         mTask.parentGoalId,
+         mStrategy.getGoals(),
+         std::bind(&ActionItemView::onDialogOk, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
       dlg->show();
    }
 
-   void onDialogOk(const std::string& title, const std::string& desc)
+   void onDialogOk(const std::string& title, const std::string& desc, const materia::Id& goalId)
    {
       mLabel->setText(title);
 
       mTask.title = title;
       mTask.notes = desc;
+      mTask.parentGoalId = goalId;
 
       mStrategy.modifyTask(mTask);
    }

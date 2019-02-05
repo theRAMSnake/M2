@@ -1,27 +1,30 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
 apply plugin: 'com.google.protobuf'
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     protobuf fileTree("../../Common/messages/")
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.google.protobuf:protobuf-gradle-plugin:0.8.7'
-    compile 'com.google.protobuf:protobuf-java:3.4.0'
-    compile 'org.zeromq:jeromq:0.4.0'
-    compile 'com.github.bmelnychuk:atv:1.2.+'
-    compile 'com.github.johnkil.print:print:1.2.2'
-    compile 'com.applandeo:material-calendar-view:1.0.1'
-    testCompile 'junit:junit:4.12'
+    implementation 'com.android.support:appcompat-v7:25.3.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.google.protobuf:protobuf-gradle-plugin:0.8.8'
+    implementation 'com.google.protobuf:protobuf-java:3.6.0'
+    implementation 'org.zeromq:jeromq:0.4.0'
+    implementation 'com.github.bmelnychuk:atv:1.2.+'
+    implementation 'com.github.johnkil.print:print:1.2.2'
+    implementation 'com.applandeo:material-calendar-view:1.0.1'
+    testImplementation 'junit:junit:4.12'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
 protobuf {
     protoc {
         // The artifact spec for the Protobuf Compiler
-        artifact = 'com.google.protobuf:protoc:3.0.0'
+        artifact = 'com.google.protobuf:protoc:3.6.0'
     }
     plugins {
         lite {
@@ -73,7 +76,8 @@ android {
         }
     }
 }
-
-
+repositories {
+    mavenCentral()
+}
 
 

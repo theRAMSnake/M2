@@ -1,23 +1,20 @@
-package snakesoft.minion.Activities;
+package snakesoft.minion.Activities
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent
+import android.os.Bundle
+import android.support.constraint.ConstraintLayout
+import android.support.v7.app.AppCompatActivity
 
-import com.unnamed.b.atv.model.TreeNode;
-import com.unnamed.b.atv.view.AndroidTreeView;
+import com.unnamed.b.atv.model.TreeNode
+import com.unnamed.b.atv.view.AndroidTreeView
 
-import snakesoft.minion.R;
+import snakesoft.minion.R
 
-public class ActionsActivity extends AppCompatActivity implements TreeNode.TreeNodeLongClickListener
-{
+class ActionsActivity : AppCompatActivity(), TreeNode.TreeNodeLongClickListener {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_actions);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_actions)
 
         /*final String mode = getIntent().getStringExtra("Mode");
 
@@ -34,8 +31,7 @@ public class ActionsActivity extends AppCompatActivity implements TreeNode.TreeN
         ((ConstraintLayout) findViewById(R.id.actionsLayout)).addView(tView.getView());*/
     }
 
-    public boolean onLongClick(TreeNode node, Object value)
-    {
+    override fun onLongClick(node: TreeNode, value: Any): Boolean {
         /*if(value != null)
         {
             Actions.ActionInfo item = (Actions.ActionInfo)value;
@@ -70,17 +66,14 @@ public class ActionsActivity extends AppCompatActivity implements TreeNode.TreeN
             ActionsActivity.this.startActivityForResult(myIntent, 1);
             return true;
         }*/
-        return true;
+        return true
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        super.onActivityResult(requestCode, resultCode, data);
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == 1)
-        {
-            recreate();
+        if (requestCode == 1) {
+            recreate()
         }
     }
 }

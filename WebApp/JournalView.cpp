@@ -27,9 +27,22 @@ public:
 
    void populate() override
    {
-      for(auto x : mModel.getChildren(mItem.id))
+      auto ch = mModel.getChildren(mItem.id);
+
+      for(auto x : ch)
       {
-         addChildNode(std::make_unique<JournalTreeNode>(x, mModel));
+         if(!x.isPage)
+         {
+            addChildNode(std::make_unique<JournalTreeNode>(x, mModel));
+         }
+      }
+
+      for(auto x : ch)
+      {
+         if(x.isPage)
+         {
+            addChildNode(std::make_unique<JournalTreeNode>(x, mModel));
+         }
       }
    }
 

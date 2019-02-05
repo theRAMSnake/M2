@@ -1,9 +1,9 @@
-package snakesoft.minion.Materia;
+package snakesoft.minion.materia
 
-import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.InvalidProtocolBufferException
 
-import calendar.Calendar;
-import common.Common;
+import calendar.Calendar
+import common.Common
 
 /**
  * Created by snake on 11/24/17.
@@ -17,50 +17,50 @@ import common.Common;
    rpc AddItem (CalendarItem) returns (common.UniqueId);
 */
 
-public class CalendarServiceProxy
-{
-    public CalendarServiceProxy(MateriaConnection materiaConnection)
-    {
-        mMateriaConnection = materiaConnection;
-    }
+class CalendarServiceProxy(private val mMateriaConnection: MateriaConnection) {
 
-    public Calendar.CalendarItems query(Calendar.TimeRange input) throws InvalidProtocolBufferException, MateriaUnreachableException {
+    @Throws(InvalidProtocolBufferException::class, MateriaUnreachableException::class)
+    fun query(input: Calendar.TimeRange): Calendar.CalendarItems {
         return Calendar.CalendarItems.parseFrom(mMateriaConnection.sendMessage(
                 input.toByteString(),
                 "CalendarService",
                 "Query"
-        ));}
+        ))
+    }
 
-    public Calendar.CalendarItems next(Calendar.NextQueryParameters input) throws InvalidProtocolBufferException, MateriaUnreachableException {
+    @Throws(InvalidProtocolBufferException::class, MateriaUnreachableException::class)
+    fun next(input: Calendar.NextQueryParameters): Calendar.CalendarItems {
         return Calendar.CalendarItems.parseFrom(mMateriaConnection.sendMessage(
                 input.toByteString(),
                 "CalendarService",
                 "Next"
-        ));}
+        ))
+    }
 
-    public void deleteItem(Common.UniqueId id) throws InvalidProtocolBufferException, MateriaUnreachableException {
+    @Throws(InvalidProtocolBufferException::class, MateriaUnreachableException::class)
+    fun deleteItem(id: Common.UniqueId) {
         mMateriaConnection.sendMessage(
                 id.toByteString(),
                 "CalendarService",
                 "DeleteItem"
-        );
+        )
     }
 
-    public Common.UniqueId addItem(Calendar.CalendarItem item) throws InvalidProtocolBufferException, MateriaUnreachableException {
+    @Throws(InvalidProtocolBufferException::class, MateriaUnreachableException::class)
+    fun addItem(item: Calendar.CalendarItem): Common.UniqueId {
         return Common.UniqueId.parseFrom(mMateriaConnection.sendMessage(
                 item.toByteString(),
                 "CalendarService",
                 "AddItem"
-        ));
+        ))
     }
 
-    public boolean editItem(Calendar.CalendarItem item) throws InvalidProtocolBufferException, MateriaUnreachableException {
+    @Throws(InvalidProtocolBufferException::class, MateriaUnreachableException::class)
+    fun editItem(item: Calendar.CalendarItem): Boolean {
         return Common.OperationResultMessage.parseFrom(mMateriaConnection.sendMessage(
                 item.toByteString(),
                 "CalendarService",
                 "EditItem"
-        )).getSuccess();
+        )).success
     }
-
-    private MateriaConnection mMateriaConnection;
 }

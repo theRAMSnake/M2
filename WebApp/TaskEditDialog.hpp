@@ -2,16 +2,26 @@
 #include <Wt/WLineEdit.h>
 #include <Wt/WTextEdit.h>
 #include <Wt/WPushButton.h>
+#include "GoalsComboBox.hpp"
 
 class TaskEditDialog : public Wt::WDialog
 {
 public:
-   typedef std::function<void(const std::string&, const std::string&)> TOnOkCallback;
-   TaskEditDialog(const std::string& title, const std::string& desc, TOnOkCallback cb)
+   typedef std::function<void(const std::string&, const std::string&, const materia::Id&)> TOnOkCallback;
+   TaskEditDialog(
+      const std::string& title, 
+      const std::string& desc, 
+      const materia::Id& parentGoalId, 
+      const std::vector<StrategyModel::Goal>& goals,
+      TOnOkCallback cb
+      )
    {
       setWidth(Wt::WLength("75%"));
       mTitle = new Wt::WLineEdit(title);
       contents()->addWidget(std::unique_ptr<Wt::WLineEdit>(mTitle));
+
+      auto cmb = contents()->addWidget(std::make_unique<GoalComboBox>(goals));
+      cmb->select(parentGoalId);
 
       mDesc = new Wt::WTextEdit();
       mDesc->setHeight(500);
@@ -43,7 +53,7 @@ public:
       finished().connect(std::bind([=]() {
         if (result() == Wt::DialogCode::Accepted)
         {
-            cb(mTitle->text().narrow(), mDesc->text().narrow());
+           cb(mTitle->text().narrow(), mDesc->text().narrow(), cmb->getSelectedGoalId());
         }
 
         delete this;
