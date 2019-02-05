@@ -16,7 +16,7 @@ class DoubleLogger
 {
 public:
     DoubleLogger(const std::string& fileName)
-    : mFile(fileName.c_str())
+    : mFile(fileName.c_str(), std::ofstream::out | std::ofstream::trunc)
     {
     }
 
@@ -99,10 +99,13 @@ int main()
     {
         zmq::message_t requestEndpoint;
         clientSocket.recv (&requestEndpoint);
+        logger << "Received endpoint\n";
         zmq::message_t delimeterMessage;
         clientSocket.recv (&delimeterMessage);
+        logger << "Received delimeter\n";
         zmq::message_t clientMessage;
         clientSocket.recv (&clientMessage);
+        logger << "Received message\n";
 
         common::MateriaMessage materiaMsg;
         materiaMsg.ParseFromArray(clientMessage.data(), clientMessage.size());
@@ -116,6 +119,7 @@ int main()
         resp.SerializeToArray(msgToSend.data (), msgToSend.size());
 
         clientSocket.send (msgToSend);
+        logger << "Sending responce\n";
     }
     return 0;
 }
