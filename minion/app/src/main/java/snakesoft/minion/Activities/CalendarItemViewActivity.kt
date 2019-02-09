@@ -12,6 +12,7 @@ import android.widget.Toast
 
 import calendar.Calendar
 import common.Common
+import snakesoft.minion.Models.CalendarItem
 import snakesoft.minion.Models.GlobalModel
 import snakesoft.minion.R
 
@@ -75,7 +76,7 @@ class CalendarItemViewActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onClick(v: View) {
-        val guid = intent.getStringExtra("Id")
+        val guid = java.util.UUID.fromString(intent.getStringExtra("Id"))
         if (v === mAcceptBtn) {
             val txtView = findViewById(R.id.cal_txtText) as TextView
             val txtViewTime = findViewById(R.id.cal_txtTextTime) as TextView
@@ -95,16 +96,12 @@ class CalendarItemViewActivity : AppCompatActivity(), View.OnClickListener {
                 return
             }
 
-            val result = Calendar.CalendarItem.newBuilder()
-                    .setText(txtView.text.toString())
-                    .setTimestamp(timestamp)
-                    .setId(Common.UniqueId.newBuilder().setGuid(guid).build())
-                    .build()
+            val result = CalendarItem(guid, txtView.text.toString(), timestamp);
 
             if (intent.getBooleanExtra("IsNewItem", false)) {
                 GlobalModel.calendarModel!!.addItem(result)
             } else {
-                GlobalModel.calendarModel!!.modifyItem(result)
+                GlobalModel.calendarModel!!.replaceItem(result)
             }
             finish()
         }

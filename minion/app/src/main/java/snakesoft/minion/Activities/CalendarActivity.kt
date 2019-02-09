@@ -24,9 +24,9 @@ class CalendarActivity : AppCompatActivity() {
         val mEventDays = ArrayList<EventDay>()
         val mCalendarView = findViewById(R.id.cal_cal_view) as CalendarView
 
-        for (item in GlobalModel.calendarModel!!.allItems) {
+        for (item in GlobalModel.calendarModel!!.AllItems) {
             val cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"))
-            cal.timeInMillis = item.getTimestamp() * 1000
+            cal.timeInMillis = item.timestamp * 1000
 
             //Here we must recreate calendar item with local timezone, preserving the date only
             //Because of a bug CalendarView which allow to work with local time zones only

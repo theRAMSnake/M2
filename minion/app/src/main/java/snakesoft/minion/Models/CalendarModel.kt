@@ -1,16 +1,16 @@
 package snakesoft.minion.Models
 
-import com.google.protobuf.InvalidProtocolBufferException
-
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-
 import calendar.Calendar
 import snakesoft.minion.materia.CalendarServiceProxy
 import snakesoft.minion.materia.MateriaConnection
 import snakesoft.minion.materia.MateriaUnreachableException
 import java.util.*
 
+import kotlinx.serialization.*
+import kotlinx.serialization.json.Json
+import snakesoft.minion.materia.toProto
+
+@Serializable
 data class CalendarItem(
         val id: java.util.UUID,
         var text: String,
@@ -21,10 +21,12 @@ data class CalendarItem(
 class CalendarModel(private val Db: LocalDatabase)
 {
     private var Items: MutableMap<java.util.UUID, CalendarItem> = mutableMapOf()
+    val AllItems: List<CalendarItem>
+        get() = Items.values.toList()
 
     init
     {
-
+        loadState()
     }
 
     @Throws(MateriaUnreachableException::class)
@@ -56,7 +58,9 @@ class CalendarModel(private val Db: LocalDatabase)
             }
         }
 
-        Items = queryAllItems()
+        val queried = queryAllItems(proxy)
+
+        Items = queried.associate{ it.id to it }.toMutableMap()
 
         observer.itemLoaded(Items.size)
 
@@ -97,69 +101,32 @@ class CalendarModel(private val Db: LocalDatabase)
 
     private fun saveState()
     {
-        val bos = ByteArrayOutputStream()
+        val json = Json.stringify(CalendarItem.serializer().list, Items.values.toList())
 
-        //save here
-
-        Db.put("CalendarItems", bos.toByteArray())
+        Db.put("CalendarItems", json)
     }
 
     @Throws(MateriaUnreachableException::class)
-    private fun queryAllItems(): Calendar.CalendarItems {
+    private fun queryAllItems(proxy: CalendarServiceProxy): List<CalendarItem>
+    {
         val threeYears: Long = 94670778
 
-        try {
-            return mProxy.query(Calendar.TimeRange.newBuilder().setTimestampFrom(System.currentTimeMillis() / 1000 - threeYears).setTimestampTo(System.currentTimeMillis() / 1000 + threeYears).build())
-        } catch (e: InvalidProtocolBufferException) {
-            e.printStackTrace()
-            return Calendar.CalendarItems.newBuilder().build()
+        val result = mutableListOf<CalendarItem>()
+
+        val queryResult = proxy.query(Calendar.TimeRange.newBuilder().setTimestampFrom(System.currentTimeMillis() / 1000 - threeYears).
+                setTimestampTo(System.currentTimeMillis() / 1000 + threeYears).build())
+
+        for(x in queryResult.itemsList)
+        {
+            result.add(CalendarItem(java.util.UUID.fromString(x.id.guid), x.text, x.timestamp))
         }
 
+        return result
     }
 
     @Throws(Exception::class)
-    fun loadState(localDb: LocalDatabase) {
-        mLocalDb = localDb
-        try {
-            mItems = Calendar.CalendarItems.parseFrom(localDb.get("CalendarItems"))
-            val byteStream = ByteArrayInputStream(localDb.get("CalendarItemsStatus"))
-            var next = byteStream.read()
-            while (next != -1) {
-                val ch = StatusOfChange()
-                ch.type = StatusOfChange.Type.values()[next]
-                mItemsChanges.add(ch)
-
-                next = byteStream.read()
-            }
-
-            assert(mItemsChanges.size == mItems!!.itemsCount)
-
-            for (i in 0 until mItems!!.itemsCount) {
-                if (mItems!!.getItems(i).id.guid.length < 10) {
-                    val curVirtualId = Integer.parseInt(mItems!!.getItems(i).id.guid)
-                    if (curVirtualId > mLastVirtualId) {
-                        mLastVirtualId = curVirtualId
-                    }
-                }
-            }
-        } catch (ex: InvalidProtocolBufferException) {
-
-        } catch (ex: NullPointerException) {
-            if (mItems == null) {
-                mItems = Calendar.CalendarItems.newBuilder().build()
-            }
-
-            //no data in db case
-            if (mItems!!.itemsCount != mItemsChanges.size) {
-                for (i in 0 until mItems!!.itemsCount) {
-                    mItemsChanges.addElement(StatusOfChange())
-                }
-            }
-        }
-
-        //db check
-        if (mItems!!.itemsCount != mItemsChanges.size) {
-            throw Exception("Inconsistent DB!")
-        }
+    private fun loadState()
+    {
+        Items = Json.parse(CalendarItem.serializer().list, Db.get("CalendarItems")).associate { it.id to it }.toMutableMap()
     }
 }

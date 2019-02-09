@@ -10,11 +10,12 @@ import android.widget.ListView
 import java.util.Vector
 
 import calendar.Calendar
+import snakesoft.minion.Models.CalendarItem
 import snakesoft.minion.Models.GlobalModel
 import snakesoft.minion.R
 
 class CalendarDayViewActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
-    private var mItems: List<Calendar.CalendarItem>? = null
+    private var mItems: List<CalendarItem>? = null
     private var mTimeStamp: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,7 +30,7 @@ class CalendarDayViewActivity : AppCompatActivity(), AdapterView.OnItemClickList
 
         itemsAsString.add("New...")
 
-        mItems = GlobalModel.calendarModel!!.getItems(mTimeStamp, to)
+        mItems = GlobalModel.calendarModel!!.AllItems.filter { it.timestamp >= mTimeStamp && it.timestamp <= to }
         for (item in mItems!!) {
             val calendar = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"))
             calendar.timeInMillis = item.timestamp * 1000
@@ -75,13 +76,13 @@ class CalendarDayViewActivity : AppCompatActivity(), AdapterView.OnItemClickList
             myIntent.putExtra("Text", mItems!![position - 1].text)
             myIntent.putExtra("Timestamp", mItems!![position - 1].timestamp)
             myIntent.putExtra("IsNewItem", false)
-            myIntent.putExtra("Id", mItems!![position - 1].id.guid)
+            myIntent.putExtra("Id", mItems!![position - 1].id)
             startActivityForResult(myIntent, 1)
         } else {
             val myIntent = Intent(this@CalendarDayViewActivity, CalendarItemViewActivity::class.java)
             myIntent.putExtra("IsNewItem", true)
             myIntent.putExtra("Timestamp", mTimeStamp)
-            myIntent.putExtra("Id", GlobalModel.calendarModel!!.newId)
+            myIntent.putExtra("Id", java.util.UUID.randomUUID())
             startActivityForResult(myIntent, 1)
         }
     }

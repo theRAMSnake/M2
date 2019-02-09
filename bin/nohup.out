@@ -28670,3 +28670,538 @@ Handled: StrategyService::AddResource127.0.0.1 - - [2018-Dec-31 19:48:37.189] "P
 [2018-Dec-31 19:49:07.892] 5322 - [info] "WebController: shutdown: stopping 1 sessions."
 [2018-Dec-31 19:49:07.892] 5322 [/ avTN4ulnagEbxi2m] [info] "Wt: session destroyed (#sessions = 0)"
 [2018-Dec-31 19:49:07.892] 5322 - [info] "WServer/wthttp: Shutdown: stopping web server."
+[2019-Jan-01 00:41:24.319] 13569 - [info] "config: reading Wt config file: /etc/wt/wt_config.xml (location = './WebApp')"
+[2019-Jan-01 00:41:24.321] 13569 - [info] "WServer/wthttp: initializing built-in wthttpd"
+[2019-Jan-01 00:41:24.323] 13569 - [info] "wthttp: started server: http://0.0.0.0:80"
+[2019-Jan-01 00:41:32.366] 13569 - [info] "Wt: session created (#sessions = 1)"
+[2019-Jan-01 00:41:32.366] 13569 [/ 12tMTqmzCrQ10v8b] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2019-Jan-01 00:41:32.367] "GET / HTTP/1.1" 200 2268
+[2019-Jan-01 00:41:32.367] 13569 - [info] "WebRequest: took 1.117 ms"
+127.0.0.1 - - [2019-Jan-01 00:41:32.622] "GET /?wtd=12tMTqmzCrQ10v8b&request=style&page=1 HTTP/1.1" 200 104
+[2019-Jan-01 00:41:32.622] 13569 - [info] "WebRequest: took 150.061 ms"
+127.0.0.1 - - [2019-Jan-01 00:41:32.631] "GET /?wtd=12tMTqmzCrQ10v8b&sid=1681070502&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=2666815497 HTTP/1.1" 200 38367
+[2019-Jan-01 00:41:32.631] 13569 - [info] "WebRequest: took 9.217 ms"
+127.0.0.1 - - [2019-Jan-01 00:41:32.733] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 304 0
+127.0.0.1 - - [2019-Jan-01 00:41:32.735] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 304 0
+127.0.0.1 - - [2019-Jan-01 00:41:32.736] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2019-Jan-01 00:41:32.739] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2019-Jan-01 00:41:32.739] "GET /custom.css HTTP/1.1" 304 0
+127.0.0.1 - - [2019-Jan-01 00:41:32.813] "GET /resources/ajax-loading.gif HTTP/1.1" 304 0
+127.0.0.1 - - [2019-Jan-01 00:41:32.873] "POST /?wtd=12tMTqmzCrQ10v8b HTTP/1.1" 200 50
+[2019-Jan-01 00:41:32.873] 13569 - [info] "WebRequest: took 0.416 ms"
+===f04d3c06-cdc5-48a6-87c1-3b322f476ca3======fe29533f-b290-4561-9ba9-df1140056bf7======1eaf86f5-0cae-4763-8891-67c6ed5e4e81======96775097-9d37-4291-a3e0-6016e99338ae======057bfd2e-d402-4517-a4f2-6e3e52f524b9======d7e53622-486d-409d-9b06-a2ad55a93d9f======fe00e9f9-2de6-43a5-83a5-2735c9cfa6b7======1d9ca93a-64bb-4732-9365-0b16f0a78932======b41e07e9-6e12-429f-8e2f-8d5c861900bd======82e27bf4-552e-4860-89e0-10144d32915b===127.0.0.1 - - [2019-Jan-01 00:41:34.076] "POST /?wtd=12tMTqmzCrQ10v8b HTTP/1.1" 200 5029
+[2019-Jan-01 00:41:34.076] 13569 - [info] "WebRequest: took 20.635 ms"
+127.0.0.1 - - [2019-Jan-01 00:41:34.082] "GET /resources/tinymce/tinymce.min.js HTTP/1.1" 304 0
+127.0.0.1 - - [2019-Jan-01 00:41:34.212] "POST /?wtd=12tMTqmzCrQ10v8b HTTP/1.1" 200 1209
+[2019-Jan-01 00:41:34.212] 13569 - [info] "WebRequest: took 0.57 ms"
+[2019-Jan-01 00:41:42.781] 13569 - [info] "WServer/wthttp: shutdown (signal = 15)"
+[2019-Jan-01 00:41:42.781] 13569 - [info] "WebController: shutdown: stopping 1 sessions."
+[2019-Jan-01 00:41:42.783] 13569 [/ 12tMTqmzCrQ10v8b] [info] "Wt: session destroyed (#sessions = 0)"
+[2019-Jan-01 00:41:42.783] 13569 - [info] "WServer/wthttp: Shutdown: stopping web server."
+./WebApp: error while loading shared libraries: libwt.so.49: cannot open shared object file: No such file or directory
+./WebApp: error while loading shared libraries: libwt.so.49: cannot open shared object file: No such file or directory
+[2019-Jan-04 00:03:02.663] 30867 - [info] "config: reading Wt config file: /etc/wt/wt_config.xml (location = './WebApp')"
+[2019-Jan-04 00:03:02.669] 30867 - [info] "WServer/wthttp: initializing built-in wthttpd"
+[2019-Jan-04 00:03:02.679] 30867 - [info] "wthttp: started server: http://0.0.0.0:80"
+[2019-Jan-04 00:03:05.894] 30867 - [info] "Wt: session created (#sessions = 1)"
+[2019-Jan-04 00:03:05.894] 30867 [/ uXWfz0pzMGohwWN2] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2019-Jan-04 00:03:05.956] "GET / HTTP/1.1" 200 2283
+[2019-Jan-04 00:03:05.956] 30867 - [info] "WebRequest: took 61.768 ms"
+127.0.0.1 - - [2019-Jan-04 00:03:06.579] "GET /?wtd=uXWfz0pzMGohwWN2&request=style&page=1 HTTP/1.1" 200 104
+[2019-Jan-04 00:03:06.579] 30867 - [info] "WebRequest: took 276.158 ms"
+127.0.0.1 - - [2019-Jan-04 00:03:06.587] "GET /?wtd=uXWfz0pzMGohwWN2&sid=1300779458&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=950052930 HTTP/1.1" 200 38368
+[2019-Jan-04 00:03:06.587] 30867 - [info] "WebRequest: took 27.414 ms"
+127.0.0.1 - - [2019-Jan-04 00:03:06.694] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 200 122998
+127.0.0.1 - - [2019-Jan-04 00:03:06.711] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2019-Jan-04 00:03:06.712] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2019-Jan-04 00:03:06.728] "GET /custom.css HTTP/1.1" 200 1505
+127.0.0.1 - - [2019-Jan-04 00:03:06.737] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 200 20034
+127.0.0.1 - - [2019-Jan-04 00:03:06.802] "GET /favicon.ico HTTP/1.1" 200 1424
+127.0.0.1 - - [2019-Jan-04 00:03:06.855] "GET /resources/ajax-loading.gif HTTP/1.1" 200 1786
+127.0.0.1 - - [2019-Jan-04 00:03:06.931] "POST /?wtd=uXWfz0pzMGohwWN2 HTTP/1.1" 200 50
+[2019-Jan-04 00:03:06.931] 30867 - [info] "WebRequest: took 0.292 ms"
+===f04d3c06-cdc5-48a6-87c1-3b322f476ca3======fe29533f-b290-4561-9ba9-df1140056bf7======1eaf86f5-0cae-4763-8891-67c6ed5e4e81======96775097-9d37-4291-a3e0-6016e99338ae======057bfd2e-d402-4517-a4f2-6e3e52f524b9======d7e53622-486d-409d-9b06-a2ad55a93d9f======fe00e9f9-2de6-43a5-83a5-2735c9cfa6b7======1d9ca93a-64bb-4732-9365-0b16f0a78932======b41e07e9-6e12-429f-8e2f-8d5c861900bd======82e27bf4-552e-4860-89e0-10144d32915b===127.0.0.1 - - [2019-Jan-04 00:03:08.227] "POST /?wtd=uXWfz0pzMGohwWN2 HTTP/1.1" 200 5133
+[2019-Jan-04 00:03:08.227] 30867 - [info] "WebRequest: took 31.13 ms"
+127.0.0.1 - - [2019-Jan-04 00:03:08.247] "GET /resources/tinymce/tinymce.min.js HTTP/1.1" 304 0
+127.0.0.1 - - [2019-Jan-04 00:03:08.441] "POST /?wtd=uXWfz0pzMGohwWN2 HTTP/1.1" 200 1213
+[2019-Jan-04 00:03:08.441] 30867 - [info] "WebRequest: took 0.613 ms"
+127.0.0.1 - - [2019-Jan-04 00:03:12.668] "POST /?wtd=uXWfz0pzMGohwWN2 HTTP/1.1" 200 5989
+[2019-Jan-04 00:03:12.668] 30867 - [info] "WebRequest: took 3.022 ms"
+[2019-Jan-04 00:03:14.017] 30867 [/ uXWfz0pzMGohwWN2] [warning] "WApplication: Deploy-path ends with '/', using /?_= for internal paths"
+[2019-Jan-04 00:03:14.022] 30867 [/ uXWfz0pzMGohwWN2] [error] "XSS: Error reading XHTML string: could not parse xhtml entity"
+127.0.0.1 - - [2019-Jan-04 00:03:14.026] "POST /?wtd=uXWfz0pzMGohwWN2 HTTP/1.1" 200 5713
+[2019-Jan-04 00:03:14.026] 30867 - [info] "WebRequest: took 9.813 ms"
+127.0.0.1 - - [2019-Jan-04 00:03:31.699] "POST /?wtd=uXWfz0pzMGohwWN2 HTTP/1.1" 200 1991
+[2019-Jan-04 00:03:31.699] 30867 - [info] "WebRequest: took 5.394 ms"
+[2019-Jan-04 00:04:41.928] 30867 [/ uXWfz0pzMGohwWN2] [error] "XSS: Error reading XHTML string: could not parse xhtml entity"
+127.0.0.1 - - [2019-Jan-04 00:04:41.931] "POST /?wtd=uXWfz0pzMGohwWN2 HTTP/1.1" 200 3623
+[2019-Jan-04 00:04:41.931] 30867 - [info] "WebRequest: took 6.693 ms"
+127.0.0.1 - - [2019-Jan-04 00:04:50.124] "POST /?wtd=uXWfz0pzMGohwWN2 HTTP/1.1" 200 2006
+[2019-Jan-04 00:04:50.124] 30867 - [info] "WebRequest: took 5.244 ms"
+[2019-Jan-04 00:05:22.345] 30867 - [info] "Wt: session created (#sessions = 2)"
+[2019-Jan-04 00:05:22.345] 30867 [/ IIQuVhqYMh9YAxuK] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2019-Jan-04 00:05:22.346] "GET / HTTP/1.1" 200 2284
+[2019-Jan-04 00:05:22.346] 30867 - [info] "WebRequest: took 1.732 ms"
+127.0.0.1 - - [2019-Jan-04 00:05:22.393] "GET /?wtd=IIQuVhqYMh9YAxuK&request=style&page=1 HTTP/1.1" 200 104
+[2019-Jan-04 00:05:22.393] 30867 - [info] "WebRequest: took 26.63 ms"
+127.0.0.1 - - [2019-Jan-04 00:05:22.404] "GET /?wtd=IIQuVhqYMh9YAxuK&sid=-45233864&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=1874758117 HTTP/1.1" 200 38370
+[2019-Jan-04 00:05:22.404] 30867 - [info] "WebRequest: took 11.387 ms"
+127.0.0.1 - - [2019-Jan-04 00:05:22.407] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 200 122998
+127.0.0.1 - - [2019-Jan-04 00:05:22.409] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 200 20034
+127.0.0.1 - - [2019-Jan-04 00:05:22.411] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2019-Jan-04 00:05:22.412] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2019-Jan-04 00:05:22.413] "GET /custom.css HTTP/1.1" 200 1504
+127.0.0.1 - - [2019-Jan-04 00:05:22.459] "GET /resources/ajax-loading.gif HTTP/1.1" 304 0
+127.0.0.1 - - [2019-Jan-04 00:05:22.513] "POST /?wtd=IIQuVhqYMh9YAxuK HTTP/1.1" 200 49
+[2019-Jan-04 00:05:22.513] 30867 - [info] "WebRequest: took 0.277 ms"
+127.0.0.1 - - [2019-Jan-04 00:05:23.315] "POST /?wtd=IIQuVhqYMh9YAxuK HTTP/1.1" 200 49
+[2019-Jan-04 00:05:23.315] 30867 - [info] "WebRequest: took 0.315 ms"
+===f04d3c06-cdc5-48a6-87c1-3b322f476ca3======fe29533f-b290-4561-9ba9-df1140056bf7======1eaf86f5-0cae-4763-8891-67c6ed5e4e81======96775097-9d37-4291-a3e0-6016e99338ae======057bfd2e-d402-4517-a4f2-6e3e52f524b9======d7e53622-486d-409d-9b06-a2ad55a93d9f======fe00e9f9-2de6-43a5-83a5-2735c9cfa6b7======1d9ca93a-64bb-4732-9365-0b16f0a78932======b41e07e9-6e12-429f-8e2f-8d5c861900bd======82e27bf4-552e-4860-89e0-10144d32915b===127.0.0.1 - - [2019-Jan-04 00:05:26.589] "POST /?wtd=IIQuVhqYMh9YAxuK HTTP/1.1" 200 5170
+[2019-Jan-04 00:05:26.589] 30867 - [info] "WebRequest: took 19.112 ms"
+127.0.0.1 - - [2019-Jan-04 00:05:26.702] "POST /?wtd=IIQuVhqYMh9YAxuK HTTP/1.1" 200 1215
+[2019-Jan-04 00:05:26.702] 30867 - [info] "WebRequest: took 0.475 ms"
+127.0.0.1 - - [2019-Jan-04 00:05:28.499] "POST /?wtd=IIQuVhqYMh9YAxuK HTTP/1.1" 200 5982
+[2019-Jan-04 00:05:28.499] 30867 - [info] "WebRequest: took 2.328 ms"
+[2019-Jan-04 00:05:29.695] 30867 [/ IIQuVhqYMh9YAxuK] [warning] "WApplication: Deploy-path ends with '/', using /?_= for internal paths"
+[2019-Jan-04 00:05:29.698] 30867 [/ IIQuVhqYMh9YAxuK] [error] "XSS: Error reading XHTML string: could not parse xhtml entity"
+127.0.0.1 - - [2019-Jan-04 00:05:29.701] "POST /?wtd=IIQuVhqYMh9YAxuK HTTP/1.1" 200 5716
+[2019-Jan-04 00:05:29.701] 30867 - [info] "WebRequest: took 7.082 ms"
+127.0.0.1 - - [2019-Jan-04 00:05:56.192] "POST /?wtd=IIQuVhqYMh9YAxuK HTTP/1.1" 200 1965
+[2019-Jan-04 00:05:56.193] 30867 - [info] "WebRequest: took 6.123 ms"
+[2019-Jan-04 00:06:06.280] 30867 - [info] "Wt: session created (#sessions = 3)"
+[2019-Jan-04 00:06:06.280] 30867 [/ NDJ49yL1ASc98jNW] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2019-Jan-04 00:06:06.282] "GET / HTTP/1.1" 200 2283
+[2019-Jan-04 00:06:06.282] 30867 - [info] "WebRequest: took 1.587 ms"
+[2019-Jan-04 00:06:06.288] 30867 - [info] "WebController: Removing session IIQuVhqYMh9YAxuK"
+127.0.0.1 - - [2019-Jan-04 00:06:06.289] "POST /?wtd=IIQuVhqYMh9YAxuK HTTP/1.1" 200 129
+[2019-Jan-04 00:06:06.289] 30867 - [info] "WebRequest: took 0.493 ms"
+[2019-Jan-04 00:06:06.290] 30867 [/ IIQuVhqYMh9YAxuK] [info] "Wt: session destroyed (#sessions = 2)"
+127.0.0.1 - - [2019-Jan-04 00:06:06.318] "GET /?wtd=NDJ49yL1ASc98jNW&request=style&page=1 HTTP/1.1" 200 104
+[2019-Jan-04 00:06:06.318] 30867 - [info] "WebRequest: took 2.916 ms"
+127.0.0.1 - - [2019-Jan-04 00:06:06.326] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 304 0
+127.0.0.1 - - [2019-Jan-04 00:06:06.327] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 304 0
+127.0.0.1 - - [2019-Jan-04 00:06:06.327] "GET /?wtd=NDJ49yL1ASc98jNW&sid=226886909&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=40730193 HTTP/1.1" 200 38378
+[2019-Jan-04 00:06:06.327] 30867 - [info] "WebRequest: took 10.12 ms"
+127.0.0.1 - - [2019-Jan-04 00:06:06.330] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2019-Jan-04 00:06:06.332] "GET /custom.css HTTP/1.1" 200 1504
+127.0.0.1 - - [2019-Jan-04 00:06:06.334] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2019-Jan-04 00:06:06.402] "GET /resources/ajax-loading.gif HTTP/1.1" 304 0
+127.0.0.1 - - [2019-Jan-04 00:06:06.456] "POST /?wtd=NDJ49yL1ASc98jNW HTTP/1.1" 200 49
+[2019-Jan-04 00:06:06.456] 30867 - [info] "WebRequest: took 0.289 ms"
+Creating core
+Start listening
+Handled: AdminService::wrongopname (8ms)
+Handled: StrategyService::GetGoals (0ms)
+Handled: CalendarService::Query (0ms)
+Handled: CalendarService::Next (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: InboxService::GetInbox (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetResources (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: AdminService::wrongopname (0ms)
+Handled: StrategyService::GetGoals (0ms)
+Handled: CalendarService::Query (0ms)
+Handled: CalendarService::Next (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: InboxService::GetInbox (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetResources (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: AdminService::wrongopname (0ms)
+Handled: StrategyService::GetGoals (0ms)
+Handled: CalendarService::Query (0ms)
+Handled: CalendarService::Next (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: InboxService::GetInbox (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+H===f04d3c06-cdc5-48a6-87c1-3b322f476ca3======fe29533f-b290-4561-9ba9-df1140056bf7======1eaf86f5-0cae-4763-8891-67c6ed5e4e81======96775097-9d37-4291-a3e0-6016e99338ae======057bfd2e-d402-4517-a4f2-6e3e52f524b9======d7e53622-486d-409d-9b06-a2ad55a93d9f======fe00e9f9-2de6-43a5-83a5-2735c9cfa6b7======1d9ca93a-64bb-4732-9365-0b16f0a78932======b41e07e9-6e12-429f-8e2f-8d5c861900bd======82e27bf4-552e-4860-89e0-10144d32915b===127.0.0.1 - - [2019-Jan-04 00:06:07.097] "POST /?wtd=NDJ49yL1ASc98jNW HTTP/1.1" 200 5178
+[2019-Jan-04 00:06:07.097] 30867 - [info] "WebRequest: took 19.322 ms"
+127.0.0.1 - - [2019-Jan-04 00:06:07.205] "POST /?wtd=NDJ49yL1ASc98jNW HTTP/1.1" 200 1224
+[2019-Jan-04 00:06:07.205] 30867 - [info] "WebRequest: took 0.486 ms"
+127.0.0.1 - - [2019-Jan-04 00:06:08.296] "POST /?wtd=NDJ49yL1ASc98jNW HTTP/1.1" 200 5985
+[2019-Jan-04 00:06:08.296] 30867 - [info] "WebRequest: took 2.67 ms"
+[2019-Jan-04 00:06:09.379] 30867 [/ NDJ49yL1ASc98jNW] [warning] "WApplication: Deploy-path ends with '/', using /?_= for internal paths"
+[2019-Jan-04 00:06:09.382] 30867 [/ NDJ49yL1ASc98jNW] [error] "XSS: Error reading XHTML string: could not parse xhtml entity"
+127.0.0.1 - - [2019-Jan-04 00:06:09.385] "POST /?wtd=NDJ49yL1ASc98jNW HTTP/1.1" 200 5692
+[2019-Jan-04 00:06:09.385] 30867 - [info] "WebRequest: took 6.786 ms"
+127.0.0.1 - - [2019-Jan-04 00:06:26.449] "POST /?wtd=NDJ49yL1ASc98jNW HTTP/1.1" 200 1974
+[2019-Jan-04 00:06:26.449] 30867 - [info] "WebRequest: took 5.305 ms"
+[2019-Jan-04 00:06:41.900] 30867 - [info] "Wt: session created (#sessions = 3)"
+[2019-Jan-04 00:06:41.900] 30867 [/ JCEZ13LxauFxPrPX] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2019-Jan-04 00:06:41.901] "GET / HTTP/1.1" 200 2283
+[2019-Jan-04 00:06:41.901] 30867 - [info] "WebRequest: took 1.066 ms"
+[2019-Jan-04 00:06:41.912] 30867 - [info] "WebController: Removing session NDJ49yL1ASc98jNW"
+127.0.0.1 - - [2019-Jan-04 00:06:41.913] "POST /?wtd=NDJ49yL1ASc98jNW HTTP/1.1" 200 129
+[2019-Jan-04 00:06:41.913] 30867 - [info] "WebRequest: took 0.376 ms"
+[2019-Jan-04 00:06:41.914] 30867 [/ NDJ49yL1ASc98jNW] [info] "Wt: session destroyed (#sessions = 2)"
+127.0.0.1 - - [2019-Jan-04 00:06:41.945] "GET /?wtd=JCEZ13LxauFxPrPX&request=style&page=1 HTTP/1.1" 200 104
+[2019-Jan-04 00:06:41.945] 30867 - [info] "WebRequest: took 16.665 ms"
+127.0.0.1 - - [2019-Jan-04 00:06:41.953] "GET /?wtd=JCEZ13LxauFxPrPX&sid=-794171099&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=572224446 HTTP/1.1" 200 38373
+[2019-Jan-04 00:06:41.953] 30867 - [info] "WebRequest: took 9.096 ms"
+127.0.0.1 - - [2019-Jan-04 00:06:41.960] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 200 122998
+127.0.0.1 - - [2019-Jan-04 00:06:41.960] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 200 20034
+127.0.0.1 - - [2019-Jan-04 00:06:41.961] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2019-Jan-04 00:06:41.962] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2019-Jan-04 00:06:41.962] "GET /custom.css HTTP/1.1" 200 1504
+127.0.0.1 - - [2019-Jan-04 00:06:41.997] "GET /favicon.ico HTTP/1.1" 200 1424
+127.0.0.1 - - [2019-Jan-04 00:06:42.005] "GET /resources/ajax-loading.gif HTTP/1.1" 200 1786
+127.0.0.1 - - [2019-Jan-04 00:06:42.062] "POST /?wtd=JCEZ13LxauFxPrPX HTTP/1.1" 200 50
+[2019-Jan-04 00:06:42.062] 30867 - [info] "WebRequest: took 0.279 ms"
+===f04d3c06-cdc5-48a6-87c1-3b322f476ca3======fe29533f-b290-4561-9ba9-df1140056bf7======1eaf86f5-0cae-4763-8891-67c6ed5e4e81======96775097-9d37-4291-a3e0-6016e99338ae======057bfd2e-d402-4517-a4f2-6e3e52f524b9======d7e53622-486d-409d-9b06-a2ad55a93d9f======fe00e9f9-2de6-43a5-83a5-2735c9cfa6b7======1d9ca93a-64bb-4732-9365-0b16f0a78932======b41e07e9-6e12-429f-8e2f-8d5c861900bd======82e27bf4-552e-4860-89e0-10144d32915b===127.0.0.1 - - [2019-Jan-04 00:06:42.965] "POST /?wtd=JCEZ13LxauFxPrPX HTTP/1.1" 200 5160
+[2019-Jan-04 00:06:42.965] 30867 - [info] "WebRequest: took 18.588 ms"
+127.0.0.1 - - [2019-Jan-04 00:06:43.078] "POST /?wtd=JCEZ13LxauFxPrPX HTTP/1.1" 200 1219
+[2019-Jan-04 00:06:43.078] 30867 - [info] "WebRequest: took 0.533 ms"
+127.0.0.1 - - [2019-Jan-04 00:06:44.290] "POST /?wtd=JCEZ13LxauFxPrPX HTTP/1.1" 200 5995
+[2019-Jan-04 00:06:44.290] 30867 - [info] "WebRequest: took 2.429 ms"
+[2019-Jan-04 00:06:48.707] 30867 [/ JCEZ13LxauFxPrPX] [warning] "WApplication: Deploy-path ends with '/', using /?_= for internal paths"
+[2019-Jan-04 00:06:48.710] 30867 [/ JCEZ13LxauFxPrPX] [error] "XSS: Error reading XHTML string: could not parse xhtml entity"
+127.0.0.1 - - [2019-Jan-04 00:06:48.713] "POST /?wtd=JCEZ13LxauFxPrPX HTTP/1.1" 200 5732
+[2019-Jan-04 00:06:48.713] 30867 - [info] "WebRequest: took 7.185 ms"
+[2019-Jan-04 00:06:53.455] 30867 - [info] "Wt: session created (#sessions = 3)"
+[2019-Jan-04 00:06:53.455] 30867 [/ yvZJaqpROdsXCGuJ] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2019-Jan-04 00:06:53.457] "GET / HTTP/1.1" 200 2285
+[2019-Jan-04 00:06:53.457] 30867 - [info] "WebRequest: took 2.029 ms"
+127.0.0.1 - - [2019-Jan-04 00:06:53.490] "GET /?wtd=yvZJaqpROdsXCGuJ&request=style&page=1 HTTP/1.1" 200 104
+[2019-Jan-04 00:06:53.490] 30867 - [info] "WebRequest: took 4.612 ms"
+127.0.0.1 - - [2019-Jan-04 00:06:53.499] "GET /?wtd=yvZJaqpROdsXCGuJ&sid=1364933568&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=3145217102 HTTP/1.1" 200 38373
+[2019-Jan-04 00:06:53.499] 30867 - [info] "WebRequest: took 10.093 ms"
+127.0.0.1 - - [2019-Jan-04 00:06:53.503] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 304 0
+127.0.0.1 - - [2019-Jan-04 00:06:53.504] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 304 0
+127.0.0.1 - - [2019-Jan-04 00:06:53.516] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2019-Jan-04 00:06:53.516] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2019-Jan-04 00:06:53.517] "GET /custom.css HTTP/1.1" 200 1504
+127.0.0.1 - - [2019-Jan-04 00:06:53.559] "GET /resources/ajax-loading.gif HTTP/1.1" 200 1786
+127.0.0.1 - - [2019-Jan-04 00:06:53.619] "POST /?wtd=yvZJaqpROdsXCGuJ HTTP/1.1" 200 50
+[2019-Jan-04 00:06:53.619] 30867 - [info] "WebRequest: took 0.283 ms"
+===f04d3c06-cdc5-48a6-87c1-3b322f476ca3======fe29533f-b290-4561-9ba9-df1140056bf7======1eaf86f5-0cae-4763-8891-67c6ed5e4e81======96775097-9d37-4291-a3e0-6016e99338ae======057bfd2e-d402-4517-a4f2-6e3e52f524b9======d7e53622-486d-409d-9b06-a2ad55a93d9f======fe00e9f9-2de6-43a5-83a5-2735c9cfa6b7======1d9ca93a-64bb-4732-9365-0b16f0a78932======b41e07e9-6e12-429f-8e2f-8d5c861900bd======82e27bf4-552e-4860-89e0-10144d32915b===127.0.0.1 - - [2019-Jan-04 00:06:54.405] "POST /?wtd=yvZJaqpROdsXCGuJ HTTP/1.1" 200 5175
+[2019-Jan-04 00:06:54.405] 30867 - [info] "WebRequest: took 16.648 ms"
+127.0.0.1 - - [2019-Jan-04 00:06:54.519] "POST /?wtd=yvZJaqpROdsXCGuJ HTTP/1.1" 200 1214
+[2019-Jan-04 00:06:54.519] 30867 - [info] "WebRequest: took 0.519 ms"
+127.0.0.1 - - [2019-Jan-04 00:06:55.786] "POST /?wtd=yvZJaqpROdsXCGuJ HTTP/1.1" 200 6007
+[2019-Jan-04 00:06:55.786] 30867 - [info] "WebRequest: took 2.473 ms"
+[2019-Jan-04 00:06:56.731] 30867 [/ yvZJaqpROdsXCGuJ] [warning] "WApplication: Deploy-path ends with '/', using /?_= for internal paths"
+[2019-Jan-04 00:06:56.734] 30867 [/ yvZJaqpROdsXCGuJ] [error] "XSS: Error reading XHTML string: could not parse xhtml entity"
+127.0.0.1 - - [2019-Jan-04 00:06:56.737] "POST /?wtd=yvZJaqpROdsXCGuJ HTTP/1.1" 200 5717
+[2019-Jan-04 00:06:56.737] 30867 - [info] "WebRequest: took 6.8 ms"
+127.0.0.1 - - [2019-Jan-04 00:07:01.668] "POST /?wtd=yvZJaqpROdsXCGuJ HTTP/1.1" 200 2014
+[2019-Jan-04 00:07:01.668] 30867 - [info] "WebRequest: took 5.612 ms"
+[2019-Jan-04 00:07:20.401] 30867 [/ yvZJaqpROdsXCGuJ] [error] "XSS: Error reading XHTML string: could not parse xhtml entity"
+127.0.0.1 - - [2019-Jan-04 00:07:20.405] "POST /?wtd=yvZJaqpROdsXCGuJ HTTP/1.1" 200 3600
+[2019-Jan-04 00:07:20.405] 30867 - [info] "WebRequest: took 6.969 ms"
+127.0.0.1 - - [2019-Jan-04 00:07:36.694] "POST /?wtd=yvZJaqpROdsXCGuJ HTTP/1.1" 200 2004
+[2019-Jan-04 00:07:36.694] 30867 - [info] "WebRequest: took 5.052 ms"
+127.0.0.1 - - [2019-Jan-04 00:11:54.564] "POST /?wtd=yvZJaqpROdsXCGuJ HTTP/1.1" 200 50
+[2019-Jan-04 00:11:54.564] 30867 - [info] "WebRequest: took 0.316 ms"
+[2019-Jan-04 00:12:05.808] 30867 [/ yvZJaqpROdsXCGuJ] [error] "XSS: Error reading XHTML string: could not parse xhtml entity"
+127.0.0.1 - - [2019-Jan-04 00:12:05.811] "POST /?wtd=yvZJaqpROdsXCGuJ HTTP/1.1" 200 3618
+[2019-Jan-04 00:12:05.811] 30867 - [info] "WebRequest: took 6.602 ms"
+127.0.0.1 - - [2019-Jan-04 00:12:27.840] "POST /?wtd=yvZJaqpROdsXCGuJ HTTP/1.1" 200 1980
+[2019-Jan-04 00:12:27.840] 30867 - [info] "WebRequest: took 5.51 ms"
+[2019-Jan-04 00:12:51.112] 30867 - [info] "Wt: session created (#sessions = 4)"
+[2019-Jan-04 00:12:51.112] 30867 [/ 4r5TXFmunguYFBTj] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2019-Jan-04 00:12:51.113] "GET / HTTP/1.1" 200 2285
+[2019-Jan-04 00:12:51.113] 30867 - [info] "WebRequest: took 1.083 ms"
+[2019-Jan-04 00:12:51.117] 30867 - [info] "WebController: Removing session yvZJaqpROdsXCGuJ"
+127.0.0.1 - - [2019-Jan-04 00:12:51.118] "POST /?wtd=yvZJaqpROdsXCGuJ HTTP/1.1" 200 130
+[2019-Jan-04 00:12:51.118] 30867 - [info] "WebRequest: took 0.306 ms"
+[2019-Jan-04 00:12:51.119] 30867 [/ yvZJaqpROdsXCGuJ] [info] "Wt: session destroyed (#sessions = 3)"
+127.0.0.1 - - [2019-Jan-04 00:12:51.148] "GET /?wtd=4r5TXFmunguYFBTj&request=style&page=1 HTTP/1.1" 200 104
+[2019-Jan-04 00:12:51.148] 30867 - [info] "WebRequest: took 10.352 ms"
+127.0.0.1 - - [2019-Jan-04 00:12:51.153] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 200 122998
+127.0.0.1 - - [2019-Jan-04 00:12:51.156] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 200 20034
+127.0.0.1 - - [2019-Jan-04 00:12:51.157] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2019-Jan-04 00:12:51.157] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2019-Jan-04 00:12:51.158] "GET /?wtd=4r5TXFmunguYFBTj&sid=1155272357&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=2068703644 HTTP/1.1" 200 38372
+[2019-Jan-04 00:12:51.158] 30867 - [info] "WebRequest: took 10.351 ms"
+127.0.0.1 - - [2019-Jan-04 00:12:51.158] "GET /custom.css HTTP/1.1" 200 1504
+127.0.0.1 - - [2019-Jan-04 00:12:51.200] "GET /favicon.ico HTTP/1.1" 200 1424
+127.0.0.1 - - [2019-Jan-04 00:12:51.207] "GET /resources/ajax-loading.gif HTTP/1.1" 200 1786
+127.0.0.1 - - [2019-Jan-04 00:12:51.271] "POST /?wtd=4r5TXFmunguYFBTj HTTP/1.1" 200 50
+[2019-Jan-04 00:12:51.271] 30867 - [info] "WebRequest: took 0.349 ms"
+127.0.0.1 - - [2019-Jan-04 00:12:52.061] "POST /?wtd=4r5TXFmunguYFBTj HTTP/1.1" 200 50
+[2019-Jan-04 00:12:52.061] 30867 - [info] "WebRequest: took 0.325 ms"
+andled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetResources (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: AdminService::wrongopname (0ms)
+Handled: StrategyService::GetGoals (0ms)
+Handled: CalendarService::Query (0ms)
+Handled: CalendarService::Next (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: InboxService::GetInbox (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetResources (0ms)
+Handled: AdminService::wrongopname (0ms)
+Handled: StrategyService::GetGoals (0ms)
+Handled: CalendarService::Query (0ms)
+Handled: CalendarService::Next (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: InboxService::GetInbox (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: JournalService::GetIndex (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetResources (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: StrategyService::GetGoalItems (0ms)
+Handled: AdminService::wrongopname (0ms)
+Handled: StrategyService::GetGoals (0ms)
+Handled: CalendarService::Query (0ms)
+Handled: CalendarServi===f04d3c06-cdc5-48a6-87c1-3b322f476ca3======fe29533f-b290-4561-9ba9-df1140056bf7======1eaf86f5-0cae-4763-8891-67c6ed5e4e81======96775097-9d37-4291-a3e0-6016e99338ae======057bfd2e-d402-4517-a4f2-6e3e52f524b9======d7e53622-486d-409d-9b06-a2ad55a93d9f======fe00e9f9-2de6-43a5-83a5-2735c9cfa6b7======1d9ca93a-64bb-4732-9365-0b16f0a78932======b41e07e9-6e12-429f-8e2f-8d5c861900bd======82e27bf4-552e-4860-89e0-10144d32915b===127.0.0.1 - - [2019-Jan-04 00:12:56.776] "POST /?wtd=4r5TXFmunguYFBTj HTTP/1.1" 200 5163
+[2019-Jan-04 00:12:56.776] 30867 - [info] "WebRequest: took 18.136 ms"
+127.0.0.1 - - [2019-Jan-04 00:12:56.892] "POST /?wtd=4r5TXFmunguYFBTj HTTP/1.1" 200 1217
+[2019-Jan-04 00:12:56.892] 30867 - [info] "WebRequest: took 0.461 ms"
+127.0.0.1 - - [2019-Jan-04 00:12:58.017] "POST /?wtd=4r5TXFmunguYFBTj HTTP/1.1" 200 2602
+[2019-Jan-04 00:12:58.017] 30867 - [info] "WebRequest: took 4.141 ms"
+127.0.0.1 - - [2019-Jan-04 00:12:58.027] "GET /resources/themes/bootstrap/nav-plus.gif HTTP/1.1" 200 190
+127.0.0.1 - - [2019-Jan-04 00:12:58.035] "GET /resources/themes/bootstrap/nav-minus.gif HTTP/1.1" 200 180
+127.0.0.1 - - [2019-Jan-04 00:12:58.056] "GET /resources/line-last.gif HTTP/1.1" 404 85
+127.0.0.1 - - [2019-Jan-04 00:12:58.057] "GET /resources/line-trunk.gif HTTP/1.1" 404 85
+127.0.0.1 - - [2019-Jan-04 00:12:58.057] "GET /resources/line-middle.gif HTTP/1.1" 404 85
+127.0.0.1 - - [2019-Jan-04 00:12:58.073] "GET /resources/tinymce/themes/modern/theme.min.js HTTP/1.1" 200 14360
+127.0.0.1 - - [2019-Jan-04 00:12:58.078] "GET /resources/Folder.gif HTTP/1.1" 200 991
+127.0.0.1 - - [2019-Jan-04 00:12:58.080] "POST /?wtd=4r5TXFmunguYFBTj HTTP/1.1" 200 2531
+[2019-Jan-04 00:12:58.080] 30867 - [info] "WebRequest: took 0.95 ms"
+127.0.0.1 - - [2019-Jan-04 00:12:58.087] "GET /resources/tinymce/plugins/textcolor/plugin.min.js HTTP/1.1" 200 5168
+127.0.0.1 - - [2019-Jan-04 00:12:58.095] "GET /resources/tinymce/plugins/searchreplace/plugin.min.js HTTP/1.1" 200 7468127.0.0.1 - - [2019-Jan-04 00:12:58.095] "GET /resources/tinymce/plugins/lists/plugin.min.js HTTP/1.1" 200 14999
+
+[2019-Jan-04 00:12:58.098] 30867 [/ 4r5TXFmunguYFBTj] [error] "Wt: decodeSignal(): signal 'odna2dj.render' not exposed"
+127.0.0.1 - - [2019-Jan-04 00:12:58.099] "POST /?wtd=4r5TXFmunguYFBTj HTTP/1.1" 200 50
+[2019-Jan-04 00:12:58.099] 30867 - [info] "WebRequest: took 1.102 ms"
+127.0.0.1 - - [2019-Jan-04 00:12:58.112] "GET /resources/tinymce/plugins/table/plugin.min.js HTTP/1.1" 200 47683
+127.0.0.1 - - [2019-Jan-04 00:12:58.129] "GET /resources/tinymce/plugins/colorpicker/plugin.min.js HTTP/1.1" 200 2143
+127.0.0.1 - - [2019-Jan-04 00:12:58.139] "GET /resources/tinymce/skins/lightgray/skin.min.css HTTP/1.1" 200 39404
+127.0.0.1 - - [2019-Jan-04 00:12:58.232] "GET /resources/tinymce/skins/lightgray/content.min.css HTTP/1.1" 200 3327
+127.0.0.1 - - [2019-Jan-04 00:12:58.269] "GET /resources/tinymce/skins/lightgray/fonts/tinymce.woff HTTP/1.1" 200 17484
+127.0.0.1 - - [2019-Jan-04 00:12:58.916] "POST /?wtd=4r5TXFmunguYFBTj HTTP/1.1" 200 5994
+[2019-Jan-04 00:12:58.916] 30867 - [info] "WebRequest: took 2.725 ms"
+[2019-Jan-04 00:13:01.437] 30867 [/ 4r5TXFmunguYFBTj] [warning] "WApplication: Deploy-path ends with '/', using /?_= for internal paths"
+[2019-Jan-04 00:13:01.441] 30867 [/ 4r5TXFmunguYFBTj] [error] "XSS: Error reading XHTML string: could not parse xhtml entity"
+127.0.0.1 - - [2019-Jan-04 00:13:01.445] "POST /?wtd=4r5TXFmunguYFBTj HTTP/1.1" 200 5710
+[2019-Jan-04 00:13:01.445] 30867 - [info] "WebRequest: took 8.222 ms"
+127.0.0.1 - - [2019-Jan-04 00:13:03.299] "POST /?wtd=4r5TXFmunguYFBTj HTTP/1.1" 200 1994
+[2019-Jan-04 00:13:03.299] 30867 - [info] "WebRequest: took 5.558 ms"
+[2019-Jan-04 00:13:25.179] 30867 - [info] "Wt: session created (#sessions = 4)"
+[2019-Jan-04 00:13:25.179] 30867 [/ PglxwihQOBQhXFFl] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2019-Jan-04 00:13:25.181] "GET / HTTP/1.1" 200 2285
+[2019-Jan-04 00:13:25.181] 30867 - [info] "WebRequest: took 1.79 ms"
+[2019-Jan-04 00:13:25.188] 30867 - [info] "WebController: Removing session 4r5TXFmunguYFBTj"
+127.0.0.1 - - [2019-Jan-04 00:13:25.188] "POST /?wtd=4r5TXFmunguYFBTj HTTP/1.1" 200 130
+[2019-Jan-04 00:13:25.188] 30867 - [info] "WebRequest: took 0.449 ms"
+[2019-Jan-04 00:13:25.190] 30867 [/ 4r5TXFmunguYFBTj] [info] "Wt: session destroyed (#sessions = 3)"
+127.0.0.1 - - [2019-Jan-04 00:13:25.219] "GET /?wtd=PglxwihQOBQhXFFl&request=style&page=1 HTTP/1.1" 200 104
+[2019-Jan-04 00:13:25.219] 30867 - [info] "WebRequest: took 13.409 ms"
+127.0.0.1 - - [2019-Jan-04 00:13:25.229] "GET /?wtd=PglxwihQOBQhXFFl&sid=1689608422&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=2431807936 HTTP/1.1" 200 38376
+[2019-Jan-04 00:13:25.229] 30867 - [info] "WebRequest: took 10.419 ms"
+127.0.0.1 - - [2019-Jan-04 00:13:25.234] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 200 122998
+127.0.0.1 - - [2019-Jan-04 00:13:25.235] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 200 20034
+127.0.0.1 - - [2019-Jan-04 00:13:25.237] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2019-Jan-04 00:13:25.237] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2019-Jan-04 00:13:25.238] "GET /custom.css HTTP/1.1" 200 1504
+127.0.0.1 - - [2019-Jan-04 00:13:25.285] "GET /resources/ajax-loading.gif HTTP/1.1" 304 0
+127.0.0.1 - - [2019-Jan-04 00:13:25.349] "POST /?wtd=PglxwihQOBQhXFFl HTTP/1.1" 200 50
+[2019-Jan-04 00:13:25.349] 30867 - [info] "WebRequest: took 0.212 ms"
+===f04d3c06-cdc5-48a6-87c1-3b322f476ca3======fe29533f-b290-4561-9ba9-df1140056bf7======1eaf86f5-0cae-4763-8891-67c6ed5e4e81======96775097-9d37-4291-a3e0-6016e99338ae======057bfd2e-d402-4517-a4f2-6e3e52f524b9======d7e53622-486d-409d-9b06-a2ad55a93d9f======fe00e9f9-2de6-43a5-83a5-2735c9cfa6b7======1d9ca93a-64bb-4732-9365-0b16f0a78932======b41e07e9-6e12-429f-8e2f-8d5c861900bd======82e27bf4-552e-4860-89e0-10144d32915b===127.0.0.1 - - [2019-Jan-04 00:13:26.377] "POST /?wtd=PglxwihQOBQhXFFl HTTP/1.1" 200 5199
+[2019-Jan-04 00:13:26.377] 30867 - [info] "WebRequest: took 16.468 ms"
+127.0.0.1 - - [2019-Jan-04 00:13:26.489] "POST /?wtd=PglxwihQOBQhXFFl HTTP/1.1" 200 1219
+[2019-Jan-04 00:13:26.489] 30867 - [info] "WebRequest: took 0.531 ms"
+127.0.0.1 - - [2019-Jan-04 00:13:27.859] "POST /?wtd=PglxwihQOBQhXFFl HTTP/1.1" 200 5990
+[2019-Jan-04 00:13:27.860] 30867 - [info] "WebRequest: took 2.428 ms"
+[2019-Jan-04 00:13:28.904] 30867 [/ PglxwihQOBQhXFFl] [warning] "WApplication: Deploy-path ends with '/', using /?_= for internal paths"
+[2019-Jan-04 00:13:28.907] 30867 [/ PglxwihQOBQhXFFl] [error] "XSS: Error reading XHTML string: could not parse xhtml entity"
+127.0.0.1 - - [2019-Jan-04 00:13:28.910] "POST /?wtd=PglxwihQOBQhXFFl HTTP/1.1" 200 5704
+[2019-Jan-04 00:13:28.910] 30867 - [info] "WebRequest: took 6.758 ms"
+127.0.0.1 - - [2019-Jan-04 00:13:47.868] "POST /?wtd=PglxwihQOBQhXFFl HTTP/1.1" 200 1974
+[2019-Jan-04 00:13:47.868] 30867 - [info] "WebRequest: took 5.042 ms"
+[2019-Jan-04 00:14:52.690] 30867 [/ uXWfz0pzMGohwWN2] [info] "WebController: timeout: expiring"
+[2019-Jan-04 00:14:52.692] 30867 [/ uXWfz0pzMGohwWN2] [info] "Wt: session destroyed (#sessions = 2)"
+[2019-Jan-04 00:15:47.653] 30867 [/ PglxwihQOBQhXFFl] [error] "XSS: Error reading XHTML string: could not parse xhtml entity"
+127.0.0.1 - - [2019-Jan-04 00:15:47.656] "POST /?wtd=PglxwihQOBQhXFFl HTTP/1.1" 200 3604
+[2019-Jan-04 00:15:47.656] 30867 - [info] "WebRequest: took 6.414 ms"
+127.0.0.1 - - [2019-Jan-04 00:15:53.782] "POST /?wtd=PglxwihQOBQhXFFl HTTP/1.1" 200 1972
+[2019-Jan-04 00:15:53.782] 30867 - [info] "WebRequest: took 6.299 ms"
+[2019-Jan-04 00:16:39.302] 30867 - [info] "WServer/wthttp: shutdown (signal = 15)"
+[2019-Jan-04 00:16:39.302] 30867 - [info] "WebController: shutdown: stopping 2 sessions."
+[2019-Jan-04 00:16:39.304] 30867 [/ JCEZ13LxauFxPrPX] [info] "Wt: session destroyed (#sessions = 0)"
+[2019-Jan-04 00:16:39.305] 30867 [/ PglxwihQOBQhXFFl] [info] "Wt: session destroyed (#sessions = 0)"
+[2019-Jan-04 00:16:39.305] 30867 - [info] "WServer/wthttp: Shutdown: stopping web server."
+[2019-Jan-04 00:16:40.505] 24742 - [info] "config: reading Wt config file: /etc/wt/wt_config.xml (location = './WebApp')"
+[2019-Jan-04 00:16:40.506] 24742 - [info] "WServer/wthttp: initializing built-in wthttpd"
+[2019-Jan-04 00:16:40.510] 24742 - [info] "wthttp: started server: http://0.0.0.0:80"
+[2019-Jan-04 00:16:44.159] 24742 - [info] "Wt: session created (#sessions = 1)"
+[2019-Jan-04 00:16:44.159] 24742 [/ Sut0YThMOz9CL1aq] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+127.0.0.1 - - [2019-Jan-04 00:16:44.161] "GET / HTTP/1.1" 200 2284
+[2019-Jan-04 00:16:44.161] 24742 - [info] "WebRequest: took 3.083 ms"
+[2019-Jan-04 00:16:44.167] 24742 - [info] "Wt: session created (#sessions = 2)"
+[2019-Jan-04 00:16:44.167] 24742 [/ nECkwLIKHMe7Tqw0] [info] "WEnvironment: UserAgent: Mozilla/5.0 (X11; Linux x86_64; rv:64.0) Gecko/20100101 Firefox/64.0"
+[2019-Jan-04 00:16:44.167] 24742 [/ nECkwLIKHMe7Tqw0] [info] "Wt: signal from dead session, sending reload."
+[2019-Jan-04 00:16:44.167] 24742 - [info] "WebController: Removing session nECkwLIKHMe7Tqw0"
+[2019-Jan-04 00:16:44.167] 24742 [/ nECkwLIKHMe7Tqw0] [info] "Wt: session destroyed (#sessions = 1)"
+127.0.0.1 - - [2019-Jan-04 00:16:44.167] "POST /?wtd=PglxwihQOBQhXFFl HTTP/1.1" 200 76
+[2019-Jan-04 00:16:44.167] 24742 - [info] "WebRequest: took 0.457 ms"
+127.0.0.1 - - [2019-Jan-04 00:16:44.198] "GET /?wtd=Sut0YThMOz9CL1aq&request=style&page=1 HTTP/1.1" 200 104
+[2019-Jan-04 00:16:44.199] 24742 - [info] "WebRequest: took 14.43 ms"
+127.0.0.1 - - [2019-Jan-04 00:16:44.207] "GET /?wtd=Sut0YThMOz9CL1aq&sid=1251419859&webGL=true&scrW=1920&scrH=1080&tz=120&tzS=Europe%2FKiev&htmlHistory=true&deployPath=%2F&request=script&rand=2316836334 HTTP/1.1" 200 38373
+[2019-Jan-04 00:16:44.207] 24742 - [info] "WebRequest: took 10.79 ms"
+127.0.0.1 - - [2019-Jan-04 00:16:44.212] "GET /resources/themes/bootstrap/3/bootstrap.css HTTP/1.1" 200 122998
+127.0.0.1 - - [2019-Jan-04 00:16:44.215] "GET /resources/themes/bootstrap/3/wt.css HTTP/1.1" 200 20034
+127.0.0.1 - - [2019-Jan-04 00:16:44.215] "GET /resources/moz-transitions.css HTTP/1.1" 404 85
+127.0.0.1 - - [2019-Jan-04 00:16:44.225] "GET /resources/bootstrap.css HTTP/1.1" 404 85
+127.0.0.1 - - [2019-Jan-04 00:16:44.226] "GET /custom.css HTTP/1.1" 200 1504
+127.0.0.1 - - [2019-Jan-04 00:16:44.262] "GET /resources/ajax-loading.gif HTTP/1.1" 304 0
+127.0.0.1 - - [2019-Jan-04 00:16:44.323] "POST /?wtd=Sut0YThMOz9CL1aq HTTP/1.1" 200 50
+[2019-Jan-04 00:16:44.323] 24742 - [info] "WebRequest: took 0.381 ms"
+===f04d3c06-cdc5-48a6-87c1-3b322f476ca3======fe29533f-b290-4561-9ba9-df1140056bf7======1eaf86f5-0cae-4763-8891-67c6ed5e4e81======96775097-9d37-4291-a3e0-6016e99338ae======057bfd2e-d402-4517-a4f2-6e3e52f524b9======d7e53622-486d-409d-9b06-a2ad55a93d9f======fe00e9f9-2de6-43a5-83a5-2735c9cfa6b7======1d9ca93a-64bb-4732-9365-0b16f0a78932======b41e07e9-6e12-429f-8e2f-8d5c861900bd======82e27bf4-552e-4860-89e0-10144d32915b===127.0.0.1 - - [2019-Jan-04 00:16:45.160] "POST /?wtd=Sut0YThMOz9CL1aq HTTP/1.1" 200 5135
+[2019-Jan-04 00:16:45.160] 24742 - [info] "WebRequest: took 27.15 ms"
+127.0.0.1 - - [2019-Jan-04 00:16:45.271] "POST /?wtd=Sut0YThMOz9CL1aq HTTP/1.1" 200 1211
+[2019-Jan-04 00:16:45.271] 24742 - [info] "WebRequest: took 0.501 ms"
+127.0.0.1 - - [2019-Jan-04 00:16:46.397] "POST /?wtd=Sut0YThMOz9CL1aq HTTP/1.1" 200 5969
+[2019-Jan-04 00:16:46.397] 24742 - [info] "WebRequest: took 2.929 ms"
+[2019-Jan-04 00:16:47.209] 24742 [/ Sut0YThMOz9CL1aq] [warning] "WApplication: Deploy-path ends with '/', using /?_= for internal paths"
+[2019-Jan-04 00:16:47.212] 24742 [/ Sut0YThMOz9CL1aq] [error] "XSS: Error reading XHTML string: could not parse xhtml entity"
+127.0.0.1 - - [2019-Jan-04 00:16:47.216] "POST /?wtd=Sut0YThMOz9CL1aq HTTP/1.1" 200 5696
+[2019-Jan-04 00:16:47.216] 24742 - [info] "WebRequest: took 7.22 ms"
+127.0.0.1 - - [2019-Jan-04 00:16:51.561] "POST /?wtd=Sut0YThMOz9CL1aq HTTP/1.1" 200 1971
+[2019-Jan-04 00:16:51.561] 24742 - [info] "WebRequest: took 5.892 ms"
+[2019-Jan-04 00:16:57.316] 24742 - [info] "WServer/wthttp: shutdown (signal = 15)"
+[2019-Jan-04 00:16:57.316] 24742 - [info] "WebController: shutdown: stopping 1 sessions."
+[2019-Jan-04 00:16:57.317] 24742 [/ Sut0YThMOz9CL1aq] [info] "Wt: session destroyed (#sessions = 0)"
+[2019-Jan-04 00:16:57.318] 24742 - [info] "WServer/wthttp: Shutdown: stopping web server."

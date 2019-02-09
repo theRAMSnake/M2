@@ -4,15 +4,13 @@ import android.content.Context
 
 import com.google.common.io.Files
 
-import java.io.BufferedReader
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileNotFoundException
-import java.io.FileOutputStream
-import java.io.IOException
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.io.RandomAccessFile
+import android.R.attr.data
+import org.zeromq.ZMQ.context
+import java.io.*
+import org.zeromq.ZMQ.context
+
+
+
 
 /**
  * Created by snake on 4/30/17.
@@ -20,25 +18,34 @@ import java.io.RandomAccessFile
 
 class LocalDatabase(private val mContext: Context) {
 
-    operator fun get(path: String): ByteArray? {
-        try {
-            val f = RandomAccessFile(mContext.applicationInfo.dataDir + "/" + path, "r")
-            val b = ByteArray(f.length().toInt())
-            f.readFully(b)
-            return b
-        } catch (ex: FileNotFoundException) {
+    operator fun get(path: String): String
+    {
+        var ret = ""
 
-        } catch (ex: IOException) {
+        try
+        {
+            val inputStream = mContext.openFileInput(mContext.applicationInfo.dataDir + "/" + path)
+            ret =  inputStream.bufferedReader().use { it.readText() }
+        }
+        catch (e: FileNotFoundException) {
+
+        } catch (e: IOException) {
 
         }
 
-        return null
+        return ret
     }
 
-    fun put(path: String, data: ByteArray) {
-        try {
-            Files.write(data, File(mContext.applicationInfo.dataDir + "/" + path))
-        } catch (e: IOException) {
+    fun put(path: String, data: String)
+    {
+        try
+        {
+            val outputStreamWriter = OutputStreamWriter(mContext.openFileOutput(mContext.applicationInfo.dataDir + "/" + path, Context.MODE_PRIVATE))
+            outputStreamWriter.write(data)
+            outputStreamWriter.close()
+        }
+        catch (e: IOException)
+        {
 
         }
 
