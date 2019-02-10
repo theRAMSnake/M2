@@ -1,50 +1,43 @@
 package snakesoft.minion.Models
 
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-
-/**
- * Created by snake on 6/10/18.
- */
-
-class WpModel {
-
-    var successAtempts: Int
-        get() = mSuccessAtempts
-        set(newValue) {
-            mSuccessAtempts = newValue
+class WpModel (var Db: LocalDatabase)
+{
+    var SuccessAttempts: Int = 0
+        set(newValue)
+        {
+            field = newValue
             saveState()
         }
 
-    var failedAtempts: Int
-        get() = mFailedAtempts
-        set(newValue) {
-            mFailedAtempts = newValue
+    var FailedAttempts: Int = 0
+        set(newValue)
+        {
+            field = newValue
             saveState()
         }
 
-    private var mLocalDb: LocalDatabase? = null
-    private var mSuccessAtempts = 0
-    private var mFailedAtempts = 0
-    fun loadState(localDb: LocalDatabase) {
-        mLocalDb = localDb
-        try {
-            val byteStream = ByteArrayInputStream(localDb.get("WillPowerTracking"))
-            mSuccessAtempts = byteStream.read()
-            mFailedAtempts = byteStream.read()
-        } catch (ex: Exception) {
-            mSuccessAtempts = 0
-            mFailedAtempts = 0
+    init
+    {
+        loadState()
+    }
+
+    private fun loadState()
+    {
+        try
+        {
+            val splitted = Db["WillPowerTracking"].split(' ')
+            SuccessAttempts = splitted[0].toInt()
+            FailedAttempts = splitted[1].toInt()
+        }
+        catch (ex: Exception)
+        {
+
         }
 
     }
 
-    fun saveState() {
-        val bos = ByteArrayOutputStream()
-
-        bos.write(mSuccessAtempts)
-        bos.write(mFailedAtempts)
-
-        mLocalDb!!.put("WillPowerTracking", bos.toByteArray())
+    private fun saveState()
+    {
+        Db.put("WillPowerTracking", "$SuccessAttempts $FailedAttempts")
     }
 }

@@ -53,9 +53,9 @@ class InboxItemViewActivity : AppCompatActivity(), View.OnClickListener {
                     .build()
 
             if (intent.getBooleanExtra("IsNewItem", false)) {
-                GlobalModel.inboxModel!!.addItem(result)
+                GlobalModel.InboxModel.addItem(result)
             } else {
-                GlobalModel.inboxModel!!.modifyItem(result)
+                GlobalModel.InboxModel.modifyItem(result)
             }
 
             finish()
@@ -65,7 +65,7 @@ class InboxItemViewActivity : AppCompatActivity(), View.OnClickListener {
             dlgAlert.setMessage("Are you sure?")
             dlgAlert.setTitle("Caution")
             dlgAlert.setPositiveButton("OK") { dialog, which ->
-                GlobalModel.inboxModel!!.deleteItem(guid)
+                GlobalModel.InboxModel.deleteItem(guid)
                 finish()
             }
 

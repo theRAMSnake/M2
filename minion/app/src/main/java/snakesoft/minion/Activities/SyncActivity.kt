@@ -23,14 +23,14 @@ class SyncActivity : AppCompatActivity(), SyncListener {
         GlobalModel.sync(this)
     }
 
-    override fun onSyncComplete() {
-        val obs = GlobalModel.syncObserver
+    override fun onSyncComplete()
+    {
 
         val pb = findViewById(R.id.pbSync) as ProgressBar
         pb.visibility = View.INVISIBLE
 
         val txtView = findViewById(R.id.syncText) as EditText
-        txtView.setText(obs!!.log)
+        txtView.setText(GlobalModel.LastSyncLog)
     }
 
     override fun onSyncError() {

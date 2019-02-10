@@ -11,7 +11,7 @@ import inbox.Inbox.InboxItems
 import snakesoft.minion.materia.InboxServiceProxy
 import snakesoft.minion.materia.MateriaUnreachableException
 
-class InboxModel(private val mProxy: InboxServiceProxy) {
+class InboxModel(private val Db: LocalDatabase) {
 
     val items: List<Inbox.InboxItemInfo>
         get() {

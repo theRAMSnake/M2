@@ -21,9 +21,9 @@ class InboxActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
         setContentView(R.layout.activity_inbox)
 
         val itemsAsString = Vector<String>()
-        if (GlobalModel.inboxModel!!.items != null) {
+        if (GlobalModel.InboxModel.items != null) {
             itemsAsString.add("New...")
-            for (x in GlobalModel.inboxModel!!.items) {
+            for (x in GlobalModel.InboxModel.items) {
                 itemsAsString.add(x.getText())
             }
         }
@@ -49,14 +49,14 @@ class InboxActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
         if (position != 0) {
             val myIntent = Intent(this@InboxActivity, InboxItemViewActivity::class.java)
-            myIntent.putExtra("Text", GlobalModel.inboxModel!!.items.get(position - 1).getText())
-            myIntent.putExtra("Id", GlobalModel.inboxModel!!.items.get(position - 1).getId().getGuid())
+            myIntent.putExtra("Text", GlobalModel.InboxModel.items.get(position - 1).getText())
+            myIntent.putExtra("Id", GlobalModel.InboxModel.items.get(position - 1).getId().getGuid())
             myIntent.putExtra("IsNewItem", false)
             this@InboxActivity.startActivityForResult(myIntent, 1)
         } else {
             val myIntent = Intent(this@InboxActivity, InboxItemViewActivity::class.java)
             myIntent.putExtra("IsNewItem", true)
-            myIntent.putExtra("Id", GlobalModel.inboxModel!!.newId)
+            myIntent.putExtra("Id", GlobalModel.InboxModel.newId)
             this@InboxActivity.startActivityForResult(myIntent, 1)
         }
     }

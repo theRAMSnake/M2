@@ -24,7 +24,7 @@ class CalendarActivity : AppCompatActivity() {
         val mEventDays = ArrayList<EventDay>()
         val mCalendarView = findViewById(R.id.cal_cal_view) as CalendarView
 
-        for (item in GlobalModel.calendarModel!!.AllItems) {
+        for (item in GlobalModel.CalendarModel.AllItems) {
             val cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"))
             cal.timeInMillis = item.timestamp * 1000
 

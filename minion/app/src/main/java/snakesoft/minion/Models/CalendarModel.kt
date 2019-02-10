@@ -127,6 +127,18 @@ class CalendarModel(private val Db: LocalDatabase)
     @Throws(Exception::class)
     private fun loadState()
     {
-        Items = Json.parse(CalendarItem.serializer().list, Db.get("CalendarItems")).associate { it.id to it }.toMutableMap()
+        try
+        {
+            Items = Json.parse(CalendarItem.serializer().list, Db["CalendarItems"]).associate { it.id to it }.toMutableMap()
+        }
+        catch(ex: Exception)
+        {
+
+        }
+    }
+
+    fun clear()
+    {
+        Items.clear()
     }
 }

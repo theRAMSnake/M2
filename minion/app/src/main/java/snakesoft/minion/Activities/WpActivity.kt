@@ -20,10 +20,10 @@ class WpActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_wp)
 
-        val successAtempts = GlobalModel.wpModel!!.successAtempts
-        val failedAtempts = GlobalModel.wpModel!!.failedAtempts
+        val SuccessAttempts = GlobalModel.WpModel.SuccessAttempts
+        val FailedAttempts = GlobalModel.WpModel.FailedAttempts
 
-        setData(successAtempts, failedAtempts)
+        setData(SuccessAttempts, FailedAttempts)
 
         mBtnSuccess = findViewById(R.id.btnSuccess) as Button
         mBtnSuccess!!.setOnClickListener(this@WpActivity)
@@ -35,29 +35,29 @@ class WpActivity : AppCompatActivity(), View.OnClickListener {
         mBtnClear!!.setOnClickListener(this@WpActivity)
     }
 
-    private fun setData(successAtempts: Int, failedAtempts: Int) {
+    private fun setData(SuccessAttempts: Int, FailedAttempts: Int) {
         val tv = findViewById(R.id.tvScore) as TextView
-        tv.text = Integer.toString(successAtempts) + ":" + Integer.toString(failedAtempts)
+        tv.text = Integer.toString(SuccessAttempts) + ":" + Integer.toString(FailedAttempts)
 
         val pb = findViewById(R.id.progressBar) as ProgressBar
-        pb.progress = successAtempts
-        pb.max = failedAtempts + successAtempts
+        pb.progress = SuccessAttempts
+        pb.max = FailedAttempts + SuccessAttempts
     }
 
     override fun onClick(v: View) {
         if (v === mBtnSuccess) {
-            GlobalModel.wpModel!!.successAtempts = GlobalModel.wpModel!!.successAtempts + 1
+            GlobalModel.WpModel.SuccessAttempts = GlobalModel.WpModel.SuccessAttempts + 1
 
-            setData(GlobalModel.wpModel!!.successAtempts, GlobalModel.wpModel!!.failedAtempts)
+            setData(GlobalModel.WpModel.SuccessAttempts, GlobalModel.WpModel.FailedAttempts)
         }
         if (v === mBtnFailed) {
-            GlobalModel.wpModel!!.failedAtempts = GlobalModel.wpModel!!.failedAtempts + 1
+            GlobalModel.WpModel.FailedAttempts = GlobalModel.WpModel.FailedAttempts + 1
 
-            setData(GlobalModel.wpModel!!.successAtempts, GlobalModel.wpModel!!.failedAtempts)
+            setData(GlobalModel.WpModel.SuccessAttempts, GlobalModel.WpModel.FailedAttempts)
         }
         if (v === mBtnClear) {
-            GlobalModel.wpModel!!.failedAtempts = 0
-            GlobalModel.wpModel!!.successAtempts = 0
+            GlobalModel.WpModel.FailedAttempts = 0
+            GlobalModel.WpModel.SuccessAttempts = 0
             setData(0, 0)
         }
     }

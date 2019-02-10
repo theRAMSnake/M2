@@ -30,7 +30,7 @@ class CalendarDayViewActivity : AppCompatActivity(), AdapterView.OnItemClickList
 
         itemsAsString.add("New...")
 
-        mItems = GlobalModel.calendarModel!!.AllItems.filter { it.timestamp >= mTimeStamp && it.timestamp <= to }
+        mItems = GlobalModel.CalendarModel.AllItems.filter { it.timestamp >= mTimeStamp && it.timestamp <= to }
         for (item in mItems!!) {
             val calendar = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"))
             calendar.timeInMillis = item.timestamp * 1000

@@ -99,9 +99,9 @@ class CalendarItemViewActivity : AppCompatActivity(), View.OnClickListener {
             val result = CalendarItem(guid, txtView.text.toString(), timestamp);
 
             if (intent.getBooleanExtra("IsNewItem", false)) {
-                GlobalModel.calendarModel!!.addItem(result)
+                GlobalModel.CalendarModel.addItem(result)
             } else {
-                GlobalModel.calendarModel!!.replaceItem(result)
+                GlobalModel.CalendarModel.replaceItem(result)
             }
             finish()
         }
@@ -110,7 +110,7 @@ class CalendarItemViewActivity : AppCompatActivity(), View.OnClickListener {
             dlgAlert.setMessage("Are you sure?")
             dlgAlert.setTitle("Caution")
             dlgAlert.setPositiveButton("OK") { dialog, which ->
-                GlobalModel.calendarModel!!.deleteItem(guid)
+                GlobalModel.CalendarModel.deleteItem(guid)
                 finish()
             }
 

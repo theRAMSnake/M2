@@ -19,11 +19,11 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_settings)
 
         val txtView = findViewById(R.id.edtIP) as TextView
-        txtView.setText(GlobalModel.ip)
+        txtView.setText(GlobalModel.Ip)
 
         (findViewById(R.id.btnSave) as Button).setOnClickListener {
             val ip = txtView.text.toString()
-            GlobalModel.setNewIp(ip)
+            GlobalModel.Ip = ip
 
             val myIntent = Intent(this@SettingsActivity, SyncActivity::class.java)
             this@SettingsActivity.startActivity(myIntent)

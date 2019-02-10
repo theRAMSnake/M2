@@ -41,8 +41,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         mWpBtn = findViewById(R.id.btnWp) as Button
         mWpBtn!!.setOnClickListener(this@MainActivity)
-
-        GlobalModel.init(applicationContext)
     }
 
     override fun onClick(v: View) {

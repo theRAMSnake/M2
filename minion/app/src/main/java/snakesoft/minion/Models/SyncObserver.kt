@@ -2,7 +2,7 @@ package snakesoft.minion.Models
 
 import java.util.Vector
 
-internal class SyncedEntity(var name: String) {
+data class SyncedEntity(val name: String) {
     var changed = 0
     var added = 0
     var loaded = 0
@@ -11,14 +11,14 @@ internal class SyncedEntity(var name: String) {
 
 class SyncObserver {
 
-    private val mSyncedEntities = Vector<SyncedEntity>()
-    private var mSyncedEntity: SyncedEntity? = null
+    private val SyncedEntities = mutableListOf<SyncedEntity>()
+    private var SyncedEntity = SyncedEntity("")
 
-    val log: String
+    val Log: String
         get() {
             val b = StringBuilder()
 
-            for (en in mSyncedEntities) {
+            for (en in SyncedEntities) {
                 b.append(en.name)
                 b.append(System.lineSeparator())
 
@@ -41,29 +41,34 @@ class SyncObserver {
             return b.toString()
         }
 
-    fun beginSync(name: String) {
-        mSyncedEntity = SyncedEntity(name)
+    fun beginSync(name: String)
+    {
+        SyncedEntity = SyncedEntity(name)
     }
 
-    fun endSync() {
-        if (mSyncedEntity != null) {
-            mSyncedEntities.add(mSyncedEntity)
-        }
+    fun endSync()
+    {
+        SyncedEntities.add(SyncedEntity)
+        SyncedEntity = SyncedEntity("")
     }
 
-    fun itemChanged() {
-        mSyncedEntity!!.changed++
+    fun itemChanged()
+    {
+        SyncedEntity.changed++
     }
 
-    fun itemDeleted() {
-        mSyncedEntity!!.deleted++
+    fun itemDeleted()
+    {
+        SyncedEntity.deleted++
     }
 
-    fun itemAdded() {
-        mSyncedEntity!!.added++
+    fun itemAdded()
+    {
+        SyncedEntity.added++
     }
 
-    fun itemLoaded(itemsCount: Int) {
-        mSyncedEntity!!.loaded += itemsCount
+    fun itemLoaded(itemsCount: Int)
+    {
+        SyncedEntity.loaded += itemsCount
     }
 }
