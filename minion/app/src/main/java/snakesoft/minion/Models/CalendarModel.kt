@@ -20,9 +20,7 @@ data class CalendarItem(
 
 class CalendarModel(private val Db: LocalDatabase)
 {
-    private var Items: MutableMap<java.util.UUID, CalendarItem> = mutableMapOf()
-    val AllItems: List<CalendarItem>
-        get() = Items.values.toList()
+    var Items = TrackedCollection<CalendarItem>()
 
     init
     {
