@@ -13,6 +13,7 @@ import android.widget.TextView
 import common.Common
 import inbox.Inbox
 import snakesoft.minion.Models.GlobalModel
+import snakesoft.minion.Models.InboxItem
 import snakesoft.minion.R
 
 class InboxItemViewActivity : AppCompatActivity(), View.OnClickListener {
@@ -47,15 +48,13 @@ class InboxItemViewActivity : AppCompatActivity(), View.OnClickListener {
         if (v === mAcceptBtn) {
             val txtView = findViewById(R.id.txtText) as TextView
 
-            val result = Inbox.InboxItemInfo.newBuilder()
-                    .setText(txtView.text.toString())
-                    .setId(Common.UniqueId.newBuilder().setGuid(guid).build())
-                    .build()
+            val result = InboxItem(java.util.UUID.fromString(guid),
+                    txtView.text.toString())
 
             if (intent.getBooleanExtra("IsNewItem", false)) {
-                GlobalModel.InboxModel.addItem(result)
+                GlobalModel.InboxModel.Items.add(result)
             } else {
-                GlobalModel.InboxModel.modifyItem(result)
+                GlobalModel.InboxModel.Items.replace(result)
             }
 
             finish()
@@ -65,7 +64,7 @@ class InboxItemViewActivity : AppCompatActivity(), View.OnClickListener {
             dlgAlert.setMessage("Are you sure?")
             dlgAlert.setTitle("Caution")
             dlgAlert.setPositiveButton("OK") { dialog, which ->
-                GlobalModel.InboxModel.deleteItem(guid)
+                GlobalModel.InboxModel.Items.delete(java.util.UUID.fromString(guid))
                 finish()
             }
 

@@ -15,16 +15,18 @@ import calendar.Calendar
 import snakesoft.minion.Models.GlobalModel
 import snakesoft.minion.R
 
-class CalendarActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
+class CalendarActivity : AppCompatActivity()
+{
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_calendar)
 
-        val mEventDays = ArrayList<EventDay>()
-        val mCalendarView = findViewById(R.id.cal_cal_view) as CalendarView
+        val eventDays = ArrayList<EventDay>()
+        val calendarView = findViewById(R.id.cal_cal_view) as CalendarView
 
-        for (item in GlobalModel.CalendarModel.AllItems) {
+        for (item in GlobalModel.CalendarModel.Items)
+        {
             val cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"))
             cal.timeInMillis = item.timestamp * 1000
 
@@ -36,14 +38,15 @@ class CalendarActivity : AppCompatActivity() {
                     cal.get(java.util.Calendar.MONTH),
                     cal.get(java.util.Calendar.DAY_OF_MONTH))
 
-            mEventDays.add(EventDay(
+            eventDays.add(EventDay(
                     calForEventDay,
                     resources.getIdentifier("@mipmap/event", "mipmap", packageName)))
         }
 
-        mCalendarView.setEvents(mEventDays)
-        mCalendarView.setOnDayClickListener { eventDay ->
-            if (eventDay != null) {
+        calendarView.setEvents(eventDays)
+        calendarView.setOnDayClickListener { eventDay ->
+            if (eventDay != null)
+            {
                 val myIntent = Intent(this@CalendarActivity, CalendarDayViewActivity::class.java)
 
                 //Here we must recreate calendar item with UTC timezone, preserving the date only

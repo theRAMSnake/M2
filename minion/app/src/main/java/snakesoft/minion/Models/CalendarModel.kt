@@ -12,11 +12,12 @@ import snakesoft.minion.materia.toProto
 
 @Serializable
 data class CalendarItem(
-        val id: java.util.UUID,
+        @ContextualSerialization
+        override var id: java.util.UUID,
         var text: String,
         var timestamp: Long,
-        var trackingInfo: StatusOfChange = StatusOfChange.None
-    )
+        override var trackingInfo: StatusOfChange = StatusOfChange.None
+    ) : ITrackable
 
 class CalendarModel(private val Db: LocalDatabase)
 {
@@ -25,6 +26,8 @@ class CalendarModel(private val Db: LocalDatabase)
     init
     {
         loadState()
+
+        Items.OnChanged += {saveState()}
     }
 
     @Throws(MateriaUnreachableException::class)
@@ -36,29 +39,30 @@ class CalendarModel(private val Db: LocalDatabase)
 
         for (i in Items)
         {
-            when(i.value.trackingInfo)
+            when(i.trackingInfo)
             {
                 StatusOfChange.Edit ->
                 {
-                    proxy.editItem(toProto(i.value))
+                    proxy.editItem(toProto(i))
                     observer.itemChanged()
                 }
                 StatusOfChange.Delete ->
                 {
-                    proxy.deleteItem(toProto(i.key))
+                    proxy.deleteItem(toProto(i.id))
                     observer.itemDeleted()
                 }
                 StatusOfChange.Add ->
                 {
-                    proxy.addItem(toProto(i.value))
+                    proxy.addItem(toProto(i))
                     observer.itemAdded()
                 }
+                else -> {}
             }
         }
 
         val queried = queryAllItems(proxy)
 
-        Items = queried.associate{ it.id to it }.toMutableMap()
+        Items = TrackedCollection(queried)
 
         observer.itemLoaded(Items.size)
 
@@ -67,39 +71,9 @@ class CalendarModel(private val Db: LocalDatabase)
         observer.endSync()
     }
 
-    fun replaceItem(item: CalendarItem)
-    {
-        var newItem = item
-
-        if(newItem.trackingInfo != StatusOfChange.Add)
-        {
-            newItem.trackingInfo = StatusOfChange.Edit
-        }
-
-        Items[newItem.id] = newItem
-
-        saveState()
-    }
-
-    fun deleteItem(id: java.util.UUID)
-    {
-        Items[id]!!.trackingInfo = StatusOfChange.Delete
-
-        saveState()
-    }
-
-    fun addItem(item: CalendarItem)
-    {
-        val newItem = CalendarItem(UUID.randomUUID(), item.text, item.timestamp, StatusOfChange.Add)
-
-        Items[newItem.id] = newItem
-
-        saveState()
-    }
-
     private fun saveState()
     {
-        val json = Json.stringify(CalendarItem.serializer().list, Items.values.toList())
+        val json = Json.stringify(CalendarItem.serializer().list, Items.toList())
 
         Db.put("CalendarItems", json)
     }
@@ -127,7 +101,7 @@ class CalendarModel(private val Db: LocalDatabase)
     {
         try
         {
-            Items = Json.parse(CalendarItem.serializer().list, Db["CalendarItems"]).associate { it.id to it }.toMutableMap()
+            Items = TrackedCollection(Json.parse(CalendarItem.serializer().list, Db["CalendarItems"]))
         }
         catch(ex: Exception)
         {

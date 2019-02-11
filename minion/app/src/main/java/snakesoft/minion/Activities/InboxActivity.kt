@@ -14,18 +14,18 @@ import inbox.Inbox
 import snakesoft.minion.Models.GlobalModel
 import snakesoft.minion.R
 
-class InboxActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
+class InboxActivity : AppCompatActivity(), AdapterView.OnItemClickListener
+{
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_inbox)
 
         val itemsAsString = Vector<String>()
-        if (GlobalModel.InboxModel.items != null) {
-            itemsAsString.add("New...")
-            for (x in GlobalModel.InboxModel.items) {
-                itemsAsString.add(x.getText())
-            }
+        itemsAsString.add("New...")
+        for (x in GlobalModel.InboxModel.Items)
+        {
+            itemsAsString.add(x.text)
         }
 
         val itemsAdapter = ArrayAdapter(this,
@@ -49,14 +49,14 @@ class InboxActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
     override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
         if (position != 0) {
             val myIntent = Intent(this@InboxActivity, InboxItemViewActivity::class.java)
-            myIntent.putExtra("Text", GlobalModel.InboxModel.items.get(position - 1).getText())
-            myIntent.putExtra("Id", GlobalModel.InboxModel.items.get(position - 1).getId().getGuid())
+            myIntent.putExtra("Text", GlobalModel.InboxModel.Items[position - 1].text)
+            myIntent.putExtra("Id", GlobalModel.InboxModel.Items[position - 1].id.toString())
             myIntent.putExtra("IsNewItem", false)
             this@InboxActivity.startActivityForResult(myIntent, 1)
         } else {
             val myIntent = Intent(this@InboxActivity, InboxItemViewActivity::class.java)
             myIntent.putExtra("IsNewItem", true)
-            myIntent.putExtra("Id", GlobalModel.InboxModel.newId)
+            myIntent.putExtra("Id", java.util.UUID.randomUUID().toString())
             this@InboxActivity.startActivityForResult(myIntent, 1)
         }
     }

@@ -15,23 +15,25 @@ import snakesoft.minion.Models.GlobalModel
 import snakesoft.minion.R
 
 class CalendarDayViewActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
-    private var mItems: List<CalendarItem>? = null
-    private var mTimeStamp: Long = 0
+    private var Items: List<CalendarItem>? = null
+    private var TimeStamp: Long = 0
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_calendar_day_view)
 
         val timestamp = intent.getLongExtra("TimestampOnMidnight", 0)
 
         val itemsAsString = Vector<String>()
-        mTimeStamp = timestamp / 1000
+        TimeStamp = timestamp / 1000
         val to = getNextDayInMillis(timestamp) / 1000
 
         itemsAsString.add("New...")
 
-        mItems = GlobalModel.CalendarModel.AllItems.filter { it.timestamp >= mTimeStamp && it.timestamp <= to }
-        for (item in mItems!!) {
+        Items = GlobalModel.CalendarModel.Items.filter { it.timestamp in TimeStamp..to }
+        for (item in Items!!)
+        {
             val calendar = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"))
             calendar.timeInMillis = item.timestamp * 1000
 
@@ -56,33 +58,40 @@ class CalendarDayViewActivity : AppCompatActivity(), AdapterView.OnItemClickList
         listView.onItemClickListener = this
     }
 
-    private fun getNextDayInMillis(millis: Long): Long {
+    private fun getNextDayInMillis(millis: Long): Long
+    {
         // Add one day's time to the beginning of the day.
         // 24 hours * 60 minutes * 60 seconds * 1000 milliseconds = 1 day
         return millis + 24 * 60 * 60 * 1000
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent)
+    {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == 1) {
+        if (requestCode == 1)
+        {
             recreate()
         }
     }
 
-    override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-        if (position != 0) {
+    override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long)
+    {
+        if (position != 0)
+        {
             val myIntent = Intent(this@CalendarDayViewActivity, CalendarItemViewActivity::class.java)
-            myIntent.putExtra("Text", mItems!![position - 1].text)
-            myIntent.putExtra("Timestamp", mItems!![position - 1].timestamp)
+            myIntent.putExtra("Text", Items!![position - 1].text)
+            myIntent.putExtra("Timestamp", Items!![position - 1].timestamp)
             myIntent.putExtra("IsNewItem", false)
-            myIntent.putExtra("Id", mItems!![position - 1].id)
+            myIntent.putExtra("Id", Items!![position - 1].id.toString())
             startActivityForResult(myIntent, 1)
-        } else {
+        }
+        else
+        {
             val myIntent = Intent(this@CalendarDayViewActivity, CalendarItemViewActivity::class.java)
             myIntent.putExtra("IsNewItem", true)
-            myIntent.putExtra("Timestamp", mTimeStamp)
-            myIntent.putExtra("Id", java.util.UUID.randomUUID())
+            myIntent.putExtra("Timestamp", TimeStamp)
+            myIntent.putExtra("Id", java.util.UUID.randomUUID().toString())
             startActivityForResult(myIntent, 1)
         }
     }

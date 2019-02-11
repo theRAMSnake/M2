@@ -1,180 +1,108 @@
 package snakesoft.minion.Models
 
-import com.google.protobuf.InvalidProtocolBufferException
+import calendar.Calendar
 
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.util.Vector
+import kotlinx.serialization.*
+import kotlinx.serialization.json.Json
+import snakesoft.minion.materia.*
 
-import inbox.Inbox
-import inbox.Inbox.InboxItems
-import snakesoft.minion.materia.InboxServiceProxy
-import snakesoft.minion.materia.MateriaUnreachableException
+@Serializable
+data class InboxItem(
+        @ContextualSerialization
+        override var id: java.util.UUID,
+        var text: String,
+        override var trackingInfo: StatusOfChange = StatusOfChange.None
+) : ITrackable
 
-class InboxModel(private val Db: LocalDatabase) {
+class InboxModel(private val Db: LocalDatabase)
+{
+    var Items = TrackedCollection<InboxItem>()
 
-    val items: List<Inbox.InboxItemInfo>
-        get() {
-            val result = Vector<Inbox.InboxItemInfo>()
+    init
+    {
+        loadState()
 
-            for (i in 0 until mItems!!.itemsCount) {
-                if (mItemsChanges[i].type != StatusOfChange.Type.Delete && mItemsChanges[i].type != StatusOfChange.Type.Junk) {
-                    result.add(mItems!!.getItems(i))
-                }
-            }
-
-            return result
-        }
-
-    val newId: String
-        get() = Integer.toString(++mLastVirtualId)
-
-    private var mLastVirtualId = 0
-    private var mItems: InboxItems? = null
-    private var mLocalDb: LocalDatabase? = null
-    private val mItemsChanges: Vector<StatusOfChange>
-
-    init {
-        mItemsChanges = Vector()
+        Items.OnChanged += {saveState()}
     }
 
     @Throws(MateriaUnreachableException::class)
-    fun sync(observer: SyncObserver) {
-        try {
-            observer.beginSync("Inbox")
-            for (i in mItemsChanges.indices) {
-                if (mItemsChanges[i].type == StatusOfChange.Type.Edit) {
-                    mProxy.editItem(mItems!!.getItems(i))
+    fun sync(observer: SyncObserver, connection: MateriaConnection)
+    {
+        observer.beginSync("Inbox")
+
+        val proxy = InboxServiceProxy(connection)
+
+        for (i in Items)
+        {
+            when(i.trackingInfo)
+            {
+                StatusOfChange.Edit ->
+                {
+                    proxy.editItem(toProto(i))
                     observer.itemChanged()
-                } else if (mItemsChanges[i].type == StatusOfChange.Type.Delete) {
-                    mProxy.deleteItem(mItems!!.getItems(i).id)
+                }
+                StatusOfChange.Delete ->
+                {
+                    proxy.deleteItem(toProto(i.id))
                     observer.itemDeleted()
-                } else if (mItemsChanges[i].type == StatusOfChange.Type.Add) {
-                    mProxy.addItem(mItems!!.getItems(i))
+                }
+                StatusOfChange.Add ->
+                {
+                    proxy.addItem(toProto(i))
                     observer.itemAdded()
                 }
+                else -> {}
             }
-
-            mItemsChanges.clear()
-
-            mItems = mProxy.inbox
-            for (i in 0 until mItems!!.itemsCount) {
-                mItemsChanges.addElement(StatusOfChange())
-            }
-
-            observer.itemLoaded(mItems!!.itemsCount)
-        } catch (ex: InvalidProtocolBufferException) {
-
         }
+
+        val queried = queryAllItems(proxy)
+
+        Items = TrackedCollection(queried)
+
+        observer.itemLoaded(Items.size)
 
         saveState()
 
         observer.endSync()
     }
 
-    fun resetChanges() {
-        mItemsChanges.clear()
+    private fun saveState()
+    {
+        val json = Json.stringify(InboxItem.serializer().list, Items.toList())
+
+        Db.put("InboxItems", json)
     }
 
-    fun modifyItem(item: Inbox.InboxItemInfo) {
-        for (i in 0 until mItems!!.itemsCount) {
-            if (mItems!!.getItems(i).id.guid == item.id.guid) {
-                mItems = InboxItems.newBuilder(mItems).setItems(i, item).build()
+    @Throws(MateriaUnreachableException::class)
+    private fun queryAllItems(proxy: InboxServiceProxy): List<InboxItem>
+    {
+        val result = mutableListOf<InboxItem>()
 
-                if (mItemsChanges[i].type != StatusOfChange.Type.Add) {
-                    val ch = StatusOfChange()
-                    ch.type = StatusOfChange.Type.Edit
-                    mItemsChanges[i] = ch
-                }
+        val queryResult = proxy.loadInbox()
 
-                break
-            }
+        for(x in queryResult.itemsList)
+        {
+            result.add(InboxItem(java.util.UUID.fromString(x.id.guid), x.text))
         }
 
-        saveState()
-    }
-
-    fun deleteItem(guid: String) {
-        for (i in 0 until mItems!!.itemsCount) {
-            if (mItems!!.getItems(i).id.guid == guid) {
-                val newStatus = StatusOfChange()
-
-                newStatus.type = if (mItemsChanges[i].type == StatusOfChange.Type.Add)
-                    StatusOfChange.Type.Junk
-                else
-                    StatusOfChange.Type.Delete
-
-                mItemsChanges[i] = newStatus
-                break
-            }
-        }
-
-        saveState()
-    }
-
-    fun addItem(item: Inbox.InboxItemInfo) {
-        mItems = InboxItems.newBuilder(mItems).addItems(item).build()
-
-        val ch = StatusOfChange()
-        ch.type = StatusOfChange.Type.Add
-        mItemsChanges.add(ch)
-
-        saveState()
+        return result
     }
 
     @Throws(Exception::class)
-    fun loadState(localDb: LocalDatabase) {
-        mLocalDb = localDb
-        try {
-            mItems = InboxItems.parseFrom(localDb.get("InboxItems"))
-            val byteStream = ByteArrayInputStream(localDb.get("InboxItemsStatus"))
-            var next = byteStream.read()
-            while (next != -1) {
-                val ch = StatusOfChange()
-                ch.type = StatusOfChange.Type.values()[next]
-                mItemsChanges.add(ch)
-
-                next = byteStream.read()
-            }
-
-            assert(mItemsChanges.size == mItems!!.itemsCount)
-
-            for (i in 0 until mItems!!.itemsCount) {
-                if (mItems!!.getItems(i).id.guid.length < 10) {
-                    val curVirtualId = Integer.parseInt(mItems!!.getItems(i).id.guid)
-                    if (curVirtualId > mLastVirtualId) {
-                        mLastVirtualId = curVirtualId
-                    }
-                }
-            }
-        } catch (ex: InvalidProtocolBufferException) {
-
-        } catch (ex: NullPointerException) {
-            //no data in db case
-            if (mItems!!.itemsCount != mItemsChanges.size) {
-                for (i in 0 until mItems!!.itemsCount) {
-                    mItemsChanges.addElement(StatusOfChange())
-                }
-            }
+    private fun loadState()
+    {
+        try
+        {
+            Items = TrackedCollection(Json.parse(InboxItem.serializer().list, Db["InboxItems"]))
         }
+        catch(ex: Exception)
+        {
 
-        //db check
-        if (mItems!!.itemsCount != mItemsChanges.size) {
-            throw Exception("Inconsistent DB!")
         }
     }
 
-    fun saveState() {
-        mLocalDb!!.put("InboxItems", mItems!!.toByteArray())
-
-        val bos = ByteArrayOutputStream()
-
-        for (x in mItemsChanges) {
-            bos.write(x.type.ordinal)
-        }
-
-        mLocalDb!!.put("InboxItemsStatus", bos.toByteArray())
+    fun clear()
+    {
+        Items.clear()
     }
-
-
 }

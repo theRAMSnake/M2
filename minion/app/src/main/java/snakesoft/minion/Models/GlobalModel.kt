@@ -52,7 +52,7 @@ object GlobalModel
             val newSyncObserver = SyncObserver()
             val connection = MateriaConnection(Ip)
 
-            InboxModel.sync(newSyncObserver)
+            InboxModel.sync(newSyncObserver, connection)
             CalendarModel.sync(newSyncObserver, connection)
 
             LastSyncLog = newSyncObserver.Log
@@ -77,7 +77,7 @@ object GlobalModel
 
     fun reset()
     {
-        InboxModel.resetChanges()
+        InboxModel.clear()
         CalendarModel.clear()
     }
 }

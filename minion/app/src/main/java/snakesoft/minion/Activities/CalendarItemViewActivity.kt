@@ -18,10 +18,11 @@ import snakesoft.minion.R
 
 class CalendarItemViewActivity : AppCompatActivity(), View.OnClickListener {
 
-    private var mBtnDelete: Button? = null
-    private var mAcceptBtn: Button? = null
+    private var BtnDelete: Button? = null
+    private var AcceptBtn: Button? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_calendar_item_view)
 
@@ -34,18 +35,20 @@ class CalendarItemViewActivity : AppCompatActivity(), View.OnClickListener {
         val txtViewDate = findViewById(R.id.cal_txtTextDate) as TextView
         txtViewDate.text = getDateText(intent.getLongExtra("Timestamp", 0))
 
-        mAcceptBtn = findViewById(R.id.cal_btnAccept) as Button
-        mAcceptBtn!!.setOnClickListener(this@CalendarItemViewActivity)
+        AcceptBtn = findViewById(R.id.cal_btnAccept) as Button
+        AcceptBtn!!.setOnClickListener(this@CalendarItemViewActivity)
 
-        mBtnDelete = findViewById(R.id.cal_btnDelete) as Button
-        mBtnDelete!!.setOnClickListener(this@CalendarItemViewActivity)
+        BtnDelete = findViewById(R.id.cal_btnDelete) as Button
+        BtnDelete!!.setOnClickListener(this@CalendarItemViewActivity)
 
-        if (intent.getBooleanExtra("IsNewItem", false)) {
-            mBtnDelete!!.visibility = View.INVISIBLE
+        if (intent.getBooleanExtra("IsNewItem", false))
+        {
+            BtnDelete!!.visibility = View.INVISIBLE
         }
     }
 
-    private fun getDateText(timestamp: Long): String {
+    private fun getDateText(timestamp: Long): String
+    {
         val cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"))
         cal.timeInMillis = timestamp * 1000
 
@@ -62,7 +65,8 @@ class CalendarItemViewActivity : AppCompatActivity(), View.OnClickListener {
         return days + "/" + month + "/" + Integer.toString(cal.get(java.util.Calendar.YEAR))
     }
 
-    private fun getTimeText(timestamp: Long): String {
+    private fun getTimeText(timestamp: Long): String
+    {
         val cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"))
         cal.timeInMillis = timestamp * 1000
 
@@ -75,9 +79,11 @@ class CalendarItemViewActivity : AppCompatActivity(), View.OnClickListener {
                 minutes
     }
 
-    override fun onClick(v: View) {
+    override fun onClick(v: View)
+    {
         val guid = java.util.UUID.fromString(intent.getStringExtra("Id"))
-        if (v === mAcceptBtn) {
+        if (v === AcceptBtn)
+        {
             val txtView = findViewById(R.id.cal_txtText) as TextView
             val txtViewTime = findViewById(R.id.cal_txtTextTime) as TextView
             val txtViewDate = findViewById(R.id.cal_txtTextDate) as TextView
@@ -99,18 +105,19 @@ class CalendarItemViewActivity : AppCompatActivity(), View.OnClickListener {
             val result = CalendarItem(guid, txtView.text.toString(), timestamp);
 
             if (intent.getBooleanExtra("IsNewItem", false)) {
-                GlobalModel.CalendarModel.addItem(result)
+                GlobalModel.CalendarModel.Items.add(result)
             } else {
-                GlobalModel.CalendarModel.replaceItem(result)
+                GlobalModel.CalendarModel.Items.replace(result)
             }
             finish()
         }
-        if (v === mBtnDelete) {
+        if (v === BtnDelete)
+        {
             val dlgAlert = AlertDialog.Builder(this)
             dlgAlert.setMessage("Are you sure?")
             dlgAlert.setTitle("Caution")
-            dlgAlert.setPositiveButton("OK") { dialog, which ->
-                GlobalModel.CalendarModel.deleteItem(guid)
+            dlgAlert.setPositiveButton("OK") { _, _ ->
+                GlobalModel.CalendarModel.Items.delete(guid)
                 finish()
             }
 
@@ -119,15 +126,16 @@ class CalendarItemViewActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun parseTimeAndDateText(timeS: String, dateS: String): Long {
+    private fun parseTimeAndDateText(timeS: String, dateS: String): Long
+    {
         try {
             val cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"))
-            var values = timeS.split(":".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
+            var values = timeS.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
             val hours = Integer.valueOf(values[0])
             val minutes = Integer.valueOf(values[1])
 
-            values = dateS.split("/".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
+            values = dateS.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
             val day = Integer.valueOf(values[0])
             val month = Integer.valueOf(values[1]) - 1
