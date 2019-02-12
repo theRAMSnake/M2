@@ -17,7 +17,10 @@ dependencies {
     implementation 'org.zeromq:jeromq:0.4.0'
     implementation 'com.github.bmelnychuk:atv:1.2.+'
     implementation 'com.github.johnkil.print:print:1.2.2'
-    implementation 'com.applandeo:material-calendar-view:1.0.1'
+    //implementation 'com.applandeo:material-calendar-view:1.0.1'
+    implementation "org.jetbrains.anko:anko:$anko_version"
+    implementation "org.jetbrains.anko:anko-support-v4:$anko_version"
+    implementation "org.jetbrains.anko:anko-design:$anko_version"
     testImplementation 'junit:junit:4.12'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.10.0"
@@ -55,7 +58,7 @@ android {
         pickFirst 'META-INF/plexus/components.xml'
     }
 
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "snakesoft.minion"

@@ -1,14 +1,9 @@
 package snakesoft.minion.Models
 
-import android.content.Context
 import android.os.AsyncTask
-import android.widget.Toast
 
-import snakesoft.minion.materia.InboxServiceProxy
-import snakesoft.minion.materia.CalendarServiceProxy
 import snakesoft.minion.materia.MateriaConnection
 import snakesoft.minion.materia.MateriaUnreachableException
-import snakesoft.minion.Activities.SyncListener
 
 object GlobalModel
 {
