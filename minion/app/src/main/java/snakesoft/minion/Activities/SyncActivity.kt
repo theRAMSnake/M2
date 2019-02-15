@@ -1,29 +1,28 @@
 package snakesoft.minion.Activities
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import org.jetbrains.anko.AnkoViewDslMarker
 import org.jetbrains.anko.setContentView
 import org.jetbrains.anko.support.v4._DrawerLayout
 import org.jetbrains.anko.textView
 
-
-class MainActivity : AppCompatActivity()
+class SyncActivity : AppCompatActivity()
 {
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        MainActivityUI().setContentView(this)
+        SyncActivityUI().setContentView(this)
     }
 }
 
-class MainActivityUI : MateriaActivityUI<MainActivity>()
+class SyncActivityUI : MateriaActivityUI<SyncActivity>()
 {
     override fun fillActivityUI(_DrawerLayout:@AnkoViewDslMarker _DrawerLayout)
     {
         with(_DrawerLayout)
         {
-            textView("ddd")
+            textView("sss")
         }
     }
 }
