@@ -9,7 +9,9 @@ data class SyncedEntity(val name: String) {
     var deleted = 0
 }
 
-class SyncObserver {
+class SyncObserver
+{
+    val OnFinished = Event()
 
     private val SyncedEntities = mutableListOf<SyncedEntity>()
     private var SyncedEntity = SyncedEntity("")
@@ -70,5 +72,10 @@ class SyncObserver {
     fun itemLoaded(itemsCount: Int)
     {
         SyncedEntity.loaded += itemsCount
+    }
+
+    fun finish()
+    {
+        OnFinished()
     }
 }

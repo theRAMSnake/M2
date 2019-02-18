@@ -8,13 +8,6 @@ interface ITrackable
     var trackingInfo: StatusOfChange
 }
 
-class Event
-{
-    private val handlers = arrayListOf<(Event.() -> Unit)>()
-    operator fun plusAssign(handler: Event.() -> Unit) { handlers.add(handler) }
-    operator fun invoke() { for (handler in handlers) handler() }
-}
-
 class TrackedCollection<T: ITrackable> : Iterable<T>
 {
     private var Items: MutableMap<java.util.UUID, T> = mutableMapOf()

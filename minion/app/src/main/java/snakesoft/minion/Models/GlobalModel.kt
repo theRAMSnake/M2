@@ -7,7 +7,7 @@ import snakesoft.minion.materia.MateriaUnreachableException
 
 object GlobalModel
 {
-    var Ip: String = ""
+    var Ip: String = "188.116.57.62"
         set(value)
         {
             field = value
@@ -19,9 +19,8 @@ object GlobalModel
     val InboxModel = InboxModel(Db)
     val CalendarModel = CalendarModel(Db)
     val WpModel = WpModel(Db)
-    var LastSyncLog = ""
 
-    internal class SyncAllTask : AsyncTask<SyncListener, Void, SyncListener>()
+    /*internal class SyncAllTask : AsyncTask<SyncListener, Void, SyncListener>()
     {
         private var mSyncResult: Boolean = false
         override fun doInBackground(vararg p: SyncListener): SyncListener
@@ -38,19 +37,18 @@ object GlobalModel
                 listener.onSyncError()
             }
         }
-    }
+    }*/
 
-    internal fun doSync(): Boolean
+    internal fun doSync(syncObserver: SyncObserver): Boolean
     {
         return try
         {
-            val newSyncObserver = SyncObserver()
             val connection = MateriaConnection(Ip)
 
-            InboxModel.sync(newSyncObserver, connection)
-            CalendarModel.sync(newSyncObserver, connection)
+            InboxModel.sync(syncObserver, connection)
+            CalendarModel.sync(syncObserver, connection)
 
-            LastSyncLog = newSyncObserver.Log
+            syncObserver.finish()
 
             true
         }
@@ -63,11 +61,6 @@ object GlobalModel
     init
     {
         Ip = Db["Settings.IP"]
-    }
-
-    fun sync(listener: SyncListener)
-    {
-        SyncAllTask().execute(listener)
     }
 
     fun reset()

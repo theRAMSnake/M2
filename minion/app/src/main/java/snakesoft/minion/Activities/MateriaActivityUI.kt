@@ -21,7 +21,6 @@ fun createStateColors(): ColorStateList
     return ColorStateList(states, colors)
 }
 
-
 abstract class MateriaActivityUI<Activity> : AnkoComponent<Activity>
 {
     override fun createView(ui: AnkoContext<Activity>) = with(ui)
@@ -35,28 +34,16 @@ abstract class MateriaActivityUI<Activity> : AnkoComponent<Activity>
                 lparams(width = matchParent, height = matchParent, gravity = Gravity.START)
                 foregroundGravity = Gravity.START
 
+                fillActivityUI(this)
+
                 navigationView()
                 {
                     backgroundColor = Color.rgb(88, 88, 88)
                     itemTextColor = createStateColors()
 
-                    setNavigationItemSelectedListener()
-                    {
-                        startActivity<SyncActivity>()
-                        true
-                    }
+                    UIManager.fillNavigationMenu(menu, ui)
 
-                    menu.add("Sync").setOnMenuItemClickListener()
-                    {
-                        startActivity<SyncActivity>()
-                        true
-                    }
-                    menu.add("Inbox")
-                    menu.add("Calendar")
-                    menu.add("Settings")
                 }.lparams(width = wrapContent, height = matchParent, gravity = Gravity.START)
-
-                fillActivityUI(this)
             }
         }
     }
