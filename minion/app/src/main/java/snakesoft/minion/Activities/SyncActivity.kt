@@ -9,21 +9,20 @@ import snakesoft.minion.Models.SyncObserver
 
 class SyncActivity : AppCompatActivity()
 {
-    val SyncObserver = snakesoft.minion.Models.SyncObserver()
-
     override fun onCreate(savedInstanceState: Bundle?)
     {
+        val syncObserver = snakesoft.minion.Models.SyncObserver()
         super.onCreate(savedInstanceState)
-        SyncActivityUI(SyncObserver).setContentView(this)
+        SyncActivityUI(syncObserver).setContentView(this)
 
         doAsync()
         {
-            GlobalModel.doSync(SyncObserver)
+            GlobalModel.doSync(syncObserver)
         }
     }
 }
 
-class SyncActivityUI(val SyncObserver: SyncObserver) : MateriaActivityUI<SyncActivity>()
+class SyncActivityUI(private val SyncObserver: SyncObserver) : MateriaActivityUI<SyncActivity>()
 {
     override fun fillActivityUI(_DrawerLayout:@AnkoViewDslMarker _DrawerLayout)
     {

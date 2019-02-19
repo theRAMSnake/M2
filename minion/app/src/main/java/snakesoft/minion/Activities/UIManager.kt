@@ -7,14 +7,15 @@ object UIManager
 {
     fun <T> fillNavigationMenu(menu: Menu, c: AnkoContext<T>)
     {
-        addMenuItem(menu, "Sync", c)
+        addMenuItem<SyncActivity, T>(menu, "Sync", c)
+        addMenuItem<InboxActivity, T>(menu, "Inbox", c)
 
         //menu.add("Inbox")
         //menu.add("Calendar")
         //menu.add("Settings")
     }
 
-    private fun <T> addMenuItem(menu: Menu, text: String, c: AnkoContext<T>)
+    private inline fun <reified A : Activity, T> addMenuItem(menu: Menu, text: String, c: AnkoContext<T>)
     {
         val context = c.ctx
         if(context is Activity)
@@ -22,7 +23,7 @@ object UIManager
             menu.add(text).setOnMenuItemClickListener()
             {
                 context.finish()
-                c.startActivity<SyncActivity>()
+                c.startActivity<A>()
                 true
             }
         }
