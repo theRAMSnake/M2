@@ -67,7 +67,6 @@ class InboxActivityUI : MateriaActivityUI<InboxActivity>()
 
                 onItemClick { _, _, pos: Int, _ ->
                     showInboxItemActivity(GlobalModel.InboxModel.Items[pos], ctx)
-                    true
                 }
             }
 
@@ -84,6 +83,6 @@ class InboxActivityUI : MateriaActivityUI<InboxActivity>()
 
     private fun showInboxItemActivity(inboxItem: InboxItem, ctx: Context)
     {
-        ctx.startActivity<InboxItemActivity>("item" to inboxItem)
+        //ctx.startActivity<InboxItemActivity>("item" to inboxItem)
     }
 }

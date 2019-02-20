@@ -4,15 +4,13 @@ import calendar.Calendar
 import snakesoft.minion.materia.CalendarServiceProxy
 import snakesoft.minion.materia.MateriaConnection
 import snakesoft.minion.materia.MateriaUnreachableException
-import java.util.*
-
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import snakesoft.minion.materia.toProto
 
 @Serializable
 data class CalendarItem(
-        @ContextualSerialization
+        @Serializable(with = UUIDSerializer::class)
         override var id: java.util.UUID,
         var text: String,
         var timestamp: Long,

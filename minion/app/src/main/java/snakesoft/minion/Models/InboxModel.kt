@@ -8,7 +8,7 @@ import snakesoft.minion.materia.*
 
 @Serializable
 data class InboxItem(
-        @ContextualSerialization
+        @Serializable(with = UUIDSerializer::class)
         override var id: java.util.UUID,
         var text: String,
         override var trackingInfo: StatusOfChange = StatusOfChange.None
