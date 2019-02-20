@@ -1,5 +1,6 @@
 package snakesoft.minion.Activities
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import org.jetbrains.anko.*
@@ -24,7 +25,7 @@ class SyncActivity : AppCompatActivity()
 
 class SyncActivityUI(private val SyncObserver: SyncObserver) : MateriaActivityUI<SyncActivity>()
 {
-    override fun fillActivityUI(_DrawerLayout:@AnkoViewDslMarker _DrawerLayout)
+    override fun fillActivityUI(_DrawerLayout: @AnkoViewDslMarker _DrawerLayout, ctx: Context)
     {
         with(_DrawerLayout)
         {

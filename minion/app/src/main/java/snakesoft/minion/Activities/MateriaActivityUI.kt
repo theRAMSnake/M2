@@ -1,5 +1,6 @@
 package snakesoft.minion.Activities
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.Gravity
@@ -34,7 +35,7 @@ abstract class MateriaActivityUI<Activity> : AnkoComponent<Activity>
                 lparams(width = matchParent, height = matchParent, gravity = Gravity.START)
                 foregroundGravity = Gravity.START
 
-                fillActivityUI(this)
+                fillActivityUI(this, ui.ctx)
 
                 navigationView()
                 {
@@ -48,5 +49,5 @@ abstract class MateriaActivityUI<Activity> : AnkoComponent<Activity>
         }
     }
 
-    abstract fun fillActivityUI(_DrawerLayout: @AnkoViewDslMarker _DrawerLayout)
+    abstract fun fillActivityUI(_DrawerLayout: @AnkoViewDslMarker _DrawerLayout, ctx: Context)
 }

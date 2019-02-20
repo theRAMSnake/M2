@@ -1,5 +1,6 @@
 package snakesoft.minion.Activities
 
+import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import org.jetbrains.anko.AnkoViewDslMarker
@@ -19,7 +20,7 @@ class MainActivity : AppCompatActivity()
 
 class MainActivityUI : MateriaActivityUI<MainActivity>()
 {
-    override fun fillActivityUI(_DrawerLayout:@AnkoViewDslMarker _DrawerLayout)
+    override fun fillActivityUI(_DrawerLayout: @AnkoViewDslMarker _DrawerLayout, ctx: Context)
     {
         with(_DrawerLayout)
         {

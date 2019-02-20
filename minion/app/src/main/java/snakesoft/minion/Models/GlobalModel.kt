@@ -60,7 +60,7 @@ object GlobalModel
 
     init
     {
-        Ip = Db["Settings.IP"]
+        //Ip = Db["Settings.IP"]
     }
 
     fun reset()

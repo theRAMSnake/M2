@@ -1,13 +1,18 @@
 package snakesoft.minion.Activities
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import org.jetbrains.anko.*
+import org.jetbrains.anko.design.floatingActionButton
+import org.jetbrains.anko.sdk27.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onItemClick
 import org.jetbrains.anko.support.v4._DrawerLayout
 import snakesoft.minion.Models.GlobalModel
+import snakesoft.minion.Models.InboxItem
 
 class InboxActivity : AppCompatActivity()
 {
@@ -52,14 +57,33 @@ class InboxAdapter : BaseAdapter()
 
 class InboxActivityUI : MateriaActivityUI<InboxActivity>()
 {
-    override fun fillActivityUI(_DrawerLayout:@AnkoViewDslMarker _DrawerLayout)
+    override fun fillActivityUI(_DrawerLayout: @AnkoViewDslMarker _DrawerLayout, ctx: Context)
     {
         with(_DrawerLayout)
         {
             listView()
             {
                 adapter = InboxAdapter()
+
+                onItemClick { _, _, pos: Int, _ ->
+                    showInboxItemActivity(GlobalModel.InboxModel.Items[pos], ctx)
+                    true
+                }
+            }
+
+            floatingActionButton()
+            {
+                imageResource = android.R.drawable.ic_input_add
+                onClick()
+                {
+                    showInboxItemActivity(GlobalModel.InboxModel.createItemTemplate(), ctx)
+                }
             }
         }
+    }
+
+    private fun showInboxItemActivity(inboxItem: InboxItem, ctx: Context)
+    {
+        ctx.startActivity<InboxItemActivity>("item" to inboxItem)
     }
 }
