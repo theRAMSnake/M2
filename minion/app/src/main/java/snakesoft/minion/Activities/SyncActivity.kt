@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import org.jetbrains.anko.*
 import org.jetbrains.anko.support.v4._DrawerLayout
+import snakesoft.minion.Models.Event1
 import snakesoft.minion.Models.GlobalModel
 import snakesoft.minion.Models.SyncObserver
 
@@ -14,16 +15,22 @@ class SyncActivity : AppCompatActivity()
     {
         val syncObserver = snakesoft.minion.Models.SyncObserver()
         super.onCreate(savedInstanceState)
-        SyncActivityUI(syncObserver).setContentView(this)
+
+        val onSyncFinished = Event1<String>()
+        SyncActivityUI(onSyncFinished).setContentView(this)
 
         doAsync()
         {
             GlobalModel.doSync(syncObserver)
+            uiThread()
+            {
+                onSyncFinished(syncObserver.Log)
+            }
         }
     }
 }
 
-class SyncActivityUI(private val SyncObserver: SyncObserver) : MateriaActivityUI<SyncActivity>()
+class SyncActivityUI(private val onSyncFinished: Event1<String>) : MateriaActivityUI<SyncActivity>()
 {
     override fun fillActivityUI(_DrawerLayout: @AnkoViewDslMarker _DrawerLayout, ctx: Context)
     {
@@ -32,10 +39,7 @@ class SyncActivityUI(private val SyncObserver: SyncObserver) : MateriaActivityUI
             textView()
             {
                 singleLine = false
-
-                SyncObserver.OnFinished += {
-                    append(SyncObserver.Log)
-                }
+                onSyncFinished += { s -> append(s) }
             }
         }
     }

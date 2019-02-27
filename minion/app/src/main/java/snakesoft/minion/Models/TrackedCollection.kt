@@ -1,5 +1,6 @@
 package snakesoft.minion.Models
 
+import com.google.common.collect.ImmutableCollection
 import java.util.*
 
 interface ITrackable
@@ -15,7 +16,7 @@ class TrackedCollection<T: ITrackable> : Iterable<T>
     override operator fun iterator(): Iterator<T> = Items.values.iterator()
 
     val size: Int
-        get() = Items.size
+        get() = getAvailableItems().size
 
     val OnChanged = Event()
 
@@ -42,8 +43,17 @@ class TrackedCollection<T: ITrackable> : Iterable<T>
 
     fun delete(id: java.util.UUID)
     {
-        Items[id]!!.trackingInfo = StatusOfChange.Delete
+        val item = Items[id]!!
+        if(item.trackingInfo != StatusOfChange.Add)
+        {
+            item.trackingInfo = StatusOfChange.Delete
+        }
+        else
+        {
+            item.trackingInfo = StatusOfChange.Junk
+        }
 
+        Items[id] = item
         OnChanged()
     }
 
@@ -66,6 +76,28 @@ class TrackedCollection<T: ITrackable> : Iterable<T>
 
     operator fun get(i: Int): T
     {
-        return Items.values.elementAt(i)
+        return getAvailableItems().elementAt(i)
+    }
+
+    private fun getAvailableItems(): List<T>
+    {
+        return Items.values.filter { it.trackingInfo != StatusOfChange.Junk &&
+                it.trackingInfo != StatusOfChange.Delete }
+    }
+
+    fun restore(id: UUID)
+    {
+        val item = Items[id]!!
+        if(item.trackingInfo == StatusOfChange.Junk)
+        {
+            item.trackingInfo = StatusOfChange.Add
+        }
+        else
+        {
+            item.trackingInfo = StatusOfChange.None
+        }
+
+        Items[id] = item
+        OnChanged()
     }
 }

@@ -105,9 +105,4 @@ class InboxModel(private val Db: LocalDatabase)
     {
         Items.clear()
     }
-
-    fun createItemTemplate(): InboxItem
-    {
-        return InboxItem(java.util.UUID(0, 0), "")
-    }
 }
