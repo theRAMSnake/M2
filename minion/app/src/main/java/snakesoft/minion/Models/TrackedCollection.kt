@@ -79,7 +79,7 @@ class TrackedCollection<T: ITrackable> : Iterable<T>
         return getAvailableItems().elementAt(i)
     }
 
-    private fun getAvailableItems(): List<T>
+    fun getAvailableItems(): List<T>
     {
         return Items.values.filter { it.trackingInfo != StatusOfChange.Junk &&
                 it.trackingInfo != StatusOfChange.Delete }
@@ -99,5 +99,10 @@ class TrackedCollection<T: ITrackable> : Iterable<T>
 
         Items[id] = item
         OnChanged()
+    }
+
+    fun byId(id: UUID): T
+    {
+        return Items[id]!!
     }
 }

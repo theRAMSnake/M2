@@ -9,10 +9,7 @@ object UIManager
     {
         addMenuItem<SyncActivity, T>(menu, "Sync", c)
         addMenuItem<InboxActivity, T>(menu, "Inbox", c)
-
-        //menu.add("Inbox")
-        //menu.add("Calendar")
-        //menu.add("Settings")
+        addMenuItem<CalendarActivity, T>(menu, "Calendar", c)
     }
 
     private inline fun <reified A : Activity, T> addMenuItem(menu: Menu, text: String, c: AnkoContext<T>)
