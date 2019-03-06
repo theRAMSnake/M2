@@ -115,7 +115,6 @@ class InboxCollectionUIProvider(private val ctx: Context): ICollectionUIProvider
         GlobalModel.InboxModel.Items.restore(id)
         OnChanged()
     }
-
 }
 
 class InboxActivityUI : MateriaActivityUI<InboxActivity>()
