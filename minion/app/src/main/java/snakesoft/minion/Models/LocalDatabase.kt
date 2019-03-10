@@ -28,4 +28,10 @@ class LocalDatabase
         }
 
     }
+
+    fun contains(path: String): Boolean
+    {
+        val fullpath = Environment.getExternalStorageDirectory().absolutePath + "/" + path
+        return File(fullpath).exists()
+    }
 }

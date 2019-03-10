@@ -1,5 +1,6 @@
 package snakesoft.minion.Models
 
+import common.Common
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.list
@@ -35,11 +36,32 @@ class JournalModel(private val Db: LocalDatabase)
         observer.beginSync("Journal")
 
         val proxy = JournalServiceProxy(connection)
-        Items = queryIndex(proxy)
+        val newItems = queryIndex(proxy)
 
+        for(x in newItems)
+        {
+            if(x.isPage)
+            {
+                val oldItem = Items.find{it.id == x.id}
+                if(oldItem == null || !Db.contains(x.id.toString()) ||
+                        oldItem.modifiedTimestamp < x.modifiedTimestamp)
+                {
+                    syncPage(x.id, proxy)
+                    observer.itemLoaded(1)
+                }
+            }
+        }
+
+        Items = newItems
         saveState()
 
         observer.endSync()
+    }
+
+    private fun syncPage(id: UUID, proxy: JournalServiceProxy)
+    {
+        val p = proxy.loadPage(Common.UniqueId.newBuilder().setGuid(id.toString()).build())
+        Db.put(id.toString(), p.content)
     }
 
     private fun saveState()
@@ -90,5 +112,17 @@ class JournalModel(private val Db: LocalDatabase)
     fun clear()
     {
         Items = listOf()
+    }
+
+    fun loadPage(itemId: UUID): String
+    {
+        try
+        {
+            return Db[itemId.toString()]
+        }
+        catch(ex: Exception)
+        {
+            return String()
+        }
     }
 }

@@ -4,14 +4,37 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.text.Html
 import android.view.View
 import com.unnamed.b.atv.model.TreeNode
 import org.jetbrains.anko.support.v4._DrawerLayout
 import com.unnamed.b.atv.view.AndroidTreeView
 import org.jetbrains.anko.*
+import org.jetbrains.anko.sdk27.coroutines.onClick
 import snakesoft.minion.Models.GlobalModel
 import snakesoft.minion.Models.JournalIndexItem
+import java.util.*
 
+class JournalItemActivity : AppCompatActivity()
+{
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+        JournalItemActivityUI(UUID.fromString(intent.getStringExtra("itemId"))).setContentView(this)
+    }
+}
+
+class JournalItemActivityUI(val itemId: UUID) : AnkoComponent<JournalItemActivity>
+{
+    override fun createView(ui: AnkoContext<JournalItemActivity>) = with(ui)
+    {
+        linearLayout {
+            webView {
+                loadData(GlobalModel.JournalModel.loadPage(itemId), "text/html", "UTF-8")
+            }
+        }
+    }
+}
 
 class JournalActivity : AppCompatActivity()
 {
@@ -30,7 +53,13 @@ class MyHolder(private val ctx: Context, val depth: Int): TreeNode.BaseNodeViewH
             relativeLayout {
                 textView(value!!.title) {
                     textSize = 32f
-                    textColor = if(value!!.isPage) Color.BLUE else Color.GREEN
+                    textColor = if(value.isPage) Color.BLUE else Color.GREEN
+
+                    if(value.isPage)
+                    {
+                        onClick { ctx.startActivity<JournalItemActivity>("id" to 5555,
+                                "itemId" to value.id.toString()) }
+                    }
                 }.lparams()
                 {
                     leftMargin = dip(20 * depth)
