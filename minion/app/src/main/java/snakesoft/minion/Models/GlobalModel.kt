@@ -18,26 +18,8 @@ object GlobalModel
     private val Db = LocalDatabase()
     val InboxModel = InboxModel(Db)
     val CalendarModel = CalendarModel(Db)
+    val JournalModel = JournalModel(Db)
     val WpModel = WpModel(Db)
-
-    /*internal class SyncAllTask : AsyncTask<SyncListener, Void, SyncListener>()
-    {
-        private var mSyncResult: Boolean = false
-        override fun doInBackground(vararg p: SyncListener): SyncListener
-        {
-            mSyncResult = GlobalModel.doSync()
-            return p[0]
-        }
-
-        override fun onPostExecute(listener: SyncListener)
-        {
-            if (mSyncResult) {
-                listener.onSyncComplete()
-            } else {
-                listener.onSyncError()
-            }
-        }
-    }*/
 
     internal fun doSync(syncObserver: SyncObserver): Boolean
     {
@@ -47,6 +29,7 @@ object GlobalModel
 
             InboxModel.sync(syncObserver, connection)
             CalendarModel.sync(syncObserver, connection)
+            JournalModel.sync(syncObserver, connection)
 
             syncObserver.finish()
 
@@ -67,5 +50,6 @@ object GlobalModel
     {
         InboxModel.clear()
         CalendarModel.clear()
+        JournalModel.clear()
     }
 }
