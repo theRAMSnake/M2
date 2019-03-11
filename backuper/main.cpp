@@ -3,6 +3,7 @@
 #include "WebApp/materia/ZmqPbChannel.hpp"
 #include "WebApp/materia/MateriaServiceProxy.hpp"
 #include <messages/admin.pb.h>
+#include <messages/inbox.pb.h>
 
 std::string genName()
 {
@@ -41,4 +42,17 @@ int main(int argc,  char** argv)
 
    stream.close();
    std::cout << fname;
+
+   MateriaServiceProxy<inbox::InboxService> ib(channel);
+
+   auto now = time(0);
+   tm* ltm = localtime(&now);
+
+   inbox::InboxItemInfo itemToAdd;
+   auto text = "Backup was made on " + std::to_string(ltm->tm_mday) + "/" + std::to_string(1+ ltm->tm_mon) +
+      " at " + std::to_string(ltm->tm_hour);
+   itemToAdd.set_text(text);
+
+   common::UniqueId id;
+   ib.getService().AddItem(nullptr, &itemToAdd, &id, nullptr);
 } 

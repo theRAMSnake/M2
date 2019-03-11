@@ -73,15 +73,9 @@ private:
 ActionsView::ActionsView(StrategyModel& strategy)
 : mStrategy(strategy)
 {
-   //addStyleClass("container-fluid");
-
-   //auto actionsGroup = new Wt::WContainerWidget;
-   //actionsGroup->addStyleClass("col-md-10");
 
    for(auto x : mStrategy.getActiveTasks())
    {
-      /*actionsGroup->*/addWidget(std::unique_ptr<Wt::WContainerWidget>(new ActionItemView(x, mStrategy)));
+      addWidget(std::unique_ptr<Wt::WContainerWidget>(new ActionItemView(x, mStrategy)));
    }
-   
-   //addWidget(std::unique_ptr<Wt::WContainerWidget>(actionsGroup));
 }

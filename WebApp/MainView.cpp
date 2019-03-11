@@ -34,6 +34,7 @@ void MainView::showInbox()
    Wt::WDialog* dialog = new Wt::WDialog("Inbox View");
 
    dialog->contents()->addWidget(std::unique_ptr<Wt::WWidget>(new InboxView(mInbox)));
+   dialog->contents()->setOverflow(Wt::Overflow::Auto);
 
    Wt::WPushButton *ok = new Wt::WPushButton("OK");
    dialog->footer()->addWidget(std::unique_ptr<Wt::WPushButton>(ok));

@@ -672,6 +672,8 @@ private:
       mValue->setText(valueText);
 
       mModel.modifyResource(newResource);
+
+      mResource = newResource;
    }
 
    Wt::WLabel* mName;
@@ -864,6 +866,7 @@ void StrategyView::onBacklogClick()
    Wt::WDialog* dialog = new Wt::WDialog("Backlog View");
 
    dialog->contents()->addWidget(std::unique_ptr<Wt::WWidget>(new BacklogView(mModel)));
+   dialog->contents()->setOverflow(Wt::Overflow::Auto);
 
    Wt::WPushButton *ok = new Wt::WPushButton("OK");
    dialog->footer()->addWidget(std::unique_ptr<Wt::WPushButton>(ok));
