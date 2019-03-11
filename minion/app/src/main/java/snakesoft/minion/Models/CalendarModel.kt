@@ -35,6 +35,7 @@ class CalendarModel(private val Db: LocalDatabase)
 
         val proxy = CalendarServiceProxy(connection)
 
+        var numModifications = 0
         for (i in Items)
         {
             when(i.trackingInfo)
@@ -42,21 +43,23 @@ class CalendarModel(private val Db: LocalDatabase)
                 StatusOfChange.Edit ->
                 {
                     proxy.editItem(toProto(i))
-                    observer.itemChanged()
+                    numModifications++
                 }
                 StatusOfChange.Delete ->
                 {
                     proxy.deleteItem(toProto(i.id))
-                    observer.itemDeleted()
+                    numModifications++
                 }
                 StatusOfChange.Add ->
                 {
                     proxy.addItem(toProto(i))
-                    observer.itemAdded()
+                    numModifications++
                 }
                 else -> {}
             }
         }
+
+        observer.itemsModified(numModifications)
 
         val queried = queryAllItems(proxy)
 

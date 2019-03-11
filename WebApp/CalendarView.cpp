@@ -158,11 +158,11 @@ private:
     std::vector<CalendarModel::Item> mItems;
 };
 
-struct calendarByTimestampCmp
+struct calendarByTimestampAndIdCmp
 {
     bool operator()(const CalendarModel::Item& lhs, const CalendarModel::Item& rhs) const
     {
-        return lhs.timestamp < rhs.timestamp;
+        return lhs.timestamp == rhs.timestamp ? lhs.id < rhs.id : lhs.timestamp < rhs.timestamp;
     }
 };
 
@@ -303,7 +303,7 @@ private:
 
    Wt::Signal<CalendarModel::Item> mOnItemCtrlClicked;
    Wt::Signal<CalendarModel::Item> mOnItemDblClicked;
-   std::multimap<CalendarModel::Item, Wt::WWidget*, calendarByTimestampCmp> mItems;
+   std::multimap<CalendarModel::Item, Wt::WWidget*, calendarByTimestampAndIdCmp> mItems;
    const DisplayMode mDisplayMode;
 };
 

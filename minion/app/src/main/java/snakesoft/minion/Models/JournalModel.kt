@@ -38,6 +38,8 @@ class JournalModel(private val Db: LocalDatabase)
         val proxy = JournalServiceProxy(connection)
         val newItems = queryIndex(proxy)
 
+        observer.itemLoaded(newItems.size)
+
         for(x in newItems)
         {
             if(x.isPage)
@@ -47,7 +49,7 @@ class JournalModel(private val Db: LocalDatabase)
                         oldItem.modifiedTimestamp < x.modifiedTimestamp)
                 {
                     syncPage(x.id, proxy)
-                    observer.itemLoaded(1)
+                    observer.itemDetailsUpdated(x.id)
                 }
             }
         }

@@ -20,7 +20,7 @@ struct FieldInfo
 class BasicDialog : public Wt::WDialog
 {
 public:
-    BasicDialog(const std::string& caption);
+    BasicDialog(const std::string& caption, const bool supressEnter = false);
 
     virtual void onAccepted();
 };

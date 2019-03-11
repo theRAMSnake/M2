@@ -169,6 +169,8 @@ void JournalView::onSaveClick()
    auto node = static_cast<JournalTreeNode*>(*mIndexTree->selectedNodes().begin());
    auto& item = node->getItem();
    mModel.saveContent(item.id, mPageView->text().narrow());
+
+   mIndexTree->clearSelection();
 }
 
 void JournalView::onIndexSelectionChanged()
@@ -188,5 +190,10 @@ void JournalView::onIndexSelectionChanged()
          mSaveBtn->setEnabled(false);
          mPageView->setText("");
       }
+   }
+   else
+   {
+      mSaveBtn->setEnabled(false);
+      mPageView->setText("");
    }
 }

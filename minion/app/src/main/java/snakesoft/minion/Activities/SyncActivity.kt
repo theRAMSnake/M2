@@ -16,21 +16,23 @@ class SyncActivity : AppCompatActivity()
         val syncObserver = snakesoft.minion.Models.SyncObserver()
         super.onCreate(savedInstanceState)
 
-        val onSyncFinished = Event1<String>()
-        SyncActivityUI(onSyncFinished).setContentView(this)
+        val onSyncUpdated = Event1<String>()
+        SyncActivityUI(onSyncUpdated).setContentView(this)
 
         doAsync()
         {
-            GlobalModel.doSync(syncObserver)
-            uiThread()
-            {
-                onSyncFinished(syncObserver.Log)
+            syncObserver.OnUpdated += {
+                s -> uiThread() {
+                    onSyncUpdated(s)
+                }
             }
+
+            GlobalModel.doSync(syncObserver)
         }
     }
 }
 
-class SyncActivityUI(private val onSyncFinished: Event1<String>) : MateriaActivityUI<SyncActivity>()
+class SyncActivityUI(private val onSyncUpdated: Event1<String>) : MateriaActivityUI<SyncActivity>()
 {
     override fun fillActivityUI(_DrawerLayout: @AnkoViewDslMarker _DrawerLayout, ctx: Context)
     {
@@ -39,7 +41,10 @@ class SyncActivityUI(private val onSyncFinished: Event1<String>) : MateriaActivi
             textView()
             {
                 singleLine = false
-                onSyncFinished += { s -> append(s) }
+                onSyncUpdated += {
+                    s -> append(s)
+                    append("\n")
+                }
             }
         }
     }

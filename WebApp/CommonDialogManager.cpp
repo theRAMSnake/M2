@@ -69,11 +69,14 @@ void CommonDialogManager::showDialog(
    d->show();
 }
 
-BasicDialog::BasicDialog(const std::string& caption)
+BasicDialog::BasicDialog(const std::string& caption, const bool suppressEnter)
 {
     Wt::WPushButton *ok = new Wt::WPushButton("OK");
     footer()->addWidget(std::unique_ptr<Wt::WPushButton>(ok));
-    ok->setDefault(true);
+    if(!suppressEnter)
+    {
+        ok->setDefault(true);
+    }
 
     Wt::WPushButton *cancel = new Wt::WPushButton("Cancel");
     footer()->addWidget(std::unique_ptr<Wt::WPushButton>(cancel));

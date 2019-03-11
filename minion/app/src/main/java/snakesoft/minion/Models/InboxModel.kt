@@ -32,6 +32,7 @@ class InboxModel(private val Db: LocalDatabase)
 
         val proxy = InboxServiceProxy(connection)
 
+        var numModified = 0
         for (i in Items)
         {
             when(i.trackingInfo)
@@ -39,21 +40,23 @@ class InboxModel(private val Db: LocalDatabase)
                 StatusOfChange.Edit ->
                 {
                     proxy.editItem(toProto(i))
-                    observer.itemChanged()
+                    numModified++
                 }
                 StatusOfChange.Delete ->
                 {
                     proxy.deleteItem(toProto(i.id))
-                    observer.itemDeleted()
+                    numModified++
                 }
                 StatusOfChange.Add ->
                 {
                     proxy.addItem(toProto(i))
-                    observer.itemAdded()
+                    numModified++
                 }
                 else -> {}
             }
         }
+
+        observer.itemsModified(numModified)
 
         val queried = queryAllItems(proxy)
 

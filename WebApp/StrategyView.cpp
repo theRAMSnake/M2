@@ -24,7 +24,7 @@ class GoalEditDialog : public BasicDialog
 public:
    typedef std::function<void(const StrategyModel::Goal&)> TOnOkCallback;
    GoalEditDialog(const StrategyModel::Goal& subject, TOnOkCallback cb)
-   : BasicDialog("Goal Edit")
+   : BasicDialog("Goal Edit", true)
    {
       mTitle = new Wt::WLineEdit(subject.title);
       contents()->addWidget(std::unique_ptr<Wt::WLineEdit>(mTitle));
@@ -240,13 +240,14 @@ private:
    StrategyModel::Task mTask;
 };
 
-class ObjectiveWidget : public Wt::WCheckBox
+class ObjectiveWidget : public Wt::WLabel
 {
 public:
    ObjectiveWidget(const StrategyModel::Objective& o)
    : mObj(o)
    {
       setInline(false);
+      setTextFormat(Wt::TextFormat::XHTML);
 
       setObjective(o);
    }
@@ -255,8 +256,13 @@ public:
    {
       mObj = o;
       
-      setText(o.title);
-      setChecked(o.reached);
+      auto t = o.title;
+      if(o.reached)
+      {
+         t = "<s>" + t + "</s>";
+      }
+
+      setText(t);
    }
 
    const StrategyModel::Objective& getObjective() const
@@ -296,8 +302,9 @@ public:
          mTasks = new Wt::WContainerWidget();
          frame->addWidget(std::unique_ptr<Wt::WContainerWidget>(mTasks));
 
-         mNotes = frame->addWidget(std::make_unique<Wt::WLabel>(""));
+         mNotes = frame->addWidget(std::make_unique<Wt::WText>(""));
          mNotes->setStyleClass("GoalViewCtrl_Notes");
+         mNotes->setTextFormat(Wt::TextFormat::Plain);
 
          WContainerWidget* frameObj = addWidget(std::make_unique<Wt::WContainerWidget>());
          frameObj->setStyleClass("col-md-6");
@@ -552,7 +559,7 @@ private:
    static constexpr char MY_MIME_TYPE[] = "GoalViewCtrl";
    StrategyModel& mModel;
    Wt::WLabel* mName = nullptr;
-   Wt::WLabel* mNotes = nullptr;
+   Wt::WText* mNotes = nullptr;
    Wt::WContainerWidget* mTasks = nullptr;
    Wt::WContainerWidget* mObjs = nullptr;
    std::optional<StrategyModel::Goal> mGoal;
