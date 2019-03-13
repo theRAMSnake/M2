@@ -674,8 +674,7 @@ private:
       mModel.modifyResource(newResource);
 
       mResource = newResource;
-   }
-
+   } 
    Wt::WLabel* mName;
    Wt::WLabel* mValue;
    StrategyModel& mModel;

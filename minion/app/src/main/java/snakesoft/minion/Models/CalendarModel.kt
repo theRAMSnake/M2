@@ -64,6 +64,7 @@ class CalendarModel(private val Db: LocalDatabase)
         val queried = queryAllItems(proxy)
 
         Items = TrackedCollection(queried)
+        Items.OnChanged += {saveState()}
 
         observer.itemLoaded(Items.size)
 

@@ -5,10 +5,11 @@
 class CalendarModel;
 class StrategyModel;
 class InboxModel;
+class JournalModel;
 class MainView : public Wt::WContainerWidget
 {
 public:
-   MainView(CalendarModel& calendar, StrategyModel& strategy, InboxModel& inbox);
+   MainView(CalendarModel& calendar, StrategyModel& strategy, InboxModel& inbox, JournalModel& journal);
 
 private:
    void showInbox();

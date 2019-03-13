@@ -2,14 +2,20 @@
 #include <Wt/WGroupBox.h>
 #include <Wt/WPushButton.h>
 #include <Wt/WDialog.h>
+#include <Wt/WLabel.h>
 #include "CalendarView.hpp"
 #include "ActionsView.hpp"
 #include "InboxView.hpp"
+#include "JournalView.hpp"
 #include "materia/InboxModel.hpp"
 
-MainView::MainView(CalendarModel& calendar, StrategyModel& strategy, InboxModel& inbox)
+MainView::MainView(CalendarModel& calendar, StrategyModel& strategy, InboxModel& inbox, JournalModel& journal)
 : mInbox(inbox)
 {
+   auto tipOfTheDayLabel = new Wt::WLabel(journal.getTipOfTheDay());
+   tipOfTheDayLabel->setStyleClass("tod");
+   addWidget(std::unique_ptr<Wt::WLabel>(tipOfTheDayLabel));
+
    mInboxBtn = new Wt::WPushButton;
    mInboxBtn->setStyleClass("btn-primary btn-lg");
    mInboxBtn->clicked().connect(this, &MainView::showInbox);

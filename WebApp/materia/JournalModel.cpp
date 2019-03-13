@@ -1,4 +1,5 @@
 #include "JournalModel.hpp"
+#include <regex>
 
 JournalModel::JournalModel(ZmqPbChannel& channel)
 : mService(channel)
@@ -129,4 +130,44 @@ std::string JournalModel::loadContent(const materia::Id& id)
    mService.getService().GetPage(nullptr, &request, &page, nullptr);
 
    return page.content();
+}
+
+std::vector<std::string> toList(const std::string& content)
+{
+   std::vector<std::string> result;
+
+   std::string src = content;
+   std::smatch match;
+   std::regex reg("<li>.+</li>");
+
+   while(std::regex_search(src, match, reg))
+   {
+      result.push_back(match.str());
+      src = match.suffix();
+   }
+
+   return result;
+}
+
+std::string JournalModel::getTipOfTheDay()
+{
+   auto index = loadIndex();
+
+   auto pos = std::find_if(index.begin(), index.end(), [](auto x) -> bool {return x.title == "Wisdom";});
+   if(pos != index.end())
+   {
+      auto content = loadContent(pos->id);
+
+      auto items = toList(content);
+
+      auto now = time(0);
+      tm* ltm = localtime(&now);
+
+      if(!items.empty())
+      {
+         return items[ltm->tm_yday % items.size()];
+      }
+   }
+
+   return "Tip of the day could not be calculated";
 }

@@ -59,6 +59,15 @@
   -moz-user-select: none;
 }
 
+.tod {
+  font-size: 24px;
+  margin-left: 15px;
+  width: 100vw;
+  text-align: center;
+  color: darkgreen;
+  display: block;
+}
+
 .ResourceViewCtrl {
   display: inline;
   margin-left: 5px; 

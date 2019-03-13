@@ -42,6 +42,8 @@ public:
    void saveContent(const materia::Id& id, const std::string& content);
    std::string loadContent(const materia::Id& id);
 
+   std::string getTipOfTheDay();
+
 private:
    std::vector<IndexItem> loadIndex();
    std::optional<IndexItem> loadIndexItem(const materia::Id& id);

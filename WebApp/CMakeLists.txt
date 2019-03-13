@@ -28,7 +28,7 @@ materia/InboxModel.cpp
 materia/JournalModel.cpp
 )
 
-find_package(Boost COMPONENTS system REQUIRED)
+find_package(Boost COMPONENTS system regex REQUIRED)
 find_package(ZeroMQ REQUIRED)
 find_package(Wt REQUIRED)
 
