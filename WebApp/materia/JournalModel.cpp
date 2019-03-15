@@ -132,7 +132,7 @@ std::string JournalModel::loadContent(const materia::Id& id)
    return page.content();
 }
 
-std::vector<std::string> toList(const std::string& content)
+std::vector<std::string> parsePagetoList(const std::string& content)
 {
    std::vector<std::string> result;
 
@@ -158,7 +158,7 @@ std::string JournalModel::getTipOfTheDay()
    {
       auto content = loadContent(pos->id);
 
-      auto items = toList(content);
+      auto items = parsePagetoList(content);
 
       auto now = time(0);
       tm* ltm = localtime(&now);
@@ -170,4 +170,22 @@ std::string JournalModel::getTipOfTheDay()
    }
 
    return "Tip of the day could not be calculated";
+}
+
+materia::Id JournalModel::searchIndex(const std::string& name)
+{
+   auto index = loadIndex();
+
+   auto iter = std::find_if(index.begin(), index.end(), [&](auto x)->bool {
+      return x.title == name;
+   });
+
+   if(iter != index.end())
+   {
+      return iter->id;
+   }
+   else
+   {
+      return materia::Id::Invalid;
+   }
 }

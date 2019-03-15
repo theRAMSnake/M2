@@ -284,3 +284,21 @@ void StrategyModel::modifyResource(const Resource& r)
    common::OperationResultMessage opResult;
    mService.getService().ModifyResource(nullptr, &res, &opResult, nullptr);
 }
+
+std::optional<StrategyModel::Resource> StrategyModel::getResource(const std::string& name)
+{
+   auto res = getResources();
+
+   auto iter = std::find_if(res.begin(), res.end(), [&](auto x) -> bool {
+      return x.name == name;
+   });
+
+   if(iter != res.end())
+   {
+      return *iter;
+   }
+   else
+   {
+      return std::optional<StrategyModel::Resource>();
+   }
+}

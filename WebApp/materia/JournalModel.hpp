@@ -29,6 +29,8 @@ struct SearchResult
    std::size_t position;
 };
 
+std::vector<std::string> parsePagetoList(const std::string& content);
+
 class JournalModel
 {
 public:
@@ -38,6 +40,7 @@ public:
    IndexItem addIndexItem(const bool isPage, const std::string& name, const materia::Id& parentId);
    void renameIndexItem(const materia::Id& id, const std::string& name);
    void deleteItem(const materia::Id& id);
+   materia::Id searchIndex(const std::string& name);
 
    void saveContent(const materia::Id& id, const std::string& content);
    std::string loadContent(const materia::Id& id);

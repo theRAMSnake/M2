@@ -27,7 +27,7 @@
         <activity android:name=".Activities.SyncActivity" />
         <activity android:name=".Activities.JournalActivity" />
         <activity android:name=".Activities.JournalItemActivity" />
-        <activity android:name=".Activities.ActionsActivity" />
+        <activity android:name=".Activities.ResourcesActivity" />
         <activity android:name=".Activities.ActionsItemViewActivity" />
         <activity android:name=".Activities.CalendarActivity" />
         <activity android:name=".Activities.CalendarDayViewActivity" />

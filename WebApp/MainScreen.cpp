@@ -3,6 +3,7 @@
 #include "ActionsView.hpp"
 #include "StrategyView.hpp"
 #include "JournalView.hpp"
+#include "RewardsSmartPage.hpp"
 
 #include <Wt/WNavigationBar.h>
 #include <Wt/WText.h>
@@ -20,6 +21,8 @@ MainScreen::MainScreen(MateriaClient& client)
     
     auto menu = std::make_unique<Wt::WMenu>(contentsStack);
     auto menu_ = navigation->addMenu(std::move(menu));
+
+    RewardsSmartPage::update(client.getJournal(), client.getStrategy());
 
     menu_->addItem("MainView", std::make_unique<MainView>(
         client.getCalendar(), 

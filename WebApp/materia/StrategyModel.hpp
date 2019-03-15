@@ -57,6 +57,7 @@ public:
    std::vector<Objective> getGoalObjectives(const materia::Id& id);
 
    std::vector<Resource> getResources();
+   std::optional<Resource> getResource(const std::string& name);
    Resource addResource(const std::string& name);
    void modifyResource(const Resource& r);
    void deleteResource(const materia::Id& id);

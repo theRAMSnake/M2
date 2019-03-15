@@ -21,6 +21,7 @@ MateriaClient.cpp
 MainView.cpp
 JournalView.cpp
 GoalsComboBox.cpp
+RewardsSmartPage.cpp
 materia/ZmqPbChannel.cpp
 materia/StrategyModel.cpp
 materia/CalendarModel.cpp

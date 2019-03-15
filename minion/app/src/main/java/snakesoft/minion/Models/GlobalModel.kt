@@ -19,7 +19,7 @@ object GlobalModel
     val InboxModel = InboxModel(Db)
     val CalendarModel = CalendarModel(Db)
     val JournalModel = JournalModel(Db)
-    val WpModel = WpModel(Db)
+    val StrategyModel = StrategyModel(Db)
 
     internal fun doSync(syncObserver: SyncObserver): Boolean
     {
@@ -30,6 +30,7 @@ object GlobalModel
             InboxModel.sync(syncObserver, connection)
             CalendarModel.sync(syncObserver, connection)
             JournalModel.sync(syncObserver, connection)
+            StrategyModel.sync(syncObserver, connection)
 
             syncObserver.finish()
 
@@ -51,5 +52,6 @@ object GlobalModel
         InboxModel.clear()
         CalendarModel.clear()
         JournalModel.clear()
+        StrategyModel.clear()
     }
 }
