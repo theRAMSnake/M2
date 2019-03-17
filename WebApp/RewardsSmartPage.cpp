@@ -15,7 +15,7 @@ std::vector<RewardItem> parseItems(const std::vector<std::string>& contentItems)
     std::vector<RewardItem> result;
 
     std::smatch match;
-    std::regex reg("<li>(.+)([0-9]+)/([0-9]+)</li>");
+    std::regex reg("<li>(.+) ([0-9]+)/([0-9]+)</li>");
 
     for(auto x: contentItems)
     {
@@ -30,9 +30,9 @@ std::vector<RewardItem> parseItems(const std::vector<std::string>& contentItems)
 
 void replaceItem(const RewardItem& item, std::string& content)
 {
-    std::regex reg("<li>" + item.name + "([0-9]+)/([0-9]+)</li>");
+    std::regex reg("<li>" + item.name + " ([0-9]+)/([0-9]+)</li>");
 
-    content = std::regex_replace(content, reg, "<li>" + item.name + std::to_string(item.count) + "/" +
+    content = std::regex_replace(content, reg, "<li>" + item.name + " " + std::to_string(item.count) + "/" +
         std::to_string(item.max) + "</li>");
 }
 
