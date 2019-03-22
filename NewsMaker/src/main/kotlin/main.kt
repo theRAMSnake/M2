@@ -8,16 +8,12 @@ import java.util.concurrent.TimeUnit
 import net.dean.jraw.http.*
 import net.dean.jraw.oauth.*
 import net.dean.jraw.models.*
+import net.dean.jraw.RedditClient
 
-fun genTestRedditContent(): String
+fun genContentForSubreddit(name: String, reddit: RedditClient): String
 {
-    val userAgent = UserAgent("linux", "snake.materia.newsreader", "v1", "theramsnake");
-    val credentials = Credentials.script("theramsnake", "rtff6#yo", "DVOqwIAoJxN5NA", "1pfVk4fZ1mwSct2fL-72GbMpF-E");
-    val adapter = OkHttpNetworkAdapter(userAgent);
-    val reddit = OAuthHelper.automatic(adapter, credentials);
-
     val paginator = reddit
-       .subreddit("VrGaming")
+       .subreddit(name)
        .posts()
        .timePeriod(TimePeriod.DAY)
        .sorting(SubredditSort.NEW)
@@ -26,20 +22,22 @@ fun genTestRedditContent(): String
     val firstThreePages = paginator.accumulate(3);
 
     val timeNow: Date = java.util.Calendar.getInstance().time
+    
+    var result = "<h1>$name</h1>"
 
-    var result = ""
     for(x in firstThreePages)
     {
         for(y in x.getChildren())
         {
-            val diffInMillies = Math.abs(timeNow.time - y.created.time);
-            if(TimeUnit.HOURS.convert(diffInMillies, TimeUnit.MILLISECONDS) < 25)
+            val diffInMillies = Math.abs(timeNow.time - y.created.time)
+
+            if(less(diffInMillies, 90000000))
             {
                 result += "<li>${y.getTitle()}</li>"
             }
             else
             {
-                break
+                return result
             }
         }
     }
@@ -47,9 +45,27 @@ fun genTestRedditContent(): String
     return result
 }
 
+fun genRedditContent(): String
+{
+    val userAgent = UserAgent("linux", "snake.materia.newsreader", "v1", "theramsnake");
+    val credentials = Credentials.script("theramsnake", "rtff6#yo", "DVOqwIAoJxN5NA", "1pfVk4fZ1mwSct2fL-72GbMpF-E");
+    val adapter = OkHttpNetworkAdapter(userAgent);
+    val reddit = OAuthHelper.automatic(adapter, credentials);
+
+    val subreddits = listOf("WorldNews", "Science", "Space", "VrGaming", "Programming", "Productivity")
+
+    var result = ""
+    for(x in subreddits)
+    {
+        result += genContentForSubreddit(x, reddit)
+    }
+
+    return result
+}
+
 fun publishFile(filename: String)
 {
-    Runtime.getRuntime().exec("./m2tools News $filename") // -> delete after
+    //Runtime.getRuntime().exec("./m2tools News $filename") // -> delete after
 }
 
 fun genNewsFile(): String
@@ -57,7 +73,7 @@ fun genNewsFile(): String
     val cal = java.util.Calendar.getInstance()
     val filename = "${cal.get(Calendar.DAY_OF_MONTH)}_${cal.get(Calendar.MONTH)}_${cal.get(Calendar.YEAR)}"
 
-    val filecontent = genTestRedditContent()
+    val filecontent = genRedditContent()
 
     File(filename).writeText(filecontent)
 
