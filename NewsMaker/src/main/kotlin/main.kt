@@ -9,6 +9,8 @@ import net.dean.jraw.http.*
 import net.dean.jraw.oauth.*
 import net.dean.jraw.models.*
 import net.dean.jraw.RedditClient
+import org.jsoup.*
+import kotlinx.serialization.json.JSON
 
 fun genContentForSubreddit(name: String, reddit: RedditClient): String
 {
@@ -19,13 +21,13 @@ fun genContentForSubreddit(name: String, reddit: RedditClient): String
        .sorting(SubredditSort.NEW)
        .build();
 
-    val firstThreePages = paginator.accumulate(3);
+    val firstPages = paginator.accumulate(5);
 
     val timeNow: Date = java.util.Calendar.getInstance().time
     
-    var result = "<h1>$name</h1>"
+    val items = mutableListOf<Submission>()
 
-    for(x in firstThreePages)
+    for(x in firstPages)
     {
         for(y in x.getChildren())
         {
@@ -33,13 +35,29 @@ fun genContentForSubreddit(name: String, reddit: RedditClient): String
 
             if(less(diffInMillies, 90000000))
             {
-                result += "<li>${y.getTitle()}</li>"
+                items.add(y)
             }
             else
             {
-                return result
+                break
             }
         }
+    }
+
+    items.sortByDescending{ it.score }
+
+    var result = "<h1>$name</h1>"
+
+    var i = 0
+    for(x in items)
+    {
+        if(i > 24)
+        {
+            break
+        }
+
+        result += "<li>${x.getTitle()}</li>"
+        ++i
     }
 
     return result
@@ -63,9 +81,43 @@ fun genRedditContent(): String
     return result
 }
 
+fun loadHackernewsPage(pageNumber: Int): String
+{
+    val doc = Jsoup.connect("https://hacker-news.firebaseio.com/v0/newstories.json?").get()
+    return doc.outerHtml()
+}
+
+fun genHackernewsContent(): String
+{
+    var i = 1
+    val allItems = mutableListOf<String>()
+    mainLoop@ while(true)
+    {
+        val page = loadHackernewsPage(i++)
+        val itemsOnPage = JSON.parse(Int.serializer().list, page)
+
+        for(x in itemsOnPage)
+        {
+            val item = loadItem(x)
+            if(item.score > 100)
+            {
+                allItems.add(item.title)
+                if(allItems.size > 25)
+                {
+                    break@mainLoop
+                }
+            }
+        }
+    }
+
+    return composeHtmlList("HackerNews", allItems)
+}
+
 fun publishFile(filename: String)
 {
-    //Runtime.getRuntime().exec("./m2tools News $filename") // -> delete after
+    val p = Runtime.getRuntime().exec("./m2tools News $filename")
+    p.waitFor()
+    Runtime.getRuntime().exec("rm $filename")
 }
 
 fun genNewsFile(): String
@@ -74,6 +126,7 @@ fun genNewsFile(): String
     val filename = "${cal.get(Calendar.DAY_OF_MONTH)}_${cal.get(Calendar.MONTH)}_${cal.get(Calendar.YEAR)}"
 
     val filecontent = genRedditContent()
+    filecontent += genHackernewsContent()
 
     File(filename).writeText(filecontent)
 
