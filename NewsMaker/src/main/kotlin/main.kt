@@ -19,6 +19,7 @@ fun genNewsFile(): String
 
     var filecontent = genRedditContent()
     filecontent += genHackernewsContent()
+    filecontent += genSteamContent()
 
     File(filename).writeText(filecontent)
 
@@ -28,7 +29,7 @@ fun genNewsFile(): String
 fun main(args: Array<String>)
 {
     val filename = genNewsFile()
-    //publishFile(filename)
+    publishFile(filename)
 
     println("Done")
 }
