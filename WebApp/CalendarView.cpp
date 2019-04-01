@@ -1,6 +1,6 @@
 #include "CalendarView.hpp"
 #include "WtConverters.hpp"
-#include "CommonDialogManager.hpp"
+#include "dialog/CommonDialogManager.hpp"
 #include <Common/Id.hpp>
 #include <Wt/WDialog.h>
 #include <Wt/WLineEdit.h>

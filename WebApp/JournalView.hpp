@@ -13,6 +13,7 @@ private:
    Wt::WWidget* createPageView();
    void onSaveClick();
    void onIndexSelectionChanged();
+   void onSearchClick();
 
    Wt::WTree* mIndexTree = nullptr;
    Wt::WTextEdit* mPageView = nullptr;

@@ -1,5 +1,5 @@
 #include "InboxView.hpp"
-#include "CommonDialogManager.hpp"
+#include "dialog/CommonDialogManager.hpp"
 #include <Wt/WText.h>
 #include <Wt/WCssDecorationStyle.h>
 #include <Wt/WPushButton.h>

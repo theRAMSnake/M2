@@ -189,3 +189,22 @@ materia::Id JournalModel::searchIndex(const std::string& name)
       return materia::Id::Invalid;
    }
 }
+
+std::vector<SearchResult> JournalModel::searchContent(const std::string& keyword)
+{
+   common::StringMessage msg;
+   msg.set_content(keyword);
+
+   journal::SearchResult response;
+
+   mService.getService().Search(nullptr, &msg, &response, nullptr);
+
+   std::vector<SearchResult> result;
+
+   for(int i = 0; i < response.pageid_size(); ++i)
+   {
+      result.push_back({response.pageid(i).guid(), static_cast<std::size_t>(response.position(i))});
+   }
+
+   return result;
+}

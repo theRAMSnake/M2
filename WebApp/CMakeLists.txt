@@ -12,7 +12,6 @@ WebApp.cpp
 MainScreen.cpp
 InboxView.cpp
 ActionsView.cpp
-CommonDialogManager.cpp
 StrategyView.cpp
 WtConverters.cpp
 CalendarView.cpp
@@ -27,6 +26,8 @@ materia/StrategyModel.cpp
 materia/CalendarModel.cpp
 materia/InboxModel.cpp
 materia/JournalModel.cpp
+dialog/CommonDialogManager.cpp
+dialog/Dialog.cpp
 )
 
 find_package(Boost COMPONENTS system regex REQUIRED)

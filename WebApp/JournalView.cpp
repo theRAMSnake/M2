@@ -1,11 +1,121 @@
 #include "JournalView.hpp"
-#include "CommonDialogManager.hpp"
+#include "dialog/CommonDialogManager.hpp"
+#include "dialog/Dialog.hpp"
 #include <Wt/WGroupBox.h>
 #include <Wt/WTree.h>
 #include <Wt/WTreeNode.h>
 #include <Wt/WText.h>
+#include <Wt/WTable.h>
 #include <Wt/WTextEdit.h>
 #include <Wt/WPushButton.h>
+#include <Wt/WLineEdit.h>
+#include <Wt/WCssDecorationStyle.h>
+#include <boost/algorithm/string.hpp>
+
+std::string fetchLine(const std::string& content, const std::size_t pos)
+{
+   auto start = content.rfind('\n', pos);
+   auto end = content.find('\n', pos);
+
+   if(start == std::string::npos)
+   {
+      start = 0;
+   }
+
+   if(end == std::string::npos)
+   {
+      return content.substr(start);
+   }
+   else
+   {
+      return content.substr(start, end - start);
+   }
+}
+
+void eraseAllSubStr(std::string & mainStr, const std::string & toErase)
+{
+	size_t pos = std::string::npos;
+ 
+	// Search for the substring in string in a loop untill nothing is found
+	while ((pos  = mainStr.find(toErase) )!= std::string::npos)
+	{
+		// If found then erase it from string
+		mainStr.erase(pos, toErase.length());
+	}
+}
+
+std::string buildSample(
+   JournalModel& model,
+   const materia::Id& pageId, 
+   const std::size_t pos, 
+   const std::string& keyword
+   )
+{
+
+   auto content = model.loadContent(pageId);
+   boost::algorithm::to_lower(content);
+
+   auto kw = keyword;
+   boost::algorithm::to_lower(kw);
+
+   auto line = fetchLine(content, pos);
+   auto posInLine = line.find(kw);
+
+   line.insert(posInLine + kw.size(), "</b>");
+   line.insert(posInLine, "<b>");
+
+   eraseAllSubStr(line, "<li>");
+   eraseAllSubStr(line, "</li>");
+   
+   return line;
+}
+
+class JournalSearchView : public Wt::WContainerWidget
+{
+public:
+   JournalSearchView(JournalModel& model, std::function<void(const materia::Id, std::size_t)> navigateFunction)
+   {
+      auto tv = new Wt::WLineEdit();
+      addWidget(std::unique_ptr<Wt::WWidget>(tv));
+
+      auto gb = new Wt::WGroupBox();
+      addWidget(std::unique_ptr<Wt::WGroupBox>(gb));
+      
+      auto table = new Wt::WTable();
+      table->setWidth(Wt::WLength("100%"));
+      table->addStyleClass("table-bordered");
+      table->addStyleClass("table-hover");
+      table->addStyleClass("table-striped");
+      table->decorationStyle().font().setSize(Wt::WFont::Size::Large);
+      gb->addWidget(std::unique_ptr<Wt::WTable>(table));
+
+      tv->textInput().connect(std::bind( [table, tv, &model, navigateFunction]() 
+      {
+         table->clear();
+         auto text = tv->text().narrow();
+         if(text.size() > 2)
+         {
+            auto result = model.searchContent(text);
+
+            const std::size_t SEARCH_RESULT_LIMIT = 25;
+            for(std::size_t i = 0; i < result.size() && i < SEARCH_RESULT_LIMIT; ++i)
+            {
+               auto cell = table->elementAt(i, 0);
+               auto pageId = result[i].pageId;
+               auto pos = result[i].position;
+               auto sample = new Wt::WText(buildSample(model, pageId, pos, text));
+               sample->setMargin(Wt::WLength(50));
+               sample->clicked().connect(std::bind( [=]() {
+                  navigateFunction(pageId, pos);
+               }));
+               cell->addWidget(std::unique_ptr<Wt::WText>(sample));
+            }
+         }
+      }));
+   }
+};
+
+//----------------------------------------------------------------------------------------------------------------------------
 
 class JournalTreeNode : public Wt::WTreeNode
 {
@@ -141,6 +251,19 @@ Wt::WWidget* JournalView::createPageView()
 {
    auto result = new Wt::WContainerWidget();
 
+   auto searchBtn = new Wt::WPushButton("Search");
+   searchBtn->addStyleClass("btn-primary");
+   searchBtn->clicked().connect(std::bind(&JournalView::onSearchClick, this));
+   searchBtn->setMargin(5);
+   result->addWidget(std::unique_ptr<Wt::WPushButton>(searchBtn));
+
+   mSaveBtn = new Wt::WPushButton("Save");
+   mSaveBtn->clicked().connect(std::bind(&JournalView::onSaveClick, this));
+   mSaveBtn->addStyleClass("btn-primary");
+   mSaveBtn->setEnabled(false);
+   mSaveBtn->setMargin(5);
+   result->addWidget(std::unique_ptr<Wt::WPushButton>(mSaveBtn));
+
    mPageView = new Wt::WTextEdit();
    mPageView->setConfigurationSetting("branding", false);
    mPageView->setConfigurationSetting("elementpath", false);
@@ -154,14 +277,23 @@ Wt::WWidget* JournalView::createPageView()
    
    result->addWidget(std::unique_ptr<Wt::WTextEdit>(mPageView));
 
-   mSaveBtn = new Wt::WPushButton("Save");
-   mSaveBtn->clicked().connect(std::bind(&JournalView::onSaveClick, this));
-   mSaveBtn->addStyleClass("btn-primary");
-   mSaveBtn->setMargin(5);
-   mSaveBtn->setEnabled(false);
-   result->addWidget(std::unique_ptr<Wt::WPushButton>(mSaveBtn));
-
    return result;
+}
+
+void JournalView::onSearchClick()
+{
+   Dialog* dlg = nullptr;
+
+   std::function<void(const materia::Id, std::size_t)> f = [=] (const materia::Id id, std::size_t pos) {
+         //dlg->stop();
+         //navigate(id, pos);
+      };
+   
+   dlg = new Dialog(
+      "Journal Search", 
+      std::make_unique<JournalSearchView>(mModel, f));
+
+   dlg->show();
 }
 
 void JournalView::onSaveClick()

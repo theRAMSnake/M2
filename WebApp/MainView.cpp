@@ -8,6 +8,7 @@
 #include "InboxView.hpp"
 #include "JournalView.hpp"
 #include "materia/InboxModel.hpp"
+#include "dialog/Dialog.hpp"
 
 MainView::MainView(CalendarModel& calendar, StrategyModel& strategy, InboxModel& inbox, JournalModel& journal)
 : mInbox(inbox)
@@ -37,27 +38,11 @@ MainView::MainView(CalendarModel& calendar, StrategyModel& strategy, InboxModel&
 
 void MainView::showInbox()
 {
-   Wt::WDialog* dialog = new Wt::WDialog("Inbox View");
-
-   dialog->contents()->addWidget(std::unique_ptr<Wt::WWidget>(new InboxView(mInbox)));
-   dialog->contents()->setOverflow(Wt::Overflow::Auto);
-
-   Wt::WPushButton *ok = new Wt::WPushButton("OK");
-   dialog->footer()->addWidget(std::unique_ptr<Wt::WPushButton>(ok));
-   ok->setDefault(true);
-
-   ok->clicked().connect(std::bind([=]() {
-      dialog->accept();
-   }));
-
-   dialog->finished().connect(std::bind([=]() {
+   Dialog* dlg = new Dialog("Inbox View", std::make_unique<InboxView>(mInbox));
+   dlg->OnFinished.connect(std::bind([=]() {
          updateInboxBtnText();
-         delete dialog;
    }));
-
-   dialog->setWidth(750);
-   dialog->setHeight(Wt::WLength("85%"));
-   dialog->show();
+   dlg->show();
 }
 
 void MainView::updateInboxBtnText()

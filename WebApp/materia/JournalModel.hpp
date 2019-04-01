@@ -44,6 +44,7 @@ public:
 
    void saveContent(const materia::Id& id, const std::string& content);
    std::string loadContent(const materia::Id& id);
+   std::vector<SearchResult> searchContent(const std::string& keyword);
 
    std::string getTipOfTheDay();
 

@@ -1,6 +1,7 @@
 #include "Journal.hpp"
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/algorithm/string.hpp>
 #include <chrono>
 #include "Logger.hpp"
 #include "JsonSerializer.hpp"
@@ -117,16 +118,18 @@ std::vector<IndexItem> Journal::getIndex()
 
 std::vector<SearchResult> Journal::search(const std::string& keyword)
 {
+    auto lowerKeyword = boost::algorithm::to_lower_copy(keyword);
     std::vector<SearchResult> result;
 
     for(auto& x : mPageContents)
     {
-        auto pos = x.second.find(keyword);
+        auto content = boost::algorithm::to_lower_copy(x.second);
+        auto pos = content.find(lowerKeyword);
         while(pos != std::string::npos)
         {
             result.push_back({x.first, pos});
 
-            pos = x.second.find(keyword, pos + 1);
+            pos = content.find(lowerKeyword, pos + 1);
         }
     }
 

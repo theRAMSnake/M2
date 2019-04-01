@@ -51,36 +51,43 @@ bool hasNotCompleteItems(const std::vector<RewardItem>& items)
 
 void RewardsSmartPage::update(JournalModel& journal, StrategyModel& strategy)
 {
-    srand(time(0));
-
-    auto ppResource = strategy.getResource("PP");
-    auto rewardsPageId = journal.searchIndex("Rewards");
-    auto rewardsPage = journal.loadContent(rewardsPageId);
-
-    if(ppResource && !rewardsPage.empty() && ppResource->value != 0)
+    try
     {
-        auto items = parseItems(parsePagetoList(rewardsPage));
-        while(ppResource->value > 0 && hasNotCompleteItems(items))
+        srand(time(0));
+
+        auto ppResource = strategy.getResource("PP");
+        auto rewardsPageId = journal.searchIndex("Rewards");
+        auto rewardsPage = journal.loadContent(rewardsPageId);
+
+        if(ppResource && !rewardsPage.empty() && ppResource->value != 0)
         {
-            auto& randomItem = items[rand() % items.size()];
-            if(randomItem.count < randomItem.max)
+            auto items = parseItems(parsePagetoList(rewardsPage));
+            while(ppResource->value > 0 && hasNotCompleteItems(items))
             {
-                randomItem.count++;
+                auto& randomItem = items[rand() % items.size()];
+                if(randomItem.count < randomItem.max)
+                {
+                    randomItem.count++;
+                }
+                else
+                {
+                    continue;
+                }
+
+                ppResource->value--;
             }
-            else
+
+            for(auto x : items)
             {
-                continue;
+                replaceItem(x, rewardsPage);
             }
 
-            ppResource->value--;
+            strategy.modifyResource(*ppResource);
+            journal.saveContent(rewardsPageId, rewardsPage);
         }
-
-        for(auto x : items)
-        {
-            replaceItem(x, rewardsPage);
-        }
-
-        strategy.modifyResource(*ppResource);
-        journal.saveContent(rewardsPageId, rewardsPage);
+    }
+    catch(...)
+    {
+        
     }
 }

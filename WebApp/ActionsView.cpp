@@ -1,5 +1,5 @@
 #include "ActionsView.hpp"
-#include "CommonDialogManager.hpp"
+#include "dialog/CommonDialogManager.hpp"
 #include "TaskEditDialog.hpp"
 #include <Wt/WTree.h>
 #include <Wt/WTreeNode.h>

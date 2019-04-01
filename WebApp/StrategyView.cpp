@@ -1,5 +1,6 @@
 #include "StrategyView.hpp"
-#include "CommonDialogManager.hpp"
+#include "dialog/CommonDialogManager.hpp"
+#include "dialog/Dialog.hpp"
 #include "TemplateBuilder.hpp"
 #include "TaskEditDialog.hpp"
 #include "Wt/WToolBar.h"
@@ -862,27 +863,11 @@ void StrategyView::putGoal(const StrategyModel::Goal& goal)
 
 void StrategyView::onBacklogClick()
 {
-   Wt::WDialog* dialog = new Wt::WDialog("Backlog View");
-
-   dialog->contents()->addWidget(std::unique_ptr<Wt::WWidget>(new BacklogView(mModel)));
-   dialog->contents()->setOverflow(Wt::Overflow::Auto);
-
-   Wt::WPushButton *ok = new Wt::WPushButton("OK");
-   dialog->footer()->addWidget(std::unique_ptr<Wt::WPushButton>(ok));
-   ok->setDefault(true);
-
-   ok->clicked().connect(std::bind([=]() {
-      dialog->accept();
-   }));
-
-   dialog->finished().connect(std::bind([=]() {
+   Dialog* dlg = new Dialog("Backlog View", std::make_unique<BacklogView>(mModel));
+   dlg->OnFinished.connect(std::bind([=]() {
          layGoals();
-         delete dialog;
    }));
-
-   dialog->setWidth(Wt::WLength("95%"));
-   dialog->setHeight(Wt::WLength("85%"));
-   dialog->show();
+   dlg->show();
 }
 
 void StrategyView::layGoals()
