@@ -282,18 +282,16 @@ Wt::WWidget* JournalView::createPageView()
 
 void JournalView::onSearchClick()
 {
-   Dialog* dlg = nullptr;
-
    std::function<void(const materia::Id, std::size_t)> f = [=] (const materia::Id id, std::size_t pos) {
-         //dlg->stop();
-         //navigate(id, pos);
+         mDlg->stop();
+         navigate(id, pos);
       };
    
-   dlg = new Dialog(
+   mDlg = new Dialog(
       "Journal Search", 
       std::make_unique<JournalSearchView>(mModel, f));
 
-   dlg->show();
+   mDlg->show();
 }
 
 void JournalView::onSaveClick()
@@ -328,4 +326,36 @@ void JournalView::onIndexSelectionChanged()
       mSaveBtn->setEnabled(false);
       mPageView->setText("");
    }
+}
+
+void JournalView::navigate(const materia::Id id, std::size_t pos)
+{
+   auto node = findNodeById(mIndexTree->treeRoot(), id);
+   mIndexTree->select(node);
+
+   while(node->parentNode() != nullptr)
+   {
+      node->parentNode()->expand();
+      node = node->parentNode();
+   }
+}
+
+Wt::WTreeNode* JournalView::findNodeById(Wt::WTreeNode* node, const materia::Id id)
+{
+   auto nodeCasted = static_cast<JournalTreeNode*>(node);
+   if(nodeCasted->getItem().id == id)
+   {
+      return node;
+   }
+
+   for(auto x : node->childNodes())
+   {
+      auto ret = findNodeById(x, id);
+      if(ret != nullptr)
+      {
+         return ret;
+      }
+   }
+
+   return nullptr;
 }

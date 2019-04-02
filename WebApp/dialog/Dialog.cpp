@@ -32,4 +32,5 @@ void Dialog::show()
 void Dialog::stop()
 {
     OnFinished();
+    delete this;
 }
