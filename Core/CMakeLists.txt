@@ -13,6 +13,7 @@ private/Calendar.cpp
 private/Inbox.cpp
 private/Journal.cpp
 private/Strategy.cpp
+private/Strategy_v2.cpp
 private/Goal.cpp
 private/Resource.cpp
 private/Objective.cpp

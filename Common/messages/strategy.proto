@@ -4,22 +4,7 @@ option java_generic_services = true;
 
 import "common.proto";
 
-package strategy; 
-
-/*
-
-Goal : Item {affinities, focused, achieved} => add/delete/modify (changing of focused -> add/delete corresponding action/calendar items)
-
-Objective : Item {reached, resId.value}} => add/delete/modify
-
-Task : Item {done, actionReference, calendarItemReference, count} => add/delete/modify (if parent goal is focused -> add/delete/modify corresponding action/calendar items)
-
- 
-
-Resource : {id, name, iconId, value | Func(containerId)} => add/delete/modify (modify -> recalculate all related objectives) + (container changed event (listen every 5 min) -> recalculate)
-
-Events
-*/
+package strategy;
 
 message CommonItemProperties
 {
@@ -75,6 +60,24 @@ message Resources
    repeated Resource items = 1;
 }
 
+message LinkProperties
+{
+   common.UniqueId id = 1;
+   common.UniqueId from_node_id = 2;
+   common.UniqueId to_node_id = 3;
+}
+
+message NodeProperties
+{
+   common.UniqueId id = 1;
+}
+
+message GraphDefinition
+{
+   repeated LinkProperties links = 2;
+   repeated NodeProperties nodes = 3;
+}
+
 service StrategyService 
 {
    rpc AddGoal (Goal) returns (common.UniqueId);
@@ -97,5 +100,15 @@ service StrategyService
    rpc AddResource (Resource) returns (common.UniqueId);
    rpc ModifyResource (Resource) returns (common.OperationResultMessage);
    rpc DeleteResource (common.UniqueId) returns (common.OperationResultMessage);
-   rpc GetResources (common.EmptyMessage) returns (Resources);;
+   rpc GetResources (common.EmptyMessage) returns (Resources);
+
+   // -v2
+
+   rpc GetGraph (common.UniqueId) returns (GraphDefinition);
+
+   rpc CreateLink (LinkProperties) returns (common.UniqueId);
+   rpc CreateNode (NodeProperties) returns (common.UniqueId);
+   rpc ModifyNode (NodeProperties) returns (common.OperationResultMessage);
+
+   rpc DeleteObject (common.UniqueId) returns (common.OperationResultMessage);
 }

@@ -11,6 +11,7 @@ InboxTest.cpp
 CalendarTest.cpp
 StrategyTest.cpp
 JournalTest.cpp
+StrategyGraphTest.cpp
 )
 
 find_package(Boost COMPONENTS unit_test_framework filesystem REQUIRED)
