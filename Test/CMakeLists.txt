@@ -7,10 +7,10 @@ include_directories("../build/Common")
 include_directories("..")
 
 add_executable(Test 
-InboxTest.cpp
+#InboxTest.cpp
 CalendarTest.cpp
-StrategyTest.cpp
-JournalTest.cpp
+#StrategyTest.cpp
+#JournalTest.cpp
 StrategyGraphTest.cpp
 )
 

@@ -60,16 +60,22 @@ message Resources
    repeated Resource items = 1;
 }
 
+message GraphObjectId
+{
+   common.UniqueId graphId = 1;
+   common.UniqueId objectId = 2;
+}
+
 message LinkProperties
 {
-   common.UniqueId id = 1;
+   GraphObjectId id = 1;
    common.UniqueId from_node_id = 2;
    common.UniqueId to_node_id = 3;
 }
 
 message NodeProperties
 {
-   common.UniqueId id = 1;
+   GraphObjectId id = 1;
 }
 
 message GraphDefinition
@@ -110,5 +116,5 @@ service StrategyService
    rpc CreateNode (NodeProperties) returns (common.UniqueId);
    rpc ModifyNode (NodeProperties) returns (common.OperationResultMessage);
 
-   rpc DeleteObject (common.UniqueId) returns (common.OperationResultMessage);
+   rpc DeleteGraphObject (GraphObjectId) returns (common.OperationResultMessage);
 }

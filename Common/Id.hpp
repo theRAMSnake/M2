@@ -38,6 +38,12 @@ auto find_by_id(TCollection& col, const Id& id) -> decltype(col.begin())
 {
    return find_by_id(col.begin(), col.end(), id);
 }
+
+template<class TCollection>
+bool contains_id(TCollection& col, const Id& id)
+{
+   return find_by_id(col.begin(), col.end(), id) != col.end();
+}
 }
 
 namespace std

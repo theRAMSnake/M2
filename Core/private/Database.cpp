@@ -30,6 +30,18 @@ void DatabaseTable::store(const Id& id, const std::string& data)
     binder++;
 }
 
+std::optional<std::string> DatabaseTable::load(const Id& id)
+{
+    std::optional<std::string> result;
+
+    mDb << "SELECT Json FROM " + mName + " WHERE Id = ?" << id.getGuid() >> [&](std::string field)
+    {
+        result = field;
+    };
+
+    return result;
+}
+
 void DatabaseTable::erase(const Id& id)
 {
     auto& binder = (*mEraseBinder);

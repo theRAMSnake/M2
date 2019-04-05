@@ -23,6 +23,7 @@ public:
     void store(const Id& id, const std::string& data);
     void store(const std::map<Id, std::string>& data);
     void erase(const Id& id);
+    std::optional<std::string> load(const Id& id);
 
 private:
     const std::string mName;

@@ -91,7 +91,7 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_ModifyGoal_Achieved_Is_Read_Only, Str
 
 BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_DeleteGoal, StrategyGraphTest )  
 {
-   mStrategy.deleteObject(mGoals[0].id);
+   mStrategy.deleteGoal(mGoals[0].id);
 
    auto remainingGoals = mStrategy.getGoals();
    BOOST_CHECK_EQUAL(2, remainingGoals.size());
@@ -127,12 +127,102 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_GetGoal, StrategyGraphTest )
    }
 }
 
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_CreateNode, StrategyGraphTest )  
+{
+   auto graphId = mGoals[0].id;
+   auto nodeId = mStrategy.createNode(graphId);
+
+   BOOST_CHECK(materia::contains_id(mStrategy.getGraph(graphId)->nodes, nodeId));
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_CreateNodeInvalid, StrategyGraphTest )  
+{
+   auto nodeId = mStrategy.createNode(materia::Id("invalid"));
+
+   BOOST_CHECK_EQUAL(materia::Id::Invalid, nodeId);
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_CreateLink, StrategyGraphTest )
+{
+   auto graphId = mGoals[0].id;
+   auto nodeId1 = mStrategy.createNode(graphId);
+   auto nodeId2 = mStrategy.createNode(graphId);
+
+   mStrategy.createLink(graphId, nodeId1, nodeId2);
+
+   auto g = *mStrategy.getGraph(graphId);
+
+   BOOST_CHECK(materia::contains_id(g.nodes, nodeId1));
+   BOOST_CHECK(materia::contains_id(g.nodes, nodeId2));
+   BOOST_CHECK_EQUAL(1, g.links.size());
+   BOOST_CHECK_EQUAL(nodeId1, g.links[0].from);
+   BOOST_CHECK_EQUAL(nodeId2, g.links[0].to);
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_CreateLinkWrongIds, StrategyGraphTest )
+{
+   auto graphId = mGoals[0].id;
+   auto nodeId1 = materia::Id::Invalid;
+   auto nodeId2 = mStrategy.createNode(graphId);
+   auto g = *mStrategy.getGraph(graphId);
+
+   {
+      mStrategy.createLink(graphId, nodeId1, nodeId2);
+      BOOST_CHECK(g.links.empty());
+   }
+   {
+      mStrategy.createLink(graphId, nodeId2, nodeId1);
+      BOOST_CHECK(g.links.empty());
+   }
+   {
+      mStrategy.createLink(graphId, nodeId1, nodeId1);
+      BOOST_CHECK(g.links.empty());
+   }
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_CreateLinkAlreadyExist, StrategyGraphTest )
+{
+   auto graphId = mGoals[0].id;
+   auto nodeId1 = mStrategy.createNode(graphId);
+   auto nodeId2 = mStrategy.createNode(graphId);
+
+   mStrategy.createLink(graphId, nodeId1, nodeId2);
+   mStrategy.createLink(graphId, nodeId1, nodeId2);
+   mStrategy.createLink(graphId, nodeId2, nodeId1);
+
+   auto g = *mStrategy.getGraph(graphId);
+
+   BOOST_CHECK(materia::contains_id(g.nodes, nodeId1));
+   BOOST_CHECK(materia::contains_id(g.nodes, nodeId2));
+   BOOST_CHECK_EQUAL(1, g.links.size());
+   BOOST_CHECK_EQUAL(nodeId1, g.links[0].from);
+   BOOST_CHECK_EQUAL(nodeId2, g.links[0].to);
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_CreateCyclical_Triangle, StrategyGraphTest )
+{
+   auto graphId = mGoals[0].id;
+   auto nodeId1 = mStrategy.createNode(graphId);
+   auto nodeId2 = mStrategy.createNode(graphId);
+   auto nodeId3 = mStrategy.createNode(graphId);
+
+   mStrategy.createLink(graphId, nodeId1, nodeId2);
+   mStrategy.createLink(graphId, nodeId2, nodeId3);
+
+   auto g = *mStrategy.getGraph(graphId);
+
+   BOOST_CHECK_EQUAL(2, g.links.size());
+
+   mStrategy.createLink(graphId, nodeId3, nodeId1);
+
+   g = *mStrategy.getGraph(graphId);
+
+   BOOST_CHECK_EQUAL(2, g.links.size());
+}
+
 //test following use cases:
 
-//Cannot delete graph
-//Create link
-//Create node
-//Modify node
+//Create link - error cyclical - difficult case
+
 //Delete link
 //Delete node
-//Persistency

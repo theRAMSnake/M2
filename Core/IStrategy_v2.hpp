@@ -32,14 +32,16 @@ public:
    virtual void modifyGoal(const Goal& goal) = 0;
    virtual std::vector<Goal> getGoals() = 0;
    virtual std::optional<Goal> getGoal(const Id& id) = 0;
+   virtual void deleteGoal(const Id& id) = 0;
 
    virtual std::optional<StrategyGraph> getGraph(const Id& id) = 0; 
 
-   virtual Id createLink(const Id& from, const Id& to) = 0;
+   virtual void createLink(const Id& graphId, const Id& from, const Id& to) = 0;
+   virtual void breakLink(const Id& graphId, const Id& from, const Id& to) = 0;
 
-   virtual Id createNode() = 0;
+   virtual Id createNode(const Id& graphId) = 0;
 
-   virtual void deleteObject(const Id& id) = 0;
+   virtual void deleteGraphObject(const Id& graphId, const Id& objectId) = 0;
 
    virtual ~IStrategy_v2(){}
 };

@@ -4,6 +4,12 @@
 #include <boost/property_tree/json_parser.hpp>
 #include "Common/Id.hpp"
 
+template<class T>
+class JsonMap
+{
+
+};
+
 class JsonReader
 {
 public:
@@ -19,6 +25,24 @@ public:
       out = m_ptree.get<F>(field);
    }
 
+   template<class F>
+   void read(const std::string& field, std::vector<F>& out)
+   {
+      auto ch = m_ptree.get_child(field);
+
+      for(auto x : ch)
+      {
+         std::string json = x.second.get_value<std::string>();
+
+         F nextItem;
+
+         JsonReader subReader(json);
+         JsonMap<F>::read(subReader, nextItem);
+
+         out.push_back(nextItem);
+      }
+   }
+
 private:
    boost::property_tree::ptree m_ptree;
 };
@@ -32,6 +56,25 @@ public:
       m_ptree.put(field, in);
    }
 
+   template<class F>
+   void write(const std::string& field, const std::vector<F>& in)
+   {
+      boost::property_tree::ptree subTree;
+
+      for(auto x : in)
+      {
+         JsonWriter subWriter;
+         JsonMap<F>::write(x, subWriter);
+
+         boost::property_tree::ptree curCh;
+         curCh.put("", subWriter.getResult());
+
+         subTree.push_back(std::make_pair("", curCh));
+      }
+
+      m_ptree.add_child(field, subTree);
+   }
+
    std::string getResult()
    {
       std::ostringstream buf; 
@@ -41,12 +84,6 @@ public:
 
 private:
    boost::property_tree::ptree m_ptree;
-};
-
-template<class T>
-class JsonMap
-{
-
 };
 
 template<class T>
