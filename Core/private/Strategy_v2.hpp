@@ -7,6 +7,26 @@
 namespace materia
 {
 
+struct Node
+{
+   Id id;
+   NodeType type;
+   std::string brief;
+};
+
+struct StrategyGraph
+{
+   Id id;
+   std::vector<Link> links;
+   std::vector<Node> nodes;
+};
+
+struct Link
+{
+   Id from;
+   Id to;
+};
+
 class Strategy_v2 : public IStrategy_v2
 {
 public:
@@ -24,8 +44,9 @@ public:
    void breakLink(const Id& graphId, const Id& nodeFrom, const Id& nodeTo) override;
 
    Id createNode(const Id& graphId) override;
+   void setNodeAttributes(const Id& graphId, const Node& node) override;
 
-   void deleteGraphObject(const Id& graphId, const Id& objectId) override;
+   void deleteNode(const Id& graphId, const Id& objectId) override;
 
 private:
    void saveGraph(const StrategyGraph& graph);

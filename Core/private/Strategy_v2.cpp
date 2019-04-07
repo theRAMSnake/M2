@@ -1,12 +1,19 @@
 #include "Strategy_v2.hpp"
 #include "JsonSerializer.hpp"
 
+SERIALIZE_AS_INTEGER(materia::NodeType)
+
 BIND_JSON3(materia::StrategyGraph, id, nodes, links)
-BIND_JSON1(materia::Node, id)
+BIND_JSON3(materia::Node, id, type, brief)
 BIND_JSON2(materia::Link, from, to)
 
 namespace materia
 {
+
+bool operator == (const materia::Link& a, const materia::Link& b)
+{
+   return a.from == b.from && a.to == b.to;
+}
 
 Strategy_v2::Strategy_v2(IStrategy& strategy, Database& db)
 : mStrategy_v1(strategy)
@@ -15,16 +22,26 @@ Strategy_v2::Strategy_v2(IStrategy& strategy, Database& db)
    
 }
 
-void Strategy_v2::deleteGraphObject(const Id& graphId, const Id& objectId)
+void Strategy_v2::deleteNode(const Id& graphId, const Id& objectId)
 {
+   auto graph = getGraph(graphId);
 
+   if(graph)
+   {
+      auto pos = find_by_id(graph->nodes, objectId);
+      if(pos != graph->nodes.end() && pos->type != NodeType::Goal)
+      {
+         graph->nodes.erase(pos);
+         saveGraph(*graph);
+      }
+   }
 }
 
 Id Strategy_v2::addGoal(const Goal& goal)
 {
    auto id = mStrategy_v1.addGoal(goal);
 
-   StrategyGraph newGraph { id };
+   StrategyGraph newGraph { id, {}, {{Id::generate(), NodeType::Goal}}};
 
    saveGraph(newGraph);
 
@@ -100,6 +117,11 @@ bool isRouteExist(const std::vector<Link>& links, const Id& from, const Id& dest
    return false;
 }
 
+Node getGoalNode(const std::vector<Node>& nodes)
+{
+   return *std::find_if(nodes.begin(), nodes.end(), [&](auto x)->bool {return x.type == NodeType::Goal;});
+}
+
 void Strategy_v2::createLink(const Id& graphId, const Id& nodeFrom, const Id& nodeTo)
 {
    if(nodeFrom == nodeTo)
@@ -114,8 +136,10 @@ void Strategy_v2::createLink(const Id& graphId, const Id& nodeFrom, const Id& no
       auto& nodes = graph->nodes;
       auto& links = graph->links;
 
-      if(contains_id(nodes, nodeFrom) && contains_id(nodes, nodeTo) && 
-         !contains_link(links, nodeFrom, nodeTo))
+      if(contains_id(nodes, nodeFrom) && 
+         contains_id(nodes, nodeTo) && 
+         !contains_link(links, nodeFrom, nodeTo) &&
+         nodeFrom != getGoalNode(nodes).id)
       {
          links.push_back({nodeFrom, nodeTo});
 
@@ -127,9 +151,24 @@ void Strategy_v2::createLink(const Id& graphId, const Id& nodeFrom, const Id& no
    }
 }
 
-void Strategy_v2::breakLink(const Id& graphId, const Id& nodeFrom, const Id& noteTo)
+void Strategy_v2::breakLink(const Id& graphId, const Id& nodeFrom, const Id& nodeTo)
 {
-   
+   if(nodeFrom == nodeTo)
+   {
+      return;
+   }
+
+   auto graph = getGraph(graphId);
+
+   if(graph)
+   {
+      auto pos = std::find(graph->links.begin(), graph->links.end(), Link{nodeFrom, nodeTo});
+      if(pos != graph->links.end())
+      {
+         graph->links.erase(pos);
+         saveGraph(*graph);
+      }
+   }
 }
 
 Id Strategy_v2::createNode(const Id& graphId)
@@ -140,12 +179,33 @@ Id Strategy_v2::createNode(const Id& graphId)
    if(graph)
    {
       result = Id::generate();
-      graph->nodes.push_back({result});
+      graph->nodes.push_back({result, NodeType::Blank});
 
       saveGraph(*graph);
    }
 
    return result;
+}
+
+void Strategy_v2::setNodeAttributes(const Id& graphId, const Node& node)
+{
+   if(node.type == NodeType::Goal)
+   {
+      return;
+   }
+
+   auto graph = getGraph(graphId);
+
+   if(graph)
+   {
+      auto nodePos = find_by_id(graph->nodes, node.id);
+
+      if(nodePos != graph->nodes.end() && nodePos->type != NodeType::Goal)
+      {
+         *nodePos = node;
+         saveGraph(*graph);
+      }
+   }
 }
 
 void Strategy_v2::deleteGoal(const Id& id)

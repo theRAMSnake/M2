@@ -132,3 +132,7 @@ void JsonReader::read<materia::Id>(const std::string& field, materia::Id& out);
 
 template<>
 void JsonWriter::write<materia::Id>(const std::string& field, const materia::Id& in);
+
+#define SERIALIZE_AS_INTEGER(T) namespace std { \
+   static ostream& operator << (ostream& str, const T& t){ str << static_cast<int>(t); return str; } \
+   static istream& operator >> (istream& str, T& t){ int v; str >> v; t = static_cast<T>(v); return str; }}

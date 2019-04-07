@@ -18,7 +18,15 @@ fun genNewsFile(): String
     val filename = "${cal.get(Calendar.DAY_OF_MONTH)}_${cal.get(Calendar.MONTH)}_${cal.get(Calendar.YEAR)}"
 
     var filecontent = genRedditContent()
-    filecontent += genHackernewsContent()
+    try
+    {
+        filecontent += genHackernewsContent()
+    }
+    catch(e: Exception)
+    {
+        filecontent += "<h1>HN Failed </h1>"
+    }
+
     filecontent += genSteamContent()
 
     File(filename).writeText(filecontent)

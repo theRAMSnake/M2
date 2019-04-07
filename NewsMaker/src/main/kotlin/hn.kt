@@ -31,14 +31,21 @@ fun genHackernewsContent(): String
 
     for(x in itemsOnPage.value)
     {
-        val item = loadItem(x)
-        if(item.score > 100)
+        try
         {
-            allItems.add(item.title)
-            if(allItems.size > 25)
+            val item = loadItem(x)
+            if(item.score > 100)
             {
-                break
+                allItems.add(item.title)
+                if(allItems.size > 25)
+                {
+                    break
+                }
             }
+        }
+        catch(e: Exception)
+        {
+            
         }
     }
 

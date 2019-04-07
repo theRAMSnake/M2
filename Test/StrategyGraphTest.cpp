@@ -11,6 +11,21 @@ namespace std
       str << "[" << g.id << ", " << g.name << ", " << g.notes << ", " << g.focused << ", " << g.achieved  << "]";
       return str;
    }
+
+   static std::ostream& operator << (std::ostream& str, const materia::NodeType& n)
+   {
+      switch(n)
+      {
+         case materia::NodeType::Goal:
+            str << "Goal";
+            break;
+
+         default:
+            str << n;
+            break;
+      }
+      return str;
+   }
 }
 
 static materia::Goal createGoal(const int suffix)
@@ -57,7 +72,12 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_AddGoal, StrategyGraphTest )
    auto id = mStrategy.addGoal(createGoal(8));
 
    BOOST_CHECK(mStrategy.getGoal(id));
-   BOOST_CHECK(mStrategy.getGraph(id));
+
+   auto g = mStrategy.getGraph(id);
+   BOOST_CHECK(g);
+
+   BOOST_CHECK_EQUAL(1, g->nodes.size());
+   BOOST_CHECK_EQUAL(materia::NodeType::Goal, g->nodes[0].type);
 }
 
 BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_ModifyGoal_Unchangable_Id, StrategyGraphTest )  
@@ -220,9 +240,118 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_CreateCyclical_Triangle, StrategyGrap
    BOOST_CHECK_EQUAL(2, g.links.size());
 }
 
-//test following use cases:
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_CreateCyclical_Complex, StrategyGraphTest )
+{
+   auto graphId = mGoals[0].id;
+   auto nodeId1 = mStrategy.createNode(graphId);
+   auto nodeId2 = mStrategy.createNode(graphId);
+   auto nodeId3 = mStrategy.createNode(graphId);
+   auto nodeId4 = mStrategy.createNode(graphId);
+   auto nodeId5 = mStrategy.createNode(graphId);
 
-//Create link - error cyclical - difficult case
+   mStrategy.createLink(graphId, nodeId1, nodeId2);
+   mStrategy.createLink(graphId, nodeId2, nodeId3);
+   mStrategy.createLink(graphId, nodeId2, nodeId4);
+   mStrategy.createLink(graphId, nodeId2, nodeId5);
 
-//Delete link
-//Delete node
+   auto g = *mStrategy.getGraph(graphId);
+
+   BOOST_CHECK_EQUAL(4, g.links.size());
+
+   mStrategy.createLink(graphId, nodeId3, nodeId1);
+
+   g = *mStrategy.getGraph(graphId);
+
+   BOOST_CHECK_EQUAL(4, g.links.size());
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_DeleteLink, StrategyGraphTest )
+{
+   auto graphId = mGoals[0].id;
+   auto nodeId1 = mStrategy.createNode(graphId);
+   auto nodeId2 = mStrategy.createNode(graphId);
+
+   mStrategy.createLink(graphId, nodeId1, nodeId2);
+
+   auto g = *mStrategy.getGraph(graphId);
+
+   BOOST_CHECK_EQUAL(1, g.links.size());
+   
+   mStrategy.breakLink(graphId, nodeId1, nodeId2);
+   g = *mStrategy.getGraph(graphId);
+
+   BOOST_CHECK_EQUAL(0, g.links.size());
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_DeleteNode, StrategyGraphTest )  
+{
+   auto graphId = mGoals[0].id;
+   auto nodeId1 = mStrategy.createNode(graphId);
+   auto nodeId2 = mStrategy.createNode(graphId);
+   auto nodeId3 = mStrategy.createNode(graphId);
+
+   BOOST_CHECK(materia::contains_id(mStrategy.getGraph(graphId)->nodes, nodeId1));
+   BOOST_CHECK(materia::contains_id(mStrategy.getGraph(graphId)->nodes, nodeId2));
+   BOOST_CHECK(materia::contains_id(mStrategy.getGraph(graphId)->nodes, nodeId3));
+
+   mStrategy.deleteNode(graphId, nodeId3);
+
+   BOOST_CHECK(materia::contains_id(mStrategy.getGraph(graphId)->nodes, nodeId1));
+   BOOST_CHECK(materia::contains_id(mStrategy.getGraph(graphId)->nodes, nodeId2));
+   BOOST_CHECK(!materia::contains_id(mStrategy.getGraph(graphId)->nodes, nodeId3));
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_CreateGoalNode, StrategyGraphTest )  
+{
+   //Complete when other node types available
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_DeleteGoalNode, StrategyGraphTest )  
+{
+   auto graphId = mGoals[0].id;
+   auto goalNodeId = mStrategy.getGraph(graphId)->nodes[0].id;
+   mStrategy.deleteNode(graphId, goalNodeId);
+
+   BOOST_CHECK(materia::contains_id(mStrategy.getGraph(graphId)->nodes, goalNodeId));
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_CannotLinkFromGoalNode, StrategyGraphTest )  
+{
+   auto graphId = mGoals[0].id;
+   auto goalNodeId = mStrategy.getGraph(graphId)->nodes[0].id;
+   auto nodeId1 = mStrategy.createNode(graphId);
+   auto nodeId2 = mStrategy.createNode(graphId);
+
+   mStrategy.createLink(graphId, goalNodeId, nodeId1);
+
+   auto g = *mStrategy.getGraph(graphId);
+   BOOST_CHECK_EQUAL(0, g.links.size());
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_SetAttrs_Goal, StrategyGraphTest )  
+{
+   auto graphId = mGoals[0].id;
+   auto goalNodeId = mStrategy.getGraph(graphId)->nodes[0].id;
+   mStrategy.setNodeAttributes(graphId, {goalNodeId});
+
+   auto g = mStrategy.getGraph(graphId);
+   BOOST_CHECK_EQUAL(materia::NodeType::Goal, materia::find_by_id(g->nodes, goalNodeId)->type);
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_SetAttrs_Ok, StrategyGraphTest )  
+{
+   auto graphId = mGoals[0].id;
+   auto nodeId = mStrategy.createNode(graphId);
+   mStrategy.setNodeAttributes(graphId, {nodeId, materia::NodeType::Task, "test"});
+
+   auto g = mStrategy.getGraph(graphId);
+   BOOST_CHECK_EQUAL(materia::NodeType::Task, materia::find_by_id(g->nodes, nodeId)->type);
+   BOOST_CHECK_EQUAL("test", materia::find_by_id(g->nodes, nodeId)->brief);
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_SetAttrs_WrongId, StrategyGraphTest )  
+{
+   auto graphId = mGoals[0].id;
+   mStrategy.setNodeAttributes(graphId, {materia::Id("invalid"), materia::NodeType::Task, "test"});
+   mStrategy.setNodeAttributes(materia::Id("invalid"), {materia::Id("invalid"), materia::NodeType::Task, "test"});
+}
