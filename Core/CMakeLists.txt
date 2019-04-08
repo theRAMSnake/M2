@@ -20,6 +20,7 @@ private/Objective.cpp
 private/Logger.cpp
 private/JsonSerializer.cpp
 private/Backuper.cpp
+private/StrategyGraph.cpp
 )
 
 find_package(Boost COMPONENTS system REQUIRED)

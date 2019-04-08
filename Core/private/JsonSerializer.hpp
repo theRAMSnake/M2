@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include "Common/Id.hpp"
@@ -43,6 +44,18 @@ public:
       }
    }
 
+   template<class K, class V>
+   void read(const std::string& field, std::map<K, V>& out)
+   {
+      std::vector<std::pair<K, V>> items;
+      read(field, items);
+
+      for(auto x : items)
+      {
+         out.insert(x);
+      }
+   }
+
 private:
    boost::property_tree::ptree m_ptree;
 };
@@ -73,6 +86,15 @@ public:
       }
 
       m_ptree.add_child(field, subTree);
+   }
+
+   template<class K, class V>
+   void write(const std::string& field, const std::map<K, V>& in)
+   {
+      std::vector<std::pair<K, V>> items(in.size());
+      std::copy(in.begin(), in.end(), items.begin());
+
+      write(field, items);
    }
 
    std::string getResult()
@@ -118,6 +140,10 @@ std::string writeJson(const T& t)
 #define BIND_JSON3(T, F1, F2, F3) template<> class JsonMap<T> { public: \
    static void read(JsonReader& r, T& t) { r.read(#F1, t.F1); r.read(#F2, t.F2); r.read(#F3, t.F3); } \
    static void write(const T& t, JsonWriter& w) { w.write(#F1, t.F1); w.write(#F2, t.F2); w.write(#F3, t.F3); } };
+
+#define BIND_JSON4(T, F1, F2, F3, F4) template<> class JsonMap<T> { public: \
+   static void read(JsonReader& r, T& t) { r.read(#F1, t.F1); r.read(#F2, t.F2); r.read(#F3, t.F3); r.read(#F4, t.F4); } \
+   static void write(const T& t, JsonWriter& w) { w.write(#F1, t.F1); w.write(#F2, t.F2); w.write(#F3, t.F3); w.write(#F4, t.F4); } };
 
 #define BIND_JSON5(T, F1, F2, F3, F4, F5) template<> class JsonMap<T> { public: \
    static void read(JsonReader& r, T& t) { r.read(#F1, t.F1); r.read(#F2, t.F2); r.read(#F3, t.F3); r.read(#F4, t.F4); r.read(#F5, t.F5); } \

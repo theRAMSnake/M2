@@ -2,6 +2,7 @@
 
 #include <Common/Id.hpp>
 #include <vector>
+#include <map>
 #include "IStrategy.hpp"
 
 namespace materia
@@ -27,6 +28,12 @@ enum class NodeType
    //Reference = 8 //other graph node completed
 };
 
+struct Node
+{
+   Id id;
+   NodeType type;
+};
+
 struct SimpleNodeAttributes
 {
    bool done;
@@ -40,27 +47,22 @@ struct CounterNodeAttributes
    int required;
 };
 
-class INode
+struct Link
 {
-public:
-   virtual NodeType getType() const = 0;
-   virtual bool enabled() const = 0;
-   virtual bool completed() const = 0;
-
-   virtual SimpleNodeAttributes getSimpleAttrs() const = 0;
-   virtual CounterNodeAttributes getCounterAttrs() const = 0;
-
-   ~INode(){}
+   Id from;
+   Id to;
 };
 
-class IStrategyGraphReceiver
+class IStrategyGraph
 {
 public:
+   virtual std::vector<Link> getLinks() const = 0;
+   virtual std::vector<Node> getNodes() const = 0;
 
-   virtual void addLink(const Id& from, const Id& to) = 0;
-   virtual void addNode(const INode& node) = 0;
+   virtual SimpleNodeAttributes getSimpleNodeAttributes(const Id& nodeId) const = 0;
+   virtual CounterNodeAttributes getCounterNodeAttributes(const Id& nodeId) const = 0;
 
-   ~IStrategyGraphReceiver(){}
+   virtual ~IStrategyGraph(){}
 };
 
 class IStrategy_v2
@@ -72,14 +74,14 @@ public:
    virtual std::optional<Goal> getGoal(const Id& id) = 0;
    virtual void deleteGoal(const Id& id) = 0;
 
-   virtual bool getGraph(const IStrategyGraphReceiver& receiver) = 0; 
+   virtual std::shared_ptr<IStrategyGraph> getGraph(const Id& graphId) = 0; 
 
    virtual void createLink(const Id& graphId, const Id& from, const Id& to) = 0;
    virtual void breakLink(const Id& graphId, const Id& from, const Id& to) = 0;
 
    virtual Id createNode(const Id& graphId) = 0;
 
-   virtual void setNodeAttributes(const Id& graphId, const Id& objectId, const SimpleNodeAttributes& attrs) = 0;
+   virtual void setNodeAttributes(const Id& graphId, const Id& objectId, const NodeType& nodeType, const SimpleNodeAttributes& attrs) = 0;
    virtual void setNodeAttributes(const Id& graphId, const Id& objectId, const CounterNodeAttributes& attrs) = 0;
 
    virtual void deleteNode(const Id& graphId, const Id& objectId) = 0;
