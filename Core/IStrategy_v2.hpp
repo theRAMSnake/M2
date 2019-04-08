@@ -3,6 +3,7 @@
 #include <Common/Id.hpp>
 #include <vector>
 #include <map>
+#include <memory>
 #include "IStrategy.hpp"
 
 namespace materia

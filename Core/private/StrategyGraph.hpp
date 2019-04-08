@@ -18,7 +18,7 @@ struct RawStrategyGraph
 class StrategyGraph : public IStrategyGraph
 {
 public:
-   StrategyGraph();
+   StrategyGraph(const Id& id);
    StrategyGraph(const RawStrategyGraph& src);
 
    std::vector<Link> getLinks() const override;

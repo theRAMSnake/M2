@@ -31,7 +31,7 @@ std::shared_ptr<StrategyGraph> Strategy_v2::loadGraph(const Id& graphId)
    if(loaded)
    {
       //std::cout << "LLL " << *loaded;
-      return std::make_shared(readJson<RawStrategyGraph>(*loaded));
+      return std::make_shared<StrategyGraph>(readJson<RawStrategyGraph>(*loaded));
    }
    else
    {
@@ -41,14 +41,14 @@ std::shared_ptr<StrategyGraph> Strategy_v2::loadGraph(const Id& graphId)
 
 void Strategy_v2::deleteNode(const Id& graphId, const Id& objectId)
 {
-   makeGraphOperation(graphId, [=](auto g){g.deleteNode(objectId);});
+   makeGraphOperation(graphId, [=](auto& g){g.deleteNode(objectId);});
 }
 
 Id Strategy_v2::addGoal(const Goal& goal)
 {
    auto id = mStrategy_v1.addGoal(goal);
 
-   saveGraph(std::make_shared<StrategyGraph>());
+   saveGraph(*std::make_shared<StrategyGraph>(id));
 
    return id;
 }
@@ -75,19 +75,19 @@ std::shared_ptr<IStrategyGraph> Strategy_v2::getGraph(const Id& id)
 
 void Strategy_v2::createLink(const Id& graphId, const Id& nodeFrom, const Id& nodeTo)
 {
-   makeGraphOperation(graphId, [=](auto g){g.createLink(nodeFrom, nodeTo);});
+   makeGraphOperation(graphId, [=](auto& g){g.createLink(nodeFrom, nodeTo);});
 }
 
 void Strategy_v2::breakLink(const Id& graphId, const Id& nodeFrom, const Id& nodeTo)
 {
-   makeGraphOperation(graphId, [=](auto g){g.breakLink(nodeFrom, nodeTo);});
+   makeGraphOperation(graphId, [=](auto& g){g.breakLink(nodeFrom, nodeTo);});
 }
 
 Id Strategy_v2::createNode(const Id& graphId)
 {
    auto result = Id::Invalid;
 
-   makeGraphOperation(graphId, [&](auto g){result = g.createNode();});
+   makeGraphOperation(graphId, [&](auto& g){result = g.createNode();});
 
    return result;
 }

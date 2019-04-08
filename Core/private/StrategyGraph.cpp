@@ -91,8 +91,9 @@ void StrategyGraph::deleteNode(const Id& objectId)
    }
 }
 
-StrategyGraph::StrategyGraph()
+StrategyGraph::StrategyGraph(const Id& id)
 {
+   mSrc.id = id;
    mSrc.nodes.push_back({Id::generate(), NodeType::Goal});
 }
 
@@ -119,7 +120,7 @@ void StrategyGraph::createLink(const Id& from, const Id& to)
 
 void StrategyGraph::breakLink(const Id& nodeFrom, const Id& nodeTo)
 {
-   erase_if(mSrc.links, [=](auto l){return l.from == nodeFrom && l.to == nodeTo});
+   erase_if(mSrc.links, [=](auto l){return l.from == nodeFrom && l.to == nodeTo;});
 }
 
 Id StrategyGraph::createNode()
