@@ -33,9 +33,14 @@ public:
    Id createNode();
    void deleteNode(const Id& objectId);
 
+   void setNodeAttributes(const Id& objectId, const NodeType& nodeType, const SimpleNodeAttributes& attrs);
+   void setNodeAttributes(const Id& objectId, const CounterNodeAttributes& attrs);
+
    const RawStrategyGraph& getRawData() const;
 
 private:
+
+   void discardAttributes(const Id& objectId);
    bool containsLinkAnyDirection(const Id& nodeFrom, const Id& nodeTo) const;
    bool isRouteExist(const Id& from, const Id& destination) const;
    Node getGoalNode() const;

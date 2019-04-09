@@ -20,6 +20,14 @@ namespace std
             str << "Goal";
             break;
 
+         case materia::NodeType::Task:
+            str << "Task";
+            break;
+
+         case materia::NodeType::Blank:
+            str << "Blank";
+            break;
+
          default:
             str << n;
             break;
@@ -308,11 +316,6 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_DeleteNode, StrategyGraphTest )
    BOOST_CHECK(!materia::contains_id(nodes, nodeId3));
 }
 
-BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_CreateGoalNode, StrategyGraphTest )  
-{
-   //Complete when other node types available
-}
-
 BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_DeleteGoalNode, StrategyGraphTest )  
 {
    auto graphId = mGoals[0].id;
@@ -336,32 +339,99 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_CannotLinkFromGoalNode, StrategyGraph
    BOOST_CHECK_EQUAL(0, g->getLinks().size());
 }
 
-/*BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_SetAttrs_Goal, StrategyGraphTest )  
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_SetAttrs_GoalNode, StrategyGraphTest )  
 {
    auto graphId = mGoals[0].id;
    auto goalNodeId = mStrategy.getGraph(graphId)->getNodes()[0].id;
-   mStrategy.setNodeAttributes(graphId, {goalNodeId});
+   mStrategy.setNodeAttributes(graphId, goalNodeId, {});
+   mStrategy.setNodeAttributes(graphId, goalNodeId, materia::NodeType::Task, {});
 
    auto g = mStrategy.getGraph(graphId);
-   BOOST_CHECK_EQUAL(materia::NodeType::Goal, materia::find_by_id(g->getNodes(), goalNodeId)->type);
-}*/
+   auto nodes = g->getNodes();
+   BOOST_CHECK_EQUAL(materia::NodeType::Goal, materia::find_by_id(nodes, goalNodeId)->type);
+}
 
-/*BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_SetAttrs_Ok, StrategyGraphTest )  
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_SetAttrs_Simple, StrategyGraphTest )
 {
    auto graphId = mGoals[0].id;
    auto nodeId = mStrategy.createNode(graphId);
-   mStrategy.setNodeAttributes(graphId, {nodeId, materia::NodeType::Task, "test"});
+   mStrategy.setNodeAttributes(graphId, nodeId, materia::NodeType::Task, {true, "test"});
 
    auto g = mStrategy.getGraph(graphId);
-   BOOST_CHECK_EQUAL(materia::NodeType::Task, materia::find_by_id(g->getNodes(), nodeId)->type);
-   BOOST_CHECK_EQUAL("test", materia::find_by_id(g->getNodes(), nodeId)->brief);
-}*/
+   auto nodes = g->getNodes();
 
-/*BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_SetAttrs_WrongId, StrategyGraphTest )  
+   BOOST_CHECK_EQUAL(materia::NodeType::Task, materia::find_by_id(nodes, nodeId)->type);
+
+   auto attrs = g->getSimpleNodeAttributes(nodeId);
+   BOOST_CHECK_EQUAL("test", attrs.brief);
+   BOOST_CHECK_EQUAL(true, attrs.done);
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_SetAttrs_Counters, StrategyGraphTest )
 {
    auto graphId = mGoals[0].id;
-   mStrategy.setNodeAttributes(graphId, {materia::Id("invalid"), materia::NodeType::Task, "test"});
-   mStrategy.setNodeAttributes(materia::Id("invalid"), {materia::Id("invalid"), materia::NodeType::Task, "test"});
-}*/
+   auto nodeId = mStrategy.createNode(graphId);
+   mStrategy.setNodeAttributes(graphId, nodeId, {"test", 0, 3});
 
-//delete node -> all relevant links deleted
+   auto g = mStrategy.getGraph(graphId);
+   auto nodes = g->getNodes();
+
+   BOOST_CHECK_EQUAL(materia::NodeType::Counter, materia::find_by_id(nodes, nodeId)->type);
+
+   auto attrs = g->getCounterNodeAttributes(nodeId);
+   BOOST_CHECK_EQUAL("test", attrs.brief);
+   BOOST_CHECK_EQUAL(0, attrs.current);
+   BOOST_CHECK_EQUAL(3, attrs.required);
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_SetAttrs_Reassign, StrategyGraphTest )
+{
+   auto graphId = mGoals[0].id;
+   auto nodeId = mStrategy.createNode(graphId);
+   mStrategy.setNodeAttributes(graphId, nodeId, materia::NodeType::Task, {true, "test"});
+
+   auto g = mStrategy.getGraph(graphId);
+   auto nodes = g->getNodes();
+
+   BOOST_CHECK_EQUAL(materia::NodeType::Task, materia::find_by_id(nodes, nodeId)->type);
+
+   auto attrs = g->getSimpleNodeAttributes(nodeId);
+   BOOST_CHECK_EQUAL("test", attrs.brief);
+   BOOST_CHECK_EQUAL(true, attrs.done);
+
+   mStrategy.setNodeAttributes(graphId, nodeId, {"test", 0, 3});
+
+   g = mStrategy.getGraph(graphId);
+   nodes = g->getNodes();
+
+   BOOST_CHECK_EQUAL(materia::NodeType::Counter, materia::find_by_id(nodes, nodeId)->type);
+
+   auto cattrs = g->getCounterNodeAttributes(nodeId);
+   BOOST_CHECK_EQUAL("test", cattrs.brief);
+   BOOST_CHECK_EQUAL(0, cattrs.current);
+   BOOST_CHECK_EQUAL(3, cattrs.required);
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_SetAttrs_WrongId, StrategyGraphTest )  
+{
+   auto graphId = mGoals[0].id;
+   mStrategy.setNodeAttributes(graphId, materia::Id("invalid"), materia::NodeType::Task, {true, "test"});
+   mStrategy.setNodeAttributes(graphId, materia::Id("invalid"), {});
+   mStrategy.setNodeAttributes(materia::Id("invalid"), materia::Id("invalid"), {});
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_DeleteNode_LinksDeleted, StrategyGraphTest )  
+{
+   auto graphId = mGoals[0].id;
+   auto nodeId1 = mStrategy.createNode(graphId);
+   auto nodeId2 = mStrategy.createNode(graphId);
+   auto nodeId3 = mStrategy.createNode(graphId);
+
+   mStrategy.createLink(graphId, nodeId1, nodeId2);
+   mStrategy.createLink(graphId, nodeId2, nodeId3);
+
+   mStrategy.deleteNode(graphId, nodeId2);
+
+   auto g = mStrategy.getGraph(graphId);
+   BOOST_CHECK_EQUAL(0, g->getLinks().size());
+}

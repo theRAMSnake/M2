@@ -135,4 +135,49 @@ const RawStrategyGraph& StrategyGraph::getRawData() const
    return mSrc;
 }
 
+void StrategyGraph::setNodeAttributes(const Id& objectId, const NodeType& nodeType, const SimpleNodeAttributes& attrs)
+{
+   if(nodeType != NodeType::Objective &&
+      nodeType != NodeType::Task &&
+      nodeType != NodeType::Watch)
+   {
+      return;
+   }
+
+   auto nodePos = find_by_id(mSrc.nodes, objectId);
+
+   if(nodePos != mSrc.nodes.end() && nodePos->type != NodeType::Goal)
+   {
+      nodePos->type = nodeType;
+      discardAttributes(objectId);
+
+      mSrc.simpleNodeAttrs[objectId] = attrs;
+   }
+}
+
+void StrategyGraph::setNodeAttributes(const Id& objectId, const CounterNodeAttributes& attrs)
+{
+   auto nodePos = find_by_id(mSrc.nodes, objectId);
+
+   if(nodePos != mSrc.nodes.end() && nodePos->type != NodeType::Goal)
+   {
+      nodePos->type = NodeType::Counter;
+      discardAttributes(objectId);
+      mSrc.counterNodeAttrs[objectId] = attrs;
+   }
+}
+
+void StrategyGraph::discardAttributes(const Id& objectId)
+{
+   auto nodePos = find_by_id(mSrc.nodes, objectId);
+   if(nodePos->type == NodeType::Counter)
+   {
+      mSrc.counterNodeAttrs.erase(objectId);
+   }
+   else
+   {
+      mSrc.simpleNodeAttrs.erase(objectId);
+   }
+}
+
 }

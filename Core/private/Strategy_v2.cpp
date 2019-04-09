@@ -92,32 +92,20 @@ Id Strategy_v2::createNode(const Id& graphId)
    return result;
 }
 
-//here
-
 void Strategy_v2::setNodeAttributes(const Id& graphId, const Id& objectId, const NodeType& nodeType, const SimpleNodeAttributes& attrs)
 {
-   /*if(node.type == NodeType::Goal)
+   makeGraphOperation(graphId, [=](auto& g)
    {
-      return;
-   }
-
-   auto graph = getGraph(graphId);
-
-   if(graph)
-   {
-      auto nodePos = find_by_id(graph->nodes, node.id);
-
-      if(nodePos != graph->nodes.end() && nodePos->type != NodeType::Goal)
-      {
-         *nodePos = node;
-         saveGraph(*graph);
-      }
-   }*/
+      g.setNodeAttributes(objectId, nodeType, attrs);
+   });
 }
 
 void Strategy_v2::setNodeAttributes(const Id& graphId, const Id& objectId, const CounterNodeAttributes& attrs)
 {
-
+   makeGraphOperation(graphId, [=](auto& g)
+   {
+      g.setNodeAttributes(objectId, attrs);
+   });
 }
 
 void Strategy_v2::deleteGoal(const Id& id)
