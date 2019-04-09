@@ -60,6 +60,8 @@ message Resources
    repeated Resource items = 1;
 }
 
+//-
+
 message GraphObjectId
 {
    common.UniqueId graphId = 1;
@@ -68,14 +70,41 @@ message GraphObjectId
 
 message LinkProperties
 {
-   GraphObjectId id = 1;
+   common.UniqueId graphId = 1;
    common.UniqueId from_node_id = 2;
    common.UniqueId to_node_id = 3;
+}
+
+enum NodeType
+{
+   BLANK = 0;
+   GOAL = 1;
+   TASK = 2;
+   COUNTER = 3;
+   OBJECTIVE = 4;
+   WATCH = 5;
+}
+
+message SimpleAttributes
+{
+   string brief = 1;
+   bool done = 2;
+}
+
+message CounterAttributes
+{
+   string brief = 1;
+   int32 current = 2;
+   int32 required = 3;
 }
 
 message NodeProperties
 {
    GraphObjectId id = 1;
+   NodeType node_type = 2;
+
+   SimpleAttributes simple_attrs = 3; 
+   CounterAttributes counter_attrs = 4;
 }
 
 message GraphDefinition
@@ -112,9 +141,10 @@ service StrategyService
 
    rpc GetGraph (common.UniqueId) returns (GraphDefinition);
 
-   rpc CreateLink (LinkProperties) returns (common.UniqueId);
+   rpc CreateLink (LinkProperties) returns (common.EmptyMessage);
    rpc CreateNode (NodeProperties) returns (common.UniqueId);
    rpc ModifyNode (NodeProperties) returns (common.OperationResultMessage);
 
-   rpc DeleteGraphObject (GraphObjectId) returns (common.OperationResultMessage);
+   rpc DeleteNode (GraphObjectId) returns (common.OperationResultMessage);
+   rpc DeleteLink (LinkProperties) returns (common.OperationResultMessage);
 }

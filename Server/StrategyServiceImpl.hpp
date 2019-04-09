@@ -2,6 +2,7 @@
 
 #include <messages/strategy.pb.h>
 #include <Core/IStrategy.hpp>
+#include <Core/IStrategy_v2.hpp>
 #include "ProtoConvertion.hpp"
 
 namespace materia
@@ -109,11 +110,74 @@ strategy::Task toProto(const Task& x)
    return result;
 }
 
+strategy::NodeType toProto(const materia::NodeType& src)
+{
+   switch (src)
+   {
+      case materia::NodeType::Blank: return strategy::NodeType::BLANK;
+      case materia::NodeType::Counter: return strategy::NodeType::COUNTER;
+      case materia::NodeType::Goal: return strategy::NodeType::GOAL;
+      case materia::NodeType::Task: return strategy::NodeType::TASK;
+      case materia::NodeType::Objective: return strategy::NodeType::OBJECTIVE;
+      case materia::NodeType::Watch: return strategy::NodeType::WATCH;
+   }
+   
+   return strategy::NodeType::BLANK;
+}
+
+materia::NodeType fromProto(const strategy::NodeType src)
+{
+   switch (src)
+   {
+      case strategy::NodeType::BLANK: return materia::NodeType::Blank;
+      case strategy::NodeType::COUNTER: return materia::NodeType::Counter;
+      case strategy::NodeType::GOAL: return materia::NodeType::Goal;
+      case strategy::NodeType::TASK: return materia::NodeType::Task;
+      case strategy::NodeType::OBJECTIVE: return materia::NodeType::Objective;
+      case strategy::NodeType::WATCH: return materia::NodeType::Watch;
+
+   default:
+      return materia::NodeType::Blank;
+   }
+}
+
+strategy::CounterAttributes toProto(const materia::CounterNodeAttributes& src)
+{
+   strategy::CounterAttributes result;
+
+   result.set_brief(src.brief);
+   result.set_current(src.current);
+   result.set_required(src.required);
+
+   return result;
+}
+
+strategy::SimpleAttributes toProto(const materia::SimpleNodeAttributes& src)
+{
+   strategy::SimpleAttributes result;
+
+   result.set_brief(src.brief);
+   result.set_done(src.done);
+
+   return result;
+}
+
+materia::CounterNodeAttributes fromProto(const strategy::CounterAttributes& src)
+{
+   return {src.brief(), src.current(), src.required()};
+}
+
+materia::SimpleNodeAttributes fromProto(const strategy::SimpleAttributes& src)
+{
+   return {src.done(), src.brief()};
+}
+
 class StrategyServiceImpl : public strategy::StrategyService
 {
 public:
    StrategyServiceImpl(ICore& core)
    : mStrategy(core.getStrategy())
+   , mStrategy2(core.getStrategy_v2())
    {
 
    }
@@ -123,7 +187,7 @@ public:
                        ::common::UniqueId* response,
                        ::google::protobuf::Closure* done)
    {
-      response->CopyFrom(toProto(mStrategy.addGoal(fromProto(*request))));
+      response->CopyFrom(toProto(mStrategy2.addGoal(fromProto(*request))));
    }
 
    virtual void ModifyGoal(::google::protobuf::RpcController* controller,
@@ -140,7 +204,7 @@ public:
                        ::common::OperationResultMessage* response,
                        ::google::protobuf::Closure* done)
    {
-      mStrategy.deleteGoal(fromProto(*request));
+      mStrategy2.deleteGoal(fromProto(*request));
       response->set_success(true);
    }
 
@@ -272,8 +336,106 @@ public:
       }
    }
 
+   virtual void GetGraph(::google::protobuf::RpcController* controller,
+                       const ::common::UniqueId* request,
+                       ::strategy::GraphDefinition* response,
+                       ::google::protobuf::Closure* done)
+   {
+      auto g = mStrategy2.getGraph(fromProto(*request));
+      if(g)
+      {
+         for(auto x : g->getLinks())
+         {
+            auto l = response->add_links();
+            l->mutable_graphid()->CopyFrom(*request);
+            l->mutable_from_node_id()->CopyFrom(toProto(x.from));
+            l->mutable_to_node_id()->CopyFrom(toProto(x.to));
+         }
+
+         for(auto x : g->getNodes())
+         {
+            auto n = response->add_nodes();
+            n->set_node_type(toProto(x.type));
+            n->mutable_id()->mutable_graphid()->CopyFrom(*request);
+            n->mutable_id()->mutable_objectid()->CopyFrom(toProto(x.id));
+
+            switch (x.type)
+            {
+               case materia::NodeType::Counter:
+                  n->mutable_counter_attrs()->CopyFrom(toProto(g->getCounterNodeAttributes(x.id)));
+                  break;
+            
+               default:
+                  n->mutable_simple_attrs()->CopyFrom(toProto(g->getSimpleNodeAttributes(x.id)));
+                  break;
+            }
+         }
+      }
+   }
+
+   virtual void CreateLink(::google::protobuf::RpcController* controller,
+                       const ::strategy::LinkProperties* request,
+                       ::common::EmptyMessage* response,
+                       ::google::protobuf::Closure* done)
+   {
+      mStrategy2.createLink(fromProto(request->graphid()), fromProto(request->from_node_id()), fromProto(request->to_node_id()));
+   }
+
+   virtual void CreateNode(::google::protobuf::RpcController* controller,
+                       const ::strategy::NodeProperties* request,
+                       ::common::UniqueId* response,
+                       ::google::protobuf::Closure* done)
+   {
+      auto result = mStrategy2.createNode(fromProto(request->id().graphid()));
+      response->CopyFrom(toProto(result));
+   }
+
+   virtual void ModifyNode(::google::protobuf::RpcController* controller,
+                       const ::strategy::NodeProperties* request,
+                       ::common::OperationResultMessage* response,
+                       ::google::protobuf::Closure* done)
+   {
+      auto graphId = fromProto(request->id().graphid());
+      auto nodeId = fromProto(request->id().objectid());
+
+      switch (request->node_type())
+      {
+         case ::strategy::NodeType::COUNTER:
+            {
+               mStrategy2.setNodeAttributes(graphId, nodeId, fromProto(request->counter_attrs()));
+            }
+            break;
+      
+         default:
+            {
+               mStrategy2.setNodeAttributes(graphId, nodeId, fromProto(request->node_type()), fromProto(request->simple_attrs()));
+            }
+            break;
+      }
+   }
+
+   virtual void DeleteNode(::google::protobuf::RpcController* controller,
+                       const ::strategy::GraphObjectId* request,
+                       ::common::OperationResultMessage* response,
+                       ::google::protobuf::Closure* done)
+   {
+      auto graphId = fromProto(request->graphid());
+      auto nodeId = fromProto(request->objectid());
+
+      mStrategy2.deleteNode(graphId, nodeId);
+   }
+
+   virtual void DeleteLink(::google::protobuf::RpcController* controller,
+                       const ::strategy::LinkProperties* request,
+                       ::common::OperationResultMessage* response,
+                       ::google::protobuf::Closure* done)
+   {
+      mStrategy2.breakLink(fromProto(request->graphid()), fromProto(request->from_node_id()), fromProto(request->to_node_id()));
+   }
+
 private:
    IStrategy& mStrategy;
+   IStrategy_v2& mStrategy2;
 };
 
 }
