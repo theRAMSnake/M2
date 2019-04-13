@@ -83,7 +83,7 @@ common::MateriaMessage handleMessage(const common::MateriaMessage& in)
 int main()
 {
     zmq::context_t context (1);
-    zmq::socket_t clientSocket (context, ZMQ_ROUTER);
+    zmq::socket_t clientSocket (context, ZMQ_REP);
     clientSocket.bind ("tcp://*:5757");
 
     logger << "Creating core\n";
@@ -98,12 +98,6 @@ int main()
     logger << "Start listening\n";
     while(true)
     {
-        zmq::message_t requestEndpoint;
-        clientSocket.recv (&requestEndpoint);
-        logger << "Received endpoint\n";
-        zmq::message_t delimeterMessage;
-        clientSocket.recv (&delimeterMessage);
-        logger << "Received delimeter\n";
         zmq::message_t clientMessage;
         clientSocket.recv (&clientMessage);
         logger << "Received message\n";
@@ -112,9 +106,6 @@ int main()
         materiaMsg.ParseFromArray(clientMessage.data(), clientMessage.size());
 
         auto resp = handleMessage(materiaMsg);
-
-        clientSocket.send (requestEndpoint, ZMQ_SNDMORE);
-        clientSocket.send (delimeterMessage, ZMQ_SNDMORE);
 
         zmq::message_t msgToSend (resp.ByteSizeLong());
         resp.SerializeToArray(msgToSend.data (), msgToSend.size());
