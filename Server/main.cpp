@@ -63,6 +63,7 @@ common::MateriaMessage handleMessage(const common::MateriaMessage& in)
         else
         {
             logger << "Target service not found: " << in.to() << "\n";
+            logger << "Details: " << in.DebugString() << "\n";
         }
     }
     catch(std::exception& ex)
