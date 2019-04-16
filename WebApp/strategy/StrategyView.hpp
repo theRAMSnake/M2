@@ -1,6 +1,6 @@
 #pragma once
 #include <Wt/WContainerWidget.h>
-#include "materia/StrategyModel.hpp"
+#include "../materia/StrategyModel.hpp"
 
 class IGoalViewCtrl;
 class StrategyView : public Wt::WContainerWidget

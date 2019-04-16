@@ -12,14 +12,15 @@ WebApp.cpp
 MainScreen.cpp
 InboxView.cpp
 ActionsView.cpp
-StrategyView.cpp
+strategy/StrategyView.cpp
 WtConverters.cpp
 CalendarView.cpp
 TemplateBuilder.cpp
 MateriaClient.cpp
 MainView.cpp
 JournalView.cpp
-GoalsComboBox.cpp
+strategy/GoalsComboBox.cpp
+strategy/GoalViewCtrl.hpp
 RewardsSmartPage.cpp
 materia/ZmqPbChannel.cpp
 materia/StrategyModel.cpp

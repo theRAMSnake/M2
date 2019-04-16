@@ -1,7 +1,7 @@
 #include "MainScreen.hpp"
 #include "InboxView.hpp"
 #include "ActionsView.hpp"
-#include "StrategyView.hpp"
+#include "strategy/StrategyView.hpp"
 #include "JournalView.hpp"
 #include "RewardsSmartPage.hpp"
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Wt/WComboBox.h>
-#include "materia/StrategyModel.hpp"
+#include "../materia/StrategyModel.hpp"
 
 class GoalComboBox : public Wt::WComboBox
 {

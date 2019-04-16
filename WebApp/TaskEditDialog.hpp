@@ -1,8 +1,10 @@
+#pragma once
+
 #include <Wt/WDialog.h>
 #include <Wt/WLineEdit.h>
 #include <Wt/WTextEdit.h>
 #include <Wt/WPushButton.h>
-#include "GoalsComboBox.hpp"
+#include "strategy/GoalsComboBox.hpp"
 
 class TaskEditDialog : public Wt::WDialog
 {
