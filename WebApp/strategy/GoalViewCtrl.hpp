@@ -317,9 +317,10 @@ public:
 
    void attach(const StrategyModel::Goal& goal) override
    {
-      setStyleClass(GoalViewCtrlTraits<isCompact>::nonemptyStyleClass);
-
       mGoal = goal;
+      mGraph = mModel.getGraph(mGoal->id);
+
+      setStyleClass(GoalViewCtrlTraits<isCompact>::nonemptyStyleClass);
 
       render();
 
@@ -405,19 +406,27 @@ private:
       mName->setText(mGoal->title);
       if(!isCompact)
       {
-         mTasks->clear();
-         for(auto t : mModel.getGoalTasks(mGoal->id))
+         if(!mGraph)
          {
-            addTaskWidget(t);
-         }
+            mGraphView.reset();
+            mTasks->clear();
+            for(auto t : mModel.getGoalTasks(mGoal->id))
+            {
+               addTaskWidget(t);
+            }
 
-         mObjs->clear();
-         for(auto o : mModel.getGoalObjectives(mGoal->id))
+            mObjs->clear();
+            for(auto o : mModel.getGoalObjectives(mGoal->id))
+            {
+               addObjectiveWidget(o);
+            }
+
+            mNotes->setText(mGoal->notes);
+         }
+         else
          {
-            addObjectiveWidget(o);
+            mGraphView->assign(*mGraph);
          }
-
-         mNotes->setText(mGoal->notes);
       }
    }
 
@@ -519,5 +528,6 @@ private:
    Wt::WContainerWidget* mTasks = nullptr;
    Wt::WContainerWidget* mObjs = nullptr;
    std::optional<StrategyModel::Goal> mGoal;
+   std::optional<StrategyModel::Graph> mGraph;
    bool mIsActiveSlot;
 };

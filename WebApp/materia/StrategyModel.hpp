@@ -37,6 +37,11 @@ public:
       bool achieved;
    };
 
+   struct Graph
+   {
+
+   };
+
    struct Resource
    {
       materia::Id id;
@@ -65,6 +70,8 @@ public:
    Objective addObjective(const std::string& title, const materia::Id& parentGoalId);
    void deleteObjective(const materia::Id& id);
    Objective modifyObjective(const Objective& o);
+
+   std::optional<Graph> getGraph(const materia::Id& id);
 
 private:
    void fetchGoals();
