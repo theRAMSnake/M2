@@ -39,7 +39,7 @@ public:
 
    struct Graph
    {
-
+      bool tmp;
    };
 
    struct Resource

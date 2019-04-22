@@ -94,3 +94,20 @@
   user-select: none;
   -moz-user-select: none;
 }
+
+.GraphView {
+  background-color: rgb(31, 31, 31);
+  display: inline-block;
+  height: 100%;
+  width: 100%;
+}
+
+.GraphViewCaption {
+  color: white;
+  display: block;
+  text-align: center;
+  width: 100%;
+  user-select: none;
+  -moz-user-select: none;
+  font-size: 24px;
+}

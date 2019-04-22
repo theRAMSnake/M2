@@ -11,6 +11,8 @@
 #include <Wt/WCheckBox.h>
 #include "../dialog/CommonDialogManager.hpp"
 #include "../TaskEditDialog.hpp"
+#include "GraphView.hpp"
+#include "GraphEditDialog.hpp"
 
 class ObjectiveEditDialog : public BasicDialog
 {
@@ -249,6 +251,9 @@ public:
 
       if(!isCompact)
       {
+         mGraphView = addWidget(std::make_unique<GraphView>());
+         mGraphView->OnCaptionClicked.connect(std::bind(&GoalViewCtrl<isCompact>::onBoundClicked, this, std::placeholders::_1));
+
          WContainerWidget* frame = addWidget(std::make_unique<Wt::WContainerWidget>());
          frame->setStyleClass("col-md-6");
          frame->addWidget(std::make_unique<Wt::WLabel>("<br></br>"));
@@ -265,11 +270,11 @@ public:
          WContainerWidget* frameObj = addWidget(std::make_unique<Wt::WContainerWidget>());
          frameObj->setStyleClass("col-md-6");
 
-         auto panel = frameObj->addWidget(std::make_unique<Wt::WPanel>());
-         panel->addStyleClass("GoalViewCtrl_Objectives");
+         mObjsPanel = frameObj->addWidget(std::make_unique<Wt::WPanel>());
+         mObjsPanel->addStyleClass("GoalViewCtrl_Objectives");
 
          mObjs = new Wt::WContainerWidget();
-         panel->setCentralWidget(std::unique_ptr<Wt::WContainerWidget>(mObjs));
+         mObjsPanel->setCentralWidget(std::unique_ptr<Wt::WContainerWidget>(mObjs));
       }
       else
       {
@@ -354,9 +359,11 @@ public:
       setStyleClass(GoalViewCtrlTraits<isCompact>::emptyStyleClass);
       mName->setText("");
       mGoal.reset();
+      mGraph.reset();
 
       if(!isCompact)
       {
+         mGraphView->reset();
          mNotes->setText("");
          mTasks->clear();
          mObjs->clear();
@@ -373,7 +380,7 @@ public:
 private:
    void onBoundClicked(Wt::WMouseEvent event)
    {
-      if(event.button() == Wt::MouseButton::Right && mGoal)
+      if(mGoal)
       {
          if(event.modifiers().test(Wt::KeyboardModifier::Control))
          {
@@ -384,10 +391,15 @@ private:
 
             CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
          }
-         else
+         else if(!mGraph)
          {
             GoalEditDialog::TOnOkCallback cb([&] (auto g) {doModifyGoal(g);});
             GoalEditDialog* dlg = new GoalEditDialog(*mGoal, cb);
+            dlg->show();
+         }
+         else
+         {
+            GraphEditDialog* dlg = new GraphEditDialog(*mGoal, *mGraph);
             dlg->show();
          }
       }
@@ -408,13 +420,15 @@ private:
       {
          if(!mGraph)
          {
-            mGraphView.reset();
+            mName->show();
+            mGraphView->reset();
             mTasks->clear();
             for(auto t : mModel.getGoalTasks(mGoal->id))
             {
                addTaskWidget(t);
             }
 
+            mObjsPanel->show();
             mObjs->clear();
             for(auto o : mModel.getGoalObjectives(mGoal->id))
             {
@@ -426,6 +440,9 @@ private:
          else
          {
             mGraphView->assign(*mGraph);
+            mGraphView->setCaption(mGoal->title);
+            mObjsPanel->hide();
+            mName->hide();
          }
       }
    }
@@ -527,6 +544,8 @@ private:
    Wt::WText* mNotes = nullptr;
    Wt::WContainerWidget* mTasks = nullptr;
    Wt::WContainerWidget* mObjs = nullptr;
+   Wt::WPanel* mObjsPanel = nullptr;
+   GraphView* mGraphView = nullptr;
    std::optional<StrategyModel::Goal> mGoal;
    std::optional<StrategyModel::Graph> mGraph;
    bool mIsActiveSlot;

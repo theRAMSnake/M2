@@ -21,6 +21,8 @@ MainView.cpp
 JournalView.cpp
 strategy/GoalsComboBox.cpp
 strategy/GoalViewCtrl.hpp
+strategy/GraphView.cpp
+strategy/GraphEditDialog.cpp
 RewardsSmartPage.cpp
 materia/ZmqPbChannel.cpp
 materia/StrategyModel.cpp

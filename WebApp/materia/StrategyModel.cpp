@@ -302,3 +302,23 @@ std::optional<StrategyModel::Resource> StrategyModel::getResource(const std::str
       return std::optional<StrategyModel::Resource>();
    }
 }
+
+std::optional<StrategyModel::Graph> StrategyModel::getGraph(const materia::Id& src)
+{
+   common::UniqueId id;
+   id.set_guid(src.getGuid());
+
+   strategy::GraphDefinition def;
+
+   mService.getService().GetGraph(nullptr, &id, &def, nullptr);
+
+   if(def.nodes_size() > 0)
+   {
+      std::cout << "\nGraph is there\n";
+      return std::optional<StrategyModel::Graph>({true});
+   }
+   else
+   {
+      return std::optional<StrategyModel::Graph>();
+   }
+}
