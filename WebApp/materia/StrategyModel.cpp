@@ -314,11 +314,36 @@ std::optional<StrategyModel::Graph> StrategyModel::getGraph(const materia::Id& s
 
    if(def.nodes_size() > 0)
    {
-      std::cout << "\nGraph is there\n";
-      return std::optional<StrategyModel::Graph>({true});
+      Graph g;
+
+      for(auto x : def.nodes())
+      {
+         g.nodes.push_back({x.id().objectid().guid()});
+      }
+
+      return g;
    }
    else
    {
       return std::optional<StrategyModel::Graph>();
    }
+}
+
+void StrategyModel::createNode(const materia::Id& graphId)
+{
+   strategy::NodeProperties props;
+   props.mutable_id()->mutable_graphid()->set_guid(graphId.getGuid());
+
+   common::UniqueId id;
+   mService.getService().CreateNode(nullptr, &props, &id, nullptr);
+}
+
+void StrategyModel::deleteNode(const materia::Id& graphId, const materia::Id& nodeId)
+{
+   strategy::GraphObjectId id;
+   id.mutable_graphid()->set_guid(graphId.getGuid());
+   id.mutable_objectid()->set_guid(nodeId.getGuid());
+
+   common::OperationResultMessage result;
+   mService.getService().DeleteNode(nullptr, &id, &result, nullptr);
 }

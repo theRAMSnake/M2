@@ -9,12 +9,14 @@ class GraphView: public Wt::WCompositeWidget
 {
 public:
    boost::signals2::signal<void(Wt::WMouseEvent)> OnCaptionClicked;
+   boost::signals2::signal<void(StrategyModel::Node, Wt::WMouseEvent)> OnNodeClicked;
 
    GraphView();
 
    void reset();
    void assign(const StrategyModel::Graph& g);
    void setCaption(const std::string& caption);
+   void layoutNodes(const std::vector<StrategyModel::Node>& nodes);
 
 private:
    Wt::WContainerWidget* mImpl;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <Common/Id.hpp>
 #include "ZmqPbChannel.hpp"
 #include "MateriaServiceProxy.hpp"
@@ -37,9 +38,14 @@ public:
       bool achieved;
    };
 
+   struct Node
+   {
+      materia::Id id;
+   };
+
    struct Graph
    {
-      bool tmp;
+      std::vector<Node> nodes;
    };
 
    struct Resource
@@ -72,6 +78,8 @@ public:
    Objective modifyObjective(const Objective& o);
 
    std::optional<Graph> getGraph(const materia::Id& id);
+   void createNode(const materia::Id& graphId);
+   void deleteNode(const materia::Id& graphId, const materia::Id& nodeId);
 
 private:
    void fetchGoals();
