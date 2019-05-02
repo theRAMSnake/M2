@@ -41,11 +41,19 @@ public:
    struct Node
    {
       materia::Id id;
+      strategy::NodeType type;
+   };
+
+   struct Link
+   {
+      materia::Id from;
+      materia::Id to;
    };
 
    struct Graph
    {
       std::vector<Node> nodes;
+      std::vector<Link> links;
    };
 
    struct Resource

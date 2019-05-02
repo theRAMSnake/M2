@@ -14,12 +14,9 @@ public:
    GraphView();
 
    void reset();
-   void assign(const StrategyModel::Graph& g);
-   void setCaption(const std::string& caption);
-   void layoutNodes(const std::vector<StrategyModel::Node>& nodes);
+   void assign(const StrategyModel::Graph& g, const std::string& caption);
 
 private:
    Wt::WContainerWidget* mImpl;
-
-   Wt::WLabel* mName;
+   //Wt::WLabel* mName;
 };

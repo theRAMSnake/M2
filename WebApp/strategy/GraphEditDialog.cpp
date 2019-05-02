@@ -33,9 +33,9 @@ GraphEditDialog::GraphEditDialog(const StrategyModel::Goal& goal, StrategyModel&
    }));
 }
 
-void GraphEditDialog::refreshGraph()
+void GraphEditDialog::refreshGraph()   
 {
-   mGraphView->assign(*mModel.getGraph(mId));
+   mGraphView->assign(*mModel.getGraph(mId), "");
 }
 
 void GraphEditDialog::createNode()

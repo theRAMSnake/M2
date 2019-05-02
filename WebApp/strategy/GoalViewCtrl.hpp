@@ -439,8 +439,7 @@ private:
          }
          else
          {
-            mGraphView->assign(*mGraph);
-            mGraphView->setCaption(mGoal->title);
+            mGraphView->assign(*mGraph, mGoal->title);
             mObjsPanel->hide();
             mName->hide();
          }

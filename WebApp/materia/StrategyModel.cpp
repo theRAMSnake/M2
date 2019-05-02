@@ -318,7 +318,12 @@ std::optional<StrategyModel::Graph> StrategyModel::getGraph(const materia::Id& s
 
       for(auto x : def.nodes())
       {
-         g.nodes.push_back({x.id().objectid().guid()});
+         g.nodes.push_back({x.id().objectid().guid(), x.node_type()});
+      }
+
+      for(auto x : def.links())
+      {
+         g.links.push_back({x.from_node_id().guid(), x.to_node_id().guid()});
       }
 
       return g;
