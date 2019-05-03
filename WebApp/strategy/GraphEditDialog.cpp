@@ -3,6 +3,7 @@
 #include <Wt/WToolBar.h>
 #include <Wt/WContainerWidget.h>
 #include <Wt/WPushButton.h>
+#include <Wt/WComboBox.h>
 
 GraphEditDialog::GraphEditDialog(const StrategyModel::Goal& goal, StrategyModel& model, TOnOkCallback cb)
 : BasicDialog("Edit graph", true)
@@ -18,6 +19,23 @@ GraphEditDialog::GraphEditDialog(const StrategyModel::Goal& goal, StrategyModel&
    addBtn->setStyleClass("btn-primary");
    addBtn->clicked().connect(this, &GraphEditDialog::createNode);
    tb->addButton(std::move(addBtn));
+
+   auto fromNodeCombo = std::make_unique<Wt::WComboBox>();
+   fromNodeCombo->setInline(true);
+   fromNodeCombo->setWidth(50);
+   fromNodeCombo->setMargin(5, Wt::Side::Left);
+   tb->addWidget(std::move(fromNodeCombo));
+
+   auto linkBtn = std::make_unique<Wt::WPushButton>("-->");
+   linkBtn->setInline(true);
+   linkBtn->setStyleClass("btn-primary");
+   tb->addButton(std::move(linkBtn));
+
+   auto toNodeCombo = std::make_unique<Wt::WComboBox>();
+   toNodeCombo->setInline(true);
+   toNodeCombo->setWidth(50);
+   toNodeCombo->setMargin(5, Wt::Side::Left);
+   tb->addWidget(std::move(toNodeCombo));
 
    mGraphView = contents()->addWidget(std::make_unique<GraphView>());
    mGraphView->OnNodeClicked.connect(std::bind(&GraphEditDialog::handleNodeClicked, this, std::placeholders::_1, std::placeholders::_2));

@@ -5,6 +5,7 @@
 #include "../materia/StrategyModel.hpp"
 #include <boost/signals2/signal.hpp>
 
+class IGraphElement;
 class GraphView: public Wt::WCompositeWidget
 {
 public:
@@ -17,6 +18,7 @@ public:
    void assign(const StrategyModel::Graph& g, const std::string& caption);
 
 private:
+   void OnElementClicked(Wt::WMouseEvent ev, const IGraphElement& element);
+
    Wt::WContainerWidget* mImpl;
-   //Wt::WLabel* mName;
 };

@@ -111,3 +111,15 @@
   -moz-user-select: none;
   font-size: 24px;
 }
+
+.GraphViewTable {
+  border-style: solid;
+  border-width: 1px;
+  border-color: white;
+}
+
+.GraphViewTableRow{
+  border-style: solid;
+  border-width: 1px;
+  border-color: white;
+}
