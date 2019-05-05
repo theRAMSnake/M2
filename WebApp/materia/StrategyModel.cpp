@@ -303,6 +303,21 @@ std::optional<StrategyModel::Resource> StrategyModel::getResource(const std::str
    }
 }
 
+std::string createDescriptiveTitle(const StrategyModel::Node& node)
+{
+   switch(node.type)
+   {
+      case strategy::NodeType::GOAL:
+         return "Endpoint";
+
+      case strategy::NodeType::BLANK:
+         return "'" + node.id.getGuid() + "'";
+
+      default:
+         return "unnamed node";
+   }
+}
+
 std::optional<StrategyModel::Graph> StrategyModel::getGraph(const materia::Id& src)
 {
    common::UniqueId id;
@@ -319,6 +334,7 @@ std::optional<StrategyModel::Graph> StrategyModel::getGraph(const materia::Id& s
       for(auto x : def.nodes())
       {
          g.nodes.push_back({x.id().objectid().guid(), x.node_type()});
+         g.nodes.back().descriptiveTitle = createDescriptiveTitle(g.nodes.back());
       }
 
       for(auto x : def.links())
@@ -351,4 +367,15 @@ void StrategyModel::deleteNode(const materia::Id& graphId, const materia::Id& no
 
    common::OperationResultMessage result;
    mService.getService().DeleteNode(nullptr, &id, &result, nullptr);
+}
+
+void StrategyModel::createLink(const materia::Id& graphId, const materia::Id& fromNodeId, const materia::Id& toNodeId)
+{
+   strategy::LinkProperties id;
+   id.mutable_graphid()->set_guid(graphId.getGuid());
+   id.mutable_from_node_id()->set_guid(fromNodeId.getGuid());
+   id.mutable_to_node_id()->set_guid(toNodeId.getGuid());
+
+   common::EmptyMessage empty;
+   mService.getService().CreateLink(nullptr, &id, &empty, nullptr);
 }

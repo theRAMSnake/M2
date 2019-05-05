@@ -20,22 +20,12 @@ GraphEditDialog::GraphEditDialog(const StrategyModel::Goal& goal, StrategyModel&
    addBtn->clicked().connect(this, &GraphEditDialog::createNode);
    tb->addButton(std::move(addBtn));
 
-   auto fromNodeCombo = std::make_unique<Wt::WComboBox>();
-   fromNodeCombo->setInline(true);
-   fromNodeCombo->setWidth(50);
-   fromNodeCombo->setMargin(5, Wt::Side::Left);
-   tb->addWidget(std::move(fromNodeCombo));
-
    auto linkBtn = std::make_unique<Wt::WPushButton>("-->");
    linkBtn->setInline(true);
+   linkBtn->setMargin(5, Wt::Side::Left);
    linkBtn->setStyleClass("btn-primary");
+   linkBtn->clicked().connect(this, &GraphEditDialog::linkNodesRequest);
    tb->addButton(std::move(linkBtn));
-
-   auto toNodeCombo = std::make_unique<Wt::WComboBox>();
-   toNodeCombo->setInline(true);
-   toNodeCombo->setWidth(50);
-   toNodeCombo->setMargin(5, Wt::Side::Left);
-   tb->addWidget(std::move(toNodeCombo));
 
    mGraphView = contents()->addWidget(std::make_unique<GraphView>());
    mGraphView->OnNodeClicked.connect(std::bind(&GraphEditDialog::handleNodeClicked, this, std::placeholders::_1, std::placeholders::_2));
@@ -53,13 +43,38 @@ GraphEditDialog::GraphEditDialog(const StrategyModel::Goal& goal, StrategyModel&
 
 void GraphEditDialog::refreshGraph()   
 {
-   mGraphView->assign(*mModel.getGraph(mId), "");
+   mGraph = *mModel.getGraph(mId);
+   mGraphView->assign(mGraph, "");
 }
 
 void GraphEditDialog::createNode()
 {
    mModel.createNode(mId);
    refreshGraph();
+}
+
+inline bool nodesSorter(const StrategyModel::Node& a, const StrategyModel::Node& b)
+{
+   return a.descriptiveTitle > b.descriptiveTitle;
+}
+
+void GraphEditDialog::linkNodesRequest()
+{
+   auto nodes = mGraph.nodes;
+
+   std::sort(nodes.begin(), nodes.end(), nodesSorter);
+
+   std::vector<std::string> choises;
+   for(auto g : nodes)
+   {
+      choises.push_back(g.descriptiveTitle);
+   }
+
+   CommonDialogManager::showDoubleComboDialog(choises, choises, [=](auto selected1index, auto selected2index) 
+   {
+      mModel.createLink(mId, nodes[selected1index].id, nodes[selected2index].id);
+      refreshGraph();
+   });
 }
 
 void GraphEditDialog::handleNodeClicked(StrategyModel::Node node, Wt::WMouseEvent ev)

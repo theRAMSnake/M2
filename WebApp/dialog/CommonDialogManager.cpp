@@ -222,3 +222,40 @@ void CommonDialogManager::showChoiseDialog(const std::vector<std::string>& optio
 
     dialog->show();
 }
+
+void CommonDialogManager::showDoubleComboDialog(
+    const std::vector<std::string>& options, 
+    const std::vector<std::string>& options2, 
+    std::function<void(const std::size_t&, const std::size_t&)> callback
+    )
+{
+    Wt::WDialog* dialog = createDialogBase("");
+
+    auto cmb = dialog->contents()->addWidget(std::make_unique<Wt::WComboBox>());
+    for(auto x : options)
+    {
+        cmb->addItem(x);
+    }
+
+    auto cmb2 = dialog->contents()->addWidget(std::make_unique<Wt::WComboBox>());
+    for(auto x : options2)
+    {
+        cmb2->addItem(x);
+    }
+
+    cmb->setCurrentIndex(0);
+    cmb2->setCurrentIndex(0);
+
+    dialog->finished().connect(std::bind([=]() {
+
+        if (dialog->result() == Wt::DialogCode::Accepted)
+        {
+            callback(cmb->currentIndex(), cmb2->currentIndex());
+        }
+        
+        delete dialog;
+
+    }));
+
+    dialog->show();
+}

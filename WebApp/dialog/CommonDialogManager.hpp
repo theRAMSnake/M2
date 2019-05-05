@@ -36,6 +36,11 @@ public:
    static void showMessage(const std::string& text);
    static void showLinesDialog(const std::vector<Wt::WString>& lines, std::function<void(const std::vector<Wt::WString>&)> callback);
    static void showChoiseDialog(const std::vector<std::string>& options, std::function<void(const std::size_t&)> callback);
+   static void showDoubleComboDialog(
+      const std::vector<std::string>& options, 
+      const std::vector<std::string>& options2, 
+      std::function<void(const std::size_t&, const std::size_t&)> callback
+      );
    
 private:
    static Wt::WDialog* createDialog(const std::string& caption, const std::vector<FieldInfo>& fields, TCallback& callback);

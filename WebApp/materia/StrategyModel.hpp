@@ -42,6 +42,7 @@ public:
    {
       materia::Id id;
       strategy::NodeType type;
+      std::string descriptiveTitle;
    };
 
    struct Link
@@ -88,6 +89,8 @@ public:
    std::optional<Graph> getGraph(const materia::Id& id);
    void createNode(const materia::Id& graphId);
    void deleteNode(const materia::Id& graphId, const materia::Id& nodeId);
+
+   void createLink(const materia::Id& graphId, const materia::Id& fromNodeId, const materia::Id& toNodeId);
 
 private:
    void fetchGoals();

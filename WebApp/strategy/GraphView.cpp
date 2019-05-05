@@ -102,6 +102,47 @@ private:
    const std::string mText;
 };
 
+class LinkGraphElement: public IGraphElement
+{
+public:
+   LinkGraphElement(
+      const std::pair<double, double> from, 
+      const std::pair<double, double> to, 
+      const materia::Id fromId,
+      const materia::Id toId
+      )
+   : mFrom(from)
+   , mTo(to)
+   , mFromId(fromId)
+   , mToId(toId)
+   {
+
+   }
+
+   void draw(Wt::WPainter& painter) const override
+   {
+      painter.setBrush(Wt::WBrush(Wt::BrushStyle::None));
+      painter.setPen(Wt::WPen(Wt::StandardColor::Green));
+      painter.drawLine(mFrom.first, mFrom.second, mTo.first, mTo.second);
+   }
+
+   Wt::WRectF getBounds() const override
+   {
+      return Wt::WRectF(0, 0, 0, 0);
+   }
+
+   GraphElementType getType() const override
+   {
+      return GraphElementType::LINK;
+   }
+
+private:
+   const std::pair<double, double> mFrom;
+   const std::pair<double, double> mTo; 
+   const materia::Id mFromId;
+   const materia::Id mToId;
+};
+
 //---------------------------
 
 class CompositeGraphView : public Wt::WPaintedWidget
@@ -146,84 +187,171 @@ private:
 };
 
 //---------------------------
-
-std::vector<std::vector<StrategyModel::Node>> layoutNodes(const StrategyModel::Graph& g)
+class GraphMatrix
 {
-   std::vector<std::vector<StrategyModel::Node>> result;
-
-   auto goalNodePos = std::find_if(g.nodes.begin(), g.nodes.end(), [](auto n){return n.type == strategy::NodeType::GOAL;});
-
-   std::vector<StrategyModel::Node> curLayerNodes;
-
-   if(goalNodePos != g.nodes.end())
+public:
+   void add(const StrategyModel::Node& n)
    {
-      curLayerNodes.push_back(*goalNodePos);
-      while(!curLayerNodes.empty())
-      {
-         result.push_back(curLayerNodes);
+      std::size_t h = height();
 
-         std::vector<StrategyModel::Node> nextLayerNodes;
-         for(auto x : curLayerNodes)
+      for(auto& h_layer : nodes)
+      {
+         if(h_layer.size() < h)
          {
-            for(auto l : g.links)
-            {
-               if(l.to == x.id)
-               {
-                  auto srcNode = materia::find_by_id(g.nodes, l.from);
-                  if(srcNode != g.nodes.end())
-                  {
-                     nextLayerNodes.push_back(*srcNode);
-                  }
-               }
-            }
-         }
-
-         curLayerNodes = nextLayerNodes;
-      }
-
-      //fill last layer nodes (nodes which are unlinked)
-      std::set<materia::Id> allLinkedNodesIds;
-      for(auto l : g.links)
-      {
-         allLinkedNodesIds.insert(l.from);
-         allLinkedNodesIds.insert(l.to);
-      }
-
-      for(auto n : g.nodes)
-      {
-         if(allLinkedNodesIds.find(n.id) == allLinkedNodesIds.end() && n.type != strategy::NodeType::GOAL)
-         {
-            curLayerNodes.push_back(n);
+            h_layer.push_back(n);
+            return;
          }
       }
 
-      if(!curLayerNodes.empty())
+      nodes.push_back({n});
+   }
+
+   std::size_t height() const
+   {
+      return std::max_element(nodes.begin(), nodes.end(), [](auto x){return x.size();})->size();
+   }
+
+   std::size_t width() const
+   {
+      return nodes.size();
+   }
+
+   void putLeftOf(const StrategyModel::Node& src, const StrategyModel::Node& n)
+   {
+      //assumes element exist
+      auto pos = getHorizontalPosition(src);
+      if(pos == 0)
       {
-         result.push_back(curLayerNodes);
+         nodes.insert(nodes.begin(), {n});
+      }
+      else
+      {
+         nodes[pos - 1].push_back(n);
       }
    }
 
-   //split big layers
-   const int maxLayerSize = 5;
-   auto pos = std::find_if(result.begin(), result.end(), [](auto x) {return x.size() > maxLayerSize;});
-   while(pos != result.end())
+   GraphMatrix operator+ (const GraphMatrix& other)
    {
-      int numToSplit = pos->size() / maxLayerSize + 1;
+      const std::size_t ESTETICAL_HEIGHT = 6;
 
-      std::vector<std::vector<StrategyModel::Node>> newLayers;
-      newLayers.resize(numToSplit);
+      auto otherH = other.height();
+      auto otherW = other.width();
 
-      for(std::size_t i = 0; i < pos->size(); ++i)
+      if(otherH < height() && otherW <= width()) //try to fit
       {
-         newLayers[i % numToSplit].push_back((*pos)[i]);
+
+      }
+      else if(otherH + height() < ESTETICAL_HEIGHT) //combine vertically
+      {
+         auto& widestNodes = nodes.size() > other.nodes.size() ? nodes : other.nodes;
+         auto& shortestNodes = &widestNodes == &nodes ? other.nodes : nodes;
+
+         auto resultNodes = widestNodes;
+         std::size_t h_offset = widestNodes.size() - shortestNodes.size();
+         for(std::size_t i = 0; i < shortestNodes.size(); ++i)
+         {
+            resultNodes[i + h_offset].insert(resultNodes[i + h_offset].begin(), shortestNodes[i].begin(), shortestNodes[i].end());
+         }
+
+         nodes = resultNodes;
+      }
+      else //combine horizontally
+      {
+         nodes.insert(nodes.begin(), other.nodes.begin(), other.nodes.end());
       }
 
+      return *this;
+   }
+
+private:
+   std::size_t getHorizontalPosition(const StrategyModel::Node& n) const
+   {
+      for(std::size_t i = 0; i < nodes.size(); ++i)
       {
-         *pos = newLayers[0];
-         result.insert(pos, newLayers.begin() + 1, newLayers.end());
+         if(materia::find_by_id(nodes[i], n.id) != nodes[i].end())
+         {
+            return i;
+         }
       }
-      
-      pos = std::find_if(result.begin(), result.end(), [](auto x) {return x.size() > maxLayerSize;});
+
+      return -1;
+   }
+
+   std::vector<std::vector<StrategyModel::Node>> nodes; 
+};
+
+std::vector<StrategyModel::Node> getPredecessors(const StrategyModel::Graph& g, const materia::Id sucessorId)
+{
+   std::vector<StrategyModel::Node> result;
+
+   for(auto l : g.links)
+   {
+      if(l.to == sucessorId)
+      {
+         auto srcNode = materia::find_by_id(g.nodes, l.from);
+         if(srcNode != g.nodes.end())
+         {
+            result.push_back(*srcNode);
+         }
+      }
+   }
+
+   return result;
+}
+
+void putNodeRecursively(const StrategyModel::Graph& g, const StrategyModel::Node& parent, const StrategyModel::Node& n, GraphMatrix& matrix)
+{
+   matrix.putLeftOf(parent, n);
+
+   auto predecessors = getPredecessors(g, n.id);
+   for(auto p : predecessors)
+   {
+      putNodeRecursively(g, n, p, matrix);
+   }
+}
+
+GraphMatrix layoutHorizontally(const StrategyModel::Graph& g, const StrategyModel::Node& n)
+{
+   GraphMatrix result;
+
+   result.add(n);
+
+   auto predecessors = getPredecessors(g, n.id);
+   for(auto p : predecessors)
+   {
+      putNodeRecursively(g, n, p, result);
+   }
+
+   return result;
+}
+
+GraphMatrix layoutNodes(const StrategyModel::Graph& g)
+{
+   GraphMatrix result;
+
+   //Find all endpoint nodes
+   std::vector<StrategyModel::Node> endpointNodes;
+   std::copy_if(g.nodes.begin(), g.nodes.end(), std::back_inserter(endpointNodes), [&](auto x)
+   {
+      return g.links.end() == std::find_if(g.links.begin(), g.links.end(), [&](auto l){return l.to == x.id;});
+   });
+
+   //Layout graph from them & Unite all graphs
+   for(auto n : endpointNodes)
+   {
+      result = result + layoutHorizontally(g, n);
+   }
+
+   //Put non-linked nodes on free spots
+   std::vector<StrategyModel::Node> unlinkedNodes;
+   std::copy_if(g.nodes.begin(), g.nodes.end(), std::back_inserter(unlinkedNodes), [&](auto x)
+   {
+      return g.links.end() == std::find_if(g.links.begin(), g.links.end(), [&](auto l){return l.to == x.id || l.from == x.id;});
+   });
+
+   for(auto n : unlinkedNodes)
+   {
+      result.add(n);
    }
 
    return result;
@@ -257,6 +385,8 @@ std::vector<std::shared_ptr<IGraphElement>> buildCompositeGraphView(
 
    result.push_back(std::make_shared<TextGraphElement>(Wt::WRectF(0, 10, width, 50), caption));
 
+   std::map<materia::Id, std::pair<double, double>> nodeToPositionMap;
+
    //build drawables from nodes
    int colSize = width / layout.size();
 
@@ -268,11 +398,16 @@ std::vector<std::shared_ptr<IGraphElement>> buildCompositeGraphView(
          int x = width - colSize * i - colSize / 2;
          int y = rowSize * j + rowSize / 2;
 
+         nodeToPositionMap[layout[i][j].id] = std::make_pair(x, y);
          result.push_back(std::make_shared<NodeGraphElement>(x, y, layout[i][j]));
       }
    }
 
    //build drawables from links
+   for(auto l : g.links)
+   {
+      result.push_back(std::make_shared<LinkGraphElement>(nodeToPositionMap[l.from], nodeToPositionMap[l.to] ,l.from, l.to));
+   }
 
    return result;
 }
