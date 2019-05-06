@@ -3,6 +3,8 @@
 #include <Wt/WLabel.h>
 #include <Wt/WPaintedWidget.h>
 #include <Wt/WPainter.h>
+#include <numeric>
+#include "../../Common/Utils.hpp"
 
 enum class GraphElementType
 {
@@ -34,7 +36,7 @@ public:
 
    void draw(Wt::WPainter& painter) const override
    {
-      painter.setBrush(Wt::WBrush(Wt::BrushStyle::None));
+      painter.setBrush(Wt::WBrush(Wt::StandardColor::Black));
       painter.setPen(Wt::WPen(Wt::StandardColor::White));
       painter.drawEllipse(mBounds);
 
@@ -122,7 +124,7 @@ public:
    void draw(Wt::WPainter& painter) const override
    {
       painter.setBrush(Wt::WBrush(Wt::BrushStyle::None));
-      painter.setPen(Wt::WPen(Wt::StandardColor::Green));
+      painter.setPen(Wt::WPen(Wt::StandardColor::White));
       painter.drawLine(mFrom.first, mFrom.second, mTo.first, mTo.second);
    }
 
@@ -190,6 +192,7 @@ private:
 class GraphMatrix
 {
 public:
+   //1. why mirrored
    void add(const StrategyModel::Node& n)
    {
       std::size_t h = height();
@@ -208,7 +211,11 @@ public:
 
    std::size_t height() const
    {
-      return std::max_element(nodes.begin(), nodes.end(), [](auto x){return x.size();})->size();
+      if(nodes.empty())
+      {
+         return 0;
+      }
+      return std::max_element(nodes.begin(), nodes.end(), [](auto x, auto y){return x.size() < y.size();})->size();
    }
 
    std::size_t width() const
@@ -218,15 +225,21 @@ public:
 
    void putLeftOf(const StrategyModel::Node& src, const StrategyModel::Node& n)
    {
-      //assumes element exist
-      auto pos = getHorizontalPosition(src);
-      if(pos == 0)
+      auto srcPos = getHorizontalPosition(src);
+      auto pos = getHorizontalPosition(n);
+
+      if(pos != std::size_t(-1))
+      {
+         nodes[pos].erase(materia::find_by_id(nodes[pos], n.id));
+      }
+
+      if(srcPos == 0)
       {
          nodes.insert(nodes.begin(), {n});
       }
       else
       {
-         nodes[pos - 1].push_back(n);
+         nodes[srcPos - 1].push_back(n);
       }
    }
 
@@ -235,11 +248,24 @@ public:
       const std::size_t ESTETICAL_HEIGHT = 6;
 
       auto otherH = other.height();
-      auto otherW = other.width();
 
-      if(otherH < height() && otherW <= width()) //try to fit
+      //remove duplicates (other option is to layout accordingly)
+      auto allOtherNodes = std::accumulate(
+         other.nodes.begin(), 
+         other.nodes.end(), 
+         std::vector<StrategyModel::Node>(), 
+         [](auto x, auto y){x.insert(x.begin(), y.begin(), y.end()); return x;});
+
+      std::cout << "all other nodes size: " << allOtherNodes.size() << "\n";
+
+      for(auto& x: nodes)
       {
+         erase_if(x, [&](auto n){return allOtherNodes.end() != materia::find_by_id(allOtherNodes, n.id);});
+      }
 
+      if(width() == 0)
+      {
+         nodes = other.nodes;
       }
       else if(otherH + height() < ESTETICAL_HEIGHT) //combine vertically
       {
@@ -263,6 +289,31 @@ public:
       return *this;
    }
 
+   std::size_t nodesCount() const
+   {
+      return std::accumulate(nodes.begin(), nodes.end(), 0, [](auto a, auto b){return a + b.size();});
+   }
+
+   const std::vector<StrategyModel::Node> getLayer(const std::size_t pos) const
+   {
+      return nodes[pos];
+   }
+
+   void debugPrint()
+   {
+      for(std::size_t i = 0; i < nodes.size(); ++i)
+      {
+         for(std::size_t j = 0; j < nodes[i].size(); ++j)
+         {
+            std::cout << i << ", " << j << ": node\n";
+         }
+      }
+
+      std::cout << "end\n";
+
+      std::cout.flush();
+   }
+
 private:
    std::size_t getHorizontalPosition(const StrategyModel::Node& n) const
    {
@@ -274,7 +325,7 @@ private:
          }
       }
 
-      return -1;
+      return std::size_t(-1);
    }
 
    std::vector<std::vector<StrategyModel::Node>> nodes; 
@@ -329,11 +380,19 @@ GraphMatrix layoutNodes(const StrategyModel::Graph& g)
 {
    GraphMatrix result;
 
+   for(auto x : g.links)
+   {
+      std::cout << x.from << "--->" << x.to << "\n";
+   }
+
    //Find all endpoint nodes
    std::vector<StrategyModel::Node> endpointNodes;
    std::copy_if(g.nodes.begin(), g.nodes.end(), std::back_inserter(endpointNodes), [&](auto x)
    {
-      return g.links.end() == std::find_if(g.links.begin(), g.links.end(), [&](auto l){return l.to == x.id;});
+      //something leads to it
+      //nothing lead from it
+      return g.links.end() != std::find_if(g.links.begin(), g.links.end(), [&](auto l){return l.to == x.id;}) &&
+         g.links.end() == std::find_if(g.links.begin(), g.links.end(), [&](auto l){return l.from == x.id;});
    });
 
    //Layout graph from them & Unite all graphs
@@ -353,6 +412,8 @@ GraphMatrix layoutNodes(const StrategyModel::Graph& g)
    {
       result.add(n);
    }
+
+   result.debugPrint();
 
    return result;
 }
@@ -381,32 +442,35 @@ std::vector<std::shared_ptr<IGraphElement>> buildCompositeGraphView(
 
    std::vector<std::shared_ptr<IGraphElement>> result;
 
-   assert(g.nodes.size() == count(layout));
+   std::cout << g.nodes.size() << ":" << layout.nodesCount();
+   std::cout.flush();
+   assert(g.nodes.size() == layout.nodesCount());
 
    result.push_back(std::make_shared<TextGraphElement>(Wt::WRectF(0, 10, width, 50), caption));
 
    std::map<materia::Id, std::pair<double, double>> nodeToPositionMap;
 
    //build drawables from nodes
-   int colSize = width / layout.size();
+   int colSize = width / layout.width();
 
-   for(std::size_t i = 0; i < layout.size(); ++i)
+   for(std::size_t i = 0; i < layout.width(); ++i)
    {
-      int rowSize = height / layout[i].size();
-      for(std::size_t j = 0; j < layout[i].size(); ++j)
+      auto curLayer = layout.getLayer(i);
+      int rowSize = height / curLayer.size();
+      for(std::size_t j = 0; j < curLayer.size(); ++j)
       {
-         int x = width - colSize * i - colSize / 2;
+         int x = colSize * i + colSize / 2;
          int y = rowSize * j + rowSize / 2;
 
-         nodeToPositionMap[layout[i][j].id] = std::make_pair(x, y);
-         result.push_back(std::make_shared<NodeGraphElement>(x, y, layout[i][j]));
+         nodeToPositionMap[curLayer[j].id] = std::make_pair(x, y);
+         result.push_back(std::make_shared<NodeGraphElement>(x, y, curLayer[j]));
       }
    }
 
    //build drawables from links
    for(auto l : g.links)
    {
-      result.push_back(std::make_shared<LinkGraphElement>(nodeToPositionMap[l.from], nodeToPositionMap[l.to] ,l.from, l.to));
+      result.insert(result.begin(), std::make_shared<LinkGraphElement>(nodeToPositionMap[l.from], nodeToPositionMap[l.to] ,l.from, l.to));
    }
 
    return result;
