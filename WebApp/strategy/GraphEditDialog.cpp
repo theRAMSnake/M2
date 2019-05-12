@@ -29,6 +29,7 @@ GraphEditDialog::GraphEditDialog(const StrategyModel::Goal& goal, StrategyModel&
 
    mGraphView = contents()->addWidget(std::make_unique<GraphView>());
    mGraphView->OnNodeClicked.connect(std::bind(&GraphEditDialog::handleNodeClicked, this, std::placeholders::_1, std::placeholders::_2));
+   mGraphView->OnLinkClicked.connect(std::bind(&GraphEditDialog::handleLinkClicked, this, std::placeholders::_1, std::placeholders::_2));
 
    refreshGraph();
 
@@ -85,6 +86,26 @@ void GraphEditDialog::handleNodeClicked(StrategyModel::Node node, Wt::WMouseEven
       {
          std::function<void()> elementDeletedFunc = [=] () {
             mModel.deleteNode(mId, node.id);
+            refreshGraph();
+         };
+
+         CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
+      }
+      else
+      {
+         
+      }
+   }
+}
+
+void GraphEditDialog::handleLinkClicked(StrategyModel::Link link, Wt::WMouseEvent ev)
+{
+   if(ev.button() == Wt::MouseButton::Left)
+   {
+      if(ev.modifiers().test(Wt::KeyboardModifier::Control))
+      {
+         std::function<void()> elementDeletedFunc = [=] () {
+            mModel.deleteLink(mId, link.from, link.to);
             refreshGraph();
          };
 

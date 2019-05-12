@@ -91,6 +91,7 @@ public:
    void deleteNode(const materia::Id& graphId, const materia::Id& nodeId);
 
    void createLink(const materia::Id& graphId, const materia::Id& fromNodeId, const materia::Id& toNodeId);
+   void deleteLink(const materia::Id& graphId, const materia::Id& fromNodeId, const materia::Id& toNodeId);
 
 private:
    void fetchGoals();

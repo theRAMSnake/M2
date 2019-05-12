@@ -11,6 +11,7 @@ class GraphView: public Wt::WCompositeWidget
 public:
    boost::signals2::signal<void(Wt::WMouseEvent)> OnCaptionClicked;
    boost::signals2::signal<void(StrategyModel::Node, Wt::WMouseEvent)> OnNodeClicked;
+   boost::signals2::signal<void(StrategyModel::Link, Wt::WMouseEvent)> OnLinkClicked;
 
    GraphView();
 

@@ -379,3 +379,14 @@ void StrategyModel::createLink(const materia::Id& graphId, const materia::Id& fr
    common::EmptyMessage empty;
    mService.getService().CreateLink(nullptr, &id, &empty, nullptr);
 }
+
+void StrategyModel::deleteLink(const materia::Id& graphId, const materia::Id& fromNodeId, const materia::Id& toNodeId)
+{
+   strategy::LinkProperties id;
+   id.mutable_graphid()->set_guid(graphId.getGuid());
+   id.mutable_from_node_id()->set_guid(fromNodeId.getGuid());
+   id.mutable_to_node_id()->set_guid(toNodeId.getGuid());
+
+   common::OperationResultMessage opResult;
+   mService.getService().DeleteLink(nullptr, &id, &opResult, nullptr);
+}

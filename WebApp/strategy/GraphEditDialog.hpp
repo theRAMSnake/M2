@@ -15,6 +15,7 @@ private:
    void createNode();
    void linkNodesRequest();
    void handleNodeClicked(StrategyModel::Node node, Wt::WMouseEvent ev);
+   void handleLinkClicked(StrategyModel::Link link, Wt::WMouseEvent ev);
 
    const materia::Id mId;
 

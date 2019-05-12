@@ -17,7 +17,8 @@ class IGraphElement
 {
 public:
    virtual void draw(Wt::WPainter& painter) const = 0;
-   virtual Wt::WRectF getBounds() const = 0;
+   //virtual Wt::WRectF getBounds() const = 0;
+   virtual bool hitTest(const Wt::WPointF& pt) const = 0;
    virtual GraphElementType getType() const = 0;
 
    ~IGraphElement(){}
@@ -47,9 +48,9 @@ public:
       }
    }
 
-   Wt::WRectF getBounds() const override
+   bool hitTest(const Wt::WPointF& pt) const override
    {
-      return mBounds;
+      return mBounds.contains(pt);
    }
 
    GraphElementType getType() const override
@@ -89,9 +90,9 @@ public:
       painter.drawText(mBounds, Wt::AlignmentFlag::Center, mText);
    }
 
-   Wt::WRectF getBounds() const override
+   bool hitTest(const Wt::WPointF& pt) const override
    {
-      return mBounds;
+      return mBounds.contains(pt);
    }
 
    GraphElementType getType() const override
@@ -103,6 +104,16 @@ private:
    const Wt::WRectF mBounds;
    const std::string mText;
 };
+
+double getDistanceBetweenPoints(const std::pair<double, double>& a, const std::pair<double, double>& b)
+{
+   return sqrt(pow(a.first - b.first, 2) + pow(a.second - b.second, 2));
+}
+
+bool fcmp(const double a, const double b)
+{
+   return fabs(a-b) < a * .001;
+}
 
 class LinkGraphElement: public IGraphElement
 {
@@ -128,14 +139,20 @@ public:
       painter.drawLine(mFrom.first, mFrom.second, mTo.first, mTo.second);
    }
 
-   Wt::WRectF getBounds() const override
+   bool hitTest(const Wt::WPointF& pt) const override
    {
-      return Wt::WRectF(0, 0, 0, 0);
+      auto testPoint = std::make_pair(pt.x(), pt.y());
+      return fcmp(getDistanceBetweenPoints(mFrom, testPoint) + getDistanceBetweenPoints(testPoint, mTo), getDistanceBetweenPoints(mFrom, mTo));
    }
 
    GraphElementType getType() const override
    {
       return GraphElementType::LINK;
+   }
+
+   StrategyModel::Link getLink() const
+   {
+      return StrategyModel::Link {mFromId, mToId};
    }
 
 private:
@@ -177,7 +194,7 @@ private:
    {
       for(auto x : mItems)
       {
-         if(x->getBounds().contains(static_cast<Wt::WPointF>(ev.widget())))
+         if(x->hitTest(static_cast<Wt::WPointF>(ev.widget())))
          {
             OnElementClicked(ev, *x);
             break;
@@ -192,7 +209,6 @@ private:
 class GraphMatrix
 {
 public:
-   //1. why mirrored
    void add(const StrategyModel::Node& n)
    {
       std::size_t h = height();
@@ -510,6 +526,13 @@ void GraphView::OnElementClicked(Wt::WMouseEvent ev, const IGraphElement& elemen
       case GraphElementType::NODE:
          OnNodeClicked(static_cast<const NodeGraphElement&>(element).getNode(), ev);
          break;
+
+      case GraphElementType::LINK:
+      {
+         auto& linkNode = static_cast<const LinkGraphElement&>(element);
+         OnLinkClicked(linkNode.getLink(), ev);
+         break;
+      }
 
       default:
          break;
