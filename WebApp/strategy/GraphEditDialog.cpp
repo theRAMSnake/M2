@@ -1,5 +1,6 @@
 #include "GraphEditDialog.hpp"
 #include "GraphView.hpp"
+#include "NodeEditDialog.hpp"
 #include <Wt/WToolBar.h>
 #include <Wt/WContainerWidget.h>
 #include <Wt/WPushButton.h>
@@ -91,9 +92,15 @@ void GraphEditDialog::handleNodeClicked(StrategyModel::Node node, Wt::WMouseEven
 
          CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
       }
-      else
+      else if(node.type != strategy::NodeType::GOAL)
       {
-         
+         std::function<void(const StrategyModel::Node)> callback = [=] (const StrategyModel::Node outNode) {
+            mModel.updateNode(mId, outNode);
+            refreshGraph();
+         };
+
+         NodeEditDialog* dlg = new NodeEditDialog(node, callback);
+         dlg->show();
       }
    }
 }

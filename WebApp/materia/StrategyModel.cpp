@@ -305,16 +305,17 @@ std::optional<StrategyModel::Resource> StrategyModel::getResource(const std::str
 
 std::string createDescriptiveTitle(const StrategyModel::Node& node)
 {
-   switch(node.type)
+   if(node.type == strategy::NodeType::GOAL)
    {
-      case strategy::NodeType::GOAL:
-         return "Endpoint";
-
-      case strategy::NodeType::BLANK:
-         return "'" + node.id.getGuid() + "'";
-
-      default:
-         return "unnamed node";
+      return "Endpoint";
+   }
+   else if(!node.brief.empty())
+   {
+      return node.brief;
+   }
+   else
+   {
+      return "'" + node.id.getGuid() + "'";
    }
 }
 
@@ -333,7 +334,15 @@ std::optional<StrategyModel::Graph> StrategyModel::getGraph(const materia::Id& s
 
       for(auto x : def.nodes())
       {
-         g.nodes.push_back({x.id().objectid().guid(), x.node_type()});
+         g.nodes.push_back({
+            x.id().objectid().guid(), 
+            x.node_type(), 
+            "", 
+            x.attrs().brief(),
+            x.attrs().done(),
+            {x.attrs().progress_current(), x.attrs().progress_total()}
+            });
+
          g.nodes.back().descriptiveTitle = createDescriptiveTitle(g.nodes.back());
       }
 
@@ -389,4 +398,21 @@ void StrategyModel::deleteLink(const materia::Id& graphId, const materia::Id& fr
 
    common::OperationResultMessage opResult;
    mService.getService().DeleteLink(nullptr, &id, &opResult, nullptr);
+}
+
+void StrategyModel::updateNode(const materia::Id& graphId, const Node& node)
+{
+   strategy::NodeProperties props;
+   props.mutable_id()->mutable_graphid()->set_guid(graphId.getGuid());
+   props.mutable_id()->mutable_objectid()->set_guid(node.id.getGuid());
+   props.set_node_type(node.type);
+
+   auto attrs = props.mutable_attrs();
+   attrs->set_done(node.isDone);
+   attrs->set_brief(node.brief);
+   attrs->set_progress_current(node.progress.first);
+   attrs->set_progress_total(node.progress.second);
+
+   common::OperationResultMessage opResult;
+   mService.getService().ModifyNode(nullptr, &props, &opResult, nullptr);
 }

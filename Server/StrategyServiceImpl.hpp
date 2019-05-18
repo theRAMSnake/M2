@@ -118,7 +118,6 @@ strategy::NodeType toProto(const materia::NodeType& src)
       case materia::NodeType::Counter: return strategy::NodeType::COUNTER;
       case materia::NodeType::Goal: return strategy::NodeType::GOAL;
       case materia::NodeType::Task: return strategy::NodeType::TASK;
-      case materia::NodeType::Objective: return strategy::NodeType::OBJECTIVE;
       case materia::NodeType::Watch: return strategy::NodeType::WATCH;
    }
    
@@ -133,43 +132,11 @@ materia::NodeType fromProto(const strategy::NodeType src)
       case strategy::NodeType::COUNTER: return materia::NodeType::Counter;
       case strategy::NodeType::GOAL: return materia::NodeType::Goal;
       case strategy::NodeType::TASK: return materia::NodeType::Task;
-      case strategy::NodeType::OBJECTIVE: return materia::NodeType::Objective;
       case strategy::NodeType::WATCH: return materia::NodeType::Watch;
 
    default:
       return materia::NodeType::Blank;
    }
-}
-
-strategy::CounterAttributes toProto(const materia::CounterNodeAttributes& src)
-{
-   strategy::CounterAttributes result;
-
-   result.set_brief(src.brief);
-   result.set_current(src.current);
-   result.set_required(src.required);
-
-   return result;
-}
-
-strategy::SimpleAttributes toProto(const materia::SimpleNodeAttributes& src)
-{
-   strategy::SimpleAttributes result;
-
-   result.set_brief(src.brief);
-   result.set_done(src.done);
-
-   return result;
-}
-
-materia::CounterNodeAttributes fromProto(const strategy::CounterAttributes& src)
-{
-   return {src.brief(), src.current(), src.required()};
-}
-
-materia::SimpleNodeAttributes fromProto(const strategy::SimpleAttributes& src)
-{
-   return {src.done(), src.brief()};
 }
 
 class StrategyServiceImpl : public strategy::StrategyService
@@ -359,15 +326,27 @@ public:
             n->mutable_id()->mutable_graphid()->CopyFrom(*request);
             n->mutable_id()->mutable_objectid()->CopyFrom(toProto(x.id));
 
-            switch (x.type)
+            auto& attrs = *n->mutable_attrs();
+            for(auto a : g->getNodeAttributes(x.id))
             {
-               case materia::NodeType::Counter:
-                  n->mutable_counter_attrs()->CopyFrom(toProto(g->getCounterNodeAttributes(x.id)));
-                  break;
-            
-               default:
-                  n->mutable_simple_attrs()->CopyFrom(toProto(g->getSimpleNodeAttributes(x.id)));
-                  break;
+               switch(a.first)
+               {
+                  case NodeAttributeType::BRIEF:
+                     attrs.set_brief(a.second);
+                     break;
+
+                  case NodeAttributeType::IS_DONE:
+                     attrs.set_done(a.second == "1");
+                     break;
+
+                  case NodeAttributeType::PROGRESS_TOTAL:
+                     attrs.set_progress_total(std::stoi(a.second));
+                     break;
+
+                  case NodeAttributeType::PROGRESS_CURRENT:
+                     attrs.set_progress_current(std::stoi(a.second));
+                     break;
+               }
             }
          }
       }
@@ -398,20 +377,22 @@ public:
       auto graphId = fromProto(request->id().graphid());
       auto nodeId = fromProto(request->id().objectid());
 
-      switch (request->node_type())
+      materia::TNodeAttrs attrs;
+      auto& srcAttrs = request->attrs();
+      if(!srcAttrs.brief().empty())
       {
-         case ::strategy::NodeType::COUNTER:
-            {
-               mStrategy2.setNodeAttributes(graphId, nodeId, fromProto(request->counter_attrs()));
-            }
-            break;
-      
-         default:
-            {
-               mStrategy2.setNodeAttributes(graphId, nodeId, fromProto(request->node_type()), fromProto(request->simple_attrs()));
-            }
-            break;
+         attrs[materia::NodeAttributeType::BRIEF] = srcAttrs.brief();
+      }   
+
+      attrs[materia::NodeAttributeType::IS_DONE] = srcAttrs.done() ? "1" : "0";
+
+      if(srcAttrs.progress_total() != 0)
+      {
+         attrs[materia::NodeAttributeType::PROGRESS_CURRENT] = std::to_string(srcAttrs.progress_current());
+         attrs[materia::NodeAttributeType::PROGRESS_TOTAL] = std::to_string(srcAttrs.progress_total());
       }
+
+      mStrategy2.setNodeAttributes(graphId, nodeId, fromProto(request->node_type()), attrs);
    }
 
    virtual void DeleteNode(::google::protobuf::RpcController* controller,

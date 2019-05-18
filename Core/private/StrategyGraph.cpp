@@ -25,14 +25,9 @@ std::vector<Node> StrategyGraph::getNodes() const
    return mSrc.nodes;
 }
 
-SimpleNodeAttributes StrategyGraph::getSimpleNodeAttributes(const Id& nodeId) const
+std::map<NodeAttributeType, std::string> StrategyGraph::getNodeAttributes(const Id& nodeId) const
 {
-   return mSrc.simpleNodeAttrs.find(nodeId)->second;
-}
-
-CounterNodeAttributes StrategyGraph::getCounterNodeAttributes(const Id& nodeId) const
-{
-   return mSrc.counterNodeAttrs.find(nodeId)->second;
+   return mSrc.nodeAttrs.find(nodeId)->second;
 }
 
 bool StrategyGraph::containsLinkAnyDirection(const Id& nodeFrom, const Id& nodeTo) const
@@ -86,8 +81,7 @@ void StrategyGraph::deleteNode(const Id& objectId)
    {
       mSrc.nodes.erase(pos);
       erase_if(mSrc.links, [objectId](auto x) {return x.from == objectId || x.to == objectId;});
-      mSrc.simpleNodeAttrs.erase(objectId);
-      mSrc.counterNodeAttrs.erase(objectId);
+      mSrc.nodeAttrs.erase(objectId);
    }
 }
 
@@ -95,6 +89,7 @@ StrategyGraph::StrategyGraph(const Id& id)
 {
    mSrc.id = id;
    mSrc.nodes.push_back({Id::generate(), NodeType::Goal});
+   mSrc.nodeAttrs[mSrc.nodes.back().id] = {};
 }
 
 void StrategyGraph::createLink(const Id& from, const Id& to)
@@ -127,6 +122,7 @@ Id StrategyGraph::createNode()
 {
    auto result = Id::generate();
    mSrc.nodes.push_back({result, NodeType::Blank});
+   mSrc.nodeAttrs[mSrc.nodes.back().id] = {};
    return result;
 }
 
@@ -135,48 +131,21 @@ const RawStrategyGraph& StrategyGraph::getRawData() const
    return mSrc;
 }
 
-void StrategyGraph::setNodeAttributes(const Id& objectId, const NodeType& nodeType, const SimpleNodeAttributes& attrs)
-{
-   if(nodeType != NodeType::Objective &&
-      nodeType != NodeType::Task &&
-      nodeType != NodeType::Watch)
-   {
-      return;
-   }
-
-   auto nodePos = find_by_id(mSrc.nodes, objectId);
-
-   if(nodePos != mSrc.nodes.end() && nodePos->type != NodeType::Goal)
-   {
-      nodePos->type = nodeType;
-      discardAttributes(objectId);
-
-      mSrc.simpleNodeAttrs[objectId] = attrs;
-   }
-}
-
-void StrategyGraph::setNodeAttributes(const Id& objectId, const CounterNodeAttributes& attrs)
+void StrategyGraph::setNodeAttributes(const Id& objectId, const NodeType& type, const std::map<NodeAttributeType, std::string>& attrs)
 {
    auto nodePos = find_by_id(mSrc.nodes, objectId);
 
    if(nodePos != mSrc.nodes.end() && nodePos->type != NodeType::Goal)
    {
-      nodePos->type = NodeType::Counter;
-      discardAttributes(objectId);
-      mSrc.counterNodeAttrs[objectId] = attrs;
-   }
-}
+      nodePos->type = type;
+      mSrc.nodeAttrs[objectId] = attrs;
 
-void StrategyGraph::discardAttributes(const Id& objectId)
-{
-   auto nodePos = find_by_id(mSrc.nodes, objectId);
-   if(nodePos->type == NodeType::Counter)
-   {
-      mSrc.counterNodeAttrs.erase(objectId);
-   }
-   else
-   {
-      mSrc.simpleNodeAttrs.erase(objectId);
+      if(type == NodeType::Counter)
+      {
+         auto& curAttrs = mSrc.nodeAttrs[objectId];
+         curAttrs[NodeAttributeType::IS_DONE] = stoi(curAttrs[NodeAttributeType::PROGRESS_CURRENT]) >= stoi(curAttrs[NodeAttributeType::PROGRESS_TOTAL]) ?
+            "1" : "0";
+      }
    }
 }
 

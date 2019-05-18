@@ -81,30 +81,22 @@ enum NodeType
    GOAL = 1;
    TASK = 2;
    COUNTER = 3;
-   OBJECTIVE = 4;
    WATCH = 5;
 }
 
-message SimpleAttributes
+message NodeAttributes
 {
    string brief = 1;
    bool done = 2;
-}
-
-message CounterAttributes
-{
-   string brief = 1;
-   int32 current = 2;
-   int32 required = 3;
+   int32 progress_total = 3;
+   int32 progress_current = 4;
 }
 
 message NodeProperties
 {
    GraphObjectId id = 1;
    NodeType node_type = 2;
-
-   SimpleAttributes simple_attrs = 3; 
-   CounterAttributes counter_attrs = 4;
+   NodeAttributes attrs = 3; 
 }
 
 message GraphDefinition

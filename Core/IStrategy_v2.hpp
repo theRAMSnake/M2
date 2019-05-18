@@ -11,6 +11,7 @@ namespace materia
 
 enum class NodeType
 {
+   //keep consistency
    Blank = 0,
 
    //Auto created with graph
@@ -20,10 +21,9 @@ enum class NodeType
    //Completed if enabled
    Goal = 1,
 
-   Task = 2, //simple
+   Task = 2, 
    Counter = 3,
-   Objective = 4, //simple
-   Watch = 5, //simple
+   Watch = 5,
    //Wait = 6, //timestamp >>> curTime >= timestamp
    //Condition = 7, //condition
    //Reference = 8 //other graph node completed
@@ -35,17 +35,13 @@ struct Node
    NodeType type;
 };
 
-struct SimpleNodeAttributes
+enum class NodeAttributeType
 {
-   bool done;
-   std::string brief;
-};
-
-struct CounterNodeAttributes
-{
-   std::string brief;
-   int current;
-   int required;
+   //keep consistency
+   IS_DONE = 1,
+   BRIEF = 2,
+   PROGRESS_TOTAL = 3,
+   PROGRESS_CURRENT = 4
 };
 
 struct Link
@@ -60,11 +56,12 @@ public:
    virtual std::vector<Link> getLinks() const = 0;
    virtual std::vector<Node> getNodes() const = 0;
 
-   virtual SimpleNodeAttributes getSimpleNodeAttributes(const Id& nodeId) const = 0;
-   virtual CounterNodeAttributes getCounterNodeAttributes(const Id& nodeId) const = 0;
+   virtual std::map<NodeAttributeType, std::string> getNodeAttributes(const Id& nodeId) const = 0;
 
    virtual ~IStrategyGraph(){}
 };
+
+using TNodeAttrs = std::map<NodeAttributeType, std::string>;
 
 class IStrategy_v2
 {
@@ -82,8 +79,7 @@ public:
 
    virtual Id createNode(const Id& graphId) = 0;
 
-   virtual void setNodeAttributes(const Id& graphId, const Id& objectId, const NodeType& nodeType, const SimpleNodeAttributes& attrs) = 0;
-   virtual void setNodeAttributes(const Id& graphId, const Id& objectId, const CounterNodeAttributes& attrs) = 0;
+   virtual void setNodeAttributes(const Id& graphId, const Id& objectId, const NodeType& type, const std::map<NodeAttributeType, std::string>& attrs) = 0;
 
    virtual void deleteNode(const Id& graphId, const Id& objectId) = 0;
 

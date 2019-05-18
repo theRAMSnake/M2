@@ -11,8 +11,7 @@ struct RawStrategyGraph
    std::vector<Link> links;
    std::vector<Node> nodes;
 
-   std::map<Id, SimpleNodeAttributes> simpleNodeAttrs;
-   std::map<Id, CounterNodeAttributes> counterNodeAttrs;
+   std::map<Id, std::map<NodeAttributeType, std::string>> nodeAttrs;
 };
 
 class StrategyGraph : public IStrategyGraph
@@ -24,8 +23,7 @@ public:
    std::vector<Link> getLinks() const override;
    std::vector<Node> getNodes() const override;
 
-   SimpleNodeAttributes getSimpleNodeAttributes(const Id& nodeId) const override;
-   CounterNodeAttributes getCounterNodeAttributes(const Id& nodeId) const override;
+   std::map<NodeAttributeType, std::string> getNodeAttributes(const Id& nodeId) const override;
 
    void createLink(const Id& from, const Id& to);
    void breakLink(const Id& nodeFrom, const Id& nodeTo);
@@ -33,14 +31,12 @@ public:
    Id createNode();
    void deleteNode(const Id& objectId);
 
-   void setNodeAttributes(const Id& objectId, const NodeType& nodeType, const SimpleNodeAttributes& attrs);
-   void setNodeAttributes(const Id& objectId, const CounterNodeAttributes& attrs);
+   void setNodeAttributes(const Id& objectId, const NodeType& type, const std::map<NodeAttributeType, std::string>& attrs);
 
    const RawStrategyGraph& getRawData() const;
 
 private:
 
-   void discardAttributes(const Id& objectId);
    bool containsLinkAnyDirection(const Id& nodeFrom, const Id& nodeTo) const;
    bool isRouteExist(const Id& from, const Id& destination) const;
    Node getGoalNode() const;

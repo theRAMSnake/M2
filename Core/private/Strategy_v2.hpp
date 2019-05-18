@@ -25,8 +25,7 @@ public:
    void breakLink(const Id& graphId, const Id& nodeFrom, const Id& nodeTo) override;
 
    Id createNode(const Id& graphId) override;
-   void setNodeAttributes(const Id& graphId, const Id& objectId, const NodeType& nodeType, const SimpleNodeAttributes& attrs) override;
-   void setNodeAttributes(const Id& graphId, const Id& objectId, const CounterNodeAttributes& attrs) override;
+   void setNodeAttributes(const Id& graphId, const Id& objectId, const NodeType& type, const std::map<NodeAttributeType, std::string>& attrs) override;
 
    void deleteNode(const Id& graphId, const Id& objectId) override;
 

@@ -17,7 +17,6 @@ class IGraphElement
 {
 public:
    virtual void draw(Wt::WPainter& painter) const = 0;
-   //virtual Wt::WRectF getBounds() const = 0;
    virtual bool hitTest(const Wt::WPointF& pt) const = 0;
    virtual GraphElementType getType() const = 0;
 
@@ -38,13 +37,44 @@ public:
    void draw(Wt::WPainter& painter) const override
    {
       painter.setBrush(Wt::WBrush(Wt::StandardColor::Black));
-      painter.setPen(Wt::WPen(Wt::StandardColor::White));
+
+      auto pen = Wt::WPen(mNode.isDone ? Wt::StandardColor::Green : Wt::StandardColor::White);
+      pen.setWidth(2);
+      painter.setPen(pen);
       painter.drawEllipse(mBounds);
 
       if(mNode.type == strategy::NodeType::GOAL)
       {
          Wt::WRectF imageRect(mBounds.x() + 8, mBounds.y() + 8, 48, 48);
          painter.drawImage(imageRect, Wt::WPainter::Image("resources/achievement.png", 48, 48));
+      }
+      else if(mNode.type == strategy::NodeType::TASK)
+      {
+         Wt::WRectF imageRect(mBounds.x() + 8, mBounds.y() + 8, 32, 32);
+         painter.drawImage(imageRect, Wt::WPainter::Image("resources/task.png", 258, 258));
+      }
+      else if(mNode.type == strategy::NodeType::COUNTER)
+      {
+         Wt::WRectF r(mBounds.x() + 8, mBounds.y() + 8, 32, 32);
+         Wt::WFont f;
+         f.setFamily(Wt::FontFamily::Monospace, "'Courier New'");
+         f.setSize(Wt::FontSize::Small);
+         painter.setFont(f);
+
+         painter.drawText(r, Wt::AlignmentFlag::Center | Wt::AlignmentFlag::Middle, 
+            std::to_string(mNode.progress.first) + "/" + std::to_string(mNode.progress.second));
+      }
+      
+      if(mNode.type != strategy::NodeType::GOAL)
+      {
+         Wt::WFont f;
+         f.setFamily(Wt::FontFamily::Monospace, "'Courier New'");
+         f.setSize(Wt::FontSize::XXSmall);
+         painter.setFont(f);
+
+         auto b = mBounds;
+         b.setY(b.y() + b.height());
+         painter.drawText(b, Wt::AlignmentFlag::Center, mNode.descriptiveTitle);
       }
    }
 
@@ -454,6 +484,9 @@ std::vector<std::shared_ptr<IGraphElement>> buildCompositeGraphView(
    const std::string& caption
    )
 {
+   std::cout << "starting layout\n";
+   std::cout.flush();
+
    auto layout = layoutNodes(g);
 
    std::vector<std::shared_ptr<IGraphElement>> result;

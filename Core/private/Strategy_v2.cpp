@@ -2,17 +2,17 @@
 #include "JsonSerializer.hpp"
 
 SERIALIZE_AS_INTEGER(materia::NodeType)
+SERIALIZE_AS_INTEGER(materia::NodeAttributeType)
 
-BIND_JSON5(materia::RawStrategyGraph, id, nodes, links, simpleNodeAttrs, counterNodeAttrs)
+BIND_JSON4(materia::RawStrategyGraph, id, nodes, links, nodeAttrs)
 BIND_JSON2(materia::Node, id, type)
-
-using TSimpleAttrs = std::pair<materia::Id, materia::SimpleNodeAttributes>;
-BIND_JSON3(TSimpleAttrs, first, second.brief, second.done)
-
-using TCounterAttrs = std::pair<materia::Id, materia::CounterNodeAttributes>;
-BIND_JSON4(TCounterAttrs, first, second.brief, second.current, second.required)
-
 BIND_JSON2(materia::Link, from, to)
+
+using attr_map = std::pair<materia::Id, std::map<materia::NodeAttributeType, std::string>>; 
+BIND_JSON2(attr_map, first, second)
+
+using attr_map_node = std::pair<materia::NodeAttributeType, std::string>; 
+BIND_JSON2(attr_map_node, first, second)
 
 namespace materia
 {
@@ -92,19 +92,11 @@ Id Strategy_v2::createNode(const Id& graphId)
    return result;
 }
 
-void Strategy_v2::setNodeAttributes(const Id& graphId, const Id& objectId, const NodeType& nodeType, const SimpleNodeAttributes& attrs)
+void Strategy_v2::setNodeAttributes(const Id& graphId, const Id& objectId, const NodeType& nodeType, const std::map<NodeAttributeType, std::string>& attrs)
 {
    makeGraphOperation(graphId, [=](auto& g)
    {
       g.setNodeAttributes(objectId, nodeType, attrs);
-   });
-}
-
-void Strategy_v2::setNodeAttributes(const Id& graphId, const Id& objectId, const CounterNodeAttributes& attrs)
-{
-   makeGraphOperation(graphId, [=](auto& g)
-   {
-      g.setNodeAttributes(objectId, attrs);
    });
 }
 
