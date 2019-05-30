@@ -25,9 +25,9 @@ std::vector<Node> StrategyGraph::getNodes() const
    return mSrc.nodes;
 }
 
-std::map<NodeAttributeType, std::string> StrategyGraph::getNodeAttributes(const Id& nodeId) const
+NodeAttributes StrategyGraph::getNodeAttributes(const Id& nodeId) const
 {
-   return mSrc.nodeAttrs.find(nodeId)->second;
+   return NodeAttributes(mSrc.nodeAttrs.find(nodeId)->second);
 }
 
 bool StrategyGraph::containsLinkAnyDirection(const Id& nodeFrom, const Id& nodeTo) const
@@ -131,21 +131,36 @@ const RawStrategyGraph& StrategyGraph::getRawData() const
    return mSrc;
 }
 
-void StrategyGraph::setNodeAttributes(const Id& objectId, const NodeType& type, const std::map<NodeAttributeType, std::string>& attrs)
+void StrategyGraph::setNodeAttributes(const Id& objectId, const NodeType& type, const NodeAttributes& attrs)
 {
    auto nodePos = find_by_id(mSrc.nodes, objectId);
 
    if(nodePos != mSrc.nodes.end() && nodePos->type != NodeType::Goal)
    {
+      NodeAttributes modifiedAttrs = attrs;
       nodePos->type = type;
-      mSrc.nodeAttrs[objectId] = attrs;
 
       if(type == NodeType::Counter)
       {
-         auto& curAttrs = mSrc.nodeAttrs[objectId];
-         curAttrs[NodeAttributeType::IS_DONE] = stoi(curAttrs[NodeAttributeType::PROGRESS_CURRENT]) >= stoi(curAttrs[NodeAttributeType::PROGRESS_TOTAL]) ?
-            "1" : "0";
+         if(!modifiedAttrs.contains(NodeAttributeType::PROGRESS_CURRENT) || 
+            !modifiedAttrs.contains(NodeAttributeType::PROGRESS_TOTAL) ||
+            !modifiedAttrs.contains(NodeAttributeType::BRIEF))
+         {
+            return;
+         }
+
+         modifiedAttrs.set<NodeAttributeType::IS_DONE>(modifiedAttrs.get<NodeAttributeType::PROGRESS_CURRENT>() >=
+            modifiedAttrs.get<NodeAttributeType::PROGRESS_TOTAL>());
       }
+      else if(type == NodeType::Task)
+      {
+         if(!modifiedAttrs.contains(NodeAttributeType::BRIEF))
+         {
+            return;
+         }
+      }
+
+      mSrc.nodeAttrs[objectId] = modifiedAttrs.toMap();
    }
 }
 

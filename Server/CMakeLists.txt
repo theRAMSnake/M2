@@ -9,6 +9,7 @@ include_directories("..")
 add_executable(m2server
 main.cpp
 ProtoConvertion.cpp
+../Core/private/NodeAttributes.cpp #will be lib soon
 )
 
 find_package(ZeroMQ REQUIRED)

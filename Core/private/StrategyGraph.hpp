@@ -23,7 +23,7 @@ public:
    std::vector<Link> getLinks() const override;
    std::vector<Node> getNodes() const override;
 
-   std::map<NodeAttributeType, std::string> getNodeAttributes(const Id& nodeId) const override;
+   NodeAttributes getNodeAttributes(const Id& nodeId) const override;
 
    void createLink(const Id& from, const Id& to);
    void breakLink(const Id& nodeFrom, const Id& nodeTo);
@@ -31,7 +31,7 @@ public:
    Id createNode();
    void deleteNode(const Id& objectId);
 
-   void setNodeAttributes(const Id& objectId, const NodeType& type, const std::map<NodeAttributeType, std::string>& attrs);
+   void setNodeAttributes(const Id& objectId, const NodeType& type, const NodeAttributes& attrs);
 
    const RawStrategyGraph& getRawData() const;
 

@@ -20,6 +20,7 @@ namespace materia
 Strategy_v2::Strategy_v2(IStrategy& strategy, Database& db)
 : mStrategy_v1(strategy)
 , mGraphsStorage(db.getTable("graphs"))
+, mWatchStorage(db.getTable("watchItems"))
 {
    
 }
@@ -92,7 +93,7 @@ Id Strategy_v2::createNode(const Id& graphId)
    return result;
 }
 
-void Strategy_v2::setNodeAttributes(const Id& graphId, const Id& objectId, const NodeType& nodeType, const std::map<NodeAttributeType, std::string>& attrs)
+void Strategy_v2::setNodeAttributes(const Id& graphId, const Id& objectId, const NodeType& nodeType, const NodeAttributes& attrs)
 {
    makeGraphOperation(graphId, [=](auto& g)
    {
@@ -112,6 +113,38 @@ void Strategy_v2::saveGraph(const StrategyGraph& graph)
    std::string json = writeJson(rawData);
    //std::cout << json;
    mGraphsStorage->store(rawData.id, json);
+}
+
+std::vector<WatchItem> Strategy_v2::getWatchItems() const
+{
+   std::vector<WatchItem> result;
+
+   mWatchStorage->foreach([&](std::string id, std::string json) 
+   {
+      result.push_back({id, json});
+   });
+
+   return result;
+}
+
+void Strategy_v2::removeWatchItem(const Id& id)
+{
+   mWatchStorage->erase(id);
+}
+
+Id Strategy_v2::addWatchItem(const WatchItem& item)
+{
+   auto newItem = item;
+   newItem.id = Id::generate();
+
+   mWatchStorage->store(newItem.id, item.text);
+
+   return newItem.id;
+}
+
+void Strategy_v2::replaceWatchItem(const WatchItem& item)
+{
+   mWatchStorage->store(item.id, item.text);
 }
 
 }

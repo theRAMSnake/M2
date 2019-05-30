@@ -35,7 +35,7 @@ GraphEditDialog::GraphEditDialog(const StrategyModel::Goal& goal, StrategyModel&
    refreshGraph();
 
    setWidth("50%");
-   setHeight("50%");
+   setHeight("70%");
 
    finished().connect(std::bind([=]() {
       cb(*mModel.getGraph(mId));

@@ -327,26 +327,22 @@ public:
             n->mutable_id()->mutable_objectid()->CopyFrom(toProto(x.id));
 
             auto& attrs = *n->mutable_attrs();
-            for(auto a : g->getNodeAttributes(x.id))
+            auto srcAttrs = g->getNodeAttributes(x.id);
+            if(srcAttrs.contains(NodeAttributeType::BRIEF))
             {
-               switch(a.first)
-               {
-                  case NodeAttributeType::BRIEF:
-                     attrs.set_brief(a.second);
-                     break;
-
-                  case NodeAttributeType::IS_DONE:
-                     attrs.set_done(a.second == "1");
-                     break;
-
-                  case NodeAttributeType::PROGRESS_TOTAL:
-                     attrs.set_progress_total(std::stoi(a.second));
-                     break;
-
-                  case NodeAttributeType::PROGRESS_CURRENT:
-                     attrs.set_progress_current(std::stoi(a.second));
-                     break;
-               }
+               attrs.set_brief(srcAttrs.get<NodeAttributeType::BRIEF>());
+            }
+            if(srcAttrs.contains(NodeAttributeType::IS_DONE))
+            {
+               attrs.set_done(srcAttrs.get<NodeAttributeType::IS_DONE>());
+            }
+            if(srcAttrs.contains(NodeAttributeType::PROGRESS_TOTAL))
+            {
+               attrs.set_progress_total(srcAttrs.get<NodeAttributeType::PROGRESS_TOTAL>());
+            }
+            if(srcAttrs.contains(NodeAttributeType::PROGRESS_CURRENT))
+            {
+               attrs.set_progress_current(srcAttrs.get<NodeAttributeType::PROGRESS_CURRENT>());
             }
          }
       }
@@ -377,19 +373,19 @@ public:
       auto graphId = fromProto(request->id().graphid());
       auto nodeId = fromProto(request->id().objectid());
 
-      materia::TNodeAttrs attrs;
+      materia::NodeAttributes attrs;
       auto& srcAttrs = request->attrs();
       if(!srcAttrs.brief().empty())
       {
-         attrs[materia::NodeAttributeType::BRIEF] = srcAttrs.brief();
+         attrs.set<materia::NodeAttributeType::BRIEF>(srcAttrs.brief());
       }   
 
-      attrs[materia::NodeAttributeType::IS_DONE] = srcAttrs.done() ? "1" : "0";
+      attrs.set<materia::NodeAttributeType::IS_DONE>(srcAttrs.done());
 
       if(srcAttrs.progress_total() != 0)
       {
-         attrs[materia::NodeAttributeType::PROGRESS_CURRENT] = std::to_string(srcAttrs.progress_current());
-         attrs[materia::NodeAttributeType::PROGRESS_TOTAL] = std::to_string(srcAttrs.progress_total());
+         attrs.set<materia::NodeAttributeType::PROGRESS_CURRENT>(srcAttrs.progress_current());
+         attrs.set<materia::NodeAttributeType::PROGRESS_TOTAL>(srcAttrs.progress_total());
       }
 
       mStrategy2.setNodeAttributes(graphId, nodeId, fromProto(request->node_type()), attrs);
@@ -412,6 +408,45 @@ public:
                        ::google::protobuf::Closure* done)
    {
       mStrategy2.breakLink(fromProto(request->graphid()), fromProto(request->from_node_id()), fromProto(request->to_node_id()));
+   }
+
+   virtual void GetWatchItems(::google::protobuf::RpcController* controller,
+                       const ::common::EmptyMessage* request,
+                       ::strategy::WatchItems* response,
+                       ::google::protobuf::Closure* done)
+   {
+      for(auto x : mStrategy2.getWatchItems())
+      {
+         auto item = response->add_items();
+         *item->mutable_id() = toProto(x.id);
+         item->set_text(x.text);
+      }
+   }
+
+   virtual void DeleteWatchItem(::google::protobuf::RpcController* controller,
+                        const ::common::UniqueId* request,
+                        ::common::OperationResultMessage* response,
+                        ::google::protobuf::Closure* done)
+   {
+      mStrategy2.removeWatchItem(fromProto(*request));
+      response->set_success(true);
+   }
+
+   virtual void EditWatchItem(::google::protobuf::RpcController* controller,
+                        const ::strategy::WatchItemInfo* request,
+                        ::common::OperationResultMessage* response,
+                        ::google::protobuf::Closure* done)
+   {
+      mStrategy2.replaceWatchItem({fromProto(request->id()), request->text()});
+      response->set_success(true);
+   }
+
+   virtual void AddWatchItem(::google::protobuf::RpcController* controller,
+                        const ::strategy::WatchItemInfo* request,
+                        ::common::UniqueId* response,
+                        ::google::protobuf::Closure* done)
+   {
+      *response = toProto(mStrategy2.addWatchItem({ materia::Id::Invalid, request->text() }));
    }
 
 private:

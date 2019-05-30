@@ -5,6 +5,7 @@
 #include <map>
 #include <memory>
 #include "IStrategy.hpp"
+#include "NodeAttributes.hpp"
 
 namespace materia
 {
@@ -23,7 +24,7 @@ enum class NodeType
 
    Task = 2, 
    Counter = 3,
-   Watch = 5,
+   Watch = 4,
    //Wait = 6, //timestamp >>> curTime >= timestamp
    //Condition = 7, //condition
    //Reference = 8 //other graph node completed
@@ -33,15 +34,6 @@ struct Node
 {
    Id id;
    NodeType type;
-};
-
-enum class NodeAttributeType
-{
-   //keep consistency
-   IS_DONE = 1,
-   BRIEF = 2,
-   PROGRESS_TOTAL = 3,
-   PROGRESS_CURRENT = 4
 };
 
 struct Link
@@ -56,12 +48,19 @@ public:
    virtual std::vector<Link> getLinks() const = 0;
    virtual std::vector<Node> getNodes() const = 0;
 
-   virtual std::map<NodeAttributeType, std::string> getNodeAttributes(const Id& nodeId) const = 0;
+   virtual NodeAttributes getNodeAttributes(const Id& nodeId) const = 0;
 
    virtual ~IStrategyGraph(){}
 };
 
 using TNodeAttrs = std::map<NodeAttributeType, std::string>;
+
+struct WatchItem
+{
+    Id id;
+    std::string text;
+};
+
 
 class IStrategy_v2
 {
@@ -76,12 +75,14 @@ public:
 
    virtual void createLink(const Id& graphId, const Id& from, const Id& to) = 0;
    virtual void breakLink(const Id& graphId, const Id& from, const Id& to) = 0;
-
    virtual Id createNode(const Id& graphId) = 0;
-
-   virtual void setNodeAttributes(const Id& graphId, const Id& objectId, const NodeType& type, const std::map<NodeAttributeType, std::string>& attrs) = 0;
-
+   virtual void setNodeAttributes(const Id& graphId, const Id& objectId, const NodeType& type, const NodeAttributes& attrs) = 0;
    virtual void deleteNode(const Id& graphId, const Id& objectId) = 0;
+
+   virtual std::vector<WatchItem> getWatchItems() const = 0;
+   virtual void removeWatchItem(const Id& id) = 0;
+   virtual Id addWatchItem(const WatchItem& item) = 0;
+   virtual void replaceWatchItem(const WatchItem& item) = 0;
 
    virtual ~IStrategy_v2(){}
 };

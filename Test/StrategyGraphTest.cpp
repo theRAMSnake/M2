@@ -343,7 +343,7 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_SetAttrs_GoalNode, StrategyGraphTest 
 {
    auto graphId = mGoals[0].id;
    auto goalNodeId = mStrategy.getGraph(graphId)->getNodes()[0].id;
-   mStrategy.setNodeAttributes(graphId, goalNodeId, materia::NodeType::Task, {});
+   mStrategy.setNodeAttributes(graphId, goalNodeId, materia::NodeType::Task, materia::NodeAttributes());
 
    auto g = mStrategy.getGraph(graphId);
    auto nodes = g->getNodes();
@@ -355,9 +355,9 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_SetAttrs_Simple, StrategyGraphTest )
    auto graphId = mGoals[0].id;
    auto nodeId = mStrategy.createNode(graphId);
 
-   materia::TNodeAttrs attrs;
-   attrs[materia::NodeAttributeType::IS_DONE] = "1";
-   attrs[materia::NodeAttributeType::BRIEF] = "test";
+   materia::NodeAttributes attrs;
+   attrs.set<materia::NodeAttributeType::IS_DONE>(true);
+   attrs.set<materia::NodeAttributeType::BRIEF>("test");
    mStrategy.setNodeAttributes(graphId, nodeId, materia::NodeType::Task, attrs);
 
    auto g = mStrategy.getGraph(graphId);
@@ -366,18 +366,18 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_SetAttrs_Simple, StrategyGraphTest )
    BOOST_CHECK_EQUAL(materia::NodeType::Task, materia::find_by_id(nodes, nodeId)->type);
 
    attrs = g->getNodeAttributes(nodeId);
-   BOOST_CHECK_EQUAL("test", attrs[materia::NodeAttributeType::BRIEF]);
-   BOOST_CHECK_EQUAL("1", attrs[materia::NodeAttributeType::IS_DONE]);
+   BOOST_CHECK_EQUAL("test", attrs.get<materia::NodeAttributeType::BRIEF>());
+   BOOST_CHECK_EQUAL(true, attrs.get<materia::NodeAttributeType::IS_DONE>());
 }
 
 BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_SetAttrs_Counters, StrategyGraphTest )
 {
    auto graphId = mGoals[0].id;
    auto nodeId = mStrategy.createNode(graphId);
-   materia::TNodeAttrs attrs;
-   attrs[materia::NodeAttributeType::PROGRESS_CURRENT] = "3";
-   attrs[materia::NodeAttributeType::BRIEF] = "test";
-   attrs[materia::NodeAttributeType::PROGRESS_TOTAL] = "0";
+   materia::NodeAttributes attrs;
+   attrs.set<materia::NodeAttributeType::PROGRESS_CURRENT>(0);
+   attrs.set<materia::NodeAttributeType::PROGRESS_TOTAL>(3);
+   attrs.set<materia::NodeAttributeType::BRIEF>("test");
    mStrategy.setNodeAttributes(graphId, nodeId, materia::NodeType::Counter, attrs);
 
    auto g = mStrategy.getGraph(graphId);
@@ -386,9 +386,9 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_SetAttrs_Counters, StrategyGraphTest 
    BOOST_CHECK_EQUAL(materia::NodeType::Counter, materia::find_by_id(nodes, nodeId)->type);
 
    attrs = g->getNodeAttributes(nodeId);
-   BOOST_CHECK_EQUAL("test", attrs[materia::NodeAttributeType::BRIEF]);
-   BOOST_CHECK_EQUAL("0", attrs[materia::NodeAttributeType::PROGRESS_TOTAL]);
-   BOOST_CHECK_EQUAL("3", attrs[materia::NodeAttributeType::PROGRESS_CURRENT]);
+   BOOST_CHECK_EQUAL("test", attrs.get<materia::NodeAttributeType::BRIEF>());
+   BOOST_CHECK_EQUAL(3, attrs.get<materia::NodeAttributeType::PROGRESS_TOTAL>());
+   BOOST_CHECK_EQUAL(0, attrs.get<materia::NodeAttributeType::PROGRESS_CURRENT>());
 }
 
 BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_SetAttrs_Reassign, StrategyGraphTest )
@@ -396,9 +396,9 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_SetAttrs_Reassign, StrategyGraphTest 
    auto graphId = mGoals[0].id;
    auto nodeId = mStrategy.createNode(graphId);
 
-   materia::TNodeAttrs attrs;
-   attrs[materia::NodeAttributeType::IS_DONE] = "1";
-   attrs[materia::NodeAttributeType::BRIEF] = "test";
+   materia::NodeAttributes attrs;
+   attrs.set<materia::NodeAttributeType::IS_DONE>(true);
+   attrs.set<materia::NodeAttributeType::BRIEF>("test");
    mStrategy.setNodeAttributes(graphId, nodeId, materia::NodeType::Task, attrs);
 
    auto g = mStrategy.getGraph(graphId);
@@ -407,14 +407,14 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_SetAttrs_Reassign, StrategyGraphTest 
    BOOST_CHECK_EQUAL(materia::NodeType::Task, materia::find_by_id(nodes, nodeId)->type);
 
    attrs = g->getNodeAttributes(nodeId);
-   BOOST_CHECK_EQUAL("test", attrs[materia::NodeAttributeType::BRIEF]);
-   BOOST_CHECK_EQUAL("1", attrs[materia::NodeAttributeType::IS_DONE]);
+   BOOST_CHECK_EQUAL("test", attrs.get<materia::NodeAttributeType::BRIEF>());
+   BOOST_CHECK_EQUAL(true, attrs.get<materia::NodeAttributeType::IS_DONE>());
 
-   attrs = materia::TNodeAttrs();
+   attrs = materia::NodeAttributes();
 
-   attrs[materia::NodeAttributeType::PROGRESS_CURRENT] = "3";
-   attrs[materia::NodeAttributeType::BRIEF] = "test";
-   attrs[materia::NodeAttributeType::PROGRESS_TOTAL] = "0";
+   attrs.set<materia::NodeAttributeType::PROGRESS_CURRENT>(0);
+   attrs.set<materia::NodeAttributeType::PROGRESS_TOTAL>(3);
+   attrs.set<materia::NodeAttributeType::BRIEF>("test");
    mStrategy.setNodeAttributes(graphId, nodeId, materia::NodeType::Counter, attrs);
 
    g = mStrategy.getGraph(graphId);
@@ -423,9 +423,9 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_SetAttrs_Reassign, StrategyGraphTest 
    BOOST_CHECK_EQUAL(materia::NodeType::Counter, materia::find_by_id(nodes, nodeId)->type);
 
    auto cattrs = g->getNodeAttributes(nodeId);
-   BOOST_CHECK_EQUAL("test", cattrs[materia::NodeAttributeType::BRIEF]);
-   BOOST_CHECK_EQUAL("0", cattrs[materia::NodeAttributeType::PROGRESS_TOTAL]);
-   BOOST_CHECK_EQUAL("3", cattrs[materia::NodeAttributeType::PROGRESS_CURRENT]);
+   BOOST_CHECK_EQUAL("test", cattrs.get<materia::NodeAttributeType::BRIEF>());
+   BOOST_CHECK_EQUAL(3, cattrs.get<materia::NodeAttributeType::PROGRESS_TOTAL>());
+   BOOST_CHECK_EQUAL(0, cattrs.get<materia::NodeAttributeType::PROGRESS_CURRENT>());
 }
 
 BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_SetAttrs_WrongId, StrategyGraphTest )  

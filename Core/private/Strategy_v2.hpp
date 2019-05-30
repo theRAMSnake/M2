@@ -23,11 +23,14 @@ public:
 
    void createLink(const Id& graphId, const Id& nodeFrom, const Id& nodeTo) override;
    void breakLink(const Id& graphId, const Id& nodeFrom, const Id& nodeTo) override;
-
    Id createNode(const Id& graphId) override;
-   void setNodeAttributes(const Id& graphId, const Id& objectId, const NodeType& type, const std::map<NodeAttributeType, std::string>& attrs) override;
-
+   void setNodeAttributes(const Id& graphId, const Id& objectId, const NodeType& type, const NodeAttributes& attrs) override;
    void deleteNode(const Id& graphId, const Id& objectId) override;
+
+   std::vector<WatchItem> getWatchItems() const override;
+   void removeWatchItem(const Id& id) override;
+   Id addWatchItem(const WatchItem& item) override;
+   void replaceWatchItem(const WatchItem& item) override;
 
 private:
    std::shared_ptr<StrategyGraph> loadGraph(const Id& graphId);
@@ -47,6 +50,7 @@ private:
 
    IStrategy& mStrategy_v1;
    std::unique_ptr<DatabaseTable> mGraphsStorage;
+   std::unique_ptr<DatabaseTable> mWatchStorage;
 };
 
 }

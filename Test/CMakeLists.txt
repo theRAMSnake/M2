@@ -12,6 +12,8 @@ CalendarTest.cpp
 #StrategyTest.cpp
 #JournalTest.cpp
 StrategyGraphTest.cpp
+Strategy2Test.cpp
+../Core/private/NodeAttributes.cpp #will be lib soon
 )
 
 find_package(Boost COMPONENTS unit_test_framework filesystem REQUIRED)

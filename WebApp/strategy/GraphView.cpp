@@ -291,7 +291,7 @@ public:
 
    GraphMatrix operator+ (const GraphMatrix& other)
    {
-      const std::size_t ESTETICAL_HEIGHT = 6;
+      const std::size_t ESTETICAL_HEIGHT = 8;
 
       auto otherH = other.height();
 
@@ -538,7 +538,7 @@ void GraphView::assign(const StrategyModel::Graph& g, const std::string& caption
    mImpl->setStyleClass("GraphView");
    mImpl->show();
 
-   auto cgv = mImpl->addWidget(std::make_unique<CompositeGraphView>(900, 230, buildCompositeGraphView(900u, 230u, g, caption)));
+   auto cgv = mImpl->addWidget(std::make_unique<CompositeGraphView>(900, 350, buildCompositeGraphView(900u, 350u, g, caption)));
    cgv->OnElementClicked.connect(std::bind(&GraphView::OnElementClicked, this, std::placeholders::_1, std::placeholders::_2));
 }
 

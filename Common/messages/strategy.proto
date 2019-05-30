@@ -105,6 +105,18 @@ message GraphDefinition
    repeated NodeProperties nodes = 3;
 }
 
+message WatchItemInfo
+{
+   common.UniqueId id = 1;
+   string text = 2;
+}
+
+message WatchItems
+{
+   repeated WatchItemInfo items = 1;
+}
+
+
 service StrategyService 
 {
    rpc AddGoal (Goal) returns (common.UniqueId);
@@ -139,4 +151,9 @@ service StrategyService
 
    rpc DeleteNode (GraphObjectId) returns (common.OperationResultMessage);
    rpc DeleteLink (LinkProperties) returns (common.OperationResultMessage);
+
+   rpc GetWatchItems (common.EmptyMessage) returns (WatchItems);
+   rpc DeleteWatchItem (common.UniqueId) returns (common.OperationResultMessage);
+   rpc EditWatchItem (WatchItemInfo) returns (common.OperationResultMessage);
+   rpc AddWatchItem (WatchItemInfo) returns (common.UniqueId);
 }

@@ -197,7 +197,7 @@ StrategyView::StrategyView(StrategyModel& strategy)
    backlogBtn->clicked().connect(std::bind(&StrategyView::onBacklogClick, this));
    mMainToolbar->addButton(std::move(backlogBtn));
 
-   auto [temp, goalCtrls] = TemplateBuilder::makeTable<GoalViewCtrl<false>>(3u, 2u, GoalViewCtrlConstructionParams{strategy, true});
+   auto [temp, goalCtrls] = TemplateBuilder::makeTable<GoalViewCtrl<false>>(2u, 2u, GoalViewCtrlConstructionParams{strategy, true});
    std::copy(goalCtrls.begin(), goalCtrls.end(), std::inserter(mGoalCtrls, mGoalCtrls.begin()));
 
    for(auto x : mGoalCtrls)
