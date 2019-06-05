@@ -172,6 +172,56 @@ private:
    StrategyModel::Resource mResource;
 };
 
+//-----------------------------------------------------------------------------------------------------------
+
+class WatchItemCtrl : public Wt::WContainerWidget
+{
+public:
+   WatchItemCtrl(const StrategyModel::WatchItem& w, StrategyModel& model)
+   : mModel(model)
+   , mItem(w)
+   {
+      mText = addWidget(std::make_unique<Wt::WLabel>(w.text));
+      mText->setStyleClass("WatchItemCtrl");
+
+      clicked().connect(this, &WatchItemCtrl::onClicked);
+   }
+
+private:
+   void onClicked(Wt::WMouseEvent event)
+   {
+      if(event.button() == Wt::MouseButton::Left)
+      {
+         if(event.modifiers().test(Wt::KeyboardModifier::Control))
+         {
+            std::function<void()> elementDeletedFunc = [=] () {
+               mModel.deleteWatchItem(mItem.id);
+               parent()->removeChild(this);
+            };
+
+            CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
+         }
+         else
+         {
+            CommonDialogManager::showOneLineDialog("Text", "Text", mItem.text, [=] (auto x) {
+               onEditDialogOk(x);
+            });
+         }
+      }
+   }
+
+   void onEditDialogOk(const std::string& newText)
+   {
+      mText->setText(newText);
+      mItem.text = newText;
+      mModel.modifyWatchItem(mItem);
+   } 
+
+   Wt::WLabel* mText;
+   StrategyModel& mModel;
+   StrategyModel::WatchItem mItem;
+};
+
 //------------------------------------------------------------------------------------------------------------
 
 StrategyView::StrategyView(StrategyModel& strategy)
@@ -186,6 +236,7 @@ StrategyView::StrategyView(StrategyModel& strategy)
    popupPtr->addItem("Task")->triggered().connect(std::bind(&StrategyView::onAddTaskClick, this));
    popupPtr->addItem("Resource")->triggered().connect(std::bind(&StrategyView::onAddResourceClick, this));
    popupPtr->addItem("Objective")->triggered().connect(std::bind(&StrategyView::onAddObjectiveClick, this));
+   popupPtr->addItem("Watch Item")->triggered().connect(std::bind(&StrategyView::onAddWatchItemClick, this));
 
    auto addBtn = std::make_unique<Wt::WPushButton>("Add");
    addBtn->setStyleClass("btn-primary");
@@ -226,6 +277,13 @@ void StrategyView::fillResources(Wt::WToolBar& toolbar)
 {
    toolbar.addSeparator();
 
+   for(auto w : mModel.getWatchItems())
+   {
+      toolbar.addWidget(std::make_unique<WatchItemCtrl>(w, mModel));
+   }
+
+   toolbar.addSeparator();
+
    for(auto r : mModel.getResources())
    {
       toolbar.addWidget(std::make_unique<ResourceViewCtrl>(r, mModel), Wt::AlignmentFlag::Right);
@@ -264,6 +322,17 @@ void StrategyView::onAddResourceClick()
       auto item = mModel.addResource(name);
       
       mMainToolbar->addWidget(std::make_unique<ResourceViewCtrl>(item, mModel), Wt::AlignmentFlag::Right);
+   };
+
+   CommonDialogManager::showOneLineDialog("Please specify name", "Name", "", nextFunc);
+}
+
+void StrategyView::onAddWatchItemClick()
+{     
+   std::function<void(std::string)> nextFunc = [=](std::string name){
+      auto item = mModel.addWatchItem(name);
+      
+      mMainToolbar->addWidget(std::make_unique<WatchItemCtrl>(item, mModel));
    };
 
    CommonDialogManager::showOneLineDialog("Please specify name", "Name", "", nextFunc);

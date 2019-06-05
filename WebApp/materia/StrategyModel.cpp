@@ -252,6 +252,23 @@ std::vector<StrategyModel::Resource> StrategyModel::getResources()
    return result;
 }
 
+std::vector<StrategyModel::WatchItem> StrategyModel::getWatchItems()
+{
+   std::vector<WatchItem> result;
+
+   common::EmptyMessage e;
+   strategy::WatchItems res;
+
+   mService.getService().GetWatchItems(nullptr, &e, &res, nullptr);
+
+   for(auto r : res.items())
+   {
+      result.push_back({r.id().guid(), r.text()});
+   }
+
+   return result;
+}
+
 StrategyModel::Resource StrategyModel::addResource(const std::string& name)
 {
    common::UniqueId id;
@@ -263,6 +280,31 @@ StrategyModel::Resource StrategyModel::addResource(const std::string& name)
    mService.getService().AddResource(nullptr, &r, &id, nullptr);
    
    return StrategyModel::Resource {id.guid(), name, 0};
+}
+
+StrategyModel::WatchItem StrategyModel::addWatchItem(const std::string& name)
+{
+   strategy::WatchItemInfo itemToAdd;
+   itemToAdd.set_text(name);
+
+   common::UniqueId id;
+   mService.getService().AddWatchItem(nullptr, &itemToAdd, &id, nullptr);
+
+   return {id.guid(), name};
+}
+   
+void StrategyModel::modifyWatchItem(const WatchItem& r)
+{
+
+}
+
+void StrategyModel::deleteWatchItem(const materia::Id& id)
+{
+   common::UniqueId id;
+   id.set_guid(id.getGuid());
+
+   common::OperationResultMessage opResult;
+   mService.getService().DeleteWatchItem(nullptr, &id, &opResult, nullptr);
 }
 
 void StrategyModel::deleteResource(const materia::Id& src)

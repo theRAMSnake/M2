@@ -13,6 +13,7 @@ private:
    void onAddTaskClick();
    void onAddObjectiveClick();
    void onAddResourceClick();
+   void onAddWatchItemClick();
    void onBacklogClick();
    void layGoals();
    void fillResources(Wt::WToolBar& toolbar);

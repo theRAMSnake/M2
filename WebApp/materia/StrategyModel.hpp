@@ -67,6 +67,12 @@ public:
       int value;
    };
 
+   struct WatchItem
+   {
+      materia::Id id;
+      std::string text;
+   };
+
    Task addTask(const std::string& title, const materia::Id& parentGoalId);
    void modifyTask(const Task& task);
    void deleteTask(const materia::Id& id);
@@ -96,6 +102,11 @@ public:
 
    void createLink(const materia::Id& graphId, const materia::Id& fromNodeId, const materia::Id& toNodeId);
    void deleteLink(const materia::Id& graphId, const materia::Id& fromNodeId, const materia::Id& toNodeId);
+
+   std::vector<WatchItem> getWatchItems();
+   WatchItem addWatchItem(const std::string& name);
+   void modifyWatchItem(const WatchItem& r);
+   void deleteWatchItem(const materia::Id& id);
 
 private:
    void fetchGoals();
