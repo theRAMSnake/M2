@@ -1,6 +1,7 @@
 #pragma once
 #include <map>
 #include <boost/lexical_cast.hpp>
+#include "../Common/Id.hpp"
 
 namespace materia
 {
@@ -11,7 +12,8 @@ enum class NodeAttributeType
    IS_DONE = 1,
    BRIEF = 2,
    PROGRESS_TOTAL = 3,
-   PROGRESS_CURRENT = 4
+   PROGRESS_CURRENT = 4,
+   WATCH_ITEM_REFERENCE = 5
 };
 
 template<NodeAttributeType ATR_TYPE>
@@ -28,6 +30,9 @@ struct NodeAttributeTraits<NodeAttributeType::PROGRESS_TOTAL> { using Type = uns
 
 template<>
 struct NodeAttributeTraits<NodeAttributeType::PROGRESS_CURRENT> { using Type = unsigned int; };
+
+template<>
+struct NodeAttributeTraits<NodeAttributeType::WATCH_ITEM_REFERENCE> { using Type = Id; };
 
 class NodeAttributes
 {

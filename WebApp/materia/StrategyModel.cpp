@@ -295,13 +295,18 @@ StrategyModel::WatchItem StrategyModel::addWatchItem(const std::string& name)
    
 void StrategyModel::modifyWatchItem(const WatchItem& r)
 {
+   strategy::WatchItemInfo itemToEdit;
+   itemToEdit.mutable_id()->set_guid(r.id.getGuid());
+   itemToEdit.set_text(r.text);
 
+   common::OperationResultMessage dummy;
+   mService.getService().EditWatchItem(nullptr, &itemToEdit, &dummy, nullptr);
 }
 
-void StrategyModel::deleteWatchItem(const materia::Id& id)
+void StrategyModel::deleteWatchItem(const materia::Id& src)
 {
    common::UniqueId id;
-   id.set_guid(id.getGuid());
+   id.set_guid(src.getGuid());
 
    common::OperationResultMessage opResult;
    mService.getService().DeleteWatchItem(nullptr, &id, &opResult, nullptr);
@@ -345,11 +350,31 @@ std::optional<StrategyModel::Resource> StrategyModel::getResource(const std::str
    }
 }
 
-std::string createDescriptiveTitle(const StrategyModel::Node& node)
+std::optional<StrategyModel::WatchItem> StrategyModel::getWatchItem(const materia::Id& id)
+{
+   auto items = getWatchItems();
+
+   auto iter = materia::find_by_id(items, id);
+
+   if(iter != items.end())
+   {
+      return *iter;
+   }
+   else
+   {
+      return std::optional<StrategyModel::WatchItem>();
+   }
+}
+
+std::string StrategyModel::createDescriptiveTitle(const StrategyModel::Node& node)
 {
    if(node.type == strategy::NodeType::GOAL)
    {
       return "Endpoint";
+   }
+   else if(node.type == strategy::NodeType::WATCH)
+   {
+      return "Wait for " + getWatchItem(node.watchItemReference)->text;
    }
    else if(!node.brief.empty())
    {
@@ -382,7 +407,8 @@ std::optional<StrategyModel::Graph> StrategyModel::getGraph(const materia::Id& s
             "", 
             x.attrs().brief(),
             x.attrs().done(),
-            {x.attrs().progress_current(), x.attrs().progress_total()}
+            {x.attrs().progress_current(), x.attrs().progress_total()},
+            x.attrs().watch_item_reference().guid()
             });
 
          g.nodes.back().descriptiveTitle = createDescriptiveTitle(g.nodes.back());
@@ -454,6 +480,10 @@ void StrategyModel::updateNode(const materia::Id& graphId, const Node& node)
    attrs->set_brief(node.brief);
    attrs->set_progress_current(node.progress.first);
    attrs->set_progress_total(node.progress.second);
+   if(node.watchItemReference != materia::Id::Invalid)
+   {
+      attrs->mutable_watch_item_reference()->set_guid(node.watchItemReference.getGuid());
+   }
 
    common::OperationResultMessage opResult;
    mService.getService().ModifyNode(nullptr, &props, &opResult, nullptr);

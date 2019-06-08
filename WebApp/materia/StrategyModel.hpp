@@ -40,12 +40,14 @@ public:
 
    struct Node
    {
+      //!Refactor?
       materia::Id id;
       strategy::NodeType type;
       std::string descriptiveTitle;
       std::string brief;
       bool isDone;
       std::pair<int, int> progress;
+      materia::Id watchItemReference;
    };
 
    struct Link
@@ -110,6 +112,8 @@ public:
 
 private:
    void fetchGoals();
+   std::string createDescriptiveTitle(const StrategyModel::Node& node);
+   std::optional<WatchItem> getWatchItem(const materia::Id& id);
 
    std::vector<Goal> mGoals;
    MateriaServiceProxy<strategy::StrategyService> mService;

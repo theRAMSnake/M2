@@ -182,7 +182,8 @@ public:
    , mItem(w)
    {
       mText = addWidget(std::make_unique<Wt::WLabel>(w.text));
-      mText->setStyleClass("WatchItemCtrl");
+      mText->setInline(true);
+      setStyleClass("WatchItemCtrl");
 
       clicked().connect(this, &WatchItemCtrl::onClicked);
    }
@@ -203,9 +204,11 @@ private:
          }
          else
          {
-            CommonDialogManager::showOneLineDialog("Text", "Text", mItem.text, [=] (auto x) {
-               onEditDialogOk(x);
-            });
+            std::function<void(std::string)> nextFunc = [=](std::string name){
+                onEditDialogOk(name);
+            };
+
+            CommonDialogManager::showOneLineDialog("Text", "Text", mItem.text, nextFunc);
          }
       }
    }

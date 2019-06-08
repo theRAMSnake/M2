@@ -344,6 +344,10 @@ public:
             {
                attrs.set_progress_current(srcAttrs.get<NodeAttributeType::PROGRESS_CURRENT>());
             }
+            if(srcAttrs.contains(NodeAttributeType::WATCH_ITEM_REFERENCE))
+            {
+               attrs.mutable_watch_item_reference()->CopyFrom(toProto(srcAttrs.get<NodeAttributeType::WATCH_ITEM_REFERENCE>()));
+            }
          }
       }
    }
@@ -386,6 +390,10 @@ public:
       {
          attrs.set<materia::NodeAttributeType::PROGRESS_CURRENT>(srcAttrs.progress_current());
          attrs.set<materia::NodeAttributeType::PROGRESS_TOTAL>(srcAttrs.progress_total());
+      }
+      if(!srcAttrs.watch_item_reference().guid().empty())
+      {
+         attrs.set<materia::NodeAttributeType::WATCH_ITEM_REFERENCE>(fromProto(srcAttrs.watch_item_reference()));
       }
 
       mStrategy2.setNodeAttributes(graphId, nodeId, fromProto(request->node_type()), attrs);

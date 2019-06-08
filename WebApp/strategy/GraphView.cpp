@@ -53,6 +53,11 @@ public:
          Wt::WRectF imageRect(mBounds.x() + 8, mBounds.y() + 8, 32, 32);
          painter.drawImage(imageRect, Wt::WPainter::Image("resources/task.png", 258, 258));
       }
+      else if(mNode.type == strategy::NodeType::WATCH)
+      {
+         Wt::WRectF imageRect(mBounds.x() + 8, mBounds.y() + 8, 32, 32);
+         painter.drawImage(imageRect, Wt::WPainter::Image("resources/eye.png", 256, 256));
+      }
       else if(mNode.type == strategy::NodeType::COUNTER)
       {
          Wt::WRectF r(mBounds.x() + 8, mBounds.y() + 8, 32, 32);

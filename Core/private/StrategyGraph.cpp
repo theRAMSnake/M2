@@ -159,6 +159,13 @@ void StrategyGraph::setNodeAttributes(const Id& objectId, const NodeType& type, 
             return;
          }
       }
+      else if(type == NodeType::Watch)
+      {
+         if(!modifiedAttrs.contains(NodeAttributeType::WATCH_ITEM_REFERENCE))
+         {
+            return;
+         }
+      }
 
       mSrc.nodeAttrs[objectId] = modifiedAttrs.toMap();
    }

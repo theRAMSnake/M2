@@ -81,7 +81,7 @@ enum NodeType
    GOAL = 1;
    TASK = 2;
    COUNTER = 3;
-   WATCH = 5;
+   WATCH = 4;
 }
 
 message NodeAttributes
@@ -90,6 +90,7 @@ message NodeAttributes
    bool done = 2;
    int32 progress_total = 3;
    int32 progress_current = 4;
+   common.UniqueId watch_item_reference = 5;
 }
 
 message NodeProperties

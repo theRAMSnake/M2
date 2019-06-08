@@ -3,7 +3,7 @@
   border-width: 2px;
   border-color: black;
   background-color: darkgrey;
-  height: 25vh;
+  height: 38vh;
 }
 
 .GoalViewCtrl {
@@ -11,7 +11,7 @@
   border-width: 1px;
   border-color: black;
   background-color: lightyellow;
-  height: 25vh;
+  height: 38vh;
 }
 
 .GoalViewCtrlSmallEmpty {
@@ -77,6 +77,19 @@
   margin-left: 15px;
   font-size: 24px;
   color: grey;
+  user-select: none;
+  -moz-user-select: none;
+}
+
+.WatchItemCtrl {
+  margin-left: 15px;
+  padding: 5px;
+  font-size: 24px;
+  color: grey;
+  display: inline-block;
+  border-style: solid;
+  border-width: 1px;
+  border-color: black;
   user-select: none;
   -moz-user-select: none;
 }

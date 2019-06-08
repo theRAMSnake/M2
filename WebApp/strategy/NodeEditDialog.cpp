@@ -69,6 +69,47 @@ private:
    Wt::WLineEdit* mTotal;
 };
 
+class WatchNodeSpecifics : public INodeTypeSpecifics
+{
+public:
+   WatchNodeSpecifics(const StrategyModel::Node& node, const std::vector<StrategyModel::WatchItem>& watchItems, Wt::WContainerWidget& contents)
+   : mWatchItems(watchItems)
+   {
+      mWatchItemReferenceCombo = contents.addWidget(std::make_unique<Wt::WComboBox>());
+      mWatchItemReferenceCombo->addItem("None");
+
+      for(auto x : mWatchItems)
+      {
+         mWatchItemReferenceCombo->addItem(x.text);
+         if(node.watchItemReference == x.id)
+         {
+            mWatchItemReferenceCombo->setCurrentIndex(mWatchItemReferenceCombo->count() - 1);
+         }
+      }
+   }
+
+   void updateNode(StrategyModel::Node& node) const override
+   {
+      if(mWatchItemReferenceCombo->currentIndex() != 0)
+      {
+         node.watchItemReference = mWatchItems[mWatchItemReferenceCombo->currentIndex() - 1].id;
+      }
+      else
+      {
+         node.watchItemReference = materia::Id::Invalid;
+      }
+   }
+
+   void cleanUp(Wt::WContainerWidget& contents) override
+   {
+      contents.removeChild(mWatchItemReferenceCombo);
+   }
+
+private:
+   Wt::WComboBox* mWatchItemReferenceCombo;
+   const std::vector<StrategyModel::WatchItem> mWatchItems;
+};
+
 class NoNodeSpecifics : public INodeTypeSpecifics
 {
 public:
@@ -91,9 +132,15 @@ std::vector<std::pair<strategy::NodeType, std::string>> NODE_TYPES = {
    {strategy::NodeType::BLANK, "Unset"},
    {strategy::NodeType::TASK, "Task"},
    {strategy::NodeType::COUNTER, "Counter"},
+   {strategy::NodeType::WATCH, "Watch"}
 };
 
-INodeTypeSpecifics* createNodeSpecifics(const strategy::NodeType type, const StrategyModel::Node& node, Wt::WContainerWidget& contents)
+INodeTypeSpecifics* createNodeSpecifics(
+   const strategy::NodeType type, 
+   const StrategyModel::Node& node, 
+   const std::vector<StrategyModel::WatchItem>& watchItems, 
+   Wt::WContainerWidget& contents
+   )
 {
    switch(type)
    {
@@ -103,12 +150,15 @@ INodeTypeSpecifics* createNodeSpecifics(const strategy::NodeType type, const Str
       case strategy::NodeType::COUNTER:
          return new CounterNodeSpecifics(node, contents);
 
+      case strategy::NodeType::WATCH:
+         return new WatchNodeSpecifics(node, watchItems, contents);
+
       default:
          return new NoNodeSpecifics();
    }
 }
 
-NodeEditDialog::NodeEditDialog(const StrategyModel::Node& node, TOnOkCallback cb)
+NodeEditDialog::NodeEditDialog(const StrategyModel::Node& node, const std::vector<StrategyModel::WatchItem>& watchItems, TOnOkCallback cb)
 : BasicDialog("Edit node", true)
 {
    setWindowTitle(node.descriptiveTitle);
@@ -128,11 +178,11 @@ NodeEditDialog::NodeEditDialog(const StrategyModel::Node& node, TOnOkCallback cb
       }
    }
 
-   mNodeTypeSpecifics.reset(createNodeSpecifics(node.type, node, *contents()));
+   mNodeTypeSpecifics.reset(createNodeSpecifics(node.type, node, watchItems, *contents()));
 
    types->changed().connect(std::bind([=](){
       mNodeTypeSpecifics->cleanUp(*contents());
-      mNodeTypeSpecifics.reset(createNodeSpecifics(NODE_TYPES[types->currentIndex()].first, node, *contents()));
+      mNodeTypeSpecifics.reset(createNodeSpecifics(NODE_TYPES[types->currentIndex()].first, node, watchItems, *contents()));
    }));
 
    setWidth("50%");

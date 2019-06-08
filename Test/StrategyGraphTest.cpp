@@ -451,3 +451,22 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_DeleteNode_LinksDeleted, StrategyGrap
    auto g = mStrategy.getGraph(graphId);
    BOOST_CHECK_EQUAL(0, g->getLinks().size());
 }
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_WATCH_NODE_REFERENCE, StrategyGraphTest )
+{
+   auto graphId = mGoals[0].id;
+   auto nodeId = mStrategy.createNode(graphId);
+   materia::NodeAttributes attrs;
+   attrs.set<materia::NodeAttributeType::WATCH_ITEM_REFERENCE>(materia::Id("id"));
+   attrs.set<materia::NodeAttributeType::BRIEF>("test");
+   mStrategy.setNodeAttributes(graphId, nodeId, materia::NodeType::Watch, attrs);
+
+   auto g = mStrategy.getGraph(graphId);
+   auto nodes = g->getNodes();
+
+   BOOST_CHECK_EQUAL(materia::NodeType::Watch, materia::find_by_id(nodes, nodeId)->type);
+
+   attrs = g->getNodeAttributes(nodeId);
+   BOOST_CHECK_EQUAL(materia::Id("id"), attrs.get<materia::NodeAttributeType::WATCH_ITEM_REFERENCE>());
+   BOOST_CHECK_EQUAL("test", attrs.get<materia::NodeAttributeType::BRIEF>());
+}
