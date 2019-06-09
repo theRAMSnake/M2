@@ -297,7 +297,7 @@ void StrategyModel::modifyWatchItem(const WatchItem& r)
 {
    strategy::WatchItemInfo itemToEdit;
    itemToEdit.mutable_id()->set_guid(r.id.getGuid());
-   itemToEdit.set_text(r.text);
+   itemToEdit.set_text(r.title);
 
    common::OperationResultMessage dummy;
    mService.getService().EditWatchItem(nullptr, &itemToEdit, &dummy, nullptr);
@@ -374,7 +374,27 @@ std::string StrategyModel::createDescriptiveTitle(const StrategyModel::Node& nod
    }
    else if(node.type == strategy::NodeType::WATCH)
    {
-      return "Wait for " + getWatchItem(node.watchItemReference)->text;
+      return "Wait for " + getWatchItem(node.watchItemReference)->title;
+   }
+   else if(node.type == strategy::NodeType::REFERENCE)
+   {
+      auto pos = materia::find_by_id(mGoals, node.graphReference);
+      if(pos == mGoals.end())
+      {
+         return "Wait for '" + node.graphReference.getGuid() + "'";
+      }
+      else
+      {
+         return "Wait for " + pos->title;
+      }
+   }
+   else if(node.type == strategy::NodeType::WAIT)
+   {
+      char buffer[256];
+      auto tm = std::localtime(&node.requiredTimestamp);
+      strftime(buffer, sizeof(buffer), "%d %b %Y", tm);
+
+      return "Wait till " + std::string(buffer);
    }
    else if(!node.brief.empty())
    {
@@ -408,7 +428,9 @@ std::optional<StrategyModel::Graph> StrategyModel::getGraph(const materia::Id& s
             x.attrs().brief(),
             x.attrs().done(),
             {x.attrs().progress_current(), x.attrs().progress_total()},
-            x.attrs().watch_item_reference().guid()
+            x.attrs().watch_item_reference().guid(),
+            x.attrs().graph_reference().guid(),
+            x.attrs().required_timestamp()
             });
 
          g.nodes.back().descriptiveTitle = createDescriptiveTitle(g.nodes.back());
@@ -480,10 +502,9 @@ void StrategyModel::updateNode(const materia::Id& graphId, const Node& node)
    attrs->set_brief(node.brief);
    attrs->set_progress_current(node.progress.first);
    attrs->set_progress_total(node.progress.second);
-   if(node.watchItemReference != materia::Id::Invalid)
-   {
-      attrs->mutable_watch_item_reference()->set_guid(node.watchItemReference.getGuid());
-   }
+   attrs->mutable_watch_item_reference()->set_guid(node.watchItemReference.getGuid());
+   attrs->mutable_graph_reference()->set_guid(node.graphReference.getGuid());
+   attrs->set_required_timestamp(node.requiredTimestamp);
 
    common::OperationResultMessage opResult;
    mService.getService().ModifyNode(nullptr, &props, &opResult, nullptr);

@@ -99,7 +99,7 @@ void GraphEditDialog::handleNodeClicked(StrategyModel::Node node, Wt::WMouseEven
             refreshGraph();
          };
 
-         NodeEditDialog* dlg = new NodeEditDialog(node, mModel.getWatchItems(), callback);
+         NodeEditDialog* dlg = new NodeEditDialog(node, mModel.getWatchItems(), mModel.getGoals(), callback);
          dlg->show();
       }
    }

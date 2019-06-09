@@ -13,7 +13,9 @@ enum class NodeAttributeType
    BRIEF = 2,
    PROGRESS_TOTAL = 3,
    PROGRESS_CURRENT = 4,
-   WATCH_ITEM_REFERENCE = 5
+   WATCH_ITEM_REFERENCE = 5,
+   REQUIRED_TIMESTAMP = 6,
+   GRAPH_REFERENCE = 7
 };
 
 template<NodeAttributeType ATR_TYPE>
@@ -33,6 +35,12 @@ struct NodeAttributeTraits<NodeAttributeType::PROGRESS_CURRENT> { using Type = u
 
 template<>
 struct NodeAttributeTraits<NodeAttributeType::WATCH_ITEM_REFERENCE> { using Type = Id; };
+
+template<>
+struct NodeAttributeTraits<NodeAttributeType::REQUIRED_TIMESTAMP> { using Type = std::time_t; };
+
+template<>
+struct NodeAttributeTraits<NodeAttributeType::GRAPH_REFERENCE> { using Type = Id; };
 
 class NodeAttributes
 {

@@ -470,3 +470,41 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_WATCH_NODE_REFERENCE, StrategyGraphTe
    BOOST_CHECK_EQUAL(materia::Id("id"), attrs.get<materia::NodeAttributeType::WATCH_ITEM_REFERENCE>());
    BOOST_CHECK_EQUAL("test", attrs.get<materia::NodeAttributeType::BRIEF>());
 }
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_GRAPH_REFERENCE, StrategyGraphTest )
+{
+   auto graphId = mGoals[0].id;
+   auto nodeId = mStrategy.createNode(graphId);
+   materia::NodeAttributes attrs;
+   attrs.set<materia::NodeAttributeType::GRAPH_REFERENCE>(materia::Id("id"));
+   attrs.set<materia::NodeAttributeType::BRIEF>("test");
+   mStrategy.setNodeAttributes(graphId, nodeId, materia::NodeType::Reference, attrs);
+
+   auto g = mStrategy.getGraph(graphId);
+   auto nodes = g->getNodes();
+
+   BOOST_CHECK_EQUAL(materia::NodeType::Reference, materia::find_by_id(nodes, nodeId)->type);
+
+   attrs = g->getNodeAttributes(nodeId);
+   BOOST_CHECK_EQUAL(materia::Id("id"), attrs.get<materia::NodeAttributeType::GRAPH_REFERENCE>());
+   BOOST_CHECK_EQUAL("test", attrs.get<materia::NodeAttributeType::BRIEF>());
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_TIMESTAMP, StrategyGraphTest )
+{
+   auto graphId = mGoals[0].id;
+   auto nodeId = mStrategy.createNode(graphId);
+   materia::NodeAttributes attrs;
+   attrs.set<materia::NodeAttributeType::REQUIRED_TIMESTAMP>(std::time_t(50));
+   attrs.set<materia::NodeAttributeType::BRIEF>("test");
+   mStrategy.setNodeAttributes(graphId, nodeId, materia::NodeType::Wait, attrs);
+
+   auto g = mStrategy.getGraph(graphId);
+   auto nodes = g->getNodes();
+
+   BOOST_CHECK_EQUAL(materia::NodeType::Wait, materia::find_by_id(nodes, nodeId)->type);
+
+   attrs = g->getNodeAttributes(nodeId);
+   BOOST_CHECK_EQUAL(std::time_t(50), attrs.get<materia::NodeAttributeType::REQUIRED_TIMESTAMP>());
+   BOOST_CHECK_EQUAL("test", attrs.get<materia::NodeAttributeType::BRIEF>());
+}

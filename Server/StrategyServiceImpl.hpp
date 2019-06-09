@@ -119,6 +119,8 @@ strategy::NodeType toProto(const materia::NodeType& src)
       case materia::NodeType::Goal: return strategy::NodeType::GOAL;
       case materia::NodeType::Task: return strategy::NodeType::TASK;
       case materia::NodeType::Watch: return strategy::NodeType::WATCH;
+      case materia::NodeType::Wait: return strategy::NodeType::WAIT;
+      case materia::NodeType::Reference: return strategy::NodeType::REFERENCE;
    }
    
    return strategy::NodeType::BLANK;
@@ -130,9 +132,11 @@ materia::NodeType fromProto(const strategy::NodeType src)
    {
       case strategy::NodeType::BLANK: return materia::NodeType::Blank;
       case strategy::NodeType::COUNTER: return materia::NodeType::Counter;
-      case strategy::NodeType::GOAL: return materia::NodeType::Goal;
+      case strategy::NodeType::GOAL: return materia::NodeType::Goal; 
       case strategy::NodeType::TASK: return materia::NodeType::Task;
       case strategy::NodeType::WATCH: return materia::NodeType::Watch;
+      case strategy::NodeType::WAIT: return materia::NodeType::Wait;
+      case strategy::NodeType::REFERENCE: return materia::NodeType::Reference;
 
    default:
       return materia::NodeType::Blank;
@@ -348,6 +352,14 @@ public:
             {
                attrs.mutable_watch_item_reference()->CopyFrom(toProto(srcAttrs.get<NodeAttributeType::WATCH_ITEM_REFERENCE>()));
             }
+            if(srcAttrs.contains(NodeAttributeType::REQUIRED_TIMESTAMP))
+            {
+               attrs.set_required_timestamp(srcAttrs.get<NodeAttributeType::REQUIRED_TIMESTAMP>());
+            }
+            if(srcAttrs.contains(NodeAttributeType::GRAPH_REFERENCE))
+            {
+               attrs.mutable_graph_reference()->CopyFrom(toProto(srcAttrs.get<NodeAttributeType::GRAPH_REFERENCE>()));
+            }
          }
       }
    }
@@ -391,9 +403,20 @@ public:
          attrs.set<materia::NodeAttributeType::PROGRESS_CURRENT>(srcAttrs.progress_current());
          attrs.set<materia::NodeAttributeType::PROGRESS_TOTAL>(srcAttrs.progress_total());
       }
+      
+      if(!srcAttrs.graph_reference().guid().empty())
+      {
+         attrs.set<materia::NodeAttributeType::GRAPH_REFERENCE>(fromProto(srcAttrs.graph_reference()));
+      }
+
       if(!srcAttrs.watch_item_reference().guid().empty())
       {
          attrs.set<materia::NodeAttributeType::WATCH_ITEM_REFERENCE>(fromProto(srcAttrs.watch_item_reference()));
+      }
+      
+      if(srcAttrs.required_timestamp() != 0)
+      {
+         attrs.set<materia::NodeAttributeType::REQUIRED_TIMESTAMP>(srcAttrs.required_timestamp());
       }
 
       mStrategy2.setNodeAttributes(graphId, nodeId, fromProto(request->node_type()), attrs);

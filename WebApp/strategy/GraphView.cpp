@@ -23,6 +23,14 @@ public:
    ~IGraphElement(){}
 };
 
+Wt::WFont createFont(const Wt::FontSize sz)
+{
+   Wt::WFont f;
+   f.setFamily(Wt::FontFamily::Monospace, "'Courier New'");
+   f.setSize(sz);
+   return f;
+}
+
 class NodeGraphElement: public IGraphElement
 {
 public:
@@ -30,6 +38,7 @@ public:
    : mSize(n.type == strategy::NodeType::GOAL ? 64 : 48)
    , mNode(n)
    , mBounds(x - mSize / 2, y - mSize / 2, mSize, mSize)
+   , mImageRect(mBounds.x() + 8, mBounds.y() + 8, mSize - 16, mSize - 16)
    {
 
    }
@@ -45,40 +54,39 @@ public:
 
       if(mNode.type == strategy::NodeType::GOAL)
       {
-         Wt::WRectF imageRect(mBounds.x() + 8, mBounds.y() + 8, 48, 48);
-         painter.drawImage(imageRect, Wt::WPainter::Image("resources/achievement.png", 48, 48));
+         painter.drawImage(mImageRect, Wt::WPainter::Image("resources/achievement.png", 48, 48));
       }
       else if(mNode.type == strategy::NodeType::TASK)
       {
-         Wt::WRectF imageRect(mBounds.x() + 8, mBounds.y() + 8, 32, 32);
-         painter.drawImage(imageRect, Wt::WPainter::Image("resources/task.png", 258, 258));
+         painter.drawImage(mImageRect, Wt::WPainter::Image("resources/task.png", 258, 258));
+      }
+      else if(mNode.type == strategy::NodeType::REFERENCE)
+      {
+         painter.drawImage(mImageRect, Wt::WPainter::Image("resources/achievement.png", 48, 48));
       }
       else if(mNode.type == strategy::NodeType::WATCH)
       {
-         Wt::WRectF imageRect(mBounds.x() + 8, mBounds.y() + 8, 32, 32);
-         painter.drawImage(imageRect, Wt::WPainter::Image("resources/eye.png", 256, 256));
+         painter.drawImage(mImageRect, Wt::WPainter::Image("resources/eye.png", 256, 256));
+      }
+      else if(mNode.type == strategy::NodeType::WAIT)
+      {
+         Wt::WRectF imageRect(mBounds.x() + 8 + 2, mBounds.y() + 8 + 2, 32, 32);
+         painter.drawImage(imageRect, Wt::WPainter::Image("resources/hourglass.png", 256, 256));
       }
       else if(mNode.type == strategy::NodeType::COUNTER)
       {
-         Wt::WRectF r(mBounds.x() + 8, mBounds.y() + 8, 32, 32);
-         Wt::WFont f;
-         f.setFamily(Wt::FontFamily::Monospace, "'Courier New'");
-         f.setSize(Wt::FontSize::Small);
-         painter.setFont(f);
-
-         painter.drawText(r, Wt::AlignmentFlag::Center | Wt::AlignmentFlag::Middle, 
+         painter.setFont(createFont(Wt::FontSize::Small));
+         painter.drawText(mImageRect, Wt::AlignmentFlag::Center | Wt::AlignmentFlag::Middle, 
             std::to_string(mNode.progress.first) + "/" + std::to_string(mNode.progress.second));
       }
       
       if(mNode.type != strategy::NodeType::GOAL)
       {
-         Wt::WFont f;
-         f.setFamily(Wt::FontFamily::Monospace, "'Courier New'");
-         f.setSize(Wt::FontSize::XXSmall);
-         painter.setFont(f);
+         painter.setFont(createFont(Wt::FontSize::XXSmall));
 
          auto b = mBounds;
-         b.setY(b.y() + b.height());
+         b.setY(b.y() + b.height() + 10);
+         b.setHeight(10);
          painter.drawText(b, Wt::AlignmentFlag::Center, mNode.descriptiveTitle);
       }
    }
@@ -102,6 +110,7 @@ private:
    const double mSize = 48;
    const StrategyModel::Node mNode;
    const Wt::WRectF mBounds;
+   const Wt::WRectF mImageRect;
 };
 
 class TextGraphElement: public IGraphElement

@@ -48,6 +48,8 @@ public:
       bool isDone;
       std::pair<int, int> progress;
       materia::Id watchItemReference;
+      materia::Id graphReference;
+      std::time_t requiredTimestamp;
    };
 
    struct Link
@@ -72,7 +74,7 @@ public:
    struct WatchItem
    {
       materia::Id id;
-      std::string text;
+      std::string title;
    };
 
    Task addTask(const std::string& title, const materia::Id& parentGoalId);

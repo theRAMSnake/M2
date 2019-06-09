@@ -25,9 +25,9 @@ enum class NodeType
    Task = 2, 
    Counter = 3,
    Watch = 4,
-   //Wait = 6, //timestamp >>> curTime >= timestamp
+   Wait = 5,
+   Reference = 6
    //Condition = 7, //condition
-   //Reference = 8 //other graph node completed
 };
 
 struct Node

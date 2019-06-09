@@ -181,7 +181,7 @@ public:
    : mModel(model)
    , mItem(w)
    {
-      mText = addWidget(std::make_unique<Wt::WLabel>(w.text));
+      mText = addWidget(std::make_unique<Wt::WLabel>(w.title));
       mText->setInline(true);
       setStyleClass("WatchItemCtrl");
 
@@ -208,7 +208,7 @@ private:
                 onEditDialogOk(name);
             };
 
-            CommonDialogManager::showOneLineDialog("Text", "Text", mItem.text, nextFunc);
+            CommonDialogManager::showOneLineDialog("Text", "Text", mItem.title, nextFunc);
          }
       }
    }
@@ -216,7 +216,7 @@ private:
    void onEditDialogOk(const std::string& newText)
    {
       mText->setText(newText);
-      mItem.text = newText;
+      mItem.title = newText;
       mModel.modifyWatchItem(mItem);
    } 
 

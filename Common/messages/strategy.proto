@@ -82,6 +82,8 @@ enum NodeType
    TASK = 2;
    COUNTER = 3;
    WATCH = 4;
+   WAIT = 5;
+   REFERENCE = 6;
 }
 
 message NodeAttributes
@@ -91,6 +93,8 @@ message NodeAttributes
    int32 progress_total = 3;
    int32 progress_current = 4;
    common.UniqueId watch_item_reference = 5;
+   int32 required_timestamp = 6;
+   common.UniqueId graph_reference = 7;
 }
 
 message NodeProperties

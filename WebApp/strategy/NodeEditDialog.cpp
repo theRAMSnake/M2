@@ -2,6 +2,9 @@
 #include <Wt/WLineEdit.h>
 #include <Wt/WCheckBox.h>
 #include <Wt/WComboBox.h>
+#include <Wt/WTimeEdit.h>
+#include <Wt/WDateEdit.h>
+#include "../WtConverters.hpp"
 
 class INodeTypeSpecifics
 {
@@ -69,45 +72,50 @@ private:
    Wt::WLineEdit* mTotal;
 };
 
-class WatchNodeSpecifics : public INodeTypeSpecifics
+template<class TReferencedItem>
+class ReferencedNodeSpecifics : public INodeTypeSpecifics
 {
 public:
-   WatchNodeSpecifics(const StrategyModel::Node& node, const std::vector<StrategyModel::WatchItem>& watchItems, Wt::WContainerWidget& contents)
-   : mWatchItems(watchItems)
-   {
-      mWatchItemReferenceCombo = contents.addWidget(std::make_unique<Wt::WComboBox>());
-      mWatchItemReferenceCombo->addItem("None");
+   typedef materia::Id StrategyModel::Node::*TMemberPtr;
 
-      for(auto x : mWatchItems)
+   ReferencedNodeSpecifics(const StrategyModel::Node& node, TMemberPtr memberPtr, const std::vector<TReferencedItem>& items, Wt::WContainerWidget& contents)
+   : mItems(items)
+   , mMemberPtr(memberPtr)
+   {
+      mItemsSelector = contents.addWidget(std::make_unique<Wt::WComboBox>());
+      mItemsSelector->addItem("None");
+
+      for(auto x : mItems)
       {
-         mWatchItemReferenceCombo->addItem(x.text);
-         if(node.watchItemReference == x.id)
+         mItemsSelector->addItem(x.title);
+         if(node.*mMemberPtr == x.id)
          {
-            mWatchItemReferenceCombo->setCurrentIndex(mWatchItemReferenceCombo->count() - 1);
+            mItemsSelector->setCurrentIndex(mItemsSelector->count() - 1);
          }
       }
    }
 
    void updateNode(StrategyModel::Node& node) const override
    {
-      if(mWatchItemReferenceCombo->currentIndex() != 0)
+      if(mItemsSelector->currentIndex() != 0)
       {
-         node.watchItemReference = mWatchItems[mWatchItemReferenceCombo->currentIndex() - 1].id;
+         node.*mMemberPtr = mItems[mItemsSelector->currentIndex() - 1].id;
       }
       else
       {
-         node.watchItemReference = materia::Id::Invalid;
+         node.*mMemberPtr = materia::Id::Invalid;
       }
    }
 
    void cleanUp(Wt::WContainerWidget& contents) override
    {
-      contents.removeChild(mWatchItemReferenceCombo);
+      contents.removeChild(mItemsSelector);
    }
 
 private:
-   Wt::WComboBox* mWatchItemReferenceCombo;
-   const std::vector<StrategyModel::WatchItem> mWatchItems;
+   Wt::WComboBox* mItemsSelector;
+   const std::vector<TReferencedItem> mItems;
+   const TMemberPtr mMemberPtr;
 };
 
 class NoNodeSpecifics : public INodeTypeSpecifics
@@ -128,17 +136,55 @@ public:
    }
 };
 
+class WaitNodeSpecifics : public INodeTypeSpecifics
+{
+public:
+   WaitNodeSpecifics(const StrategyModel::Node& node, Wt::WContainerWidget& contents)
+   {
+      auto timestamp = node.requiredTimestamp > 0 ? node.requiredTimestamp : std::time(0);
+
+      mTimeEdit = contents.addWidget(Wt::cpp14::make_unique<Wt::WTimeEdit>());
+      mTimeEdit->setTime(timestampToWtTime(timestamp));
+      mTimeEdit->setWidth(Wt::WLength("15%"));
+      mTimeEdit->addStyleClass("col-md-6");
+      mTimeEdit->setMargin(Wt::WLength("35%"), Wt::Side::Left);
+
+      mDateEdit = contents.addWidget(Wt::cpp14::make_unique<Wt::WDateEdit>());
+      mDateEdit->setDate(timestampToWtDate(timestamp));
+      mDateEdit->setWidth(Wt::WLength("15%"));
+      mDateEdit->addStyleClass("col-md-6");
+   }
+
+   void updateNode(StrategyModel::Node& node) const override
+   {
+      node.requiredTimestamp = WtDateTimeToTimestamp(mDateEdit->date(), mTimeEdit->time());
+   }
+
+   void cleanUp(Wt::WContainerWidget& contents) override
+   {
+      contents.removeChild(mTimeEdit);
+      contents.removeChild(mDateEdit);
+   }
+
+private:
+   Wt::WTimeEdit* mTimeEdit;
+   Wt::WDateEdit* mDateEdit;
+};
+
 std::vector<std::pair<strategy::NodeType, std::string>> NODE_TYPES = {
    {strategy::NodeType::BLANK, "Unset"},
    {strategy::NodeType::TASK, "Task"},
    {strategy::NodeType::COUNTER, "Counter"},
-   {strategy::NodeType::WATCH, "Watch"}
+   {strategy::NodeType::WATCH, "Watch"},
+   {strategy::NodeType::WAIT, "Wait"},
+   {strategy::NodeType::REFERENCE, "Reference"}
 };
 
 INodeTypeSpecifics* createNodeSpecifics(
    const strategy::NodeType type, 
    const StrategyModel::Node& node, 
    const std::vector<StrategyModel::WatchItem>& watchItems, 
+   const std::vector<StrategyModel::Goal>& goals, 
    Wt::WContainerWidget& contents
    )
 {
@@ -151,14 +197,25 @@ INodeTypeSpecifics* createNodeSpecifics(
          return new CounterNodeSpecifics(node, contents);
 
       case strategy::NodeType::WATCH:
-         return new WatchNodeSpecifics(node, watchItems, contents);
+         return new ReferencedNodeSpecifics<StrategyModel::WatchItem>(node, &StrategyModel::Node::watchItemReference, watchItems, contents);
+
+      case strategy::NodeType::WAIT:
+         return new WaitNodeSpecifics(node, contents);
+
+      case strategy::NodeType::REFERENCE:
+         return new ReferencedNodeSpecifics<StrategyModel::Goal>(node, &StrategyModel::Node::graphReference, goals, contents);
 
       default:
          return new NoNodeSpecifics();
    }
 }
 
-NodeEditDialog::NodeEditDialog(const StrategyModel::Node& node, const std::vector<StrategyModel::WatchItem>& watchItems, TOnOkCallback cb)
+NodeEditDialog::NodeEditDialog(
+   const StrategyModel::Node& node, 
+   const std::vector<StrategyModel::WatchItem>& watchItems, 
+   const std::vector<StrategyModel::Goal>& goals, 
+   TOnOkCallback cb
+   )
 : BasicDialog("Edit node", true)
 {
    setWindowTitle(node.descriptiveTitle);
@@ -178,11 +235,11 @@ NodeEditDialog::NodeEditDialog(const StrategyModel::Node& node, const std::vecto
       }
    }
 
-   mNodeTypeSpecifics.reset(createNodeSpecifics(node.type, node, watchItems, *contents()));
+   mNodeTypeSpecifics.reset(createNodeSpecifics(node.type, node, watchItems, goals, *contents()));
 
    types->changed().connect(std::bind([=](){
       mNodeTypeSpecifics->cleanUp(*contents());
-      mNodeTypeSpecifics.reset(createNodeSpecifics(NODE_TYPES[types->currentIndex()].first, node, watchItems, *contents()));
+      mNodeTypeSpecifics.reset(createNodeSpecifics(NODE_TYPES[types->currentIndex()].first, node, watchItems, goals, *contents()));
    }));
 
    setWidth("50%");

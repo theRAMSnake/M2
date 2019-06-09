@@ -131,6 +131,17 @@ const RawStrategyGraph& StrategyGraph::getRawData() const
    return mSrc;
 }
 
+const std::map<NodeType, std::vector<NodeAttributeType>> REQUIRED_ATTRIBUTES_PER_NODE_TYPE =
+   {
+      {NodeType::Goal, {}},
+      {NodeType::Blank, {}},
+      {NodeType::Counter, {NodeAttributeType::PROGRESS_CURRENT, NodeAttributeType::PROGRESS_TOTAL, NodeAttributeType::BRIEF}},
+      {NodeType::Task, {NodeAttributeType::BRIEF}},
+      {NodeType::Reference, {NodeAttributeType::GRAPH_REFERENCE}},
+      {NodeType::Wait, {NodeAttributeType::REQUIRED_TIMESTAMP}},
+      {NodeType::Watch, {NodeAttributeType::WATCH_ITEM_REFERENCE}},
+   }; 
+
 void StrategyGraph::setNodeAttributes(const Id& objectId, const NodeType& type, const NodeAttributes& attrs)
 {
    auto nodePos = find_by_id(mSrc.nodes, objectId);
@@ -142,26 +153,15 @@ void StrategyGraph::setNodeAttributes(const Id& objectId, const NodeType& type, 
 
       if(type == NodeType::Counter)
       {
-         if(!modifiedAttrs.contains(NodeAttributeType::PROGRESS_CURRENT) || 
-            !modifiedAttrs.contains(NodeAttributeType::PROGRESS_TOTAL) ||
-            !modifiedAttrs.contains(NodeAttributeType::BRIEF))
-         {
-            return;
-         }
-
          modifiedAttrs.set<NodeAttributeType::IS_DONE>(modifiedAttrs.get<NodeAttributeType::PROGRESS_CURRENT>() >=
             modifiedAttrs.get<NodeAttributeType::PROGRESS_TOTAL>());
       }
-      else if(type == NodeType::Task)
+      
+      auto& reqAttrTypes = REQUIRED_ATTRIBUTES_PER_NODE_TYPE.find(type)->second;
+
+      for(auto x : reqAttrTypes)
       {
-         if(!modifiedAttrs.contains(NodeAttributeType::BRIEF))
-         {
-            return;
-         }
-      }
-      else if(type == NodeType::Watch)
-      {
-         if(!modifiedAttrs.contains(NodeAttributeType::WATCH_ITEM_REFERENCE))
+         if(!attrs.contains(x))
          {
             return;
          }
