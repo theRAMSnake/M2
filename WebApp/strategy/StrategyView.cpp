@@ -66,7 +66,7 @@ public:
    : mModel(model)
    {
       auto activeGroup = addWidget(std::make_unique<Wt::WGroupBox>("Active"));
-      auto [temp, activeGoalCtrls] = TemplateBuilder::makeTable<GoalViewCtrl<true>>(1u, 6u, GoalViewCtrlConstructionParams{model, true});
+      auto [temp, activeGoalCtrls] = TemplateBuilder::makeTable<GoalViewCtrl<true>>(1u, 4u, GoalViewCtrlConstructionParams{model, true});
       activeGroup->addWidget(std::unique_ptr<Wt::WTemplate>(temp));
 
       auto items = mModel.getGoals();

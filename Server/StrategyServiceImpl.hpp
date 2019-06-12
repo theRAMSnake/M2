@@ -356,9 +356,9 @@ public:
             {
                attrs.set_required_timestamp(srcAttrs.get<NodeAttributeType::REQUIRED_TIMESTAMP>());
             }
-            if(srcAttrs.contains(NodeAttributeType::GRAPH_REFERENCE))
+            if(srcAttrs.contains(NodeAttributeType::GOAL_REFERENCE))
             {
-               attrs.mutable_graph_reference()->CopyFrom(toProto(srcAttrs.get<NodeAttributeType::GRAPH_REFERENCE>()));
+               attrs.mutable_graph_reference()->CopyFrom(toProto(srcAttrs.get<NodeAttributeType::GOAL_REFERENCE>()));
             }
          }
       }
@@ -406,7 +406,7 @@ public:
       
       if(!srcAttrs.graph_reference().guid().empty())
       {
-         attrs.set<materia::NodeAttributeType::GRAPH_REFERENCE>(fromProto(srcAttrs.graph_reference()));
+         attrs.set<materia::NodeAttributeType::GOAL_REFERENCE>(fromProto(srcAttrs.graph_reference()));
       }
 
       if(!srcAttrs.watch_item_reference().guid().empty())

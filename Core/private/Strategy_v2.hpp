@@ -35,6 +35,9 @@ public:
 private:
    std::shared_ptr<StrategyGraph> loadGraph(const Id& graphId);
    void saveGraph(const StrategyGraph& graph);
+   void updateCompleteness(StrategyGraph& graph);
+   void updateNodeCompleteness(const StrategyGraph& graph, const Node& node, std::map<Id, bool>& completenessPerNode);
+   bool getNodeSelfCompleteness(const StrategyGraph& graph, const Node& node);
 
    template<class F>
    void makeGraphOperation(const Id& graphId, F f)

@@ -45,8 +45,8 @@ struct Link
 class IStrategyGraph
 {
 public:
-   virtual std::vector<Link> getLinks() const = 0;
-   virtual std::vector<Node> getNodes() const = 0;
+   virtual const std::vector<Link>& getLinks() const = 0;
+   virtual const std::vector<Node>& getNodes() const = 0;
 
    virtual NodeAttributes getNodeAttributes(const Id& nodeId) const = 0;
 

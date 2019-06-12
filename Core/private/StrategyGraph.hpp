@@ -20,8 +20,8 @@ public:
    StrategyGraph(const Id& id);
    StrategyGraph(const RawStrategyGraph& src);
 
-   std::vector<Link> getLinks() const override;
-   std::vector<Node> getNodes() const override;
+   const std::vector<Link>& getLinks() const override;
+   const std::vector<Node>& getNodes() const override;
 
    NodeAttributes getNodeAttributes(const Id& nodeId) const override;
 

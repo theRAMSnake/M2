@@ -399,7 +399,7 @@ private:
          }
          else
          {
-            GraphEditDialog* dlg = new GraphEditDialog(*mGoal, mModel, [&] (auto g) {mGraph = g; render();});
+            GraphEditDialog* dlg = new GraphEditDialog(*mGoal, mModel, [&] (auto graph, auto goal) {mGraph = graph; mGoal = goal; render();});
             dlg->show();
          }
       }

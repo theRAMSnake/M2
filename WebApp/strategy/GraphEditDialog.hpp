@@ -7,7 +7,7 @@ class GraphView;
 class GraphEditDialog: public BasicDialog
 {
 public:
-   typedef std::function<void(const StrategyModel::Graph&)> TOnOkCallback;
+   typedef std::function<void(const StrategyModel::Graph&, const StrategyModel::Goal&)> TOnOkCallback;
    GraphEditDialog(const StrategyModel::Goal& goal, StrategyModel& model, TOnOkCallback cb);
 
 private:
@@ -21,5 +21,6 @@ private:
 
    StrategyModel& mModel;
    StrategyModel::Graph mGraph;
+   StrategyModel::Goal mGoal;
    GraphView* mGraphView;
 };

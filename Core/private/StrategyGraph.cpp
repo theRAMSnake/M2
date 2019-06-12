@@ -15,12 +15,12 @@ StrategyGraph::StrategyGraph(const RawStrategyGraph& src)
 
 }
 
-std::vector<Link> StrategyGraph::getLinks() const
+const std::vector<Link>& StrategyGraph::getLinks() const
 {
    return mSrc.links;
 }
 
-std::vector<Node> StrategyGraph::getNodes() const
+const std::vector<Node>& StrategyGraph::getNodes() const
 {
    return mSrc.nodes;
 }
@@ -137,7 +137,7 @@ const std::map<NodeType, std::vector<NodeAttributeType>> REQUIRED_ATTRIBUTES_PER
       {NodeType::Blank, {}},
       {NodeType::Counter, {NodeAttributeType::PROGRESS_CURRENT, NodeAttributeType::PROGRESS_TOTAL, NodeAttributeType::BRIEF}},
       {NodeType::Task, {NodeAttributeType::BRIEF}},
-      {NodeType::Reference, {NodeAttributeType::GRAPH_REFERENCE}},
+      {NodeType::Reference, {NodeAttributeType::GOAL_REFERENCE}},
       {NodeType::Wait, {NodeAttributeType::REQUIRED_TIMESTAMP}},
       {NodeType::Watch, {NodeAttributeType::WATCH_ITEM_REFERENCE}},
    }; 
@@ -150,12 +150,6 @@ void StrategyGraph::setNodeAttributes(const Id& objectId, const NodeType& type, 
    {
       NodeAttributes modifiedAttrs = attrs;
       nodePos->type = type;
-
-      if(type == NodeType::Counter)
-      {
-         modifiedAttrs.set<NodeAttributeType::IS_DONE>(modifiedAttrs.get<NodeAttributeType::PROGRESS_CURRENT>() >=
-            modifiedAttrs.get<NodeAttributeType::PROGRESS_TOTAL>());
-      }
       
       auto& reqAttrTypes = REQUIRED_ATTRIBUTES_PER_NODE_TYPE.find(type)->second;
 

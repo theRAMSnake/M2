@@ -1,5 +1,6 @@
 #include "Strategy_v2.hpp"
 #include "JsonSerializer.hpp"
+#include "Common/Utils.hpp"
 
 SERIALIZE_AS_INTEGER(materia::NodeType)
 SERIALIZE_AS_INTEGER(materia::NodeAttributeType)
@@ -27,16 +28,119 @@ Strategy_v2::Strategy_v2(IStrategy& strategy, Database& db)
 
 std::shared_ptr<StrategyGraph> Strategy_v2::loadGraph(const Id& graphId)
 {
-   auto loaded = mGraphsStorage->load(graphId);
+   auto loadedJson = mGraphsStorage->load(graphId);
 
-   if(loaded)
+   if(loadedJson)
    {
-      //std::cout << "LLL " << *loaded;
-      return std::make_shared<StrategyGraph>(readJson<RawStrategyGraph>(*loaded));
+      auto result = std::make_shared<StrategyGraph>(readJson<RawStrategyGraph>(*loadedJson));
+      updateCompleteness(*result);
+
+      return result;
    }
    else
    {
       return std::shared_ptr<StrategyGraph>();
+   }
+}
+
+std::vector<Node> getPredecessors(const StrategyGraph& g, const Id sucessorId)
+{
+   std::vector<Node> result;
+
+   for(auto l : g.getLinks())
+   {
+      if(l.to == sucessorId)
+      {
+         auto srcNode = find_by_id(g.getNodes(), l.from);
+         if(srcNode != g.getNodes().end())
+         {
+            result.push_back(*srcNode);
+         }
+      }
+   }
+
+   return result;
+}
+
+bool Strategy_v2::getNodeSelfCompleteness(const StrategyGraph& graph, const Node& node)
+{
+   auto attrs = graph.getNodeAttributes(node.id);
+
+   switch (node.type)
+   {
+   case NodeType::Blank:
+      return false;
+
+   case NodeType::Counter:
+      return attrs.get<NodeAttributeType::PROGRESS_CURRENT>() >=
+            attrs.get<NodeAttributeType::PROGRESS_TOTAL>();
+
+   case NodeType::Goal:
+      return getPredecessors(graph, node.id).empty();
+   }
+}
+
+void Strategy_v2::updateNodeCompleteness(const StrategyGraph& graph, const Node& node, std::map<Id, bool>& completenessPerNode)
+{
+   auto nodes = graph.getNodes();
+   auto links = graph.getLinks();
+
+   auto predecessors = getPredecessors(graph, node.id);
+
+   bool nodeCompleted = true;
+
+   for(auto p : predecessors)
+   {
+      auto prevResult = completenessPerNode.find(p.id);
+
+      if(prevResult == completenessPerNode.end())
+      {
+         updateNodeCompleteness(graph, p, completenessPerNode);
+         prevResult = completenessPerNode.find(p.id);
+      }
+      
+      nodeCompleted = nodeCompleted && prevResult->second;
+   }
+
+   nodeCompleted = nodeCompleted && getNodeSelfCompleteness(graph, node);
+
+   completenessPerNode[node.id] = nodeCompleted;
+}
+
+void Strategy_v2::updateCompleteness(StrategyGraph& graph)
+{
+   auto nodes = graph.getNodes();
+   auto links = graph.getLinks();
+
+   //Find all endpoint nodes
+   std::vector<Node> endpointNodes;
+   std::copy_if(nodes.begin(), nodes.end(), std::back_inserter(endpointNodes), [&](auto x)
+   {
+      //something leads to it
+      //nothing lead from it
+      return links.end() != std::find_if(links.begin(), links.end(), [&](auto l){return l.to == x.id;}) &&
+         links.end() == std::find_if(links.begin(), links.end(), [&](auto l){return l.from == x.id;});
+   });
+
+   //copy unlinked nodes
+   std::copy_if(nodes.begin(), nodes.end(), std::back_inserter(endpointNodes), [&](auto x)
+   {
+      return links.end() == std::find_if(links.begin(), links.end(), [&](auto l){return l.to == x.id || l.from == x.id;});
+   });
+
+   std::map<Id, bool> completenessPerNode;
+   for(auto x : endpointNodes)
+   {
+      updateNodeCompleteness(graph, x, completenessPerNode);
+   }
+
+   assert(completenessPerNode.size() == nodes.size());
+
+   for(auto x : completenessPerNode)
+   {
+      auto attrs = graph.getNodeAttributes(x.first);
+      attrs.set<NodeAttributeType::IS_DONE>(x.second);
+      graph.setNodeAttributes(x.first, attrs);
    }
 }
 

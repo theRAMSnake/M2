@@ -69,6 +69,13 @@ public:
    }
 
 protected:
+   bool IsNodeDone(const materia::Id graphId, const materia::Id nodeId)
+   {
+      auto g = mStrategy.getGraph(graphId);
+      auto attrs = g->getNodeAttributes(nodeId);
+      return attrs.get<materia::NodeAttributeType::IS_DONE>();
+   }
+
    std::vector<materia::Goal> mGoals;
 
    std::shared_ptr<materia::ICore> mCore;
@@ -471,12 +478,12 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_WATCH_NODE_REFERENCE, StrategyGraphTe
    BOOST_CHECK_EQUAL("test", attrs.get<materia::NodeAttributeType::BRIEF>());
 }
 
-BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_GRAPH_REFERENCE, StrategyGraphTest )
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_GOAL_REFERENCE, StrategyGraphTest )
 {
    auto graphId = mGoals[0].id;
    auto nodeId = mStrategy.createNode(graphId);
    materia::NodeAttributes attrs;
-   attrs.set<materia::NodeAttributeType::GRAPH_REFERENCE>(materia::Id("id"));
+   attrs.set<materia::NodeAttributeType::GOAL_REFERENCE>(materia::Id("id"));
    attrs.set<materia::NodeAttributeType::BRIEF>("test");
    mStrategy.setNodeAttributes(graphId, nodeId, materia::NodeType::Reference, attrs);
 
@@ -486,7 +493,7 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_GRAPH_REFERENCE, StrategyGraphTest )
    BOOST_CHECK_EQUAL(materia::NodeType::Reference, materia::find_by_id(nodes, nodeId)->type);
 
    attrs = g->getNodeAttributes(nodeId);
-   BOOST_CHECK_EQUAL(materia::Id("id"), attrs.get<materia::NodeAttributeType::GRAPH_REFERENCE>());
+   BOOST_CHECK_EQUAL(materia::Id("id"), attrs.get<materia::NodeAttributeType::GOAL_REFERENCE>());
    BOOST_CHECK_EQUAL("test", attrs.get<materia::NodeAttributeType::BRIEF>());
 }
 
@@ -507,4 +514,206 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_TIMESTAMP, StrategyGraphTest )
    attrs = g->getNodeAttributes(nodeId);
    BOOST_CHECK_EQUAL(std::time_t(50), attrs.get<materia::NodeAttributeType::REQUIRED_TIMESTAMP>());
    BOOST_CHECK_EQUAL("test", attrs.get<materia::NodeAttributeType::BRIEF>());
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_Completeness_Task, StrategyGraphTest )
+{
+   //Task completeness is manual
+   auto graphId = mGoals[0].id;
+   auto nodeId = mStrategy.createNode(graphId);
+
+   materia::NodeAttributes attrs;
+   attrs.set<materia::NodeAttributeType::IS_DONE>(true);
+   attrs.set<materia::NodeAttributeType::BRIEF>("test");
+   mStrategy.setNodeAttributes(graphId, nodeId, materia::NodeType::Task, attrs);
+
+   BOOST_CHECK(IsNodeDone(graphId, nodeId));
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_Completeness_PredecessorRequirements, StrategyGraphTest )
+{
+   //Apart from own IS_DONE all predecessors' IS_DONE should be true
+   auto graphId = mGoals[0].id;
+   auto nodeId1 = mStrategy.createNode(graphId);
+   auto nodeId2 = mStrategy.createNode(graphId);
+   auto nodeIdLast = mStrategy.createNode(graphId);
+
+   mStrategy.createLink(graphId, nodeId1, nodeIdLast);
+   mStrategy.createLink(graphId, nodeId2, nodeIdLast);
+
+   materia::NodeAttributes attrs;
+   attrs.set<materia::NodeAttributeType::IS_DONE>(false);
+   attrs.set<materia::NodeAttributeType::BRIEF>("test");
+   mStrategy.setNodeAttributes(graphId, nodeId1, materia::NodeType::Task, attrs);
+   mStrategy.setNodeAttributes(graphId, nodeId2, materia::NodeType::Task, attrs);
+   mStrategy.setNodeAttributes(graphId, nodeIdLast, materia::NodeType::Task, attrs);
+
+   {
+      BOOST_CHECK(!IsNodeDone(graphId, nodeIdLast));
+
+      attrs.set<materia::NodeAttributeType::IS_DONE>(true);
+      mStrategy.setNodeAttributes(graphId, nodeIdLast, materia::NodeType::Task, attrs);
+   }
+   {
+      //even though we set IS_DONE to true, it is still false, because predecessors' IS_DONE is false
+      BOOST_CHECK(!IsNodeDone(graphId, nodeIdLast));
+
+      attrs.set<materia::NodeAttributeType::IS_DONE>(true);
+      mStrategy.setNodeAttributes(graphId, nodeId1, materia::NodeType::Task, attrs);
+      mStrategy.setNodeAttributes(graphId, nodeIdLast, materia::NodeType::Task, attrs);
+   }
+   {
+      //still false, because nodeId2 is not done
+      BOOST_CHECK(!IsNodeDone(graphId, nodeIdLast));
+
+      attrs.set<materia::NodeAttributeType::IS_DONE>(true);
+      mStrategy.setNodeAttributes(graphId, nodeId1, materia::NodeType::Task, attrs);
+      mStrategy.setNodeAttributes(graphId, nodeId2, materia::NodeType::Task, attrs);
+   }
+   {
+      //still false, because nodeIdLast is not done
+      BOOST_CHECK(!IsNodeDone(graphId, nodeIdLast));
+
+      attrs.set<materia::NodeAttributeType::IS_DONE>(true);
+      mStrategy.setNodeAttributes(graphId, nodeIdLast, materia::NodeType::Task, attrs);
+   }
+   {
+      //finally all conditions are met
+      BOOST_CHECK(IsNodeDone(graphId, nodeIdLast));
+   }
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_Completeness_Blank, StrategyGraphTest )
+{
+   //Blank is never finished, no matter the attributes
+   auto graphId = mGoals[0].id;
+   auto nodeId = mStrategy.createNode(graphId);
+
+   materia::NodeAttributes attrs;
+   attrs.set<materia::NodeAttributeType::IS_DONE>(true);
+   attrs.set<materia::NodeAttributeType::BRIEF>("test");
+   mStrategy.setNodeAttributes(graphId, nodeId, materia::NodeType::Blank, attrs);
+
+   BOOST_CHECK(!IsNodeDone(graphId, nodeId));
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_Completeness_Counter, StrategyGraphTest )
+{
+   //Counter is done, when 'value' >= 'requirement'
+
+   auto graphId = mGoals[0].id;
+   auto nodeId = mStrategy.createNode(graphId);
+   
+   materia::NodeAttributes attrs;
+   attrs.set<materia::NodeAttributeType::PROGRESS_CURRENT>(0);
+   attrs.set<materia::NodeAttributeType::PROGRESS_TOTAL>(3);
+   attrs.set<materia::NodeAttributeType::BRIEF>("test");
+   mStrategy.setNodeAttributes(graphId, nodeId, materia::NodeType::Counter, attrs);
+
+   BOOST_CHECK(!IsNodeDone(graphId, nodeId));
+   attrs.set<materia::NodeAttributeType::PROGRESS_CURRENT>(3);
+   mStrategy.setNodeAttributes(graphId, nodeId, materia::NodeType::Counter, attrs);
+
+   BOOST_CHECK(IsNodeDone(graphId, nodeId));
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_Completeness_Watch, StrategyGraphTest )
+{
+   //Watch node is done, when the WatchItem is no longer exist
+
+   auto watchItemId = mStrategy.addWatchItem({materia::Id::Invalid, "test"});
+
+   auto graphId = mGoals[0].id;
+   auto nodeId = mStrategy.createNode(graphId);
+
+   materia::NodeAttributes attrs;
+   attrs.set<materia::NodeAttributeType::WATCH_ITEM_REFERENCE>(watchItemId);
+   attrs.set<materia::NodeAttributeType::BRIEF>("test");
+   mStrategy.setNodeAttributes(graphId, nodeId, materia::NodeType::Watch, attrs);
+
+   BOOST_CHECK(!IsNodeDone(graphId, nodeId));
+
+   mStrategy.removeWatchItem(watchItemId);
+
+   BOOST_CHECK(IsNodeDone(graphId, nodeId));
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_Completeness_Wait, StrategyGraphTest )
+{
+   //Wait node is done when current time >= expected time
+
+   auto graphId = mGoals[0].id;
+   auto nodeId = mStrategy.createNode(graphId);
+   materia::NodeAttributes attrs;
+   attrs.set<materia::NodeAttributeType::REQUIRED_TIMESTAMP>(std::time_t(50));
+   attrs.set<materia::NodeAttributeType::BRIEF>("test");
+   mStrategy.setNodeAttributes(graphId, nodeId, materia::NodeType::Wait, attrs);
+
+   BOOST_CHECK(!IsNodeDone(graphId, nodeId));
+
+   attrs.set<materia::NodeAttributeType::REQUIRED_TIMESTAMP>(std::time_t(std::numeric_limits<std::time_t>::max));
+   mStrategy.setNodeAttributes(graphId, nodeId, materia::NodeType::Wait, attrs);
+
+   BOOST_CHECK(IsNodeDone(graphId, nodeId));
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_Completeness_Reference, StrategyGraphTest )
+{
+   //Reference node is done when corresponding goal is achieved
+
+   auto graphId = mGoals[0].id;
+   auto nodeId = mStrategy.createNode(graphId);
+   materia::NodeAttributes attrs;
+   attrs.set<materia::NodeAttributeType::GOAL_REFERENCE>(mGoals[1].id);
+   mStrategy.setNodeAttributes(graphId, nodeId, materia::NodeType::Reference, attrs);
+
+   BOOST_CHECK(!IsNodeDone(graphId, nodeId));
+
+   mGoals[1].achieved = true;
+   mStrategy.modifyGoal(mGoals[1]);
+
+   BOOST_CHECK(IsNodeDone(graphId, nodeId));
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_Completeness_Goal, StrategyGraphTest )
+{
+   //Goal node is done when it has at least 1 predecessor and all predecessors are done
+
+   auto graphId = mGoals[0].id;
+   auto goalNodeId = mStrategy.getGraph(graphId)->getNodes()[0].id;
+
+   BOOST_CHECK(!IsNodeDone(graphId, goalNodeId));
+
+   auto nodeId = mStrategy.createNode(graphId);
+
+   materia::NodeAttributes attrs;
+   attrs.set<materia::NodeAttributeType::IS_DONE>(true);
+   attrs.set<materia::NodeAttributeType::BRIEF>("test");
+   mStrategy.setNodeAttributes(graphId, nodeId, materia::NodeType::Task, attrs);
+
+   BOOST_CHECK(!IsNodeDone(graphId, goalNodeId));
+
+   mStrategy.createLink(graphId, nodeId, goalNodeId);
+
+   BOOST_CHECK(IsNodeDone(graphId, goalNodeId));
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_Completeness_Goal_Achieved_If_Graph_Completed, StrategyGraphTest )
+{
+   BOOST_CHECK(!mStrategy.getGoal(mGoals[0].id)->achieved);
+
+   auto graphId = mGoals[0].id;
+   auto goalNodeId = mStrategy.getGraph(graphId)->getNodes()[0].id;
+   auto nodeId = mStrategy.createNode(graphId);
+
+   materia::NodeAttributes attrs;
+   attrs.set<materia::NodeAttributeType::IS_DONE>(true);
+   attrs.set<materia::NodeAttributeType::BRIEF>("test");
+   mStrategy.setNodeAttributes(graphId, nodeId, materia::NodeType::Task, attrs);
+
+   mStrategy.createLink(graphId, nodeId, goalNodeId);
+
+   BOOST_CHECK(IsNodeDone(graphId, goalNodeId));
+
+   BOOST_CHECK(mStrategy.getGoal(mGoals[0].id)->achieved);
 }
