@@ -165,4 +165,14 @@ void StrategyGraph::setNodeAttributes(const Id& objectId, const NodeType& type, 
    }
 }
 
+void StrategyGraph::setNodeAttributes(const Id& objectId, const NodeAttributes& attrs)
+{
+   auto nodePos = find_by_id(mSrc.nodes, objectId);
+
+   if(nodePos != mSrc.nodes.end())
+   {
+      setNodeAttributes(objectId, nodePos->type, attrs);
+   }
+}
+
 }

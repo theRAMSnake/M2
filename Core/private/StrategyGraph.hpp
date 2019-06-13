@@ -32,6 +32,7 @@ public:
    void deleteNode(const Id& objectId);
 
    void setNodeAttributes(const Id& objectId, const NodeType& type, const NodeAttributes& attrs);
+   void setNodeAttributes(const Id& objectId, const NodeAttributes& attrs);
 
    const RawStrategyGraph& getRawData() const;
 

@@ -77,7 +77,27 @@ bool Strategy_v2::getNodeSelfCompleteness(const StrategyGraph& graph, const Node
 
    case NodeType::Goal:
       return getPredecessors(graph, node.id).empty();
+
+   case NodeType::Reference:
+      {
+         auto g = getGoal(attrs.get<NodeAttributeType::GOAL_REFERENCE>());
+         return g && g->achieved; 
+      }
+      
+   case NodeType::Task:
+      return attrs.get<NodeAttributeType::IS_DONE>();
+
+   case NodeType::Wait:
+      return attrs.get<NodeAttributeType::REQUIRED_TIMESTAMP>() < std::time(0);
+
+   case NodeType::Watch:
+      {
+         auto w = getWatchItems();
+         return find_by_id(w, attrs.get<NodeAttributeType::WATCH_ITEM_REFERENCE>()) == w.end();
+      }
    }
+
+   return false;
 }
 
 void Strategy_v2::updateNodeCompleteness(const StrategyGraph& graph, const Node& node, std::map<Id, bool>& completenessPerNode)

@@ -649,12 +649,12 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_Completeness_Wait, StrategyGraphTest 
    attrs.set<materia::NodeAttributeType::BRIEF>("test");
    mStrategy.setNodeAttributes(graphId, nodeId, materia::NodeType::Wait, attrs);
 
-   BOOST_CHECK(!IsNodeDone(graphId, nodeId));
+   BOOST_CHECK(IsNodeDone(graphId, nodeId));
 
    attrs.set<materia::NodeAttributeType::REQUIRED_TIMESTAMP>(std::time_t(std::numeric_limits<std::time_t>::max));
    mStrategy.setNodeAttributes(graphId, nodeId, materia::NodeType::Wait, attrs);
 
-   BOOST_CHECK(IsNodeDone(graphId, nodeId));
+   BOOST_CHECK(!IsNodeDone(graphId, nodeId));
 }
 
 BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_Completeness_Reference, StrategyGraphTest )
