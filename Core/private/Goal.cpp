@@ -23,7 +23,7 @@ void Goal::accept(const materia::Goal& props)
 {
     mImpl = props;
 
-    updateAchieved();
+    //updateAchieved();
 
     OnChanged(*this);
 }

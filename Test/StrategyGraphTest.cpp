@@ -115,15 +115,6 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_ModifyGoal_Success, StrategyGraphTest
    BOOST_CHECK_EQUAL(g, *mStrategy.getGoal(g.id));
 }
 
-BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_ModifyGoal_Achieved_Is_Read_Only, StrategyGraphTest )  
-{
-   auto g = mGoals[0];
-   g.achieved = true;
-   mStrategy.modifyGoal(g);
-
-   BOOST_CHECK(!mStrategy.getGoal(g.id)->achieved);
-}
-
 BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_DeleteGoal, StrategyGraphTest )  
 {
    mStrategy.deleteGoal(mGoals[0].id);
@@ -344,17 +335,6 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_CannotLinkFromGoalNode, StrategyGraph
 
    auto g = mStrategy.getGraph(graphId);
    BOOST_CHECK_EQUAL(0, g->getLinks().size());
-}
-
-BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_SetAttrs_GoalNode, StrategyGraphTest )  
-{
-   auto graphId = mGoals[0].id;
-   auto goalNodeId = mStrategy.getGraph(graphId)->getNodes()[0].id;
-   mStrategy.setNodeAttributes(graphId, goalNodeId, materia::NodeType::Task, materia::NodeAttributes());
-
-   auto g = mStrategy.getGraph(graphId);
-   auto nodes = g->getNodes();
-   BOOST_CHECK_EQUAL(materia::NodeType::Goal, materia::find_by_id(nodes, goalNodeId)->type);
 }
 
 BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_SetAttrs_Simple, StrategyGraphTest )

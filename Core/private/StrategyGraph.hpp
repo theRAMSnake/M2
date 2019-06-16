@@ -36,6 +36,9 @@ public:
 
    const RawStrategyGraph& getRawData() const;
 
+   Id getGoalNodeId() const;
+   Id getId() const;
+
 private:
 
    bool containsLinkAnyDirection(const Id& nodeFrom, const Id& nodeTo) const;

@@ -76,7 +76,7 @@ bool Strategy_v2::getNodeSelfCompleteness(const StrategyGraph& graph, const Node
             attrs.get<NodeAttributeType::PROGRESS_TOTAL>();
 
    case NodeType::Goal:
-      return getPredecessors(graph, node.id).empty();
+      return !getPredecessors(graph, node.id).empty();
 
    case NodeType::Reference:
       {
@@ -161,6 +161,14 @@ void Strategy_v2::updateCompleteness(StrategyGraph& graph)
       auto attrs = graph.getNodeAttributes(x.first);
       attrs.set<NodeAttributeType::IS_DONE>(x.second);
       graph.setNodeAttributes(x.first, attrs);
+   }
+
+   bool isGoalNodeAchieved = graph.getNodeAttributes(graph.getGoalNodeId()).get<NodeAttributeType::IS_DONE>();
+   auto goal = *getGoal(graph.getId());
+   if(goal.achieved != isGoalNodeAchieved)
+   {
+      goal.achieved = isGoalNodeAchieved;
+      modifyGoal(goal);
    }
 }
 

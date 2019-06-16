@@ -146,7 +146,7 @@ void StrategyGraph::setNodeAttributes(const Id& objectId, const NodeType& type, 
 {
    auto nodePos = find_by_id(mSrc.nodes, objectId);
 
-   if(nodePos != mSrc.nodes.end() && nodePos->type != NodeType::Goal)
+   if(nodePos != mSrc.nodes.end())
    {
       NodeAttributes modifiedAttrs = attrs;
       nodePos->type = type;
@@ -173,6 +173,16 @@ void StrategyGraph::setNodeAttributes(const Id& objectId, const NodeAttributes& 
    {
       setNodeAttributes(objectId, nodePos->type, attrs);
    }
+}
+
+Id StrategyGraph::getGoalNodeId() const
+{
+   return getGoalNode().id;
+}
+
+Id StrategyGraph::getId() const
+{
+   return mSrc.id;
 }
 
 }
