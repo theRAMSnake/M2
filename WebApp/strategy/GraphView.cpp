@@ -519,6 +519,10 @@ std::vector<std::shared_ptr<IGraphElement>> buildCompositeGraphView(
    for(std::size_t i = 0; i < layout.width(); ++i)
    {
       auto curLayer = layout.getLayer(i);
+      if(curLayer.empty())
+      {
+         continue;
+      }
       int rowSize = height / curLayer.size();
       for(std::size_t j = 0; j < curLayer.size(); ++j)
       {
