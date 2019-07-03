@@ -78,6 +78,8 @@ std::vector<StrategyModel::Task> StrategyModel::getActiveTasks()
 {
    std::vector<StrategyModel::Task> result;
 
+   //Redo according to graph goals
+
    for(auto g : mGoals)
    {
       if(g.focused)

@@ -166,12 +166,14 @@ public:
       const std::pair<double, double> from, 
       const std::pair<double, double> to, 
       const materia::Id fromId,
-      const materia::Id toId
+      const materia::Id toId,
+      const Wt::StandardColor color
       )
    : mFrom(from)
    , mTo(to)
    , mFromId(fromId)
    , mToId(toId)
+   , mColor(color)
    {
 
    }
@@ -179,7 +181,7 @@ public:
    void draw(Wt::WPainter& painter) const override
    {
       painter.setBrush(Wt::WBrush(Wt::BrushStyle::None));
-      painter.setPen(Wt::WPen(Wt::StandardColor::White));
+      painter.setPen(Wt::WPen(mColor));
       painter.drawLine(mFrom.first, mFrom.second, mTo.first, mTo.second);
    }
 
@@ -204,6 +206,7 @@ private:
    const std::pair<double, double> mTo; 
    const materia::Id mFromId;
    const materia::Id mToId;
+   const Wt::StandardColor mColor;
 };
 
 //---------------------------
@@ -293,19 +296,26 @@ public:
          nodes[pos].erase(materia::find_by_id(nodes[pos], n.id));
       }
 
-      if(srcPos == 0)
+      const std::size_t MAXIMUM_COL_HEIGHT = 4;
+      auto curPos = srcPos == 0 ? 0 : srcPos - 1;
+      while(curPos != 0 && nodes[curPos].size() >= MAXIMUM_COL_HEIGHT)
+      {
+         curPos--;
+      }
+
+      if(curPos == 0)
       {
          nodes.insert(nodes.begin(), {n});
       }
       else
       {
-         nodes[srcPos - 1].push_back(n);
+         nodes[curPos].push_back(n);
       }
    }
 
    GraphMatrix operator+ (const GraphMatrix& other)
    {
-      const std::size_t ESTETICAL_HEIGHT = 8;
+      const std::size_t ESTETICAL_HEIGHT = 4;
 
       auto otherH = other.height();
 
@@ -537,7 +547,13 @@ std::vector<std::shared_ptr<IGraphElement>> buildCompositeGraphView(
    //build drawables from links
    for(auto l : g.links)
    {
-      result.insert(result.begin(), std::make_shared<LinkGraphElement>(nodeToPositionMap[l.from], nodeToPositionMap[l.to] ,l.from, l.to));
+      result.insert(result.begin(), std::make_shared<LinkGraphElement>(
+         nodeToPositionMap[l.from], 
+         nodeToPositionMap[l.to], 
+         l.from, 
+         l.to,
+         materia::find_by_id(g.nodes, l.from)->isDone ? Wt::StandardColor::Green : Wt::StandardColor::White
+         ));
    }
 
    return result;

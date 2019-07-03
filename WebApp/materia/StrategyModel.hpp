@@ -15,7 +15,6 @@ public:
    {
       materia::Id id;
       std::string title;
-      std::string notes;
       materia::Id parentGoalId;
    };
 
