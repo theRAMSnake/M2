@@ -99,9 +99,10 @@ public:
    Objective modifyObjective(const Objective& o);
 
    std::optional<Graph> getGraph(const materia::Id& id);
-   void createNode(const materia::Id& graphId);
+   materia::Id createNode(const materia::Id& graphId);
    void deleteNode(const materia::Id& graphId, const materia::Id& nodeId);
    void updateNode(const materia::Id& graphId, const Node& node);
+   void cloneNode(const materia::Id& graphId, const Node& node);
 
    void createLink(const materia::Id& graphId, const materia::Id& fromNodeId, const materia::Id& toNodeId);
    void deleteLink(const materia::Id& graphId, const materia::Id& fromNodeId, const materia::Id& toNodeId);

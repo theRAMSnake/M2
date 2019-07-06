@@ -132,12 +132,17 @@ void GraphEditDialog::handleNodeClicked(StrategyModel::Node node, Wt::WMouseEven
       }
       else if(node.type != strategy::NodeType::GOAL)
       {
-         std::function<void(const StrategyModel::Node)> callback = [=] (const StrategyModel::Node outNode) {
+         std::function<void(const StrategyModel::Node)> doneCallback = [=] (const StrategyModel::Node outNode) {
             mModel.updateNode(mId, outNode);
             refreshGraph();
          };
 
-         NodeEditDialog* dlg = new NodeEditDialog(node, mModel.getWatchItems(), mModel.getGoals(), callback);
+         std::function<void(const StrategyModel::Node)> cloneCallback = [=] (const StrategyModel::Node outNode) {
+            mModel.cloneNode(mId, outNode);
+            refreshGraph();
+         };
+
+         NodeEditDialog* dlg = new NodeEditDialog(node, mModel.getWatchItems(), mModel.getGoals(), doneCallback, cloneCallback);
          dlg->show();
       }
       else if(node.type == strategy::NodeType::GOAL)

@@ -4,6 +4,7 @@
 #include <Wt/WComboBox.h>
 #include <Wt/WTimeEdit.h>
 #include <Wt/WDateEdit.h>
+#include <Wt/WPushButton.h>
 #include "../WtConverters.hpp"
 
 class INodeTypeSpecifics
@@ -214,11 +215,22 @@ NodeEditDialog::NodeEditDialog(
    const StrategyModel::Node& node, 
    const std::vector<StrategyModel::WatchItem>& watchItems, 
    const std::vector<StrategyModel::Goal>& goals, 
-   TOnOkCallback cb
+   TCallback finishedCb,
+   TCallback clonedCb
    )
 : BasicDialog("Edit node", true)
 {
    setWindowTitle(node.descriptiveTitle);
+
+   auto cloneBtn = std::make_unique<Wt::WPushButton>("Clone");
+   cloneBtn->setInline(true);
+   cloneBtn->setMargin(5, Wt::Side::Left);
+   cloneBtn->setStyleClass("btn-primary");
+   cloneBtn->clicked().connect(std::bind([=]() {
+      clonedCb(node);
+      reject();
+   }));
+   footer()->addWidget(std::move(cloneBtn));
 
    auto brief = contents()->addWidget(std::make_unique<Wt::WLineEdit>(node.brief));
    brief->setMargin(5, Wt::Side::Bottom);
@@ -253,7 +265,7 @@ NodeEditDialog::NodeEditDialog(
 
       mNodeTypeSpecifics->updateNode(n);
       
-      cb(n);
+      finishedCb(n);
       delete this;
    }));
 }

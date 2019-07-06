@@ -478,7 +478,7 @@ private:
          {
             auto dlg = new TaskEditDialog(
                t.title,
-               t.notes,
+               "",
                t.parentGoalId,
                mModel.getGoals(),
                std::bind(&GoalViewCtrl<isCompact>::onTaskEditDialogOk, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, t, w));
@@ -516,7 +516,6 @@ private:
       auto newTask = src;
 
       newTask.title = title;
-      newTask.notes = notes;
       newTask.parentGoalId = goalId;
 
       w->setTask(newTask);

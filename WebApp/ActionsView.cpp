@@ -35,7 +35,8 @@ private:
    {
       auto dlg = new TaskEditDialog(
          mTask.title,
-         mTask.notes,
+         //mTask.notes,
+         "",
          mTask.parentGoalId,
          mStrategy.getGoals(),
          std::bind(&ActionItemView::onDialogOk, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
@@ -47,7 +48,6 @@ private:
       mLabel->setText(title);
 
       mTask.title = title;
-      mTask.notes = desc;
       mTask.parentGoalId = goalId;
 
       mStrategy.modifyTask(mTask);

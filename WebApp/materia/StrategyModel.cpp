@@ -10,7 +10,7 @@ void StrategyModel::modifyTask(const Task& task)
 {
    strategy::Task t;
    t.mutable_common_props()->mutable_id()->set_guid(task.id);
-   t.mutable_common_props()->set_notes(task.notes);
+   //t.mutable_common_props()->set_notes(task.notes);
    t.mutable_common_props()->set_name(task.title);
    t.mutable_parent_goal_id()->set_guid(task.parentGoalId);
    t.set_done(false);
@@ -78,7 +78,7 @@ std::vector<StrategyModel::Task> StrategyModel::getActiveTasks()
 {
    std::vector<StrategyModel::Task> result;
 
-   //Redo according to graph goals
+   //Redo according to graph goals 
 
    for(auto g : mGoals)
    {
@@ -170,7 +170,7 @@ StrategyModel::Task StrategyModel::addTask(const std::string& title, const mater
 
    mService.getService().AddTask(nullptr, &t, &id, nullptr);
    
-   return StrategyModel::Task {id.guid(), title, "", parentGoalId};
+   return StrategyModel::Task {id.guid(), title, parentGoalId};
 }
 
 StrategyModel::Objective StrategyModel::addObjective(const std::string& title, const materia::Id& parentGoalId)
@@ -203,7 +203,6 @@ std::vector<StrategyModel::Task> StrategyModel::getGoalTasks(const materia::Id& 
          {
             t.common_props().id().guid(), 
             t.common_props().name(),
-            t.common_props().notes(),
             t.parent_goal_id().guid()
          });
    }
@@ -451,13 +450,25 @@ std::optional<StrategyModel::Graph> StrategyModel::getGraph(const materia::Id& s
    }
 }
 
-void StrategyModel::createNode(const materia::Id& graphId)
+materia::Id StrategyModel::createNode(const materia::Id& graphId)
 {
    strategy::NodeProperties props;
    props.mutable_id()->mutable_graphid()->set_guid(graphId.getGuid());
 
    common::UniqueId id;
    mService.getService().CreateNode(nullptr, &props, &id, nullptr);
+
+   return materia::Id(id.guid());
+}
+
+void StrategyModel::cloneNode(const materia::Id& graphId, const Node& node)
+{
+   auto newNodeId = createNode(graphId);
+
+   auto clonedNode = node;
+   clonedNode.id = newNodeId;
+
+   updateNode(graphId, clonedNode);
 }
 
 void StrategyModel::deleteNode(const materia::Id& graphId, const materia::Id& nodeId)
