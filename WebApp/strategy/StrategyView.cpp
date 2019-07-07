@@ -236,7 +236,6 @@ StrategyView::StrategyView(StrategyModel& strategy)
 
    auto popupPtr = std::make_unique<Wt::WPopupMenu>();
    popupPtr->addItem("Goal")->triggered().connect(std::bind(&StrategyView::onAddGoalClick, this));
-   popupPtr->addItem("Task")->triggered().connect(std::bind(&StrategyView::onAddTaskClick, this));
    popupPtr->addItem("Resource")->triggered().connect(std::bind(&StrategyView::onAddResourceClick, this));
    popupPtr->addItem("Objective")->triggered().connect(std::bind(&StrategyView::onAddObjectiveClick, this));
    popupPtr->addItem("Watch Item")->triggered().connect(std::bind(&StrategyView::onAddWatchItemClick, this));
@@ -349,36 +348,6 @@ inline bool goalsSorter(const StrategyModel::Goal &a, const StrategyModel::Goal 
    }
 
    return a.focused > b.focused;
-}
-
-void StrategyView::onAddTaskClick()
-{
-   auto goals = mModel.getGoals();
-   std::sort(goals.begin(), goals.end(), goalsSorter);
-
-   std::vector<std::string> choises;
-   for(auto g : goals)
-   {
-      choises.push_back(g.title);
-   }
-
-   CommonDialogManager::showChoiseDialog(choises, [=](auto selected) {
-      
-      std::function<void(std::string)> nextFunc = [=](std::string title){
-         auto item = mModel.addTask(title, goals[selected].id);
-         
-         for(auto gc : mGoalCtrls)
-         {
-            if(!gc->isEmpty() && gc->getGoal().id == goals[selected].id)
-            {
-               gc->addTask(item);
-               break;
-            }
-         }
-      };
-
-      CommonDialogManager::showOneLineDialog("Please specify title", "Title", "", nextFunc);
-   });
 }
 
 void StrategyView::onAddObjectiveClick()

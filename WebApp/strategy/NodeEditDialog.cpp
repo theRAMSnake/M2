@@ -216,7 +216,8 @@ NodeEditDialog::NodeEditDialog(
    const std::vector<StrategyModel::WatchItem>& watchItems, 
    const std::vector<StrategyModel::Goal>& goals, 
    TCallback finishedCb,
-   TCallback clonedCb
+   TCallback clonedCb,
+   TCallback focusCb
    )
 : BasicDialog("Edit node", true)
 {
@@ -230,7 +231,23 @@ NodeEditDialog::NodeEditDialog(
       clonedCb(node);
       reject();
    }));
+
    footer()->addWidget(std::move(cloneBtn));
+
+   if((node.type == strategy::NodeType::TASK || node.type == strategy::NodeType::COUNTER) && !node.isDone)
+   {
+      auto focusBtn = std::make_unique<Wt::WPushButton>("Focus");
+      focusBtn->setInline(true);
+      focusBtn->setMargin(5, Wt::Side::Left);
+      focusBtn->setStyleClass("btn-primary");
+      focusBtn->clicked().connect(std::bind([=]() {
+         focusCb(node);
+         reject();
+      }));
+
+      footer()->addWidget(std::move(focusBtn));
+   }
+   
 
    auto brief = contents()->addWidget(std::make_unique<Wt::WLineEdit>(node.brief));
    brief->setMargin(5, Wt::Side::Bottom);

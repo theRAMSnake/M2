@@ -142,7 +142,12 @@ void GraphEditDialog::handleNodeClicked(StrategyModel::Node node, Wt::WMouseEven
             refreshGraph();
          };
 
-         NodeEditDialog* dlg = new NodeEditDialog(node, mModel.getWatchItems(), mModel.getGoals(), doneCallback, cloneCallback);
+         std::function<void(const StrategyModel::Node)> focusCallback = [=] (const StrategyModel::Node outNode) {
+            mModel.focusNode(mId, outNode);
+            refreshGraph();
+         };
+
+         NodeEditDialog* dlg = new NodeEditDialog(node, mModel.getWatchItems(), mModel.getGoals(), doneCallback, cloneCallback, focusCallback);
          dlg->show();
       }
       else if(node.type == strategy::NodeType::GOAL)

@@ -23,6 +23,8 @@ public:
    const std::vector<Link>& getLinks() const override;
    const std::vector<Node>& getNodes() const override;
 
+   std::optional<Node> getNode(const Id& nodeId) const override;
+
    NodeAttributes getNodeAttributes(const Id& nodeId) const override;
 
    void createLink(const Id& from, const Id& to);

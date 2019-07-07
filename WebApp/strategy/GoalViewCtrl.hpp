@@ -468,21 +468,11 @@ private:
          if(event.modifiers().test(Wt::KeyboardModifier::Control))
          {
             std::function<void()> elementDeletedFunc = [=] () {
-               mModel.deleteTask(t.id);
+               mModel.deleteTask(t);
                mTasks->removeChild(w);
             };
 
             CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
-         }
-         else
-         {
-            auto dlg = new TaskEditDialog(
-               t.title,
-               "",
-               t.parentGoalId,
-               mModel.getGoals(),
-               std::bind(&GoalViewCtrl<isCompact>::onTaskEditDialogOk, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, t, w));
-            dlg->show();
          }
       }
    }
@@ -508,24 +498,6 @@ private:
                std::bind(&GoalViewCtrl<isCompact>::onObjectiveEditDialogOk, this, std::placeholders::_1, w));
             dlg->show();
          }
-      }
-   }
-
-   void onTaskEditDialogOk(const std::string& title, const std::string& notes, const materia::Id& goalId, const StrategyModel::Task src, TaskWidget* w)
-   {
-      auto newTask = src;
-
-      newTask.title = title;
-      newTask.parentGoalId = goalId;
-
-      w->setTask(newTask);
-
-      mModel.modifyTask(newTask);
-
-      if(newTask.parentGoalId != mGoal->id)
-      {
-         mTasks->removeChild(w);
-         onRefreshOtherGoalRequest(newTask.parentGoalId);
       }
    }
 

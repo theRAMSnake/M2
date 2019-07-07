@@ -7,6 +7,12 @@
 #include <Core/ICore.hpp>
 #include <Core/ICalendar.hpp>
 
+std::shared_ptr<materia::ICore> createTestCore()
+{
+   system("rm Test.db");
+   return materia::createCore({"Test.db"});
+}
+
 class CalendarTest
 {
 public:

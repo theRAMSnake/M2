@@ -14,7 +14,8 @@ public:
        const std::vector<StrategyModel::WatchItem>& watchItems, 
        const std::vector<StrategyModel::Goal>& goals, 
        TCallback finishedCb,
-       TCallback clonedCb
+       TCallback clonedCb,
+       TCallback focusCb
        );
 
 private:

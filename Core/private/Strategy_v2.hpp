@@ -32,6 +32,11 @@ public:
    Id addWatchItem(const WatchItem& item) override;
    void replaceWatchItem(const WatchItem& item) override;
 
+   std::vector<FocusItem> getFocusItems() const override;
+   void removeFocusItem(const Id& id) override;
+   void completeFocusItem(const FocusItem& item) override;
+   Id addFocusItem(const FocusItem& item) override;
+
 private:
    std::shared_ptr<StrategyGraph> loadGraph(const Id& graphId);
    void saveGraph(const StrategyGraph& graph);
@@ -54,6 +59,7 @@ private:
    IStrategy& mStrategy_v1;
    std::unique_ptr<DatabaseTable> mGraphsStorage;
    std::unique_ptr<DatabaseTable> mWatchStorage;
+   std::unique_ptr<DatabaseTable> mFocusStorage;
 };
 
 }

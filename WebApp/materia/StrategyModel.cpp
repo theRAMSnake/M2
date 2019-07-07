@@ -6,19 +6,6 @@ StrategyModel::StrategyModel(ZmqPbChannel& channel)
    fetchGoals();
 }
 
-void StrategyModel::modifyTask(const Task& task)
-{
-   strategy::Task t;
-   t.mutable_common_props()->mutable_id()->set_guid(task.id);
-   //t.mutable_common_props()->set_notes(task.notes);
-   t.mutable_common_props()->set_name(task.title);
-   t.mutable_parent_goal_id()->set_guid(task.parentGoalId);
-   t.set_done(false);
-
-   common::OperationResultMessage opResult;
-   mService.getService().ModifyTask(nullptr, &t, &opResult, nullptr);
-}
-
 StrategyModel::Objective StrategyModel::modifyObjective(const Objective& src)
 {
    strategy::Objective o;
@@ -45,13 +32,25 @@ StrategyModel::Objective StrategyModel::modifyObjective(const Objective& src)
    }
 }
 
-void StrategyModel::deleteTask(const materia::Id& src)
+void StrategyModel::deleteTask(const Task& t)
 {
    common::UniqueId id;
-   id.set_guid(src.getGuid());
+   id.set_guid(t.id.getGuid());
 
-   common::OperationResultMessage opResult;
-   mService.getService().DeleteTask(nullptr, &id, &opResult, nullptr);
+   common::OperationResultMessage result;
+   mService.getService().DeleteFocusItem(nullptr, &id, &result, nullptr);
+}
+
+void StrategyModel::completeTask(const Task& task)
+{
+   strategy::FocusItemInfo request;
+
+   request.mutable_id()->set_guid(task.id.getGuid());
+   request.mutable_details()->mutable_graphid()->set_guid(task.graphId.getGuid());
+   request.mutable_details()->mutable_objectid()->set_guid(task.nodeId.getGuid());
+
+   common::OperationResultMessage result;
+   mService.getService().CompleteFocusItem(nullptr, &request, &result, nullptr);
 }
 
 void StrategyModel::deleteObjective(const materia::Id& src)
@@ -158,19 +157,6 @@ void StrategyModel::modifyGoal(const Goal& goal)
 
       mService.getService().ModifyGoal(nullptr, &g, &op, nullptr);
    }
-}
-
-StrategyModel::Task StrategyModel::addTask(const std::string& title, const materia::Id& parentGoalId)
-{
-   common::UniqueId id;
-   strategy::Task t;
-
-   t.mutable_common_props()->set_name(title);
-   t.mutable_parent_goal_id()->set_guid(parentGoalId.getGuid());
-
-   mService.getService().AddTask(nullptr, &t, &id, nullptr);
-   
-   return StrategyModel::Task {id.guid(), title, parentGoalId};
 }
 
 StrategyModel::Objective StrategyModel::addObjective(const std::string& title, const materia::Id& parentGoalId)
@@ -469,6 +455,16 @@ void StrategyModel::cloneNode(const materia::Id& graphId, const Node& node)
    clonedNode.id = newNodeId;
 
    updateNode(graphId, clonedNode);
+}
+
+void StrategyModel::focusNode(const materia::Id& graphId, const Node& node)
+{
+   strategy::FocusItemInfo request;
+   request.mutable_details()->mutable_graphid()->set_guid(graphId.getGuid());
+   request.mutable_details()->mutable_objectid()->set_guid(node.id.getGuid());
+
+   common::UniqueId result;
+   mService.getService().AddFocusItem(nullptr, &request, &result, nullptr);
 }
 
 void StrategyModel::deleteNode(const materia::Id& graphId, const materia::Id& nodeId)

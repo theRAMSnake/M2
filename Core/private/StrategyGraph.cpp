@@ -167,12 +167,24 @@ void StrategyGraph::setNodeAttributes(const Id& objectId, const NodeType& type, 
 
 void StrategyGraph::setNodeAttributes(const Id& objectId, const NodeAttributes& attrs)
 {
-   auto nodePos = find_by_id(mSrc.nodes, objectId);
+   auto node = getNode(objectId);
+
+   if(node)
+   {
+      setNodeAttributes(objectId, node->type, attrs);
+   }
+}
+
+std::optional<Node> StrategyGraph::getNode(const Id& nodeId) const
+{
+   auto nodePos = find_by_id(mSrc.nodes, nodeId);
 
    if(nodePos != mSrc.nodes.end())
    {
-      setNodeAttributes(objectId, nodePos->type, attrs);
+      return *nodePos;
    }
+
+   return std::optional<Node>();
 }
 
 Id StrategyGraph::getGoalNodeId() const

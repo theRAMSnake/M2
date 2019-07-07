@@ -228,15 +228,6 @@ BOOST_FIXTURE_TEST_CASE( ModifyGoal_Success, StrategyTest )
    BOOST_CHECK_EQUAL(g, *getGoal(g.id));
 }
 
-BOOST_FIXTURE_TEST_CASE( ModifyGoal_Achieved_Is_Read_Only, StrategyTest )  
-{
-   auto g = mGoals[0];
-   g.achieved = true;
-   mStrategy->modifyGoal(g);
-
-   BOOST_CHECK(!getGoal(g.id)->achieved);
-}
-
 BOOST_FIXTURE_TEST_CASE( DeleteGoal, StrategyTest )  
 {
    mStrategy->deleteGoal(mGoals[0].id);

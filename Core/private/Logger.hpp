@@ -4,6 +4,7 @@
 #include <fstream>
 
 #define LOG(x) Logger::getInstance().Log(x);
+#define LOG_WARNING(x) LOG(std::string("Warning: ") + x);
 
 class Logger
 {

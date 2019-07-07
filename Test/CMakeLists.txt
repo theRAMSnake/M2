@@ -11,8 +11,8 @@ add_executable(Test
 CalendarTest.cpp
 #StrategyTest.cpp
 #JournalTest.cpp
-StrategyGraphTest.cpp
-#Strategy2Test.cpp
+#StrategyGraphTest.cpp
+Strategy2Test.cpp
 )
 
 find_package(Boost COMPONENTS unit_test_framework filesystem REQUIRED)

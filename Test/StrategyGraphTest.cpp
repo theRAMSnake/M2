@@ -47,12 +47,6 @@ static materia::Goal createGoal(const int suffix)
    return g;
 }
 
-std::shared_ptr<materia::ICore> createTestCore()
-{
-   system("rm Test.db");
-   return materia::createCore({"Test.db"});
-}
-
 class StrategyGraphTest
 {
 public:

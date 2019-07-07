@@ -14,8 +14,9 @@ public:
    struct Task
    {
       materia::Id id;
+      materia::Id graphId;
+      materia::Id nodeId;
       std::string title;
-      materia::Id parentGoalId;
    };
 
    struct Objective
@@ -76,9 +77,8 @@ public:
       std::string title;
    };
 
-   Task addTask(const std::string& title, const materia::Id& parentGoalId);
-   void modifyTask(const Task& task);
-   void deleteTask(const materia::Id& id);
+   void deleteTask(const Task& task);
+   void completeTask(const Task& task);
    std::vector<Task> getActiveTasks();
 
    std::vector<Goal> getGoals();
@@ -103,6 +103,7 @@ public:
    void deleteNode(const materia::Id& graphId, const materia::Id& nodeId);
    void updateNode(const materia::Id& graphId, const Node& node);
    void cloneNode(const materia::Id& graphId, const Node& node);
+   void focusNode(const materia::Id& graphId, const Node& node);
 
    void createLink(const materia::Id& graphId, const materia::Id& fromNodeId, const materia::Id& toNodeId);
    void deleteLink(const materia::Id& graphId, const materia::Id& fromNodeId, const materia::Id& toNodeId);
