@@ -10,16 +10,20 @@ class GraphView: public Wt::WCompositeWidget
 {
 public:
    boost::signals2::signal<void(Wt::WMouseEvent)> OnCaptionClicked;
-   boost::signals2::signal<void(StrategyModel::Node, Wt::WMouseEvent)> OnNodeClicked;
-   boost::signals2::signal<void(StrategyModel::Link, Wt::WMouseEvent)> OnLinkClicked;
 
-   GraphView();
+   GraphView(StrategyModel& model);
 
    void reset();
-   void assign(const StrategyModel::Graph& g, const std::string& caption);
+   void assign(const materia::Id& id, const StrategyModel::Graph& g, const std::string& caption);
+
+   void refreshGraph();
 
 private:
    void OnElementClicked(Wt::WMouseEvent ev, const IGraphElement& element);
+   void OnNodeClicked(const StrategyModel::Node& node, const Wt::WMouseEvent ev);
+   void OnLinkClicked(const StrategyModel::Link& link, const Wt::WMouseEvent ev);
 
    Wt::WContainerWidget* mImpl;
+   StrategyModel& mModel;
+   materia::Id mId;
 };

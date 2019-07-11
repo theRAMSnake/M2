@@ -1,6 +1,5 @@
 #include "GraphEditDialog.hpp"
 #include "GraphView.hpp"
-#include "NodeEditDialog.hpp"
 #include <Wt/WToolBar.h>
 #include <Wt/WContainerWidget.h>
 #include <Wt/WPushButton.h>
@@ -29,9 +28,7 @@ GraphEditDialog::GraphEditDialog(const StrategyModel::Goal& goal, StrategyModel&
    linkBtn->clicked().connect(this, &GraphEditDialog::linkNodesRequest);
    tb->addButton(std::move(linkBtn));
 
-   mGraphView = contents()->addWidget(std::make_unique<GraphView>());
-   mGraphView->OnNodeClicked.connect(std::bind(&GraphEditDialog::handleNodeClicked, this, std::placeholders::_1, std::placeholders::_2));
-   mGraphView->OnLinkClicked.connect(std::bind(&GraphEditDialog::handleLinkClicked, this, std::placeholders::_1, std::placeholders::_2));
+   mGraphView = contents()->addWidget(std::make_unique<GraphView>(mModel));
 
    refreshGraph();
 
@@ -48,7 +45,7 @@ void GraphEditDialog::refreshGraph()
 {
    setWindowTitle(mGoal.title);
    mGraph = *mModel.getGraph(mId);
-   mGraphView->assign(mGraph, "");
+   mGraphView->assign(mId, mGraph, "");
 }
 
 void GraphEditDialog::createNode()
@@ -79,107 +76,4 @@ void GraphEditDialog::linkNodesRequest()
       mModel.createLink(mId, nodes[selected1index].id, nodes[selected2index].id);
       refreshGraph();
    });
-}
-
-//Duplicate
-class GoalEditDialog : public BasicDialog
-{
-public:
-   typedef std::function<void(const StrategyModel::Goal&)> TOnOkCallback;
-   GoalEditDialog(const StrategyModel::Goal& subject, TOnOkCallback cb)
-   : BasicDialog("Goal Edit", true)
-   {
-      mTitle = new Wt::WLineEdit(subject.title);
-      contents()->addWidget(std::unique_ptr<Wt::WLineEdit>(mTitle));
-
-      mNotes = new Wt::WTextArea();
-      mNotes->setHeight(500);
-      mNotes->setText(subject.notes);
-      mNotes->setMargin("5px", Wt::Side::Top);
-      
-      contents()->addWidget(std::unique_ptr<Wt::WTextArea>(mNotes));
-
-      finished().connect(std::bind([=]() {
-        if (result() == Wt::DialogCode::Accepted)
-        {
-           StrategyModel::Goal newGoal = subject;
-           newGoal.title = mTitle->text().narrow();
-           newGoal.notes = mNotes->text().narrow();
-           cb(newGoal);
-        }
-
-        delete this;
-      }));
-   }
-
-private:
-   Wt::WLineEdit* mTitle;
-   Wt::WTextArea* mNotes;
-};
-
-void GraphEditDialog::handleNodeClicked(StrategyModel::Node node, Wt::WMouseEvent ev)
-{
-   if(ev.button() == Wt::MouseButton::Left)
-   {
-      if(ev.modifiers().test(Wt::KeyboardModifier::Control))
-      {
-         std::function<void()> elementDeletedFunc = [=] () {
-            mModel.deleteNode(mId, node.id);
-            refreshGraph();
-         };
-
-         CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
-      }
-      else if(node.type != strategy::NodeType::GOAL)
-      {
-         std::function<void(const StrategyModel::Node)> doneCallback = [=] (const StrategyModel::Node outNode) {
-            mModel.updateNode(mId, outNode);
-            refreshGraph();
-         };
-
-         std::function<void(const StrategyModel::Node)> cloneCallback = [=] (const StrategyModel::Node outNode) {
-            mModel.cloneNode(mId, outNode);
-            refreshGraph();
-         };
-
-         std::function<void(const StrategyModel::Node)> focusCallback = [=] (const StrategyModel::Node outNode) {
-            mModel.focusNode(mId, outNode);
-            refreshGraph();
-         };
-
-         NodeEditDialog* dlg = new NodeEditDialog(node, mModel.getWatchItems(), mModel.getGoals(), doneCallback, cloneCallback, focusCallback);
-         dlg->show();
-      }
-      else if(node.type == strategy::NodeType::GOAL)
-      {
-         std::function<void(const StrategyModel::Goal)> callback = [=] (const StrategyModel::Goal out) {
-            mModel.modifyGoal(out);
-            mGoal = out;
-            refreshGraph();
-         };
-
-         GoalEditDialog* dlg = new GoalEditDialog(mGoal, callback);
-         dlg->show();
-      }
-   }
-}
-
-void GraphEditDialog::handleLinkClicked(StrategyModel::Link link, Wt::WMouseEvent ev)
-{
-   if(ev.button() == Wt::MouseButton::Left)
-   {
-      if(ev.modifiers().test(Wt::KeyboardModifier::Control))
-      {
-         std::function<void()> elementDeletedFunc = [=] () {
-            mModel.deleteLink(mId, link.from, link.to);
-            refreshGraph();
-         };
-
-         CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
-      }
-      else
-      {
-         
-      }
-   }
 }
