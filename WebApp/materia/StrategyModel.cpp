@@ -544,3 +544,16 @@ void StrategyModel::updateNode(const materia::Id& graphId, const Node& node)
    common::OperationResultMessage opResult;
    mService.getService().ModifyNode(nullptr, &props, &opResult, nullptr);
 }
+
+std::optional<StrategyModel::Goal> StrategyModel::getGoal(const materia::Id& id)
+{
+   auto pos = materia::find_by_id(mGoals, id);
+   if(pos != mGoals.end())
+   {
+      return *pos;
+   }
+   else
+   {
+      return std::optional<StrategyModel::Goal>();
+   }
+}

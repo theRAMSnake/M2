@@ -251,7 +251,7 @@ public:
 
       if(!isCompact)
       {
-         mGraphView = addWidget(std::make_unique<GraphView>());
+         mGraphView = addWidget(std::make_unique<GraphView>(mModel));
          mGraphView->OnCaptionClicked.connect(std::bind(&GoalViewCtrl<isCompact>::onBoundClicked, this, std::placeholders::_1));
 
          WContainerWidget* frame = addWidget(std::make_unique<Wt::WContainerWidget>());
@@ -439,7 +439,7 @@ private:
          }
          else
          {
-            mGraphView->assign(*mGraph, mGoal->title);
+            mGraphView->assign(mGoal->id, *mGraph, mGoal->title);
             mObjsPanel->hide();
             mName->hide();
          }

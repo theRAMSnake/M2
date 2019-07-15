@@ -82,6 +82,7 @@ public:
    std::vector<Task> getActiveTasks();
 
    std::vector<Goal> getGoals();
+   std::optional<Goal> getGoal(const materia::Id& id);
    const Goal& addGoal(const bool focused, const std::string& name);
    void modifyGoal(const Goal& goal);
    void deleteGoal(const materia::Id& id);
