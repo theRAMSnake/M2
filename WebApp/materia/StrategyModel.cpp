@@ -77,14 +77,40 @@ std::vector<StrategyModel::Task> StrategyModel::getActiveTasks()
 {
    std::vector<StrategyModel::Task> result;
 
-   //Redo according to graph goals 
+   common::EmptyMessage e;
+   strategy::FocusItems res;
 
-   for(auto g : mGoals)
+   mService.getService().GetFocusItems(nullptr, &e, &res, nullptr);
+
+   for(auto r : res.items())
    {
-      if(g.focused)
+      result.push_back({r.id().guid(), r.details().graphid().guid(), r.details().objectid().guid(), "???"});
+   }
+
+   std::map<materia::Id, Graph> cache;
+
+   for(auto& x : result)
+   {
+      x.title = "cannot load";
+
+      auto cachePos = cache.find(x.graphId);
+      if(cachePos == cache.end())
       {
-         auto goalTasks = getGoalTasks(g.id);
-         result.insert(result.end(), goalTasks.begin(), goalTasks.end());
+         auto g = getGraph(x.graphId);
+         if(g)
+         {
+            cache[x.graphId] = *g;
+         }
+      }
+      
+      cachePos = cache.find(x.graphId);
+      if(cachePos != cache.end())
+      {
+         auto nodePos = materia::find_by_id(cachePos->second.nodes, x.nodeId);
+         if(nodePos != cachePos->second.nodes.end())
+         {
+            x.title = createDescriptiveTitle(*nodePos);
+         }
       }
    }
 

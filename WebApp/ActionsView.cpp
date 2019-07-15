@@ -20,11 +20,17 @@
 class ActionItemView : public Wt::WContainerWidget
 {
 public:
-   ActionItemView(const StrategyModel::Task& task, StrategyModel& strategy)
-   : mTask(task)
+   ActionItemView(const std::vector<StrategyModel::Task>& tasks, StrategyModel& strategy)
+   : mTasks(tasks)
    , mStrategy(strategy)
    {
-      mLabel = addWidget(std::unique_ptr<Wt::WLabel>(new Wt::WLabel(task.title)));
+      auto title = tasks[0].title;
+      if(tasks.size() > 1)
+      {
+         title += " (" + std::to_string(tasks.size()) + " left)";
+      }
+
+      mLabel = addWidget(std::unique_ptr<Wt::WLabel>(new Wt::WLabel(title)));
       setStyleClass("Task");
       doubleClicked().connect(std::bind(&ActionItemView::onDblClicked, this, std::placeholders::_1));
       clicked().connect(std::bind(&ActionItemView::onClick, this, std::placeholders::_1));
@@ -34,8 +40,9 @@ private:
    void onDblClicked(Wt::WMouseEvent ev)
    {
       std::function<void()> func = [=] () {
-         mStrategy.completeTask(mTask);
-         };
+         mStrategy.completeTask(mTasks.back());
+         updateView();
+      };
 
       CommonDialogManager::showConfirmationDialog("Complete it?", func);
    }
@@ -45,24 +52,52 @@ private:
       if(ev.modifiers().test(Wt::KeyboardModifier::Control))
       {
          std::function<void()> elementDeletedFunc = [=] () {
-            mStrategy.deleteTask(mTask);
+            mStrategy.deleteTask(mTasks.back());
+            updateView();
          };
 
          CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
       }
    }
 
+   void updateView()
+   {
+      mTasks.pop_back();
+
+      if(mTasks.empty())
+      {
+         parent()->removeChild(this);
+      }
+      else
+      {
+         auto title = mTasks[0].title;
+         if(mTasks.size() > 1)
+         {
+            title += " (" + std::to_string(mTasks.size()) + " left)";
+         }
+
+         mLabel->setText(title);
+      }
+   }
+
    Wt::WLabel* mLabel;
-   StrategyModel::Task mTask;
+   std::vector<StrategyModel::Task> mTasks;
    StrategyModel& mStrategy;
 };
 
 ActionsView::ActionsView(StrategyModel& strategy)
 : mStrategy(strategy)
 {
+   auto tasks = mStrategy.getActiveTasks();
 
-   for(auto x : mStrategy.getActiveTasks())
+   std::map<materia::Id, std::vector<StrategyModel::Task>> mergedTasks;
+   for(auto x : tasks)
    {
-      addWidget(std::unique_ptr<Wt::WContainerWidget>(new ActionItemView(x, mStrategy)));
+      mergedTasks[x.nodeId].push_back(x);
+   }
+   
+   for(auto x : mergedTasks)
+   {
+      addWidget(std::unique_ptr<Wt::WContainerWidget>(new ActionItemView(x.second, mStrategy)));
    }
 }
