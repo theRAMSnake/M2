@@ -24,8 +24,14 @@ void CommonDialogManager::showDialogSimple(const std::string& caption, const std
 
 void CommonDialogManager::showOneLineDialog(const std::string & caption, const std::string & fieldName, const std::string & defaultValue, std::function<void(std::string)>& callback)
 {
-    TCallback functor = [=](std::vector<std::string> a)->void {callback(a[0]); };
+    TCallback functor = [=](std::vector<std::string> a)->void { callback(a[0]); };
     showDialog(caption, {{fieldName, defaultValue}}, functor);
+}
+
+void CommonDialogManager::queryNumber(const int initialValue, std::function<void(int)>& callback)
+{
+    TCallback functor = [=](std::vector<std::string> a)->void { callback(a[0]); };
+    showDialog("Choose number", {{"Number", std::to_string(initialValue)}}, functor);
 }
 
 void CommonDialogManager::showConfirmationDialog(const std::string & text, std::function<void(void)>& callback)

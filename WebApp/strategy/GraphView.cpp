@@ -680,8 +680,25 @@ void GraphView::OnNodeClicked(const StrategyModel::Node& node, const Wt::WMouseE
          };
 
          std::function<void(const StrategyModel::Node)> focusCallback = [=] (const StrategyModel::Node outNode) {
-            mModel.focusNode(mId, outNode);
-            refreshGraph();
+
+            std::function<void(const int)> continuation = [=] (const int val) {
+               
+               for(int i = 0; i < val; ++i)
+               {
+                  mModel.focusNode(mId, outNode);
+               }
+               
+               refreshGraph();
+            };
+
+            if(outNode.type == strategy::NodeType::COUNTER)
+            {
+               CommonDialogManager::queryNumber(1, continuation);
+            }
+            else
+            {
+               continuation(1);
+            }
          };
 
          NodeEditDialog* dlg = new NodeEditDialog(node, mModel.getWatchItems(), mModel.getGoals(), doneCallback, cloneCallback, focusCallback);
