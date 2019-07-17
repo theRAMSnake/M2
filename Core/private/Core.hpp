@@ -8,6 +8,7 @@
 #include "Inbox.hpp"
 #include "Calendar.hpp"
 #include "Backuper.hpp"
+#include "FreeData.hpp"
 
 namespace materia
 {
@@ -23,6 +24,7 @@ public:
     IJournal& getJournal() override;
     IBackuper& getBackuper() override;
     IStrategy_v2& getStrategy_v2() override;
+    IFreeData& getFreeData() override;
 
 private:
     Database mDb;
@@ -32,6 +34,7 @@ private:
     Strategy mStrategy;
     Strategy_v2 mStrategy_v2;
     Backuper mBackuper;
+    FreeData mFreeData;
 };
 
 std::shared_ptr<ICore> createCore(const CoreConfig& config);

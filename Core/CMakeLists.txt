@@ -22,6 +22,7 @@ private/JsonSerializer.cpp
 private/Backuper.cpp
 private/StrategyGraph.cpp
 private/NodeAttributes.cpp
+private/FreeData.cpp
 )
 
 find_package(Boost COMPONENTS system REQUIRED)

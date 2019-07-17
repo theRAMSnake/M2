@@ -4,6 +4,8 @@
 #include <Core/ICore.hpp>
 #include <Core/IStrategy_v2.hpp>
 
+extern std::shared_ptr<materia::ICore> createTestCore();
+
 namespace std
 {
    static std::ostream& operator << (std::ostream& str, const materia::Goal& g)

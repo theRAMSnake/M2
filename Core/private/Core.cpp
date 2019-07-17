@@ -11,6 +11,7 @@ Core::Core(const CoreConfig& config)
 , mStrategy(mDb)
 , mStrategy_v2(mStrategy, mDb)
 , mBackuper(config.dbFileName)
+, mFreeData(mDb)
 {
 
 }
@@ -43,6 +44,11 @@ IBackuper& Core::getBackuper()
 IJournal& Core::getJournal()
 {
    return mJournal;
+}
+
+IFreeData& Core::getFreeData()
+{
+   return mFreeData;
 }
 
 std::shared_ptr<ICore> createCore(const CoreConfig& config)
