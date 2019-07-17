@@ -15,6 +15,7 @@ Journal::Journal(Database& db)
 : mIndexStorage(db.getTable("journal_index"))
 , mContentStorage(db.getTable("journal_content"))
 {
+    LOG("Start journal init");
     mIndexStorage->foreach([&](std::string id, std::string json) 
     {
         mIndex.insert({id, readJson<IndexItem>(json)});

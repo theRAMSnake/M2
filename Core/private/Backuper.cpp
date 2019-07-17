@@ -1,4 +1,5 @@
 #include "Backuper.hpp"
+#include "Logger.hpp"
 
 namespace materia
 {
@@ -6,7 +7,7 @@ namespace materia
 Backuper::Backuper(const std::string& name)
 : mDbName(name)
 {
-
+    LOG("Start bu init");
 }
 
 void Backuper::start()

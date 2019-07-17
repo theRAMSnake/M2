@@ -13,6 +13,7 @@ class DatabaseTable
 public:
 
     DatabaseTable(const std::string& name, sqlite::database& db);
+    ~DatabaseTable();
 
     template<class TFunctor>
     void foreach(TFunctor f)

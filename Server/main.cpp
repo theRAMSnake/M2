@@ -80,6 +80,8 @@ common::MateriaMessage handleMessage(const common::MateriaMessage& in)
     return errorMsg;
 }
 
+static bool shutdownFlag = false;
+
 int main()
 {
     zmq::context_t context (1);
@@ -89,11 +91,13 @@ int main()
     logger << "Creating core\n";
     auto core = materia::createCore({"/materia/materia.db"});
 
+    logger << "Creating services\n";
+
     gServices.insert({"InboxService", std::make_shared<materia::ServiceWrapper<materia::InboxServiceImpl>>((*core))});
     gServices.insert({"CalendarService", std::make_shared<materia::ServiceWrapper<materia::CalendarServiceImpl>>((*core))});
     gServices.insert({"JournalService", std::make_shared<materia::ServiceWrapper<materia::JournalServiceImpl>>((*core))});
     gServices.insert({"StrategyService", std::make_shared<materia::ServiceWrapper<materia::StrategyServiceImpl>>((*core))});
-    gServices.insert({"AdminService", std::make_shared<materia::ServiceWrapper<materia::AdminServiceImpl>>((*core))});
+    gServices.insert({"AdminService", std::make_shared<materia::ServiceWrapper<materia::AdminServiceImpl>>(*core, shutdownFlag)});
     
     logger << "Start listening\n";
     while(true)
@@ -112,6 +116,11 @@ int main()
 
         clientSocket.send (msgToSend);
         logger << "Sending responce\n";
+
+        if(shutdownFlag)
+        {
+            return 0;
+        }
     }
     return 0;
 }

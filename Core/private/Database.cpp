@@ -1,4 +1,5 @@
 #include "Database.hpp"
+#include "Logger.hpp"
 
 namespace materia
 {
@@ -12,10 +13,16 @@ DatabaseTable::DatabaseTable(const std::string& name, sqlite::database& db)
     mEraseBinder.reset(new sqlite::database_binder(mDb << "DELETE FROM " + mName + " WHERE Id = ?;"));
 }
 
+DatabaseTable::~DatabaseTable()
+{
+    mInsertBinder->used(true);
+    mEraseBinder->used(true);
+}
+
 Database::Database(const std::string& dbPath)
 : mDb(dbPath)
 {
-    
+    LOG("Db opened");
 }
 
 std::unique_ptr<DatabaseTable> Database::getTable(const std::string& name)
@@ -51,6 +58,7 @@ void DatabaseTable::erase(const Id& id)
 
 Database::~Database()
 {
+    
 }
 
 }

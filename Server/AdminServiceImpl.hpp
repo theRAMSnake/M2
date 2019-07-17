@@ -10,8 +10,9 @@ namespace materia
 class AdminServiceImpl : public admin::AdminService
 {
 public:
-   AdminServiceImpl(ICore& core)
+   AdminServiceImpl(ICore& core, bool& shutdownRequested)
    : mBackuper(core.getBackuper())
+   , mShutdownRequested(shutdownRequested)
    {
    }
 
@@ -37,8 +38,17 @@ public:
         response->set_bytes(&out.front(), out.size());
     }
 
+    virtual void ShutDownCore(::google::protobuf::RpcController* controller,
+        const ::common::EmptyMessage* request,
+        ::common::EmptyMessage* response,
+        ::google::protobuf::Closure* done)
+    {
+        mShutdownRequested = true;
+    }
+
 private:
    materia::IBackuper& mBackuper;
+   bool& mShutdownRequested;
 };
 
 }

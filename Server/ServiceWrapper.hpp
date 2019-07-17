@@ -27,6 +27,13 @@ public:
    , mEmptyCb(google::protobuf::NewCallback(&google::protobuf::DoNothing))
    {
    }
+
+   template<class TParam>
+   ServiceWrapper(ICore& core, TParam& p)
+   : mProvider(core, p)
+   , mEmptyCb(google::protobuf::NewCallback(&google::protobuf::DoNothing))
+   {
+   }
    
    common::MateriaMessage handleMessage(const common::MateriaMessage& msg) override
    {

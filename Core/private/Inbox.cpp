@@ -1,4 +1,5 @@
 #include "Inbox.hpp"
+#include "Logger.hpp"
 
 namespace materia
 {
@@ -6,6 +7,7 @@ namespace materia
 Inbox::Inbox(Database& db)
 : mStorage(db.getTable("inbox"))
 {
+    LOG("Start inbox init");
     mStorage->foreach([&](std::string id, std::string json) 
     {
         mItems.push_back({id, json});

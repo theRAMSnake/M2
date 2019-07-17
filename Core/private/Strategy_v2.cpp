@@ -26,7 +26,7 @@ Strategy_v2::Strategy_v2(IStrategy& strategy, Database& db)
 , mWatchStorage(db.getTable("watchItems"))
 , mFocusStorage(db.getTable("focusItems"))
 {
-   
+   LOG("Start strategy2 init");
 }
 
 std::shared_ptr<StrategyGraph> Strategy_v2::loadGraph(const Id& graphId)

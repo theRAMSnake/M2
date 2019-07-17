@@ -1,5 +1,8 @@
 #include <zmq.hpp>
 #include <iostream>
+#include "WebApp/materia/ZmqPbChannel.hpp"
+#include "WebApp/materia/MateriaServiceProxy.hpp"
+#include <messages/admin.pb.h>
 
 void start()
 {
@@ -11,8 +14,19 @@ void start()
 
 void stop()
 {
-   system("pkill m2server");
    system("pkill WebApp");
+
+   zmq::context_t context(1);
+   zmq::socket_t socket(context, ZMQ_REQ);
+   ZmqPbChannel channel(socket, "backuper");
+
+   const std::string ip = "localhost";
+   socket.connect("tcp://localhost:5757");
+
+   MateriaServiceProxy<admin::AdminService> service(channel);
+
+   common::EmptyMessage empty;
+   service.getService().ShutDownCore(nullptr, &empty, &empty, nullptr);
 
    std::cout << "Done\n";
 }

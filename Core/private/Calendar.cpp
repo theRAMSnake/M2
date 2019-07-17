@@ -10,10 +10,15 @@ namespace materia
 Calendar::Calendar(Database& db)
 : mStorage(db.getTable("calendar"))
 {
+    LOG("Start calendar init");
+
     mStorage->foreach([&](std::string id, std::string json) 
     {
+        LOG("Read: " + json);
         mItems.insert(readJson<CalendarItem>(json));
     });
+
+    LOG("End calendar init");
 }
 
 void Calendar::deleteItem(const Id& id)

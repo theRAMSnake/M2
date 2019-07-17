@@ -16,5 +16,6 @@ service AdminService
 {
    rpc StartBackup (common.EmptyMessage) returns (BackupChunk);
    rpc Next (common.EmptyMessage) returns (BackupChunk);
+   rpc ShutDownCore (common.EmptyMessage) returns (common.EmptyMessage);
 }
 

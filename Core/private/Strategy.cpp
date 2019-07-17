@@ -14,6 +14,8 @@ Strategy::Strategy(Database& db)
 , mObjectivesStorage(db.getTable("objectives"))
 , mResourcesStorage(db.getTable("resources"))
 {
+   LOG("Start strategy init");
+
    loadCollection(*mGoalsStorage, mGoals);
    loadCollection(*mObjectivesStorage, mObjectives);
    loadCollection(*mResourcesStorage, mResources);
