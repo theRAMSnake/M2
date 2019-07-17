@@ -30,7 +30,20 @@ void CommonDialogManager::showOneLineDialog(const std::string & caption, const s
 
 void CommonDialogManager::queryNumber(const int initialValue, std::function<void(int)>& callback)
 {
-    TCallback functor = [=](std::vector<std::string> a)->void { callback(a[0]); };
+    TCallback functor = [=](std::vector<std::string> a)->void 
+    {
+        int val = initialValue;
+        try
+        {
+            val = std::stoi(a[0]);
+        } 
+        catch(std::invalid_argument&)
+        {
+
+        }
+
+        callback(val); 
+    };
     showDialog("Choose number", {{"Number", std::to_string(initialValue)}}, functor);
 }
 
