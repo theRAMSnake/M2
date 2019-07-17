@@ -29,6 +29,33 @@ fun genNewsFile(): String
 
     filecontent += genSteamContent()
 
+    try
+    {
+        filecontent += genOpenCriticContent()
+    }
+    catch(e: Exception)
+    {
+        filecontent += "<h1>OC Failed </h1>"
+    }
+
+    try
+    {
+        filecontent += genNextLaunchContent()
+    }
+    catch(e: Exception)
+    {
+        filecontent += "<h1>Next Launch Failed </h1>"
+    }
+
+    try
+    {
+        filecontent += genMetacriticContent()
+    }
+    catch(e: Exception)
+    {
+        filecontent += "<h1>Metacritic Failed</h1>"
+    }
+
     File(filename).writeText(filecontent)
 
     return filename
