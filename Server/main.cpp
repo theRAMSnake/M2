@@ -11,6 +11,7 @@
 #include "StrategyServiceImpl.hpp"
 #include "JournalServiceImpl.hpp"
 #include "AdminServiceImpl.hpp"
+#include "FreeDataServiceImpl.hpp"
 
 class DoubleLogger
 {
@@ -97,6 +98,7 @@ int main()
     gServices.insert({"CalendarService", std::make_shared<materia::ServiceWrapper<materia::CalendarServiceImpl>>((*core))});
     gServices.insert({"JournalService", std::make_shared<materia::ServiceWrapper<materia::JournalServiceImpl>>((*core))});
     gServices.insert({"StrategyService", std::make_shared<materia::ServiceWrapper<materia::StrategyServiceImpl>>((*core))});
+    gServices.insert({"FreeDataService", std::make_shared<materia::ServiceWrapper<materia::FreeDataServiceImpl>>((*core))});
     gServices.insert({"AdminService", std::make_shared<materia::ServiceWrapper<materia::AdminServiceImpl>>(*core, shutdownFlag)});
     
     logger << "Start listening\n";

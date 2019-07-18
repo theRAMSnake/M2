@@ -10,6 +10,7 @@ Dialog::Dialog(const std::string& name, std::unique_ptr<Wt::WWidget>&& primaryWi
     Wt::WPushButton *ok = new Wt::WPushButton("OK");
     mImpl.footer()->addWidget(std::unique_ptr<Wt::WPushButton>(ok));
     ok->setDefault(true);
+    ok->setStyleClass("btn-primary");
 
     ok->clicked().connect(std::bind([=]() {
         mImpl.accept();

@@ -7,12 +7,13 @@ include_directories("../build/Common")
 include_directories("..")
 
 add_executable(Test 
-InboxTest.cpp
+#InboxTest.cpp
 CalendarTest.cpp
-StrategyTest.cpp
-JournalTest.cpp
-StrategyGraphTest.cpp
-Strategy2Test.cpp
+#StrategyTest.cpp
+#JournalTest.cpp
+#StrategyGraphTest.cpp
+#Strategy2Test.cpp
+FreeDataTest.cpp
 )
 
 find_package(Boost COMPONENTS unit_test_framework filesystem REQUIRED)

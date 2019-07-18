@@ -34,7 +34,7 @@ private:
     Strategy mStrategy;
     Strategy_v2 mStrategy_v2;
     Backuper mBackuper;
-    FreeData mFreeData;
+    freedata::FreeData mFreeData;
 };
 
 std::shared_ptr<ICore> createCore(const CoreConfig& config);

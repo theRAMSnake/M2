@@ -15,7 +15,7 @@ FreeData::FreeData(Database& db)
     
 }
 
-std::vector<std::pair<std::string, int>> FreeData::get()
+std::vector<DataBlock> FreeData::get()
 {
     std::vector<DataBlock> result;
 
@@ -29,17 +29,23 @@ std::vector<std::pair<std::string, int>> FreeData::get()
 
 void FreeData::remove(const std::string& name)
 {
-
+    mStorage->erase(name);
 }
 
 void FreeData::set(const DataBlock& block)
 {
-
+    mStorage->store(block.name, writeJson(block));
 }
 
 void FreeData::increment(const std::string& name, const int value)
 {
-
+    auto blocks = get();
+    auto pos = std::find_if(blocks.begin(), blocks.end(), [&](auto x)->bool {return x.name == name;});
+    if(pos != blocks.end())
+    {
+        pos->value += value;
+        set(*pos);
+    }
 }
 
 }
