@@ -1,7 +1,5 @@
 package snakesoft.minion.Models
 
-import android.os.AsyncTask
-
 import snakesoft.minion.materia.MateriaConnection
 import snakesoft.minion.materia.MateriaUnreachableException
 
@@ -19,7 +17,7 @@ object GlobalModel
     val InboxModel = InboxModel(Db)
     val CalendarModel = CalendarModel(Db)
     val JournalModel = JournalModel(Db)
-    val StrategyModel = StrategyModel(Db)
+    val StrategyModel = FreeDataModel(Db)
 
     internal fun doSync(syncObserver: SyncObserver): Boolean
     {

@@ -5,26 +5,23 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.list
 import snakesoft.minion.materia.MateriaConnection
 import snakesoft.minion.materia.MateriaUnreachableException
-import snakesoft.minion.materia.StrategyServiceProxy
+import snakesoft.minion.materia.FreeDataServiceProxy
 import snakesoft.minion.materia.toProto
-import strategy.Strategy
 import java.util.*
 
 @Serializable
-data class ResourceItem(
-        @Serializable(with = UUIDSerializer::class)
-        var id: java.util.UUID,
+data class FDItem(
         var name: String,
         var baseValue: Int,
         var delta: Int
 )
 
-class StrategyModel(private val Db: LocalDatabase)
+class FreeDataModel(private val Db: LocalDatabase)
 {
-    private var Items = listOf<ResourceItem>()
+    private var Items = listOf<FDItem>()
 
     val Ids: List<UUID>
-        get() = Items.map { it.id }
+        get() = Items.map { UUID.fromString(it.name) }
 
     init
     {
@@ -34,20 +31,19 @@ class StrategyModel(private val Db: LocalDatabase)
     @Throws(MateriaUnreachableException::class)
     fun sync(observer: SyncObserver, connection: MateriaConnection)
     {
-        observer.beginSync("Strategy")
+        observer.beginSync("FreeData")
 
-        val proxy = StrategyServiceProxy(connection)
+        val proxy = FreeDataServiceProxy(connection)
 
         val queried = queryAllItems(proxy)
 
         var numModifications = 0
         for (i in Items)
         {
-            var queriedItem = queried.find { it.id == i.id }
+            var queriedItem = queried.find { it.name == i.name }
             if(i.delta != 0 && queriedItem != null)
             {
-                i.baseValue = queriedItem.baseValue
-                updateResource(i, proxy)
+                updateItem(i, proxy)
                 numModifications++
             }
         }
@@ -65,26 +61,26 @@ class StrategyModel(private val Db: LocalDatabase)
 
     private fun saveState()
     {
-        val json = Json.stringify(ResourceItem.serializer().list, Items.toList())
+        val json = Json.stringify(FDItem.serializer().list, Items.toList())
 
-        Db.put("StrategyResources", json)
+        Db.put("FreeDataBlocks", json)
     }
 
-    private fun updateResource(item: ResourceItem, proxy: StrategyServiceProxy)
+    private fun updateItem(item: FDItem, proxy: FreeDataServiceProxy)
     {
-        proxy.modifyResource(toProto(item))
+        proxy.increment(item.name, item.delta)
     }
 
     @Throws(MateriaUnreachableException::class)
-    private fun queryAllItems(proxy: StrategyServiceProxy): List<ResourceItem>
+    private fun queryAllItems(proxy: FreeDataServiceProxy): List<FDItem>
     {
-        val result = mutableListOf<ResourceItem>()
+        val result = mutableListOf<FDItem>()
 
-        val queryResult = proxy.loadResources()
+        val queryResult = proxy.get()
 
         for(x in queryResult.itemsList)
         {
-            result.add(ResourceItem(java.util.UUID.fromString(x.id.guid), x.name, x.value, 0))
+            result.add(FDItem(x.name, x.value, 0))
         }
 
         return result
@@ -95,7 +91,7 @@ class StrategyModel(private val Db: LocalDatabase)
     {
         try
         {
-            Items = Json.parse(ResourceItem.serializer().list, Db["StrategyResources"])
+            Items = Json.parse(FDItem.serializer().list, Db["FreeDataBlocks"])
         }
         catch(ex: Exception)
         {
@@ -105,31 +101,33 @@ class StrategyModel(private val Db: LocalDatabase)
 
     fun clear()
     {
-        Items = listOf<ResourceItem>()
+        Items = listOf<FDItem>()
         saveState()
     }
 
-    fun getItemName(item: UUID): String
+    fun getItemName(id: UUID): Int
     {
-        return Items.find { it.id == item }!!.name
+        val item = Items.find { UUID.fromString(it.name) == id }!!
+
+        return item.baseValue + item.delta
     }
 
-    fun getItemValue(item: UUID): Int
+    fun getItemValue(id: UUID): Int
     {
-        val item = Items.find { it.id == item }!!
+        val item = Items.find { UUID.fromString(it.name) == id }!!
 
         return item.baseValue + item.delta
     }
 
     fun decItem(item: UUID)
     {
-        Items.find { it.id == item }!!.delta--
+        Items.find { UUID.fromString(it.name) == item }!!.delta--
         saveState()
     }
 
     fun incItem(item: UUID)
     {
-        Items.find { it.id == item }!!.delta++
+        Items.find { UUID.fromString(it.name) == item }!!.delta++
         saveState()
     }
 }
