@@ -21,11 +21,11 @@
 #include "Wt/WComboBox.h"
 #include <boost/signals2/signal.hpp>
 
-class ResourceEditDialog : public BasicDialog
+class FreeDataBlockEditDialog : public BasicDialog
 {
 public:
-   typedef std::function<void(const StrategyModel::Resource&)> TOnOkCallback;
-   ResourceEditDialog(const StrategyModel::Resource& subject, TOnOkCallback cb)
+   typedef std::function<void(const FreeDataModel::Block&)> TOnOkCallback;
+   FreeDataBlockEditDialog(const FreeDataModel::Block& subject, TOnOkCallback cb)
    : BasicDialog("Resource Edit")
    {
       mTitle = new Wt::WLineEdit(subject.name);
@@ -42,10 +42,10 @@ public:
       finished().connect(std::bind([=]() {
         if (result() == Wt::DialogCode::Accepted)
         {
-           StrategyModel::Resource newResource = subject;
-           newResource.name = mTitle->text().narrow();
-           newResource.value = mValue->value();
-           cb(newResource);
+           FreeDataModel::Block newBlock = subject;
+           newBlock.name = mTitle->text().narrow();
+           newBlock.value = mValue->value();
+           cb(newBlock);
         }
 
         delete this;
@@ -63,13 +63,13 @@ class BacklogView : public Wt::WContainerWidget
 {
 public:
    BacklogView(StrategyModel& model)
-   : mModel(model)
+   : mStrategyModel(model)
    {
       auto activeGroup = addWidget(std::make_unique<Wt::WGroupBox>("Active"));
       auto [temp, activeGoalCtrls] = TemplateBuilder::makeTable<GoalViewCtrl<true>>(1u, 4u, GoalViewCtrlConstructionParams{model, true});
       activeGroup->addWidget(std::unique_ptr<Wt::WTemplate>(temp));
 
-      auto items = mModel.getGoals();
+      auto items = mStrategyModel.getGoals();
 
       int numUnfocused = 6;
       std::size_t pos = 0;
@@ -107,28 +107,28 @@ public:
 
 private:
 
-   StrategyModel& mModel;
+   StrategyModel& mStrategyModel;
 };
 
-class ResourceViewCtrl : public Wt::WContainerWidget
+class FreeDataBlockViewCtrl : public Wt::WContainerWidget
 {
 public:
-   ResourceViewCtrl(const StrategyModel::Resource& r, StrategyModel& model)
-   : mModel(model)
-   , mResource(r)
+   FreeDataBlockViewCtrl(const FreeDataModel::Block& block, FreeDataModel& model)
+   : mStrategyModel(model)
+   , mBlock(block)
    {
-      mName = addWidget(std::make_unique<Wt::WLabel>(r.name));
-      mName->setStyleClass("ResourceViewCtrlText");
-      auto valueText = std::to_string(r.value);
+      mName = addWidget(std::make_unique<Wt::WLabel>(block.name));
+      mName->setStyleClass("FreeDataBlockViewCtrlText");
+      auto valueText = std::to_string(block.value);
       mValue = addWidget(std::make_unique<Wt::WLabel>(valueText));
-      mValue->setStyleClass("ResourceViewCtrlValue");
+      mValue->setStyleClass("FreeDataBlockViewCtrlValue");
 
-      clicked().connect(this, &ResourceViewCtrl::onClicked);
+      clicked().connect(this, &FreeDataBlockViewCtrl::onClicked);
    }
 
    void updateStyle()
    {
-      setStyleClass("ResourceViewCtrl");
+      setStyleClass("FreeDataBlockViewCtrl");
    }
 
 private:
@@ -139,7 +139,7 @@ private:
          if(event.modifiers().test(Wt::KeyboardModifier::Control))
          {
             std::function<void()> elementDeletedFunc = [=] () {
-               mModel.deleteResource(mResource.id);
+               mStrategyModel.remove(mBlock.name);
                parent()->removeChild(this);
             };
 
@@ -147,29 +147,29 @@ private:
          }
          else
          {
-            auto dlg = new ResourceEditDialog(
-               mResource,
-               std::bind(&ResourceViewCtrl::onEditDialogOk, this, std::placeholders::_1));
+            auto dlg = new FreeDataBlockEditDialog(
+               mBlock,
+               std::bind(&FreeDataBlockViewCtrl::onEditDialogOk, this, std::placeholders::_1));
             dlg->show();
          }
       }
    }
 
-   void onEditDialogOk(const StrategyModel::Resource& newResource)
+   void onEditDialogOk(const FreeDataModel::Block& newBlock)
    {
-      mName->setText(newResource.name);
-      auto valueText = std::to_string(newResource.value);
+      mName->setText(newBlock.name);
+      auto valueText = std::to_string(newBlock.value);
 
       mValue->setText(valueText);
 
-      mModel.modifyResource(newResource);
+      mStrategyModel.set(newBlock);
 
-      mResource = newResource;
+      mBlock = newBlock;
    } 
    Wt::WLabel* mName;
    Wt::WLabel* mValue;
-   StrategyModel& mModel;
-   StrategyModel::Resource mResource;
+   FreeDataModel& mStrategyModel;
+   FreeDataModel::Block mBlock;
 };
 
 //-----------------------------------------------------------------------------------------------------------
@@ -178,7 +178,7 @@ class WatchItemCtrl : public Wt::WContainerWidget
 {
 public:
    WatchItemCtrl(const StrategyModel::WatchItem& w, StrategyModel& model)
-   : mModel(model)
+   : mStrategyModel(model)
    , mItem(w)
    {
       mText = addWidget(std::make_unique<Wt::WLabel>(w.title));
@@ -196,7 +196,7 @@ private:
          if(event.modifiers().test(Wt::KeyboardModifier::Control))
          {
             std::function<void()> elementDeletedFunc = [=] () {
-               mModel.deleteWatchItem(mItem.id);
+               mStrategyModel.deleteWatchItem(mItem.id);
                parent()->removeChild(this);
             };
 
@@ -217,18 +217,19 @@ private:
    {
       mText->setText(newText);
       mItem.title = newText;
-      mModel.modifyWatchItem(mItem);
+      mStrategyModel.modifyWatchItem(mItem);
    } 
 
    Wt::WLabel* mText;
-   StrategyModel& mModel;
+   StrategyModel& mStrategyModel;
    StrategyModel::WatchItem mItem;
 };
 
 //------------------------------------------------------------------------------------------------------------
 
-StrategyView::StrategyView(StrategyModel& strategy)
-: mModel(strategy)
+StrategyView::StrategyView(StrategyModel& strategy, FreeDataModel& fd)
+: mStrategyModel(strategy)
+, mFdModel(fd)
 {
    setMargin(5);
 
@@ -236,7 +237,7 @@ StrategyView::StrategyView(StrategyModel& strategy)
 
    auto popupPtr = std::make_unique<Wt::WPopupMenu>();
    popupPtr->addItem("Goal")->triggered().connect(std::bind(&StrategyView::onAddGoalClick, this));
-   popupPtr->addItem("Resource")->triggered().connect(std::bind(&StrategyView::onAddResourceClick, this));
+   popupPtr->addItem("Data block")->triggered().connect(std::bind(&StrategyView::onAddFreeDataBlock, this));
    popupPtr->addItem("Objective")->triggered().connect(std::bind(&StrategyView::onAddObjectiveClick, this));
    popupPtr->addItem("Watch Item")->triggered().connect(std::bind(&StrategyView::onAddWatchItemClick, this));
 
@@ -261,7 +262,7 @@ StrategyView::StrategyView(StrategyModel& strategy)
    addWidget(std::unique_ptr<Wt::WWidget>(temp));
 
    layGoals();
-   fillResources(*mMainToolbar);
+   fillDataBlocks(*mMainToolbar);
 }
 
 void StrategyView::refreshGoalCtrl(const materia::Id& id)
@@ -275,20 +276,20 @@ void StrategyView::refreshGoalCtrl(const materia::Id& id)
    }
 }
 
-void StrategyView::fillResources(Wt::WToolBar& toolbar)
+void StrategyView::fillDataBlocks(Wt::WToolBar& toolbar)
 {
    toolbar.addSeparator();
 
-   for(auto w : mModel.getWatchItems())
+   for(auto w : mStrategyModel.getWatchItems())
    {
-      toolbar.addWidget(std::make_unique<WatchItemCtrl>(w, mModel));
+      toolbar.addWidget(std::make_unique<WatchItemCtrl>(w, mStrategyModel));
    }
 
    toolbar.addSeparator();
 
-   for(auto r : mModel.getResources())
+   for(auto r : mFdModel.get())
    {
-      toolbar.addWidget(std::make_unique<ResourceViewCtrl>(r, mModel), Wt::AlignmentFlag::Right);
+      toolbar.addWidget(std::make_unique<FreeDataBlockViewCtrl>(r, mFdModel), Wt::AlignmentFlag::Right);
    }
 }
 
@@ -307,7 +308,7 @@ void StrategyView::onAddGoalClick()
       const bool isActive = selected == 1;
 
       std::function<void(std::string)> nextFunc = [this, isActive](std::string title){
-         auto item = mModel.addGoal(isActive, title);
+         auto item = mStrategyModel.addGoal(isActive, title);
          if(isActive)
          {
             putGoal(item);
@@ -318,12 +319,18 @@ void StrategyView::onAddGoalClick()
    });
 }
 
-void StrategyView::onAddResourceClick()
+void StrategyView::onAddFreeDataBlock()
 {     
    std::function<void(std::string)> nextFunc = [=](std::string name){
-      auto item = mModel.addResource(name);
-      
-      mMainToolbar->addWidget(std::make_unique<ResourceViewCtrl>(item, mModel), Wt::AlignmentFlag::Right);
+
+      auto item = mFdModel.get(name);
+      if(!item)
+      {
+         FreeDataModel::Block newItem = {name, 0};
+
+         mFdModel.set(newItem);
+         mMainToolbar->addWidget(std::make_unique<FreeDataBlockViewCtrl>(newItem, mFdModel), Wt::AlignmentFlag::Right);
+      }
    };
 
    CommonDialogManager::showOneLineDialog("Please specify name", "Name", "", nextFunc);
@@ -332,9 +339,9 @@ void StrategyView::onAddResourceClick()
 void StrategyView::onAddWatchItemClick()
 {     
    std::function<void(std::string)> nextFunc = [=](std::string name){
-      auto item = mModel.addWatchItem(name);
+      auto item = mStrategyModel.addWatchItem(name);
       
-      mMainToolbar->addWidget(std::make_unique<WatchItemCtrl>(item, mModel));
+      mMainToolbar->addWidget(std::make_unique<WatchItemCtrl>(item, mStrategyModel));
    };
 
    CommonDialogManager::showOneLineDialog("Please specify name", "Name", "", nextFunc);
@@ -352,7 +359,7 @@ inline bool goalsSorter(const StrategyModel::Goal &a, const StrategyModel::Goal 
 
 void StrategyView::onAddObjectiveClick()
 {
-   auto goals = mModel.getGoals();
+   auto goals = mStrategyModel.getGoals();
    std::sort(goals.begin(), goals.end(), goalsSorter);
 
    std::vector<std::string> choises;
@@ -364,7 +371,7 @@ void StrategyView::onAddObjectiveClick()
    CommonDialogManager::showChoiseDialog(choises, [=](auto selected) {
       
       std::function<void(std::string)> nextFunc = [=](std::string title){
-         auto item = mModel.addObjective(title, goals[selected].id);
+         auto item = mStrategyModel.addObjective(title, goals[selected].id);
          
          for(auto gc : mGoalCtrls)
          {
@@ -394,7 +401,7 @@ void StrategyView::putGoal(const StrategyModel::Goal& goal)
 
 void StrategyView::onBacklogClick()
 {
-   Dialog* dlg = new Dialog("Backlog View", std::make_unique<BacklogView>(mModel));
+   Dialog* dlg = new Dialog("Backlog View", std::make_unique<BacklogView>(mStrategyModel));
    dlg->OnFinished.connect(std::bind([=]() {
          layGoals();
    }));
@@ -408,7 +415,7 @@ void StrategyView::layGoals()
       c->detach();
    }
 
-   for(auto g : mModel.getGoals())
+   for(auto g : mStrategyModel.getGoals())
    {
       if(g.focused)
       {

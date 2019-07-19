@@ -248,23 +248,6 @@ std::vector<StrategyModel::Objective> StrategyModel::getGoalObjectives(const mat
    return result;
 }
 
-std::vector<StrategyModel::Resource> StrategyModel::getResources()
-{
-   std::vector<Resource> result;
-
-   common::EmptyMessage e;
-   strategy::Resources res;
-
-   mService.getService().GetResources(nullptr, &e, &res, nullptr);
-
-   for(auto r : res.items())
-   {
-      result.push_back(Resource{r.id().guid(), r.name(), r.value()});
-   }
-
-   return result;
-}
-
 std::vector<StrategyModel::WatchItem> StrategyModel::getWatchItems()
 {
    std::vector<WatchItem> result;
@@ -280,19 +263,6 @@ std::vector<StrategyModel::WatchItem> StrategyModel::getWatchItems()
    }
 
    return result;
-}
-
-StrategyModel::Resource StrategyModel::addResource(const std::string& name)
-{
-   common::UniqueId id;
-   strategy::Resource r;
-
-   r.set_name(name);
-   r.set_value(0);
-
-   mService.getService().AddResource(nullptr, &r, &id, nullptr);
-   
-   return StrategyModel::Resource {id.guid(), name, 0};
 }
 
 StrategyModel::WatchItem StrategyModel::addWatchItem(const std::string& name)
@@ -323,44 +293,6 @@ void StrategyModel::deleteWatchItem(const materia::Id& src)
 
    common::OperationResultMessage opResult;
    mService.getService().DeleteWatchItem(nullptr, &id, &opResult, nullptr);
-}
-
-void StrategyModel::deleteResource(const materia::Id& src)
-{
-   common::UniqueId id;
-   id.set_guid(src.getGuid());
-
-   common::OperationResultMessage opResult;
-   mService.getService().DeleteResource(nullptr, &id, &opResult, nullptr);
-}
-
-void StrategyModel::modifyResource(const Resource& r)
-{
-   strategy::Resource res;
-   res.set_name(r.name);
-   res.set_value(r.value);
-   res.mutable_id()->set_guid(r.id.getGuid());
-
-   common::OperationResultMessage opResult;
-   mService.getService().ModifyResource(nullptr, &res, &opResult, nullptr);
-}
-
-std::optional<StrategyModel::Resource> StrategyModel::getResource(const std::string& name)
-{
-   auto res = getResources();
-
-   auto iter = std::find_if(res.begin(), res.end(), [&](auto x) -> bool {
-      return x.name == name;
-   });
-
-   if(iter != res.end())
-   {
-      return *iter;
-   }
-   else
-   {
-      return std::optional<StrategyModel::Resource>();
-   }
 }
 
 std::optional<StrategyModel::WatchItem> StrategyModel::getWatchItem(const materia::Id& id)

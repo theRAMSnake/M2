@@ -89,12 +89,6 @@ public:
    std::vector<Task> getGoalTasks(const materia::Id& id);
    std::vector<Objective> getGoalObjectives(const materia::Id& id);
 
-   std::vector<Resource> getResources();
-   std::optional<Resource> getResource(const std::string& name);
-   Resource addResource(const std::string& name);
-   void modifyResource(const Resource& r);
-   void deleteResource(const materia::Id& id);
-
    Objective addObjective(const std::string& title, const materia::Id& parentGoalId);
    void deleteObjective(const materia::Id& id);
    Objective modifyObjective(const Objective& o);

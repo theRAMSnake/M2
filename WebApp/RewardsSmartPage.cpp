@@ -1,6 +1,6 @@
 #include "RewardsSmartPage.hpp"
 #include "materia/JournalModel.hpp"
-#include "materia/StrategyModel.hpp"
+#include "materia/FreeDataModel.hpp"
 #include <regex>
 
 struct RewardItem
@@ -49,13 +49,13 @@ bool hasNotCompleteItems(const std::vector<RewardItem>& items)
     return false;
 }
 
-void RewardsSmartPage::update(JournalModel& journal, StrategyModel& strategy)
+void RewardsSmartPage::update(JournalModel& journal, FreeDataModel& fd)
 {
     try
     {
         srand(time(0));
 
-        auto ppResource = strategy.getResource("PP");
+        auto ppResource = fd.get("PP");
         auto rewardsPageId = journal.searchIndex("Rewards");
         auto rewardsPage = journal.loadContent(rewardsPageId);
 
@@ -82,7 +82,7 @@ void RewardsSmartPage::update(JournalModel& journal, StrategyModel& strategy)
                 replaceItem(x, rewardsPage);
             }
 
-            strategy.modifyResource(*ppResource);
+            fd.set(*ppResource);
             journal.saveContent(rewardsPageId, rewardsPage);
         }
     }

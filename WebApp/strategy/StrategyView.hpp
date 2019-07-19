@@ -1,27 +1,29 @@
 #pragma once
 #include <Wt/WContainerWidget.h>
 #include "../materia/StrategyModel.hpp"
+#include "../materia/FreeDataModel.hpp"
 
 class IGoalViewCtrl;
 class StrategyView : public Wt::WContainerWidget
 {
 public:
-   StrategyView(StrategyModel& strategy);
+   StrategyView(StrategyModel& strategy, FreeDataModel& fd);
 
 private:
    void onAddGoalClick();
    void onAddObjectiveClick();
-   void onAddResourceClick();
+   void onAddFreeDataBlock();
    void onAddWatchItemClick();
    void onBacklogClick();
    void layGoals();
-   void fillResources(Wt::WToolBar& toolbar);
+   void fillDataBlocks(Wt::WToolBar& toolbar);
    
    void putGoal(const StrategyModel::Goal& goal);
 
    void refreshGoalCtrl(const materia::Id& id);
 
-   StrategyModel& mModel;
+   StrategyModel& mStrategyModel;
+   FreeDataModel& mFdModel;
    Wt::WToolBar* mMainToolbar;
    std::vector<IGoalViewCtrl*> mGoalCtrls;
 };

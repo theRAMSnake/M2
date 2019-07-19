@@ -5,6 +5,7 @@
 #include "materia/InboxModel.hpp"
 #include "materia/JournalModel.hpp"
 #include "materia/StrategyModel.hpp"
+#include "materia/FreeDataModel.hpp"
 #include "materia/ZmqPbChannel.hpp"
 
 class MateriaClient
@@ -16,6 +17,7 @@ public:
    InboxModel& getInbox();
    JournalModel& getJournal();
    StrategyModel& getStrategy();
+   FreeDataModel& getFreeData();
 
 private:
    zmq::context_t mContext;
@@ -26,4 +28,5 @@ private:
    std::unique_ptr<InboxModel> mInbox;
    std::unique_ptr<JournalModel> mJournal;
    std::unique_ptr<StrategyModel> mStrategy;
+   std::unique_ptr<FreeDataModel> mFreeData;
 };

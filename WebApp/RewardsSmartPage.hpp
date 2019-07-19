@@ -1,9 +1,9 @@
 #pragma once
 
 class JournalModel;
-class StrategyModel;
+class FreeDataModel;
 class RewardsSmartPage
 {
 public:
-    static void update(JournalModel& journal, StrategyModel& strategy);
+    static void update(JournalModel& journal, FreeDataModel& fd);
 };

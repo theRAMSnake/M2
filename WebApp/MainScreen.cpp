@@ -22,7 +22,7 @@ MainScreen::MainScreen(MateriaClient& client)
     auto menu = std::make_unique<Wt::WMenu>(contentsStack);
     auto menu_ = navigation->addMenu(std::move(menu));
 
-    RewardsSmartPage::update(client.getJournal(), client.getStrategy());
+    RewardsSmartPage::update(client.getJournal(), client.getFreeData());
 
     menu_->addItem("MainView", std::make_unique<MainView>(
         client.getCalendar(), 
@@ -30,5 +30,5 @@ MainScreen::MainScreen(MateriaClient& client)
         client.getInbox(),
         client.getJournal()));
     menu_->addItem("Journal", std::make_unique<JournalView>(client.getJournal()));
-    menu_->addItem("Strategy", std::make_unique<StrategyView>(client.getStrategy()));
+    menu_->addItem("Strategy", std::make_unique<StrategyView>(client.getStrategy(), client.getFreeData()));
 }

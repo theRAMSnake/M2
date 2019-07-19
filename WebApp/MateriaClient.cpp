@@ -10,6 +10,7 @@ MateriaClient::MateriaClient()
     mInbox.reset(new InboxModel(mChannel));
     mJournal.reset(new JournalModel(mChannel));
     mStrategy.reset(new StrategyModel(mChannel));
+    mFreeData.reset(new FreeDataModel(mChannel));
 }
 
 CalendarModel& MateriaClient::getCalendar()
@@ -30,4 +31,9 @@ JournalModel& MateriaClient::getJournal()
 StrategyModel& MateriaClient::getStrategy()
 {
    return *mStrategy;
+}
+
+FreeDataModel& MateriaClient::getFreeData()
+{
+   return *mFreeData;
 }

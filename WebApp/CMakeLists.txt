@@ -30,6 +30,7 @@ materia/StrategyModel.cpp
 materia/CalendarModel.cpp
 materia/InboxModel.cpp
 materia/JournalModel.cpp
+materia/FreeDataModel.cpp
 dialog/CommonDialogManager.cpp
 dialog/Dialog.cpp
 )

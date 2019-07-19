@@ -494,7 +494,7 @@ private:
          {
             auto dlg = new ObjectiveEditDialog(
                w->getObjective(),
-               mModel.getResources(),
+               {},
                std::bind(&GoalViewCtrl<isCompact>::onObjectiveEditDialogOk, this, std::placeholders::_1, w));
             dlg->show();
          }
