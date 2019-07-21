@@ -14,75 +14,6 @@
 #include "GraphView.hpp"
 #include "GraphEditDialog.hpp"
 
-class ObjectiveEditDialog : public BasicDialog
-{
-public:
-   typedef std::function<void(const StrategyModel::Objective&)> TOnOkCallback;
-   ObjectiveEditDialog(const StrategyModel::Objective& subject, const std::vector<StrategyModel::Resource>& resources, TOnOkCallback cb)
-   : BasicDialog("Objective Edit")
-   {
-      mTitle = new Wt::WLineEdit(subject.title);
-      contents()->addWidget(std::unique_ptr<Wt::WLineEdit>(mTitle));
-
-      mReached = new Wt::WCheckBox("Reached");
-      mReached->setInline(false);
-      mReached->setChecked(subject.reached);
-      contents()->addWidget(std::unique_ptr<Wt::WCheckBox>(mReached));
-
-      mResources = new Wt::WComboBox();
-      mResources->setInline(false);
-      mResources->addItem("None");
-      mResourceRequirement = new Wt::WLineEdit();
-      for(auto x : resources)
-      {
-         mResources->addItem(x.name.c_str());
-         if(subject.resId == x.id)
-         {
-            mResources->setCurrentIndex(mResources->count() - 1);
-            mResourceRequirement->setText(std::to_string(subject.expectedResValue));
-         }
-      }
-      contents()->addWidget(std::unique_ptr<Wt::WComboBox>(mResources));
-      contents()->addWidget(std::unique_ptr<Wt::WLineEdit>(mResourceRequirement));
-      
-      finished().connect(std::bind([=]() {
-        if (result() == Wt::DialogCode::Accepted)
-        {
-            StrategyModel::Objective newObjective = subject;
-            newObjective.title = mTitle->text().narrow();
-            newObjective.reached = mReached->isChecked();
-           
-            auto pos = std::find_if(resources.begin(), resources.end(), [=](auto x){
-               return x.name == mResources->currentText().narrow();
-            }); 
-
-            if(pos != resources.end())
-            {
-               newObjective.resId = pos->id;
-               newObjective.expectedResValue = std::stoi(mResourceRequirement->text().narrow());
-            }
-
-            else
-            {
-               newObjective.resId = materia::Id::Invalid;
-               newObjective.expectedResValue = 0;
-            }
-           
-            cb(newObjective);
-        }
-
-        delete this;
-      }));
-   }
-
-private:
-   Wt::WComboBox* mResources;
-   Wt::WCheckBox* mReached;
-   Wt::WLineEdit* mTitle;
-   Wt::WLineEdit* mResourceRequirement;
-};
-
-
 class GoalEditDialog : public BasicDialog
 {
 public:
@@ -118,74 +49,6 @@ private:
    Wt::WTextArea* mNotes;
 };
 
-class TaskWidget : public Wt::WPaintedWidget
-{
-public:
-   TaskWidget(const StrategyModel::Task& t)
-   : mTask(t)
-   {
-      resize(32, 32);
-      setInline(true);
-      setMargin(5, Wt::Side::Left);
-      setToolTip(t.title);
-   }
-
-   void setTask(const StrategyModel::Task& t)
-   {
-      mTask = t;
-      setToolTip(t.title);
-   }
-
-protected:
-   void paintEvent(Wt::WPaintDevice *paintDevice) 
-   {
-      Wt::WPainter painter(paintDevice);
-      painter.setBrush(Wt::WBrush(Wt::WColor(Wt::StandardColor::Magenta)));
-      painter.drawRect(0, 0, 32, 32);
-      if(!mTask.title.empty())
-      {
-         painter.drawText(Wt::WRectF(0, 0, 32, 32), Wt::AlignmentFlag::Middle | Wt::AlignmentFlag::Center, mTask.title.substr(0, 1));
-      }
-   }
-
-private:
-   StrategyModel::Task mTask;
-};
-
-class ObjectiveWidget : public Wt::WLabel
-{
-public:
-   ObjectiveWidget(const StrategyModel::Objective& o)
-   : mObj(o)
-   {
-      setInline(false);
-      setTextFormat(Wt::TextFormat::XHTML);
-
-      setObjective(o);
-   }
-
-   void setObjective(const StrategyModel::Objective& o)
-   {
-      mObj = o;
-      
-      auto t = o.title;
-      if(o.reached)
-      {
-         t = "<s>" + t + "</s>";
-      }
-
-      setText(t);
-   }
-
-   const StrategyModel::Objective& getObjective() const
-   {
-      return mObj;
-   }
-
-private:
-   StrategyModel::Objective mObj;
-};
-
 class IGoalViewCtrl
 {
 public:
@@ -193,8 +56,6 @@ public:
 
    virtual bool isEmpty() const = 0;
    virtual void attach(const StrategyModel::Goal& goal) = 0;
-   virtual void addTask(const StrategyModel::Task& task) = 0;
-   virtual void addObjective(const StrategyModel::Objective& o) = 0;
    virtual std::optional<StrategyModel::Goal> detach() = 0;
    virtual const StrategyModel::Goal& getGoal() const = 0;
 
@@ -254,27 +115,6 @@ public:
          mGraphView = addWidget(std::make_unique<GraphView>(mModel));
          mGraphView->OnCaptionClicked.connect(std::bind(&GoalViewCtrl<isCompact>::onBoundClicked, this, std::placeholders::_1));
 
-         WContainerWidget* frame = addWidget(std::make_unique<Wt::WContainerWidget>());
-         frame->setStyleClass("col-md-6");
-         frame->addWidget(std::make_unique<Wt::WLabel>("<br></br>"));
-
-         frame->addWidget(std::move(namePtr));
-
-         mTasks = new Wt::WContainerWidget();
-         frame->addWidget(std::unique_ptr<Wt::WContainerWidget>(mTasks));
-
-         mNotes = frame->addWidget(std::make_unique<Wt::WText>(""));
-         mNotes->setStyleClass("GoalViewCtrl_Notes");
-         mNotes->setTextFormat(Wt::TextFormat::Plain);
-
-         WContainerWidget* frameObj = addWidget(std::make_unique<Wt::WContainerWidget>());
-         frameObj->setStyleClass("col-md-6");
-
-         mObjsPanel = frameObj->addWidget(std::make_unique<Wt::WPanel>());
-         mObjsPanel->addStyleClass("GoalViewCtrl_Objectives");
-
-         mObjs = new Wt::WContainerWidget();
-         mObjsPanel->setCentralWidget(std::unique_ptr<Wt::WContainerWidget>(mObjs));
       }
       else
       {
@@ -336,22 +176,6 @@ public:
       }
    }
 
-   void addTask(const StrategyModel::Task& task) override
-   {
-      if(mGoal)
-      {
-         addTaskWidget(task);
-      }
-   }
-
-   void addObjective(const StrategyModel::Objective& o) override
-   {
-      if(mGoal)
-      {
-         addObjectiveWidget(o);
-      }
-   }
-
    std::optional<StrategyModel::Goal> detach() override
    {
       auto result = mGoal;
@@ -365,8 +189,6 @@ public:
       {
          mGraphView->reset();
          mNotes->setText("");
-         mTasks->clear();
-         mObjs->clear();
       }
 
       return result;
@@ -422,99 +244,21 @@ private:
          {
             mName->show();
             mGraphView->reset();
-            mTasks->clear();
-            for(auto t : mModel.getGoalTasks(mGoal->id))
-            {
-               addTaskWidget(t);
-            }
-
-            mObjsPanel->show();
-            mObjs->clear();
-            for(auto o : mModel.getGoalObjectives(mGoal->id))
-            {
-               addObjectiveWidget(o);
-            }
-
             mNotes->setText(mGoal->notes);
          }
          else
          {
             mGraphView->assign(mGoal->id, *mGraph, mGoal->title);
-            mObjsPanel->hide();
             mName->hide();
          }
       }
    }
 
-   void addTaskWidget(const StrategyModel::Task& t)
-   {
-      auto w = mTasks->addWidget(std::make_unique<TaskWidget>(t));
-      auto b = std::bind(&GoalViewCtrl<isCompact>::onTaskWidgetClicked, this, w, t, std::placeholders::_1);
-
-      w->mouseWentDown().connect(b);
-   }
-
-   void addObjectiveWidget(const StrategyModel::Objective& o)
-   {
-      auto w = mObjs->addWidget(std::make_unique<ObjectiveWidget>(o));
-      auto b = std::bind(&GoalViewCtrl<isCompact>::onObjectiveWidgetClicked, this, w, std::placeholders::_1);
-      w->mouseWentDown().connect(b);
-   }
-
-   void onTaskWidgetClicked(TaskWidget* w, const StrategyModel::Task t, Wt::WMouseEvent event)
-   {
-      if(event.button() == Wt::MouseButton::Left)
-      {
-         if(event.modifiers().test(Wt::KeyboardModifier::Control))
-         {
-            std::function<void()> elementDeletedFunc = [=] () {
-               mModel.deleteTask(t);
-               mTasks->removeChild(w);
-            };
-
-            CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
-         }
-      }
-   }
-
-   void onObjectiveWidgetClicked(ObjectiveWidget* w, Wt::WMouseEvent event)
-   {
-      if(event.button() == Wt::MouseButton::Left)
-      {
-         if(event.modifiers().test(Wt::KeyboardModifier::Control))
-         {
-            std::function<void()> elementDeletedFunc = [=] () {
-               mModel.deleteObjective(w->getObjective().id);
-               mObjs->removeChild(w);
-            };
-
-            CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
-         }
-         else
-         {
-            auto dlg = new ObjectiveEditDialog(
-               w->getObjective(),
-               {},
-               std::bind(&GoalViewCtrl<isCompact>::onObjectiveEditDialogOk, this, std::placeholders::_1, w));
-            dlg->show();
-         }
-      }
-   }
-
-   void onObjectiveEditDialogOk(const StrategyModel::Objective src, ObjectiveWidget* w)
-   {
-      auto newObj = src;
-
-      w->setObjective(mModel.modifyObjective(newObj));
-   }
 
    static constexpr char MY_MIME_TYPE[] = "GoalViewCtrl";
    StrategyModel& mModel;
    Wt::WLabel* mName = nullptr;
    Wt::WText* mNotes = nullptr;
-   Wt::WContainerWidget* mTasks = nullptr;
-   Wt::WContainerWidget* mObjs = nullptr;
-   Wt::WPanel* mObjsPanel = nullptr;
    GraphView* mGraphView = nullptr;
    std::optional<StrategyModel::Goal> mGoal;
    std::optional<StrategyModel::Graph> mGraph;

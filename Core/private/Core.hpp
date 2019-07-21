@@ -2,7 +2,6 @@
 
 #include "../ICore.hpp"
 #include "Database.hpp"
-#include "Strategy.hpp"
 #include "Strategy_v2.hpp"
 #include "Journal.hpp"
 #include "Inbox.hpp"
@@ -20,7 +19,6 @@ public:
 
     IInbox& getInbox() override;
     ICalendar& getCalendar() override;
-    IStrategy& getStrategy() override;
     IJournal& getJournal() override;
     IBackuper& getBackuper() override;
     IStrategy_v2& getStrategy_v2() override;
@@ -31,7 +29,6 @@ private:
     Inbox mInbox;
     Calendar mCalendar;
     Journal mJournal;
-    Strategy mStrategy;
     Strategy_v2 mStrategy_v2;
     Backuper mBackuper;
     freedata::FreeData mFreeData;

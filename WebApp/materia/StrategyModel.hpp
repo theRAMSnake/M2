@@ -19,16 +19,6 @@ public:
       std::string title;
    };
 
-   struct Objective
-   {
-      materia::Id id;
-      std::string title;
-      bool reached;
-      materia::Id parentGoalId;
-      materia::Id resId;
-      int expectedResValue;
-   };
-
    struct Goal
    {
       materia::Id id;
@@ -64,13 +54,6 @@ public:
       std::vector<Link> links;
    };
 
-   struct Resource
-   {
-      materia::Id id;
-      std::string name;
-      int value;
-   };
-
    struct WatchItem
    {
       materia::Id id;
@@ -86,13 +69,7 @@ public:
    const Goal& addGoal(const bool focused, const std::string& name);
    void modifyGoal(const Goal& goal);
    void deleteGoal(const materia::Id& id);
-   std::vector<Task> getGoalTasks(const materia::Id& id);
-   std::vector<Objective> getGoalObjectives(const materia::Id& id);
-
-   Objective addObjective(const std::string& title, const materia::Id& parentGoalId);
-   void deleteObjective(const materia::Id& id);
-   Objective modifyObjective(const Objective& o);
-
+   
    std::optional<Graph> getGraph(const materia::Id& id);
    materia::Id createNode(const materia::Id& graphId);
    void deleteNode(const materia::Id& graphId, const materia::Id& nodeId);

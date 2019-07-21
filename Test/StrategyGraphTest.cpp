@@ -91,15 +91,6 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_AddGoal, StrategyGraphTest )
    BOOST_CHECK_EQUAL(materia::NodeType::Goal, g->getNodes()[0].type);
 }
 
-BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_ModifyGoal_Unchangable_Id, StrategyGraphTest )  
-{
-   auto g = mGoals[0];
-   g.id = materia::Id("other");
-   mStrategy.modifyGoal(g);
-
-   BOOST_CHECK(!mStrategy.getGoal(g.id));
-}
-
 BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_ModifyGoal_Success, StrategyGraphTest )  
 {
    auto g = mGoals[0];
@@ -122,6 +113,23 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_DeleteGoal, StrategyGraphTest )
 
    BOOST_CHECK(!mStrategy.getGraph(mGoals[0].id));
 }
+
+namespace materia
+{
+
+bool operator == (const materia::Goal& a, const materia::Goal& b)
+{
+   return a.id == b.id && a.achieved == b.achieved && a.focused == b.focused &&
+      a.name == b.name && a.notes == b.notes;
+}
+
+bool operator != (const materia::Goal& a, const materia::Goal& b)
+{
+   return !(a == b);
+}
+
+}
+
 
 BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_GetGoals, StrategyGraphTest )  
 {

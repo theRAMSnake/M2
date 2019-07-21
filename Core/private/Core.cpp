@@ -8,8 +8,7 @@ Core::Core(const CoreConfig& config)
 , mInbox(mDb)
 , mCalendar(mDb)
 , mJournal(mDb)
-, mStrategy(mDb)
-, mStrategy_v2(mStrategy, mDb)
+, mStrategy_v2(mDb)
 , mBackuper(config.dbFileName)
 , mFreeData(mDb)
 {
@@ -24,11 +23,6 @@ IInbox& Core::getInbox()
 ICalendar& Core::getCalendar()
 {
    return mCalendar;
-}
-
-IStrategy& Core::getStrategy()
-{
-   return mStrategy;
 }
 
 IStrategy_v2& Core::getStrategy_v2()

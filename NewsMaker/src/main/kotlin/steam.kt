@@ -44,7 +44,7 @@ fun genNewVrGamesContent(): String
     val allNewVrGames = mutableListOf<String>()
     for(x in 1..5)
     {
-        val r = khttp.get("https://store.steampowered.com/search/?sort_by=Released_DESC&tags=-1&vrsupport=402&page=$x")
+        val r = khttp.get("https://store.steampowered.com/search/?sort_by=Released_DESC&vrsupport=402&page=$x")
         allNewVrGames += extractGames(r.text)
     }
     

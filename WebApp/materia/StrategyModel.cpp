@@ -6,32 +6,6 @@ StrategyModel::StrategyModel(ZmqPbChannel& channel)
    fetchGoals();
 }
 
-StrategyModel::Objective StrategyModel::modifyObjective(const Objective& src)
-{
-   strategy::Objective o;
-   o.mutable_common_props()->mutable_id()->set_guid(src.id);
-   o.mutable_common_props()->set_name(src.title);
-   o.set_reached(src.reached);
-   o.mutable_parent_goal_id()->set_guid(src.parentGoalId);
-   o.mutable_res_id()->set_guid(src.resId);
-   o.set_expectedtreshold(src.expectedResValue);
-
-   common::OperationResultMessage opResult;
-   mService.getService().ModifyObjective(nullptr, &o, &opResult, nullptr);
-
-   auto objs = getGoalObjectives(src.parentGoalId);
-   auto pos = materia::find_by_id(objs, src.id);
-
-   if(pos != objs.end())
-   {
-      return *pos;
-   }
-   else
-   {
-      throw -1;
-   }
-}
-
 void StrategyModel::deleteTask(const Task& t)
 {
    common::UniqueId id;
@@ -51,15 +25,6 @@ void StrategyModel::completeTask(const Task& task)
 
    common::OperationResultMessage result;
    mService.getService().CompleteFocusItem(nullptr, &request, &result, nullptr);
-}
-
-void StrategyModel::deleteObjective(const materia::Id& src)
-{
-   common::UniqueId id;
-   id.set_guid(src.getGuid());
-
-   common::OperationResultMessage opResult;
-   mService.getService().DeleteObjective(nullptr, &id, &opResult, nullptr);
 }
 
 void StrategyModel::deleteGoal(const materia::Id& src)
@@ -183,69 +148,6 @@ void StrategyModel::modifyGoal(const Goal& goal)
 
       mService.getService().ModifyGoal(nullptr, &g, &op, nullptr);
    }
-}
-
-StrategyModel::Objective StrategyModel::addObjective(const std::string& title, const materia::Id& parentGoalId)
-{
-   common::UniqueId id;
-   strategy::Objective o;
-
-   o.mutable_common_props()->set_name(title);
-   o.mutable_parent_goal_id()->set_guid(parentGoalId.getGuid());
-   o.set_reached(false);
-
-   mService.getService().AddObjective(nullptr, &o, &id, nullptr);
-   
-   return StrategyModel::Objective {id.guid(), title, false, parentGoalId};
-}
-
-std::vector<StrategyModel::Task> StrategyModel::getGoalTasks(const materia::Id& id)
-{
-   std::vector<Task> result;
-
-   common::UniqueId in;
-   in.set_guid(id.getGuid());
-   strategy::GoalItems items;
-
-   mService.getService().GetGoalItems(nullptr, &in, &items, nullptr);
-
-   for(auto t : items.tasks())
-   {
-      result.push_back(
-         {
-            t.common_props().id().guid(), 
-            t.common_props().name(),
-            t.parent_goal_id().guid()
-         });
-   }
-
-   return result;
-}
-
-std::vector<StrategyModel::Objective> StrategyModel::getGoalObjectives(const materia::Id& id)
-{
-   std::vector<Objective> result;
-
-   common::UniqueId in;
-   in.set_guid(id.getGuid());
-   strategy::GoalItems items;
-
-   mService.getService().GetGoalItems(nullptr, &in, &items, nullptr);
-
-   for(auto o : items.objectives())
-   {
-      result.push_back(
-         {
-            o.common_props().id().guid(), 
-            o.common_props().name(),
-            o.reached(),
-            o.parent_goal_id().guid(),
-            o.res_id().guid(),
-            o.expectedtreshold()
-         });
-   }
-
-   return result;
 }
 
 std::vector<StrategyModel::WatchItem> StrategyModel::getWatchItems()

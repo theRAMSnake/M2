@@ -23,7 +23,6 @@ class ICore
 public:
     virtual IInbox& getInbox() = 0;
     virtual ICalendar& getCalendar() = 0;
-    virtual IStrategy& getStrategy() = 0;
     virtual IStrategy_v2& getStrategy_v2() = 0;
     virtual IJournal& getJournal() = 0;
     virtual IBackuper& getBackuper() = 0;

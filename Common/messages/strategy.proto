@@ -25,43 +25,6 @@ message Goals
    repeated Goal items = 1;
 }
 
-message Objective
-{
-   CommonItemProperties common_props = 1;
-   common.UniqueId parent_goal_id = 2;
-   bool reached = 3;
-   common.UniqueId res_id = 4;
-   int32 expectedtreshold = 5;
-}
-
-message Task
-{
-   CommonItemProperties common_props = 1;
-   common.UniqueId parent_goal_id = 2;
-   bool done = 3;
-}
-
-message GoalItems
-{
-   repeated Objective objectives = 1;
-   repeated Task tasks = 2;
-}
-
-message Resource
-{
-   common.UniqueId id = 1;
-   string name = 2;
-   common.UniqueId icon_id = 3;
-   int32 value = 4;
-}
-
-message Resources
-{
-   repeated Resource items = 1;
-}
-
-//-
-
 message GraphObjectId
 {
    common.UniqueId graphId = 1;
@@ -140,23 +103,6 @@ service StrategyService
 
    rpc GetGoals (common.EmptyMessage) returns (Goals);
    rpc GetGoal (common.UniqueId) returns (Goal);
-
-   rpc AddObjective (Objective) returns (common.UniqueId);
-   rpc ModifyObjective (Objective) returns (common.OperationResultMessage);
-   rpc DeleteObjective (common.UniqueId) returns (common.OperationResultMessage);
-
-   rpc AddTask (Task) returns (common.UniqueId);
-   rpc ModifyTask (Task) returns (common.OperationResultMessage);
-   rpc DeleteTask (common.UniqueId) returns (common.OperationResultMessage);
-
-   rpc GetGoalItems (common.UniqueId) returns (GoalItems);
-
-   rpc AddResource (Resource) returns (common.UniqueId);
-   rpc ModifyResource (Resource) returns (common.OperationResultMessage);
-   rpc DeleteResource (common.UniqueId) returns (common.OperationResultMessage);
-   rpc GetResources (common.EmptyMessage) returns (Resources);
-
-   // -v2
 
    rpc GetGraph (common.UniqueId) returns (GraphDefinition);
 

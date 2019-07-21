@@ -4,11 +4,19 @@
 #include <vector>
 #include <map>
 #include <memory>
-#include "IStrategy.hpp"
 #include "NodeAttributes.hpp"
 
 namespace materia
 {
+
+struct Goal
+{
+   Id id;
+   std::string name;
+   std::string notes;
+   bool focused;
+   bool achieved;
+};
 
 enum class NodeType
 {

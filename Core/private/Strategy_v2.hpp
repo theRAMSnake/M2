@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../IStrategy_v2.hpp"
-#include "../IStrategy.hpp"
 #include "Database.hpp"
 #include "StrategyGraph.hpp"
 
@@ -11,7 +10,7 @@ namespace materia
 class Strategy_v2 : public IStrategy_v2
 {
 public:
-   Strategy_v2(IStrategy& strategy, Database& db);
+   Strategy_v2(Database& db);
 
    Id addGoal(const Goal& goal) override;
    void modifyGoal(const Goal& goal) override;
@@ -56,10 +55,10 @@ private:
       }
    }
 
-   IStrategy& mStrategy_v1;
    std::unique_ptr<DatabaseTable> mGraphsStorage;
    std::unique_ptr<DatabaseTable> mWatchStorage;
    std::unique_ptr<DatabaseTable> mFocusStorage;
+   std::unique_ptr<DatabaseTable> mGoalsStorage;
 };
 
 }

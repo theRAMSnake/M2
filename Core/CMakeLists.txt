@@ -12,11 +12,7 @@ private/Database.cpp
 private/Calendar.cpp
 private/Inbox.cpp
 private/Journal.cpp
-private/Strategy.cpp
 private/Strategy_v2.cpp
-private/Goal.cpp
-private/Resource.cpp
-private/Objective.cpp
 private/Logger.cpp
 private/JsonSerializer.cpp
 private/Backuper.cpp

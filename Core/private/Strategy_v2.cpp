@@ -6,6 +6,7 @@
 SERIALIZE_AS_INTEGER(materia::NodeType)
 SERIALIZE_AS_INTEGER(materia::NodeAttributeType)
 
+BIND_JSON5(materia::Goal, id, name, notes, focused, achieved)
 BIND_JSON4(materia::RawStrategyGraph, id, nodes, links, nodeAttrs)
 BIND_JSON2(materia::Node, id, type)
 BIND_JSON2(materia::Link, from, to)
@@ -20,11 +21,11 @@ BIND_JSON2(attr_map_node, first, second)
 namespace materia
 {
 
-Strategy_v2::Strategy_v2(IStrategy& strategy, Database& db)
-: mStrategy_v1(strategy)
-, mGraphsStorage(db.getTable("graphs"))
+Strategy_v2::Strategy_v2(Database& db)
+: mGraphsStorage(db.getTable("graphs"))
 , mWatchStorage(db.getTable("watchItems"))
 , mFocusStorage(db.getTable("focusItems"))
+, mGoalsStorage(db.getTable("goals"))
 {
    LOG("Start strategy2 init");
 }
@@ -182,26 +183,46 @@ void Strategy_v2::deleteNode(const Id& graphId, const Id& objectId)
 
 Id Strategy_v2::addGoal(const Goal& goal)
 {
-   auto id = mStrategy_v1.addGoal(goal);
+   auto g = goal;
+   g.id = Id::generate();
+   g.achieved = false;
 
-   saveGraph(*std::make_shared<StrategyGraph>(id));
+   std::string json = writeJson(g);
+   mGoalsStorage->store(g.id, json);
 
-   return id;
+   saveGraph(*std::make_shared<StrategyGraph>(g.id));
+
+   return g.id;
 }
 
 void Strategy_v2::modifyGoal(const Goal& goal)
 {
-   mStrategy_v1.modifyGoal(goal);
+   std::string json = writeJson(goal);
+   mGoalsStorage->store(goal.id, json);
 }
 
 std::vector<Goal> Strategy_v2::getGoals()
 {
-   return mStrategy_v1.getGoals();
+   std::vector<Goal> result;
+
+   mGoalsStorage->foreach([&](std::string id, std::string json) 
+   {
+      result.push_back(readJson<Goal>(json));
+   });
+
+   return result;
 }
 
 std::optional<Goal> Strategy_v2::getGoal(const Id& id)
 {
-   return mStrategy_v1.getGoal(id);
+   auto goals = getGoals();
+   auto pos = find_by_id(goals, id);
+   if(pos != goals.end())
+   {
+       return *pos;
+   }
+
+   return std::optional<Goal>();
 }
 
 std::shared_ptr<IStrategyGraph> Strategy_v2::getGraph(const Id& id)
@@ -238,7 +259,7 @@ void Strategy_v2::setNodeAttributes(const Id& graphId, const Id& objectId, const
 
 void Strategy_v2::deleteGoal(const Id& id)
 {
-   mStrategy_v1.deleteGoal(id);
+   mGoalsStorage->erase(id);
    mGraphsStorage->erase(id);
 }
 

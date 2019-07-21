@@ -11,7 +11,6 @@ public:
 
 private:
    void onAddGoalClick();
-   void onAddObjectiveClick();
    void onAddFreeDataBlock();
    void onAddWatchItemClick();
    void onBacklogClick();
