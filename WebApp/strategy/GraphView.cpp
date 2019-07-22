@@ -113,6 +113,11 @@ public:
          Wt::WRectF imageRect(mBounds.x() + 8 + 2, mBounds.y() + 8 + 2, 32, 32);
          painter.drawImage(imageRect, Wt::WPainter::Image("resources/hourglass.png", 256, 256));
       }
+      else if(mNode.type == strategy::NodeType::MILESTONE)
+      {
+         Wt::WRectF imageRect(mBounds.x() + 8 + 2, mBounds.y() + 8 + 2, 32, 32);
+         painter.drawImage(imageRect, Wt::WPainter::Image("resources/milestone.png", 200, 200));
+      }
       else if(mNode.type == strategy::NodeType::COUNTER)
       {
          painter.setFont(createFont(Wt::FontSize::Small));

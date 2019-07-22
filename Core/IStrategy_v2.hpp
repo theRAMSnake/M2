@@ -34,7 +34,8 @@ enum class NodeType
    Counter = 3,
    Watch = 4,
    Wait = 5,
-   Reference = 6
+   Reference = 6,
+   Milestone = 7
    //Condition = 7, //condition
 };
 

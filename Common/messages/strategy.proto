@@ -47,6 +47,7 @@ enum NodeType
    WATCH = 4;
    WAIT = 5;
    REFERENCE = 6;
+   MILESTONE = 7;
 }
 
 message NodeAttributes

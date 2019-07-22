@@ -178,7 +178,8 @@ std::vector<std::pair<strategy::NodeType, std::string>> NODE_TYPES = {
    {strategy::NodeType::COUNTER, "Counter"},
    {strategy::NodeType::WATCH, "Watch"},
    {strategy::NodeType::WAIT, "Wait"},
-   {strategy::NodeType::REFERENCE, "Reference"}
+   {strategy::NodeType::REFERENCE, "Reference"},
+   {strategy::NodeType::MILESTONE, "Milestone"}
 };
 
 INodeTypeSpecifics* createNodeSpecifics(

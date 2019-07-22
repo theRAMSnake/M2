@@ -94,6 +94,9 @@ bool Strategy_v2::getNodeSelfCompleteness(const StrategyGraph& graph, const Node
    case NodeType::Wait:
       return attrs.get<NodeAttributeType::REQUIRED_TIMESTAMP>() < std::time(0);
 
+   case NodeType::Milestone:
+      return true;
+
    case NodeType::Watch:
       {
          auto w = getWatchItems();
