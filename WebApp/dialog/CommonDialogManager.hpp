@@ -23,6 +23,7 @@ public:
     BasicDialog(const std::string& caption, const bool supressEnter = false);
 
     virtual void onAccepted();
+    virtual bool verify();
 };
 
 class CommonDialogManager

@@ -69,3 +69,13 @@ BOOST_FIXTURE_TEST_CASE( IncrementBlock, FreeDataTest )
    BOOST_CHECK_EQUAL(6, items[1].value);
    BOOST_CHECK_EQUAL(-3, items[2].value);
 }
+
+BOOST_FIXTURE_TEST_CASE( InterpreterExecTest, FreeDataTest ) 
+{
+   
+}
+
+BOOST_FIXTURE_TEST_CASE( CheckExpressionTest, FreeDataTest ) 
+{
+   
+}

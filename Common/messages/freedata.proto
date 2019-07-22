@@ -24,5 +24,6 @@ service FreeDataService
    rpc Remove (common.StringMessage) returns (common.OperationResultMessage);
    rpc Set (FreeDataBlock) returns (common.OperationResultMessage);
    rpc Increment (FreeDataBlock) returns (common.OperationResultMessage);
+   rpc CheckExpression (common.StringMessage) returns (common.OperationResultMessage);
 }
 

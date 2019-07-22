@@ -48,5 +48,15 @@ void FreeData::increment(const std::string& name, const int value)
     }
 }
 
+bool FreeData::checkExpression(const std::string& expr)
+{
+    return mInterpreter.compile(expr);
+}
+
+const Interpreter& FreeData::getInterpreter() const
+{
+    return mInterpreter;
+}
+
 }
 }

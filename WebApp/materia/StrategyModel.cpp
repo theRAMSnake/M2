@@ -243,6 +243,10 @@ std::string StrategyModel::createDescriptiveTitle(const StrategyModel::Node& nod
 
       return "Wait till " + std::string(buffer);
    }
+   else if(node.type == strategy::NodeType::CONDITION)
+   {
+      return node.condition;
+   }
    else if(!node.brief.empty())
    {
       return node.brief;

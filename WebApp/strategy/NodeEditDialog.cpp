@@ -12,6 +12,7 @@ class INodeTypeSpecifics
 public:
    virtual void updateNode(StrategyModel::Node& node) const = 0;
    virtual void cleanUp(Wt::WContainerWidget& contents) = 0;
+   virtual bool verify() = 0;
 
    virtual ~INodeTypeSpecifics(){}
 };
@@ -33,6 +34,11 @@ public:
    void cleanUp(Wt::WContainerWidget& contents) override
    {
       contents.removeChild(mIsDone);
+   }
+
+   bool verify() override
+   {
+      return true;
    }
 
 private:
@@ -68,9 +74,52 @@ public:
       contents.removeChild(mTotal);
    }
 
+   bool verify() override
+   {
+      try
+      {
+         std::stoi(mCurrent->text());
+         std::stoi(mTotal->text());
+         return true;
+      }
+      catch(std::invalid_argument& ex)
+      {
+         return false;
+      }
+   }
+
 private:
    Wt::WLineEdit* mCurrent;
    Wt::WLineEdit* mTotal;
+};
+
+class ConditionNodeSpecifics : public INodeTypeSpecifics
+{
+public:
+   ConditionNodeSpecifics(const StrategyModel::Node& node, std::function<bool(std::string)> verifier, Wt::WContainerWidget& contents)
+   : mVerifier(verifier)
+   {
+      mText = contents.addWidget(std::make_unique<Wt::WLineEdit>(node.condition));
+   }
+
+   void updateNode(StrategyModel::Node& node) const override
+   {
+      node.condition = mText->text().narrow();
+   }
+
+   void cleanUp(Wt::WContainerWidget& contents) override
+   {
+      contents.removeChild(mText);
+   }
+
+   bool verify() override
+   {
+      return mVerifier(mText->text().narrow());
+   }
+
+private:
+   std::function<bool(std::string)> mVerifier;
+   Wt::WLineEdit* mText;
 };
 
 template<class TReferencedItem>
@@ -113,6 +162,11 @@ public:
       contents.removeChild(mItemsSelector);
    }
 
+   bool verify() override
+   {
+      return true;
+   }
+
 private:
    Wt::WComboBox* mItemsSelector;
    const std::vector<TReferencedItem> mItems;
@@ -134,6 +188,11 @@ public:
 
    void cleanUp(Wt::WContainerWidget& contents) override
    {
+   }
+
+   bool verify() override
+   {
+      return true;
    }
 };
 
@@ -167,6 +226,11 @@ public:
       contents.removeChild(mDateEdit);
    }
 
+   bool verify() override
+   {
+      return true;
+   }
+
 private:
    Wt::WTimeEdit* mTimeEdit;
    Wt::WDateEdit* mDateEdit;
@@ -178,7 +242,9 @@ std::vector<std::pair<strategy::NodeType, std::string>> NODE_TYPES = {
    {strategy::NodeType::COUNTER, "Counter"},
    {strategy::NodeType::WATCH, "Watch"},
    {strategy::NodeType::WAIT, "Wait"},
-   {strategy::NodeType::REFERENCE, "Reference"}
+   {strategy::NodeType::REFERENCE, "Reference"},
+   {strategy::NodeType::MILESTONE, "Milestone"},
+   {strategy::NodeType::CONDITION, "Condition"}
 };
 
 INodeTypeSpecifics* createNodeSpecifics(
@@ -186,6 +252,7 @@ INodeTypeSpecifics* createNodeSpecifics(
    const StrategyModel::Node& node, 
    const std::vector<StrategyModel::WatchItem>& watchItems, 
    const std::vector<StrategyModel::Goal>& goals, 
+   std::function<bool(std::string)> conditionVerifier,
    Wt::WContainerWidget& contents
    )
 {
@@ -206,6 +273,9 @@ INodeTypeSpecifics* createNodeSpecifics(
       case strategy::NodeType::REFERENCE:
          return new ReferencedNodeSpecifics<StrategyModel::Goal>(node, &StrategyModel::Node::graphReference, goals, contents);
 
+      case strategy::NodeType::CONDITION:
+         return new ConditionNodeSpecifics(node, conditionVerifier, contents);
+
       default:
          return new NoNodeSpecifics();
    }
@@ -215,6 +285,7 @@ NodeEditDialog::NodeEditDialog(
    const StrategyModel::Node& node, 
    const std::vector<StrategyModel::WatchItem>& watchItems, 
    const std::vector<StrategyModel::Goal>& goals, 
+   std::function<bool(std::string)> conditionVerifier,
    TCallback finishedCb,
    TCallback clonedCb,
    TCallback focusCb
@@ -264,11 +335,11 @@ NodeEditDialog::NodeEditDialog(
       }
    }
 
-   mNodeTypeSpecifics.reset(createNodeSpecifics(node.type, node, watchItems, goals, *contents()));
+   mNodeTypeSpecifics.reset(createNodeSpecifics(node.type, node, watchItems, goals, conditionVerifier, *contents()));
 
    types->changed().connect(std::bind([=](){
       mNodeTypeSpecifics->cleanUp(*contents());
-      mNodeTypeSpecifics.reset(createNodeSpecifics(NODE_TYPES[types->currentIndex()].first, node, watchItems, goals, *contents()));
+      mNodeTypeSpecifics.reset(createNodeSpecifics(NODE_TYPES[types->currentIndex()].first, node, watchItems, goals, conditionVerifier, *contents()));
    }));
 
    setWidth("50%");
@@ -285,4 +356,9 @@ NodeEditDialog::NodeEditDialog(
       finishedCb(n);
       delete this;
    }));
+}
+
+bool NodeEditDialog::verify()
+{
+   return mNodeTypeSpecifics->verify();
 }

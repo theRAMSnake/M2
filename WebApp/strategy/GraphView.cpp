@@ -113,6 +113,16 @@ public:
          Wt::WRectF imageRect(mBounds.x() + 8 + 2, mBounds.y() + 8 + 2, 32, 32);
          painter.drawImage(imageRect, Wt::WPainter::Image("resources/hourglass.png", 256, 256));
       }
+      else if(mNode.type == strategy::NodeType::CONDITION)
+      {
+         Wt::WRectF imageRect(mBounds.x() + 8 + 2, mBounds.y() + 8 + 2, 32, 32);
+         painter.drawImage(imageRect, Wt::WPainter::Image("resources/condition.png", 200, 200));
+      }
+      else if(mNode.type == strategy::NodeType::MILESTONE)
+      {
+         Wt::WRectF imageRect(mBounds.x() + 8 + 2, mBounds.y() + 8 + 2, 32, 32);
+         painter.drawImage(imageRect, Wt::WPainter::Image("resources/milestone.png", 200, 200));
+      }
       else if(mNode.type == strategy::NodeType::COUNTER)
       {
          painter.setFont(createFont(Wt::FontSize::Small));
@@ -618,8 +628,9 @@ void GraphView::assign(const materia::Id& id, const StrategyModel::Graph& g, con
    cgv->OnElementClicked.connect(std::bind(&GraphView::OnElementClicked, this, std::placeholders::_1, std::placeholders::_2));
 }
 
-GraphView::GraphView(StrategyModel& model)
+GraphView::GraphView(StrategyModel& model, FreeDataModel& freeData)
 : mModel(model)
+, mFreeData(freeData)
 {
    mImpl = setImplementation(std::make_unique<Wt::WContainerWidget>());
    mImpl->hide();
@@ -701,7 +712,20 @@ void GraphView::OnNodeClicked(const StrategyModel::Node& node, const Wt::WMouseE
             }
          };
 
-         NodeEditDialog* dlg = new NodeEditDialog(node, mModel.getWatchItems(), mModel.getGoals(), doneCallback, cloneCallback, focusCallback);
+         std::function<bool(std::string)> conditionVerifier = [=] (std::string expr)->bool {
+               return mFreeData.checkExpression(expr);
+            };
+
+         NodeEditDialog* dlg = new NodeEditDialog(
+            node, 
+            mModel.getWatchItems(), 
+            mModel.getGoals(), 
+            conditionVerifier, 
+            doneCallback, 
+            cloneCallback, 
+            focusCallback
+            );
+
          dlg->show();
       }
       else if(node.type == strategy::NodeType::GOAL)

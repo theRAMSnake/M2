@@ -2,6 +2,7 @@
 #include <boost/test/unit_test.hpp>
 #include <Core/ICore.hpp>
 #include <Core/IStrategy_v2.hpp>
+#include <Core/IFreeData.hpp>
 
 extern std::shared_ptr<materia::ICore> createTestCore();
 

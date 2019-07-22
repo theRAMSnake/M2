@@ -90,6 +90,7 @@ public:
 struct GoalViewCtrlConstructionParams
 {
    StrategyModel& model;
+   FreeDataModel& freeData;
    bool isActiveSlot;
 };
 
@@ -99,25 +100,24 @@ class GoalViewCtrl : public Wt::WContainerWidget, public IGoalViewCtrl
 public:
    GoalViewCtrl(GoalViewCtrlConstructionParams& p)
    : mModel(p.model)
+   , mFreeData(p.freeData)
    , mIsActiveSlot(p.isActiveSlot)
    {
       setStyleClass(GoalViewCtrlTraits<isCompact>::emptyStyleClass);
       addStyleClass("row");
 
-      auto namePtr = std::make_unique<Wt::WLabel>("");
-      mName = namePtr.get();
-      mName->setStyleClass("GoalViewCtrl_Text");
-      setAttributeValue("oncontextmenu", "event.cancelBubble = true; event.returnValue = false; return false;");
-      mName->mouseWentDown().connect(this, &GoalViewCtrl<isCompact>::onBoundClicked);
-
       if(!isCompact)
       {
-         mGraphView = addWidget(std::make_unique<GraphView>(mModel));
+         mGraphView = addWidget(std::make_unique<GraphView>(mModel, mFreeData));
          mGraphView->OnCaptionClicked.connect(std::bind(&GoalViewCtrl<isCompact>::onBoundClicked, this, std::placeholders::_1));
-
       }
       else
       {
+         auto namePtr = std::make_unique<Wt::WLabel>("");
+         mName = namePtr.get();
+         mName->setStyleClass("GoalViewCtrl_Text");
+         setAttributeValue("oncontextmenu", "event.cancelBubble = true; event.returnValue = false; return false;");
+         mName->mouseWentDown().connect(this, &GoalViewCtrl<isCompact>::onBoundClicked);
          addWidget(std::move(namePtr));
       }
 
@@ -181,16 +181,19 @@ public:
       auto result = mGoal;
 
       setStyleClass(GoalViewCtrlTraits<isCompact>::emptyStyleClass);
-      mName->setText("");
+      
       mGoal.reset();
       mGraph.reset();
 
       if(!isCompact)
       {
          mGraphView->reset();
-         mNotes->setText("");
       }
-
+      else
+      {
+         mName->setText("");
+      }
+      
       return result;
    }
 
@@ -221,7 +224,7 @@ private:
          }
          else
          {
-            GraphEditDialog* dlg = new GraphEditDialog(*mGoal, mModel, [&] (auto graph, auto goal) {mGraph = graph; mGoal = goal; render();});
+            GraphEditDialog* dlg = new GraphEditDialog(*mGoal, mModel, mFreeData, [&] (auto graph, auto goal) {mGraph = graph; mGoal = goal; render();});
             dlg->show();
          }
       }
@@ -237,28 +240,28 @@ private:
 
    void render()
    {
-      mName->setText(mGoal->title);
       if(!isCompact)
       {
          if(!mGraph)
          {
-            mName->show();
             mGraphView->reset();
-            mNotes->setText(mGoal->notes);
          }
          else
          {
             mGraphView->assign(mGoal->id, *mGraph, mGoal->title);
-            mName->hide();
          }
+      }
+      else
+      {
+         mName->setText(mGoal->title);
       }
    }
 
 
    static constexpr char MY_MIME_TYPE[] = "GoalViewCtrl";
    StrategyModel& mModel;
+   FreeDataModel& mFreeData;
    Wt::WLabel* mName = nullptr;
-   Wt::WText* mNotes = nullptr;
    GraphView* mGraphView = nullptr;
    std::optional<StrategyModel::Goal> mGoal;
    std::optional<StrategyModel::Graph> mGraph;

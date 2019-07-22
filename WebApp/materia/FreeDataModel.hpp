@@ -21,6 +21,8 @@ public:
    void set(const Block& b);
    void remove(const std::string& blockname);
 
+   bool checkExpression(const std::string& expression);
+
 private:
    MateriaServiceProxy<freedata::FreeDataService> mService;
 };
