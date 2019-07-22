@@ -3,11 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/extendedCalendarView/extendedCalendarView.iml" filepath="$PROJECT_DIR$/extendedCalendarView/extendedCalendarView.iml" />
-      <module fileurl="file://$PROJECT_DIR$/extendedCalendarView/extendedCalendarView.iml" filepath="$PROJECT_DIR$/extendedCalendarView/extendedCalendarView.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/minion.iml" filepath="$PROJECT_DIR$/.idea/minion.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/minion.iml" filepath="$PROJECT_DIR$/.idea/minion.iml" />
       <module fileurl="file://$PROJECT_DIR$/minion.iml" filepath="$PROJECT_DIR$/minion.iml" />
     </modules>
   </component>

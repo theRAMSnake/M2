@@ -11,6 +11,8 @@ import java.util.*
 
 @Serializable
 data class FDItem(
+        @Serializable(with = UUIDSerializer::class)
+        var id: UUID,
         var name: String,
         var baseValue: Int,
         var delta: Int
@@ -21,7 +23,7 @@ class FreeDataModel(private val Db: LocalDatabase)
     private var Items = listOf<FDItem>()
 
     val Ids: List<UUID>
-        get() = Items.map { UUID.fromString(it.name) }
+        get() = Items.map { it.id }
 
     init
     {
@@ -63,7 +65,7 @@ class FreeDataModel(private val Db: LocalDatabase)
     {
         val json = Json.stringify(FDItem.serializer().list, Items.toList())
 
-        Db.put("FreeDataBlocks", json)
+        Db.put("FreeDataBlocks2", json)
     }
 
     private fun updateItem(item: FDItem, proxy: FreeDataServiceProxy)
@@ -80,7 +82,7 @@ class FreeDataModel(private val Db: LocalDatabase)
 
         for(x in queryResult.itemsList)
         {
-            result.add(FDItem(x.name, x.value, 0))
+            result.add(FDItem(UUID.randomUUID(), x.name, x.value, 0))
         }
 
         return result
@@ -91,7 +93,7 @@ class FreeDataModel(private val Db: LocalDatabase)
     {
         try
         {
-            Items = Json.parse(FDItem.serializer().list, Db["FreeDataBlocks"])
+            Items = Json.parse(FDItem.serializer().list, Db["FreeDataBlocks2"])
         }
         catch(ex: Exception)
         {
@@ -105,29 +107,29 @@ class FreeDataModel(private val Db: LocalDatabase)
         saveState()
     }
 
-    fun getItemName(id: UUID): Int
+    fun getItemName(id: UUID): String
     {
-        val item = Items.find { UUID.fromString(it.name) == id }!!
+        val item = Items.find { it.id == id }!!
 
-        return item.baseValue + item.delta
+        return item.name
     }
 
     fun getItemValue(id: UUID): Int
     {
-        val item = Items.find { UUID.fromString(it.name) == id }!!
+        val item = Items.find { it.id == id }!!
 
         return item.baseValue + item.delta
     }
 
     fun decItem(item: UUID)
     {
-        Items.find { UUID.fromString(it.name) == item }!!.delta--
+        Items.find { it.id == item }!!.delta--
         saveState()
     }
 
     fun incItem(item: UUID)
     {
-        Items.find { UUID.fromString(it.name) == item }!!.delta++
+        Items.find { it.id == item }!!.delta++
         saveState()
     }
 }

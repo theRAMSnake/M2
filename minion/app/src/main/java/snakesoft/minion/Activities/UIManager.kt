@@ -11,7 +11,7 @@ object UIManager
         addMenuItem<InboxActivity, T>(menu, "Inbox", c)
         addMenuItem<CalendarActivity, T>(menu, "Calendar", c)
         addMenuItem<JournalActivity, T>(menu, "Journal", c)
-        addMenuItem<ResourcesActivity, T>(menu, "Resources", c)
+        addMenuItem<ResourcesActivity, T>(menu, "FreeData", c)
     }
 
     private inline fun <reified A : Activity, T> addMenuItem(menu: Menu, text: String, c: AnkoContext<T>)
