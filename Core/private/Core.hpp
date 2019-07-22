@@ -29,9 +29,9 @@ private:
     Inbox mInbox;
     Calendar mCalendar;
     Journal mJournal;
+    freedata::FreeData mFreeData;
     Strategy_v2 mStrategy_v2;
     Backuper mBackuper;
-    freedata::FreeData mFreeData;
 };
 
 std::shared_ptr<ICore> createCore(const CoreConfig& config);

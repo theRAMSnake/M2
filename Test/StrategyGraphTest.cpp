@@ -3,6 +3,7 @@
 #include <boost/test/unit_test.hpp>
 #include <Core/ICore.hpp>
 #include <Core/IStrategy_v2.hpp>
+#include <Core/IFreeData.hpp>
 
 extern std::shared_ptr<materia::ICore> createTestCore();
 
@@ -700,4 +701,25 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_Completeness_Goal_Achieved_If_Graph_C
    BOOST_CHECK(IsNodeDone(graphId, goalNodeId));
 
    BOOST_CHECK(mStrategy.getGoal(mGoals[0].id)->achieved);
+}
+
+BOOST_FIXTURE_TEST_CASE( CompleteConditionNode, StrategyGraphTest ) 
+{
+   mCore->getFreeData().set({"a", 1});
+   mCore->getFreeData().set({"b", 1});
+
+   auto gId = mStrategy.addGoal({});
+
+   auto nodeId = mStrategy.createNode(gId);
+
+   materia::NodeAttributes attrs;
+   attrs.set<materia::NodeAttributeType::CONDITION_EXPRESSION>("a > b");
+   mStrategy.setNodeAttributes(gId, nodeId, materia::NodeType::Condition, attrs);
+
+   BOOST_CHECK(!IsNodeDone(gId, nodeId));
+
+   attrs.set<materia::NodeAttributeType::CONDITION_EXPRESSION>("a = b");
+   mStrategy.setNodeAttributes(gId, nodeId, materia::NodeType::Condition, attrs);
+
+   BOOST_CHECK(IsNodeDone(gId, nodeId));
 }

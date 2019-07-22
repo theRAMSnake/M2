@@ -111,7 +111,19 @@ BasicDialog::BasicDialog(const std::string& caption, const bool suppressEnter)
 
 void BasicDialog::onAccepted()
 {
-    accept();
+    if(verify())
+    {
+        accept();
+    }
+    else
+    {
+        CommonDialogManager::showMessage("Verification failed!");
+    }
+}
+
+bool BasicDialog::verify()
+{
+    return true;
 }
 
 Wt::WDialog* CommonDialogManager::createDialogBase(const std::string& caption)

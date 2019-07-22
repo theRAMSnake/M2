@@ -62,11 +62,11 @@ private:
 class BacklogView : public Wt::WContainerWidget
 {
 public:
-   BacklogView(StrategyModel& model)
+   BacklogView(StrategyModel& model, FreeDataModel& freeData)
    : mStrategyModel(model)
    {
       auto activeGroup = addWidget(std::make_unique<Wt::WGroupBox>("Active"));
-      auto [temp, activeGoalCtrls] = TemplateBuilder::makeTable<GoalViewCtrl<true>>(1u, 4u, GoalViewCtrlConstructionParams{model, true});
+      auto [temp, activeGoalCtrls] = TemplateBuilder::makeTable<GoalViewCtrl<true>>(1u, 4u, GoalViewCtrlConstructionParams{model, freeData, true});
       activeGroup->addWidget(std::unique_ptr<Wt::WTemplate>(temp));
 
       auto items = mStrategyModel.getGoals();
@@ -89,7 +89,9 @@ public:
       }
 
       auto inactiveGroup = addWidget(std::make_unique<Wt::WGroupBox>("Inactive"));
-      auto [temp2, inactiveGoalCtrls] = TemplateBuilder::makeTable<GoalViewCtrl<true>>(numUnfocused / 6 + 1, 6u, GoalViewCtrlConstructionParams{model, false});
+      auto [temp2, inactiveGoalCtrls] = TemplateBuilder::makeTable<GoalViewCtrl<true>>(numUnfocused / 6 + 1, 6u, 
+         GoalViewCtrlConstructionParams{model, freeData, false});
+
       inactiveGroup->addWidget(std::unique_ptr<Wt::WTemplate>(temp2));
 
       pos = 0;
@@ -250,7 +252,7 @@ StrategyView::StrategyView(StrategyModel& strategy, FreeDataModel& fd)
    backlogBtn->clicked().connect(std::bind(&StrategyView::onBacklogClick, this));
    mMainToolbar->addButton(std::move(backlogBtn));
 
-   auto [temp, goalCtrls] = TemplateBuilder::makeTable<GoalViewCtrl<false>>(2u, 2u, GoalViewCtrlConstructionParams{strategy, true});
+   auto [temp, goalCtrls] = TemplateBuilder::makeTable<GoalViewCtrl<false>>(2u, 2u, GoalViewCtrlConstructionParams{strategy, fd, true});
    std::copy(goalCtrls.begin(), goalCtrls.end(), std::inserter(mGoalCtrls, mGoalCtrls.begin()));
 
    for(auto x : mGoalCtrls)
@@ -370,7 +372,7 @@ void StrategyView::putGoal(const StrategyModel::Goal& goal)
 
 void StrategyView::onBacklogClick()
 {
-   Dialog* dlg = new Dialog("Backlog View", std::make_unique<BacklogView>(mStrategyModel));
+   Dialog* dlg = new Dialog("Backlog View", std::make_unique<BacklogView>(mStrategyModel, mFdModel));
    dlg->OnFinished.connect(std::bind([=]() {
          layGoals();
    }));

@@ -8,9 +8,9 @@ Core::Core(const CoreConfig& config)
 , mInbox(mDb)
 , mCalendar(mDb)
 , mJournal(mDb)
-, mStrategy_v2(mDb)
-, mBackuper(config.dbFileName)
 , mFreeData(mDb)
+, mStrategy_v2(mDb, mFreeData.getInterpreter())
+, mBackuper(config.dbFileName)
 {
 
 }

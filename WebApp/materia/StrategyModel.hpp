@@ -40,6 +40,7 @@ public:
       materia::Id watchItemReference;
       materia::Id graphReference;
       std::time_t requiredTimestamp;
+      std::string condition;
    };
 
    struct Link

@@ -19,6 +19,7 @@ public:
     virtual void remove(const std::string& name) = 0;
     virtual void set(const DataBlock& block) = 0;
     virtual void increment(const std::string& name, const int value) = 0;
+    virtual bool checkExpression(const std::string& expression) = 0;
 
     virtual ~IFreeData(){}
 };

@@ -45,6 +45,7 @@ strategy::NodeType toProto(const materia::NodeType& src)
       case materia::NodeType::Wait: return strategy::NodeType::WAIT;
       case materia::NodeType::Reference: return strategy::NodeType::REFERENCE;
       case materia::NodeType::Milestone: return strategy::NodeType::MILESTONE;
+      case materia::NodeType::Condition: return strategy::NodeType::CONDITION;
    }
    
    return strategy::NodeType::BLANK;
@@ -62,6 +63,7 @@ materia::NodeType fromProto(const strategy::NodeType src)
       case strategy::NodeType::WAIT: return materia::NodeType::Wait;
       case strategy::NodeType::REFERENCE: return materia::NodeType::Reference;
       case strategy::NodeType::MILESTONE: return materia::NodeType::Milestone;
+      case strategy::NodeType::CONDITION: return materia::NodeType::Condition;
 
    default:
       return materia::NodeType::Blank;

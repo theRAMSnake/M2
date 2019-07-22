@@ -48,6 +48,7 @@ enum NodeType
    WAIT = 5;
    REFERENCE = 6;
    MILESTONE = 7;
+   CONDITION = 8;
 }
 
 message NodeAttributes
@@ -59,6 +60,7 @@ message NodeAttributes
    common.UniqueId watch_item_reference = 5;
    int32 required_timestamp = 6;
    common.UniqueId graph_reference = 7;
+   string fd_expression = 8;
 }
 
 message NodeProperties

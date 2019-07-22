@@ -56,3 +56,14 @@ void FreeDataModel::remove(const std::string& blockname)
    common::OperationResultMessage dummy;
    mService.getService().Remove(nullptr, &str, &dummy, nullptr);
 }
+
+bool FreeDataModel::checkExpression(const std::string& expression)
+{
+   common::StringMessage str;
+   str.set_content(expression);
+
+   common::OperationResultMessage result;
+   mService.getService().CheckExpression(nullptr, &str, &result, nullptr);
+
+   return result.success();
+}

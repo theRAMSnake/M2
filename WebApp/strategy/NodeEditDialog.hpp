@@ -13,10 +13,13 @@ public:
        const StrategyModel::Node& node,
        const std::vector<StrategyModel::WatchItem>& watchItems, 
        const std::vector<StrategyModel::Goal>& goals, 
+       std::function<bool(std::string)> conditionVerifier,
        TCallback finishedCb,
        TCallback clonedCb,
        TCallback focusCb
        );
+
+    bool verify() override;
 
 private:
 

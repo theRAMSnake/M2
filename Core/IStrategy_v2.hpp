@@ -35,8 +35,8 @@ enum class NodeType
    Watch = 4,
    Wait = 5,
    Reference = 6,
-   Milestone = 7
-   //Condition = 7, //condition
+   Milestone = 7,
+   Condition = 8
 };
 
 struct Node

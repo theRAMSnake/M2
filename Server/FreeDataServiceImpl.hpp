@@ -55,6 +55,14 @@ public:
       response->set_success(true);
    }
 
+   virtual void CheckExpression(::google::protobuf::RpcController* controller,
+                       const ::common::StringMessage* request,
+                       ::common::OperationResultMessage* response,
+                       ::google::protobuf::Closure* done)
+   {
+      response->set_success(mFd.checkExpression(request->content()));
+   }
+
 private:
    materia::IFreeData& mFd;
 };
