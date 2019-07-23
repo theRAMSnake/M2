@@ -181,6 +181,10 @@ public:
             {
                attrs.mutable_graph_reference()->CopyFrom(toProto(srcAttrs.get<NodeAttributeType::GOAL_REFERENCE>()));
             }
+            if(srcAttrs.contains(NodeAttributeType::CONDITION_EXPRESSION))
+            {
+               attrs.set_fd_expression(srcAttrs.get<NodeAttributeType::CONDITION_EXPRESSION>());
+            }
          }
       }
    }
@@ -238,6 +242,11 @@ public:
       if(srcAttrs.required_timestamp() != 0)
       {
          attrs.set<materia::NodeAttributeType::REQUIRED_TIMESTAMP>(srcAttrs.required_timestamp());
+      }
+
+      if(srcAttrs.fd_expression().size() > 0)
+      {
+         attrs.set<materia::NodeAttributeType::CONDITION_EXPRESSION>(srcAttrs.fd_expression());
       }
 
       mStrategy2.setNodeAttributes(graphId, nodeId, fromProto(request->node_type()), attrs);

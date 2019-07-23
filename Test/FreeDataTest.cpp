@@ -70,12 +70,60 @@ BOOST_FIXTURE_TEST_CASE( IncrementBlock, FreeDataTest )
    BOOST_CHECK_EQUAL(-3, items[2].value);
 }
 
-BOOST_FIXTURE_TEST_CASE( InterpreterExecTest, FreeDataTest ) 
+BOOST_FIXTURE_TEST_CASE( EvaluateTest, FreeDataTest ) 
 {
-   
+   mFd.set({"a", 1});
+   mFd.set({"b", 2});
+   mFd.set({"c", 4});
+   mFd.set({"d", 2});
+
+   {
+      std::string expr = "a = b";
+      BOOST_CHECK(!mFd.evaluateExpression(expr));
+   }
+   {
+      std::string expr = "d = b";
+      BOOST_CHECK(mFd.evaluateExpression(expr));
+   }
+   {
+      std::string expr = "a > b";
+      BOOST_CHECK(!mFd.evaluateExpression(expr));
+   }
+   {
+      std::string expr = "c > b";
+      BOOST_CHECK(mFd.evaluateExpression(expr));
+   }
+   {
+      std::string expr = "b < a";
+      BOOST_CHECK(!mFd.evaluateExpression(expr));
+   }
+   {
+      std::string expr = "a < b";
+      BOOST_CHECK(mFd.evaluateExpression(expr));
+   }
 }
 
 BOOST_FIXTURE_TEST_CASE( CheckExpressionTest, FreeDataTest ) 
 {
-   
+   {
+      std::string expr = "wrong";
+      BOOST_CHECK(!mFd.checkExpression(expr));
+   }
+   {
+      std::string expr = "5=6";
+      BOOST_CHECK(!mFd.checkExpression(expr));
+   }
+   {
+      std::string expr = "5 = 6";
+      BOOST_CHECK(mFd.checkExpression(expr));
+   }
+   {
+      std::string expr = "a = 6";
+      BOOST_CHECK(!mFd.checkExpression(expr));
+   }
+   mFd.set({"a", 1});
+   {
+      std::string expr = "a = 6";
+      BOOST_CHECK(mFd.checkExpression(expr));
+   }
 }

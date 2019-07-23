@@ -7,22 +7,24 @@ namespace materia
 namespace freedata
 {
 
-bool Interpreter::execBoolean(const std::string& expression) const
+bool Interpreter::execBoolean(const BinaryExpression& expression) const
 {
-   return false;
-}
+   int arg1 = boost::lexical_cast<int>(expression.arg1);
+   int arg2 = boost::lexical_cast<int>(expression.arg2);
 
-bool is_number(const std::string& s)
-{
-   try 
+   switch(expression.sign)
    {
-      int x = boost::lexical_cast<int>(s);
-      return true;
+      case '=':
+         return arg1 == arg2;
+
+      case '>':
+         return arg1 > arg2;
+
+      case '<':
+         return arg1 < arg2;
    }
-   catch(...) 
-   { 
-      return false;
-   }
+
+   return false;
 }
 
 std::optional<BinaryExpression> Interpreter::compile(const std::string& expression) const
@@ -34,11 +36,11 @@ std::optional<BinaryExpression> Interpreter::compile(const std::string& expressi
 
    if (std::regex_match(expression, m, reg) && m.size() == 4)
    {
-      auto arg1 = m[1];
-      auto sign = m[2];
-      auto arg2 = m[3];
+      auto arg1 = m[1].str();
+      auto sign = m[2].str();
+      auto arg2 = m[3].str();
 
-      result.reset(BinaryExpression(arg1, arg2, sign));
+      result = BinaryExpression{arg1, arg2, sign[0]};
    }
 
    return result;

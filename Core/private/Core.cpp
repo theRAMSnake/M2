@@ -9,7 +9,7 @@ Core::Core(const CoreConfig& config)
 , mCalendar(mDb)
 , mJournal(mDb)
 , mFreeData(mDb)
-, mStrategy_v2(mDb, mFreeData.getInterpreter())
+, mStrategy_v2(mDb, mFreeData)
 , mBackuper(config.dbFileName)
 {
 

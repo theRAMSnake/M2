@@ -7,16 +7,17 @@ namespace materia
 namespace freedata
 {
 
-class BinaryExpression
+struct BinaryExpression
 {
-public:
-
+   std::string arg1;
+   std::string arg2;
+   char sign;
 };
 
 class Interpreter
 {
 public:
-   bool execBoolean(const std::string& expression) const;
+   bool execBoolean(const BinaryExpression& expression) const;
 
    std::optional<BinaryExpression> compile(const std::string& expression) const;
 };

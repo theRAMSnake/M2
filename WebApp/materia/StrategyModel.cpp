@@ -281,7 +281,8 @@ std::optional<StrategyModel::Graph> StrategyModel::getGraph(const materia::Id& s
             {x.attrs().progress_current(), x.attrs().progress_total()},
             x.attrs().watch_item_reference().guid(),
             x.attrs().graph_reference().guid(),
-            x.attrs().required_timestamp()
+            x.attrs().required_timestamp(),
+            x.attrs().fd_expression()
             });
 
          g.nodes.back().descriptiveTitle = createDescriptiveTitle(g.nodes.back());
@@ -378,6 +379,7 @@ void StrategyModel::updateNode(const materia::Id& graphId, const Node& node)
    attrs->mutable_watch_item_reference()->set_guid(node.watchItemReference.getGuid());
    attrs->mutable_graph_reference()->set_guid(node.graphReference.getGuid());
    attrs->set_required_timestamp(node.requiredTimestamp);
+   attrs->set_fd_expression(node.condition);
 
    common::OperationResultMessage opResult;
    mService.getService().ModifyNode(nullptr, &props, &opResult, nullptr);

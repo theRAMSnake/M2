@@ -3,7 +3,7 @@
 #include "../IStrategy_v2.hpp"
 #include "Database.hpp"
 #include "StrategyGraph.hpp"
-#include "FreeDataInterpreter.hpp"
+#include "FreeData.hpp"
 
 namespace materia
 {
@@ -11,7 +11,7 @@ namespace materia
 class Strategy_v2 : public IStrategy_v2
 {
 public:
-   Strategy_v2(Database& db, const freedata::Interpreter& fdInterpreter);
+   Strategy_v2(Database& db, freedata::FreeData& fd);
 
    Id addGoal(const Goal& goal) override;
    void modifyGoal(const Goal& goal) override;
@@ -60,7 +60,7 @@ private:
    std::unique_ptr<DatabaseTable> mWatchStorage;
    std::unique_ptr<DatabaseTable> mFocusStorage;
    std::unique_ptr<DatabaseTable> mGoalsStorage;
-   const freedata::Interpreter& mFdInterpreter;
+   freedata::FreeData& mFd;
 };
 
 }

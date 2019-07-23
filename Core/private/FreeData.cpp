@@ -1,5 +1,6 @@
 #include "FreeData.hpp"
 #include "JsonSerializer.hpp"
+#include <boost/lexical_cast.hpp>
 
 BIND_JSON2(materia::DataBlock, name, value)
 
@@ -48,14 +49,83 @@ void FreeData::increment(const std::string& name, const int value)
     }
 }
 
-bool FreeData::checkExpression(const std::string& expr)
+bool is_number(const std::string& s)
 {
-    return mInterpreter.compile(expr);
+   try 
+   {
+      boost::lexical_cast<int>(s);
+      return true;
+   }
+   catch(...) 
+   { 
+      return false;
+   }
 }
 
-const Interpreter& FreeData::getInterpreter() const
+std::string FreeData::bindField(const std::string& field)
 {
-    return mInterpreter;
+    if(is_number(field))
+    {
+        return field;
+    }
+    else
+    {
+        auto blocks = get();
+        auto pos = std::find_if(blocks.begin(), blocks.end(), [&](auto x)->bool {return x.name == field;});
+        if(pos != blocks.end())
+        {
+            return std::to_string(pos->value);
+        }
+        else
+        {
+            throw std::invalid_argument("field");
+        }
+    }
+}
+
+std::optional<BinaryExpression> FreeData::bind(const BinaryExpression& expr)
+{   
+    try
+    {
+        BinaryExpression newExpr;
+
+        newExpr.arg1 = bindField(expr.arg1);
+        newExpr.arg2 = bindField(expr.arg2);
+        newExpr.sign = expr.sign;
+
+        return newExpr;
+    }
+    catch(const std::exception& e)
+    {
+        return std::optional<BinaryExpression>();
+    }
+}
+
+bool FreeData::checkExpression(const std::string& expr)
+{
+    auto compiled = mInterpreter.compile(expr);
+    if(compiled)
+    {
+        auto bound = bind(*compiled);
+        return bound.has_value();
+    }
+
+    return false;
+}
+
+bool FreeData::evaluateExpression(const std::string& expr)
+{
+    auto compiled = mInterpreter.compile(expr);
+    if(compiled)
+    {
+        auto bound = bind(*compiled);
+        if(bound)
+        {
+            return mInterpreter.execBoolean(*bound);
+        }
+    }
+
+    return false;
 }
 
 }

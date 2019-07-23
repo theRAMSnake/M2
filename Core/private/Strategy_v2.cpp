@@ -21,12 +21,12 @@ BIND_JSON2(attr_map_node, first, second)
 namespace materia
 {
 
-Strategy_v2::Strategy_v2(Database& db, const freedata::Interpreter& fdInterpreter)
+Strategy_v2::Strategy_v2(Database& db, freedata::FreeData& fd)
 : mGraphsStorage(db.getTable("graphs"))
 , mWatchStorage(db.getTable("watchItems"))
 , mFocusStorage(db.getTable("focusItems"))
 , mGoalsStorage(db.getTable("goals"))
-, mFdInterpreter(fdInterpreter)
+, mFd(fd)
 {
    LOG("Start strategy2 init");
 }
@@ -99,7 +99,7 @@ bool Strategy_v2::getNodeSelfCompleteness(const StrategyGraph& graph, const Node
       return true;
 
    case NodeType::Condition:
-      return mFdInterpreter.execBoolean(attrs.get<NodeAttributeType::CONDITION_EXPRESSION>());
+      return mFd.evaluateExpression(attrs.get<NodeAttributeType::CONDITION_EXPRESSION>());
 
    case NodeType::Watch:
       {
