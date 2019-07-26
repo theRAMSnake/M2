@@ -10,6 +10,7 @@ object UIManager
         addMenuItem<SyncActivity, T>(menu, "Sync", c)
         addMenuItem<InboxActivity, T>(menu, "Inbox", c)
         addMenuItem<CalendarActivity, T>(menu, "Calendar", c)
+        addMenuItem<FocusActivity, T>(menu, "Focus", c)
         addMenuItem<JournalActivity, T>(menu, "Journal", c)
         addMenuItem<ResourcesActivity, T>(menu, "FreeData", c)
     }

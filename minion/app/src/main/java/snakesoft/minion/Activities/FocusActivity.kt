@@ -13,16 +13,16 @@ import org.jetbrains.anko.support.v4._DrawerLayout
 import snakesoft.minion.Models.GlobalModel
 import java.util.*
 
-class ResourcesActivity : AppCompatActivity()
+class FocusActivity : AppCompatActivity()
 {
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        ResourcesActivityUI().setContentView(this)
+        FocusActivityUI().setContentView(this)
     }
 }
 
-class ResourceItemAdapter : BaseAdapter()
+class FocusItemAdapter : BaseAdapter()
 {
     override fun getItemId(p0: Int): Long {
         return p0.toLong()
@@ -30,50 +30,29 @@ class ResourceItemAdapter : BaseAdapter()
 
     override fun getView(i : Int, v : View?, parent : ViewGroup?) : View
     {
-        val item = getItem(i)
+        val itemId = getItem(i)
         return with(parent!!.context) {
             relativeLayout()
             {
-                textView(GlobalModel.FreeDataModel.getItemName(item))
+                textView(GlobalModel.FocusDataModel.getItemName(itemId))
                 {
                     textSize = 64f
                     textColor = Color.BLUE
-                    onClick {
-                        GlobalModel.FreeDataModel.decItem(item)
-                        notifyDataSetChanged()
-                    }
-                }.lparams()
-                {
-                    leftMargin = dip(15)
-                    alignParentLeft()
-                }
-                textView(GlobalModel.FreeDataModel.getItemValue(item).toString())
-                {
-                    textSize = 64f
-                    textColor = Color.BLACK
-                    onClick {
-                        GlobalModel.FreeDataModel.incItem(item)
-                        notifyDataSetChanged()
-                    }
-                }.lparams()
-                {
-                    rightMargin = dip(30)
-                    alignParentRight()
                 }
             }
         }
     }
 
     override fun getItem(position : Int) : UUID {
-        return GlobalModel.FreeDataModel.Ids[position]
+        return GlobalModel.FocusDataModel.Items[position].id
     }
 
     override fun getCount() : Int {
-        return GlobalModel.FreeDataModel.Ids.size
+        return GlobalModel.FocusDataModel.Items.size
     }
 }
 
-class ResourcesActivityUI : MateriaActivityUI<ResourcesActivity>()
+class FocusActivityUI : MateriaActivityUI<FocusActivity>()
 {
     override fun fillActivityUI(_DrawerLayout: @AnkoViewDslMarker _DrawerLayout, ctx: Context)
     {
@@ -83,7 +62,7 @@ class ResourcesActivityUI : MateriaActivityUI<ResourcesActivity>()
             {
                 listView()
                 {
-                    adapter = ResourceItemAdapter()
+                    adapter = FocusItemAdapter()
                 }
             }
         }
