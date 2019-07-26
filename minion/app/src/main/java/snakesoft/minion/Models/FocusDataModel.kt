@@ -39,6 +39,8 @@ class FocusDataModel(private val Db: LocalDatabase)
         graphToNodesMap.forEach {
             val g = proxy.loadGraph(it.key)
 
+            observer.OnUpdated("Graph loaded: ${it.key}")
+
             it.value.forEach {
                 val node = g.nodesList.find { n -> n.id.objectId == it }
                 if(node != null)
