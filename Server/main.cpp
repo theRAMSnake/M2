@@ -12,6 +12,7 @@
 #include "JournalServiceImpl.hpp"
 #include "AdminServiceImpl.hpp"
 #include "FreeDataServiceImpl.hpp"
+#include "Common/Codec.hpp"
 
 class DoubleLogger
 {
@@ -83,8 +84,17 @@ common::MateriaMessage handleMessage(const common::MateriaMessage& in)
 
 static bool shutdownFlag = false;
 
-int main()
+int main(int argc, char *argv[])
 {
+    if(argc < 2)
+    {
+       std::cout << "Please specify password";
+       return -1;
+    }
+
+    std::string password = argv[1];
+    Codec codec(password);
+
     zmq::context_t context (1);
     zmq::socket_t clientSocket (context, ZMQ_REP);
     clientSocket.bind ("tcp://*:5757");
@@ -108,8 +118,10 @@ int main()
         clientSocket.recv (&clientMessage);
         logger << "Received message\n";
 
+        std::string decoded = codec.decrypt(std::string(clientMessage.data(), clientMessage.size()));
+
         common::MateriaMessage materiaMsg;
-        materiaMsg.ParseFromArray(clientMessage.data(), clientMessage.size());
+        materiaMsg.ParseFromArray(&decoded[0], decoded.size());
 
         auto resp = handleMessage(materiaMsg);
 
