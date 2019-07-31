@@ -1,9 +1,9 @@
 #include "MateriaClient.hpp"
 
-MateriaClient::MateriaClient()
+MateriaClient::MateriaClient(const std::string& password)
 : mContext(1)
 , mSocket(mContext, ZMQ_REQ)
-, mChannel(mSocket, "webapp")
+, mChannel(mSocket, "webapp", password)
 {
     mSocket.connect("tcp://localhost:5757");
     mCalendar.reset(new CalendarModel(mChannel));

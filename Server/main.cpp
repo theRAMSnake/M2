@@ -118,16 +118,34 @@ int main(int argc, char *argv[])
         clientSocket.recv (&clientMessage);
         logger << "Received message\n";
 
-        std::string decoded = codec.decrypt(std::string(clientMessage.data(), clientMessage.size()));
+        std::string received(static_cast<const char *>(clientMessage.data()), clientMessage.size());
+        std::string decoded;
+        
+        try
+        {
+            decoded = codec.decrypt(received);
+        }
+        catch(...)
+        {
+            logger << "Decription failed\n";
+            clientSocket.send (clientMessage);
+            continue;
+        }
 
         common::MateriaMessage materiaMsg;
-        materiaMsg.ParseFromArray(&decoded[0], decoded.size());
+        if(!materiaMsg.ParseFromString(decoded))
+        {
+            logger << "Cannot parse message, sending it back\n";
+            clientSocket.send (clientMessage);
+            continue;
+        }
 
         auto resp = handleMessage(materiaMsg);
+        std::string serialized;
+        resp.SerializeToString(&serialized);
+        std::string encoded = codec.encrypt(serialized);
 
-        zmq::message_t msgToSend (resp.ByteSizeLong());
-        resp.SerializeToArray(msgToSend.data (), msgToSend.size());
-
+        zmq::message_t msgToSend (encoded.data(), encoded.size());
         clientSocket.send (msgToSend);
         logger << "Sending responce\n";
 

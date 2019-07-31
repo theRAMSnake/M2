@@ -15,4 +15,4 @@ add_library(m2common STATIC
 
 add_subdirectory(messages)
 
-target_link_libraries(m2common m2commonMessages)
+target_link_libraries(m2common crypto m2commonMessages)

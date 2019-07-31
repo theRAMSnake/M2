@@ -11,7 +11,7 @@
 class MateriaClient
 {
 public:
-   MateriaClient();
+   MateriaClient(const std::string& password);
 
    CalendarModel& getCalendar();
    InboxModel& getInbox();

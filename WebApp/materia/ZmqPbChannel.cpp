@@ -3,9 +3,10 @@
 #include <messages/common.pb.h>
 #include <iostream>
    
-ZmqPbChannel::ZmqPbChannel(zmq::socket_t& zmqSocket, const std::string& owner)
+ZmqPbChannel::ZmqPbChannel(zmq::socket_t& zmqSocket, const std::string& owner, const std::string& password)
 : mZmqSocket(zmqSocket)
 , mOwner(owner)
+, mCodec(password)
 {
 }
    
@@ -17,28 +18,40 @@ void ZmqPbChannel::CallMethod(const MethodDescriptor * method, RpcController * c
    envelope.set_operationname(method->name());
    
    envelope.set_payload(request->SerializeAsString());
+   std::string toCode;
+   envelope.SerializeToString(&toCode);
+   std::string encrypted = mCodec.encrypt(toCode);
    
-   zmq::message_t req (envelope.ByteSizeLong());
-   envelope.SerializeToArray(req.data (), req.size());
-   
+   zmq::message_t req (encrypted.data(), encrypted.size());
    mZmqSocket.send (req);
-   
+
+   //-----------------------------------------------------------
+
    zmq::message_t resp;
    mZmqSocket.recv (&resp);
+
+   std::string received(static_cast<const char *>(resp.data()), resp.size());
+   std::string decoded;
    
    common::MateriaMessage expectedMessage;
-   expectedMessage.ParseFromArray(resp.data(), resp.size());
-   
-   if(expectedMessage.payload().empty())
+
+   try
    {
-      if(mErrorCallback != nullptr)
+      decoded = mCodec.decrypt(received);
+      if(expectedMessage.ParseFromString(decoded) && !expectedMessage.payload().empty())
       {
-         mErrorCallback(expectedMessage.error());
+         response->ParseFromString(expectedMessage.payload());
+         return;
       }
    }
-   else
+   catch(...)
    {
-      response->ParseFromString(expectedMessage.payload());
+      
+   }
+   
+   if(mErrorCallback != nullptr)
+   {
+      mErrorCallback(expectedMessage.error());
    }
 }
 

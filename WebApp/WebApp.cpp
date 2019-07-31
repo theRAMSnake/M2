@@ -48,21 +48,19 @@ void WebApp::showLogin()
 
 void WebApp::onPasswordSent(const Wt::WString& text)
 {
-   if(text == "test")
+   root()->removeWidget(mLoginScreen);
+   if(checkMateriaAvailabilityAndPassword(text.narrow()))
    {
-      root()->removeWidget(mLoginScreen);
-      if(checkMateriaAvailability())
-      {
-         showMainScreen();
-      }
-      else
-      {
-         showErrorScreen();
-      }
+      mClient.reset(new MateriaClient(text.narrow()));
+      showMainScreen();
+   }
+   else
+   {
+      showErrorScreen();
    }
 }
 
-bool isMateriaAvailable()
+bool WebApp::checkMateriaAvailabilityAndPassword(const std::string& str)
 {
    zmq::context_t context;
    zmq::socket_t socket(context, ZMQ_REQ);
@@ -94,17 +92,13 @@ bool isMateriaAvailable()
       }
    }
 
-   return true;
-}
-
-bool WebApp::checkMateriaAvailability()
-{
-   return isMateriaAvailable();
+   //materia available, lets check password
+   MateriaClient client(str);
+   return !client.getJournal().getChildren(materia::Id::Invalid).empty();
 }
 
 void WebApp::showMainScreen()
 {
-    mClient.reset(new MateriaClient());
     root()->addWidget(std::unique_ptr<Wt::WContainerWidget>(new MainScreen(*mClient)));
 }
 

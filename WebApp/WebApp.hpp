@@ -13,7 +13,7 @@ private:
     void showMainScreen();
     void showErrorScreen();
     void onPasswordSent(const Wt::WString& text);
-    bool checkMateriaAvailability();
+    bool checkMateriaAvailabilityAndPassword(const std::string& str);
 
     Wt::WContainerWidget* mMainScreen;
     Wt::WContainerWidget* mLoginScreen;

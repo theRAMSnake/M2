@@ -13,9 +13,17 @@ std::string genName()
 
 int main(int argc,  char** argv)
 {
+   if(argc < 2)
+   {
+      std::cout << "Please specify password";
+      return -1;
+   }
+
+   std::string password = argv[1];
+
    zmq::context_t context(1);
    zmq::socket_t socket(context, ZMQ_REQ);
-   ZmqPbChannel channel(socket, "backuper");
+   ZmqPbChannel channel(socket, "backuper", password);
 
    const std::string ip = "localhost";
    socket.connect("tcp://188.116.57.62:5757");

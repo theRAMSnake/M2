@@ -128,7 +128,7 @@ fun genNewsContent(): String
     val cal = java.util.Calendar.getInstance()
     cal.add(java.util.Calendar.DAY_OF_MONTH, -1)
     
-    val apps = listOf("238960", "494150", "963930", "365360", "839960", "566860") //loadFromFile
+    val apps = listOf("238960", "494150", "963930", "365360", "839960", "566860", "611160") //loadFromFile
     val suitableNews = mutableListOf<String>()
 
     for(x in apps)
