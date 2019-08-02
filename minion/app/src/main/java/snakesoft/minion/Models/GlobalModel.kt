@@ -20,11 +20,11 @@ object GlobalModel
     val FreeDataModel = FreeDataModel(Db)
     val FocusDataModel = FocusDataModel(Db)
 
-    internal fun doSync(syncObserver: SyncObserver): Boolean
+    internal fun doSync(syncObserver: SyncObserver, password: String): Boolean
     {
         return try
         {
-            val connection = MateriaConnection(Ip)
+            val connection = MateriaConnection(Ip, password)
 
             InboxModel.sync(syncObserver, connection)
             CalendarModel.sync(syncObserver, connection)
