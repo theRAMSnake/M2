@@ -3,26 +3,16 @@
 
 using EVP_CIPHER_CTX_free_ptr = std::unique_ptr<EVP_CIPHER_CTX, decltype(&::EVP_CIPHER_CTX_free)>;
 
-std::string sha256(const std::string str)
-{
-    unsigned char hash[SHA256_DIGEST_LENGTH];
-    SHA256_CTX sha256;
-    SHA256_Init(&sha256);
-    SHA256_Update(&sha256, str.c_str(), str.size());
-    SHA256_Final(hash, &sha256);
-    std::stringstream ss;
-    for(int i = 0; i < SHA256_DIGEST_LENGTH; i++)
-    {
-        ss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
-    }
-    return ss.str();
-}
-
 Codec::Codec(const std::string password)
 {
    EVP_add_cipher(EVP_aes_256_cbc());
 
-   auto hash = sha256(password);
+   unsigned char hash[SHA256_DIGEST_LENGTH];
+   SHA256_CTX sha256;
+   SHA256_Init(&sha256);
+   SHA256_Update(&sha256, password.c_str(), password.size());
+   SHA256_Final(hash, &sha256);
+
    for(unsigned int i = 0; i < KEY_SIZE; ++i)
    {
       mKeyBuf[i] = hash[i];
