@@ -11,7 +11,12 @@ import java.util.*
 data class FocusItem(
         @Serializable(with = UUIDSerializer::class)
         var id: UUID,
-        var text: String
+        @Serializable(with = UUIDSerializer::class)
+        var graphId: UUID,
+        @Serializable(with = UUIDSerializer::class)
+        var objId: UUID,
+        var text: String,
+        var completed: Boolean
 )
 
 class FocusDataModel(private val Db: LocalDatabase)
@@ -30,9 +35,28 @@ class FocusDataModel(private val Db: LocalDatabase)
 
         val proxy = StrategyServiceProxy(connection)
 
+        var numModified = 0
+        Items.forEach {
+            if(it.completed)
+            {
+                val toSend = Strategy.FocusItemInfo.newBuilder()
+                        .setId(toProto(it.id))
+                        .setDetails(Strategy.GraphObjectId.newBuilder()
+                                .setGraphId(toProto(it.graphId))
+                                .setObjectId(toProto(it.objId))
+                                .build())
+                        .build()
+
+                proxy.completeFocusItem(toSend)
+                numModified++
+            }
+        }
+
+        observer.itemsModified(numModified)
+
+
         val rawItems = queryFocusItems(proxy)
-        val nodeToItemsMap = rawItems.groupBy { it.details.objectId }
-        val graphToNodesMap = rawItems.groupBy ({ it.details.graphId }, { it.details.objectId })
+        val graphToNodesMap = rawItems.groupBy ({ it.details.graphId }, { it })
 
         val newItems = mutableListOf<FocusItem>()
 
@@ -42,15 +66,15 @@ class FocusDataModel(private val Db: LocalDatabase)
             observer.OnUpdated("Graph loaded: ${it.key}")
 
             it.value.forEach {
-                val node = g.nodesList.find { n -> n.id.objectId == it }
+                val node = g.nodesList.find { n -> n.id.objectId == it.details.objectId }
                 if(node != null)
                 {
-                    val text = when(val numItems = nodeToItemsMap.getOrElse(node.id.objectId) { listOf() }.size)
-                    {
-                        1 -> node.attrs.brief
-                        else -> node.attrs.brief + " ($numItems times)"
-                    }
-                    newItems.add(FocusItem(UUID.fromString(node.id.objectId.guid), text))
+                    newItems.add(FocusItem(
+                            UUID.fromString(it.id.guid),
+                            UUID.fromString(it.details.graphId.guid),
+                            UUID.fromString(it.details.objectId.guid),
+                            node.attrs.brief,
+                            false))
                 }
             }
         }
@@ -83,7 +107,7 @@ class FocusDataModel(private val Db: LocalDatabase)
     {
         val json = Json.stringify(FocusItem.serializer().list, Items.toList())
 
-        Db.put("FocusItems", json)
+        Db.put("FocusItems2", json)
     }
 
     @Throws(Exception::class)
@@ -91,7 +115,7 @@ class FocusDataModel(private val Db: LocalDatabase)
     {
         try
         {
-            Items = Json.parse(FocusItem.serializer().list, Db["FocusItems"])
+            Items = Json.parse(FocusItem.serializer().list, Db["FocusItems2"])
         }
         catch(ex: Exception)
         {
@@ -110,5 +134,17 @@ class FocusDataModel(private val Db: LocalDatabase)
         val item = Items.find { it.id == id }!!
 
         return item.text
+    }
+
+    fun toggleItem(id: UUID) {
+        val item = Items.find { it.id == id }!!
+
+        item.completed = !item.completed
+    }
+
+    fun isItemToggled(id: UUID): Boolean {
+        val item = Items.find { it.id == id }!!
+
+        return item.completed
     }
 }

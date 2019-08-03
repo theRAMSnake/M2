@@ -4,6 +4,9 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.text.Html
+import android.text.Spanned
+import android.text.SpannedString
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
@@ -34,13 +37,22 @@ class FocusItemAdapter : BaseAdapter()
         return with(parent!!.context) {
             relativeLayout()
             {
-                textView(GlobalModel.FocusDataModel.getItemName(itemId))
+                textView(getItemText(itemId))
                 {
-                    textSize = 64f
+                    textSize = 32f
                     textColor = Color.BLUE
+                    onClick {
+                        GlobalModel.FocusDataModel.toggleItem(itemId)
+                        text = getItemText(itemId)
+                    }
                 }
             }
         }
+    }
+
+    fun getItemText(id: UUID): Spanned? {
+        val rawText = GlobalModel.FocusDataModel.getItemName(id)
+        return if (GlobalModel.FocusDataModel.isItemToggled(id)) Html.fromHtml("<s>$rawText</s>") else SpannedString(rawText)
     }
 
     override fun getItem(position : Int) : UUID {

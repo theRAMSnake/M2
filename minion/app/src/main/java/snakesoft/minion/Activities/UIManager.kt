@@ -7,7 +7,7 @@ object UIManager
 {
     fun <T> fillNavigationMenu(menu: Menu, c: AnkoContext<T>)
     {
-        addMenuItem<SyncActivity, T>(menu, "Sync", c)
+        addMenuItem<SyncPrepareActivity, T>(menu, "Sync", c)
         addMenuItem<InboxActivity, T>(menu, "Inbox", c)
         addMenuItem<CalendarActivity, T>(menu, "Calendar", c)
         addMenuItem<FocusActivity, T>(menu, "Focus", c)

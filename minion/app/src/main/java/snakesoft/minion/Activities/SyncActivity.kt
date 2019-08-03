@@ -16,6 +16,8 @@ class SyncActivity : AppCompatActivity()
         val syncObserver = snakesoft.minion.Models.SyncObserver()
         super.onCreate(savedInstanceState)
 
+        val password = intent.getStringExtra("password")
+
         val onSyncUpdated = Event1<String>()
         SyncActivityUI(onSyncUpdated).setContentView(this)
 
@@ -27,7 +29,7 @@ class SyncActivity : AppCompatActivity()
                 }
             }
 
-            GlobalModel.doSync(syncObserver)
+            GlobalModel.doSync(syncObserver, password)
         }
     }
 }

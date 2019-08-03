@@ -24,4 +24,14 @@ class StrategyServiceProxy(private val mMateriaConnection: MateriaConnection)
                 "StrategyService",
                 "GetGraph"))
     }
+
+    @Throws(InvalidProtocolBufferException::class, MateriaUnreachableException::class)
+    fun completeFocusItem(item: Strategy.FocusItemInfo)
+    {
+        mMateriaConnection.sendMessage(
+                item.toByteString(),
+                "StrategyService",
+                "CompleteFocusItem"
+        )
+    }
 }
