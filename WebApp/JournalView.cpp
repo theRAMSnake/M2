@@ -177,7 +177,7 @@ private:
 
    void onClick(Wt::WMouseEvent ev)
    {
-      if(ev.modifiers().test(Wt::KeyboardModifier::Control))
+      if(ev.modifiers().test(Wt::KeyboardModifier::Control) && mItem.isPage)
       {
         if(mItem.id != materia::Id::Invalid)
         {
@@ -187,6 +187,36 @@ private:
             };
           CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
         }
+      }
+      else if(ev.modifiers().test(Wt::KeyboardModifier::Control) && !mItem.isPage)
+      {
+         std::vector<std::string> choise = {"Clear", "Erase"};
+         CommonDialogManager::showChoiseDialog(choise, [=](auto selected) 
+         {
+            const bool isClear = selected == 0;
+
+            if(isClear)
+            {
+               std::function<void()> elementClearFunc = [=] () {
+                  mModel.clearItem(mItem.id);
+                  for(auto c : childNodes())
+                  {
+                     removeChildNode(c);
+                  }
+               };
+
+               CommonDialogManager::showConfirmationDialog("Clear it?", elementClearFunc);
+            }
+            else
+            {
+               std::function<void()> elementDeletedFunc = [=] () {
+                  mModel.deleteItem(mItem.id);
+                  parentNode()->removeChildNode(this);
+               };
+
+               CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
+            }
+         });
       }
       else if(ev.modifiers().test(Wt::KeyboardModifier::Shift) && !mItem.isPage)
       {

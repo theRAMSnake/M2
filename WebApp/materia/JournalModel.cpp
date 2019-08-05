@@ -109,6 +109,14 @@ void JournalModel::deleteItem(const materia::Id& id)
    mService.getService().DeleteItem(nullptr, &request, &dummy, nullptr);
 }
 
+void JournalModel::clearItem(const materia::Id& id)
+{
+   for(auto c : getChildren(id))
+   {
+      deleteItem(c.id);
+   }
+}
+
 void JournalModel::saveContent(const materia::Id& id, const std::string& content)
 {
    common::UniqueId request;

@@ -40,6 +40,7 @@ public:
    IndexItem addIndexItem(const bool isPage, const std::string& name, const materia::Id& parentId);
    void renameIndexItem(const materia::Id& id, const std::string& name);
    void deleteItem(const materia::Id& id);
+   void clearItem(const materia::Id& id);
    materia::Id searchIndex(const std::string& name);
 
    void saveContent(const materia::Id& id, const std::string& content);
