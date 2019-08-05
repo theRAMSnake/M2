@@ -19,6 +19,7 @@ TemplateBuilder.cpp
 MateriaClient.cpp
 MainView.cpp
 JournalView.cpp
+FilesView.cpp
 strategy/GoalsComboBox.cpp
 strategy/GoalViewCtrl.hpp
 strategy/GraphView.cpp
@@ -35,7 +36,7 @@ dialog/CommonDialogManager.cpp
 dialog/Dialog.cpp
 )
 
-find_package(Boost COMPONENTS system regex REQUIRED)
+find_package(Boost COMPONENTS system regex filesystem REQUIRED)
 find_package(ZeroMQ REQUIRED)
 find_package(Wt REQUIRED)
 

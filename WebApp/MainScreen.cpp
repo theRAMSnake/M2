@@ -1,6 +1,7 @@
 #include "MainScreen.hpp"
 #include "InboxView.hpp"
 #include "ActionsView.hpp"
+#include "FilesView.hpp"
 #include "strategy/StrategyView.hpp"
 #include "JournalView.hpp"
 #include "RewardsSmartPage.hpp"
@@ -31,4 +32,5 @@ MainScreen::MainScreen(MateriaClient& client)
         client.getJournal()));
     menu_->addItem("Journal", std::make_unique<JournalView>(client.getJournal()));
     menu_->addItem("Strategy", std::make_unique<StrategyView>(client.getStrategy(), client.getFreeData()));
+    menu_->addItem("Files", std::make_unique<FilesView>());
 }
