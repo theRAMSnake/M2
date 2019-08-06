@@ -5,22 +5,24 @@
 
 int main(int argc,  char** argv)
 {
-   if(argc != 3)
+   if(argc != 4)
    {
-      std::cout << "Usage m2tools <parent> <doc_name>";
+      std::cout << "Usage m2tools <password> <parent> <doc_name>";
       return -1;
    }
 
+   std::string password = argv[1];
+
    zmq::context_t context(1);
    zmq::socket_t socket(context, ZMQ_REQ);
-   ZmqPbChannel channel(socket, "tools");
+   ZmqPbChannel channel(socket, "tools", password);
 
    const std::string ip = "localhost";
    socket.connect("tcp://188.116.57.62:5757");
 
    JournalModel m(channel);
 
-   auto parentId = m.searchIndex(argv[1]);
+   auto parentId = m.searchIndex(argv[2]);
 
    if(parentId == materia::Id::Invalid)
    {
@@ -28,7 +30,7 @@ int main(int argc,  char** argv)
       return -1;
    }
 
-   std::ifstream f(argv[2], std::ifstream::in);
+   std::ifstream f(argv[3], std::ifstream::in);
    if(!f)
    {
       std::cout << "File not found";
@@ -37,7 +39,7 @@ int main(int argc,  char** argv)
 
    std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
 
-   auto indexItem = m.addIndexItem(true, argv[2], parentId);
+   auto indexItem = m.addIndexItem(true, argv[3], parentId);
    m.saveContent(indexItem.id, str);
 
    std::cout << "Done";

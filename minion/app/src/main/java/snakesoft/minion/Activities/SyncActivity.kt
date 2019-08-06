@@ -38,18 +38,6 @@ class SyncActivityUI(private val onSyncUpdated: Event1<String>) : MateriaActivit
 {
     override fun fillActivityUI(_DrawerLayout: @AnkoViewDslMarker _DrawerLayout, ctx: Context)
     {
-        alert {
-            customView {
-                val t = editText(item.text)
-                okButton()
-                {
-                    item.text = t.text.toString()
-                    GlobalModel.InboxModel.Items.add(item)
-                    OnChanged()
-                }
-            }
-        }.show()
-
         with(_DrawerLayout)
         {
             textView()

@@ -7,36 +7,37 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
+fun ByteArray.toHexString() : String {
+    return this.joinToString("") {
+        java.lang.String.format("%02x", it)
+    }
+}
+
 fun hashPassword(password: String): ByteArray {
     val digest = MessageDigest.getInstance("SHA-256")
     return digest.digest(password.toByteArray(Charsets.UTF_8))
 }
 
 fun encrypt(password: String, data: ByteArray): ByteArray {
-    val secretKeySpec = SecretKeySpec(hashPassword(password), "AES")
-    val iv = ByteArray(16)
-    val charArray = password.toCharArray()
-    for (i in 0 until iv.size){
-        iv[i] = charArray[i].toByte()
-    }
-    val ivParameterSpec = IvParameterSpec(iv)
+    val hashed = hashPassword(password)
 
-    val cipher = Cipher.getInstance("AES/CBC/Padding")
+    println("Hashed is: ${hashed.toHexString()}, size ${hashed.size}")
+
+    val secretKeySpec = SecretKeySpec(hashed, 0, 32, "AES")
+    val ivParameterSpec = IvParameterSpec(hashed, 0, 16)
+
+    val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
     cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivParameterSpec)
 
     return cipher.doFinal(data)
 }
 
 fun decrypt(password: String, data: ByteArray): ByteArray {
-    val secretKeySpec = SecretKeySpec(hashPassword(password), "AES")
-    val iv = ByteArray(16)
-    val charArray = password.toCharArray()
-    for (i in 0 until iv.size){
-        iv[i] = charArray[i].toByte()
-    }
-    val ivParameterSpec = IvParameterSpec(iv)
+    val hashed = hashPassword(password)
+    val secretKeySpec = SecretKeySpec(hashed, 0, 32,"AES")
+    val ivParameterSpec = IvParameterSpec(hashed, 0, 16)
 
-    val cipher = Cipher.getInstance("AES/CBC/Padding")
+    val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
     cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, ivParameterSpec)
 
     return cipher.doFinal(data)
@@ -58,6 +59,10 @@ class MateriaConnection(Ip: String, val Password: String)
     @Throws(MateriaUnreachableException::class)
     internal fun sendMessage(payload: com.google.protobuf.ByteString, serviceName: String, operationName: String): com.google.protobuf.ByteString
     {
+        //println("Password is: ${Password}")
+        //val encrypted = encrypt(Password, "dddtttyyyuuu".toByteArray())
+        //println("Encrypted is: ${encrypted.toHexString()}")
+
         val toSend = common.Common.MateriaMessage.newBuilder()
                 .setFrom("minion")
                 .setTo(serviceName)

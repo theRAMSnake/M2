@@ -1,5 +1,7 @@
 package snakesoft.minion.Models
 
+import snakesoft.minion.materia.CalendarServiceProxy
+import snakesoft.minion.materia.JournalServiceProxy
 import snakesoft.minion.materia.MateriaConnection
 import snakesoft.minion.materia.MateriaUnreachableException
 
@@ -26,18 +28,33 @@ object GlobalModel
         {
             val connection = MateriaConnection(Ip, password)
 
-            InboxModel.sync(syncObserver, connection)
-            CalendarModel.sync(syncObserver, connection)
-            JournalModel.sync(syncObserver, connection)
-            FreeDataModel.sync(syncObserver, connection)
-            FocusDataModel.sync(syncObserver, connection)
+            //check password
+            val p = JournalServiceProxy(connection)
+            if(p.loadIndex().itemsCount == 0)
+            {
+                syncObserver.OnUpdated("Incorrect password")
+                false
+            }
+            else
+            {
+                InboxModel.sync(syncObserver, connection)
+                CalendarModel.sync(syncObserver, connection)
+                JournalModel.sync(syncObserver, connection)
+                FreeDataModel.sync(syncObserver, connection)
+                FocusDataModel.sync(syncObserver, connection)
 
-            syncObserver.finish()
+                syncObserver.finish()
 
-            true
+                true
+            }
         }
-        catch (ex: MateriaUnreachableException)
+        catch (ex: Exception)
         {
+            if(ex.message != null)
+            {
+                syncObserver.OnUpdated(ex.message!!)
+            }
+
             false
         }
     }

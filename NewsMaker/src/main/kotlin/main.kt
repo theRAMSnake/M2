@@ -5,9 +5,9 @@ import java.io.File
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
-fun publishFile(filename: String)
+fun publishFile(filename: String, password: String)
 {
-    val p = Runtime.getRuntime().exec("./m2tools News $filename")
+    val p = Runtime.getRuntime().exec("./m2tools $password News $filename")
     p.waitFor()
     Runtime.getRuntime().exec("rm $filename")
 }
@@ -64,7 +64,7 @@ fun genNewsFile(): String
 fun main(args: Array<String>)
 {
     val filename = genNewsFile()
-    publishFile(filename)
+    publishFile(filename, args[0])
 
     println("Done")
 }
