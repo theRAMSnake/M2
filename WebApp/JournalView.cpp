@@ -294,6 +294,12 @@ Wt::WWidget* JournalView::createPageView()
    mSaveBtn->setMargin(5);
    result->addWidget(std::unique_ptr<Wt::WPushButton>(mSaveBtn));
 
+   auto randomBtn = new Wt::WPushButton("Random");
+   randomBtn->addStyleClass("btn-primary");
+   randomBtn->clicked().connect(std::bind(&JournalView::onRandomClick, this));
+   randomBtn->setMargin(5);
+   result->addWidget(std::unique_ptr<Wt::WPushButton>(randomBtn));
+
    mPageView = new Wt::WTextEdit();
    mPageView->setConfigurationSetting("branding", false);
    mPageView->setConfigurationSetting("elementpath", false);
@@ -331,6 +337,19 @@ void JournalView::onSaveClick()
    mModel.saveContent(item.id, mPageView->text().narrow());
 
    mIndexTree->clearSelection();
+}
+
+void JournalView::onRandomClick()
+{
+   auto text = mPageView->text().narrow();
+
+   std::vector<string> strs;
+   boost::split(strs, text, boost::is_any_of("\n\r"), boost::token_compress_on);
+
+   srand (time(NULL));
+
+   auto result = strs[rand() % strs.size()];
+   CommonDialogManager::showMessage(result);
 }
 
 void JournalView::onIndexSelectionChanged()

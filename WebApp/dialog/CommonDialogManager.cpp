@@ -66,7 +66,7 @@ void CommonDialogManager::showConfirmationDialog(const std::string & text, std::
 void CommonDialogManager::showMessage(const std::string & text)
 {
     Wt::WMessageBox *messageBox = new Wt::WMessageBox
-        ("Confirm",
+        ("Message",
             "<p>" + text + "</p>",
             Wt::Icon::Critical, Wt::StandardButton::Ok);
 

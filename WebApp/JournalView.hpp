@@ -15,6 +15,7 @@ private:
    void onSaveClick();
    void onIndexSelectionChanged();
    void onSearchClick();
+   void onRandomClick();
    void navigate(const materia::Id id, std::size_t pos);
    Wt::WTreeNode* findNodeById(Wt::WTreeNode* node, const materia::Id id);
 
