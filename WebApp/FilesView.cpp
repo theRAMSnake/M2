@@ -7,26 +7,72 @@
 #include <Wt/WFileResource.h>
 #include <Wt/WCssDecorationStyle.h>
 #include <Wt/WFileUpload.h>
+#include <Wt/WCheckBox.h>
 #include <Wt/WProgressBar.h>
 #include "dialog/CommonDialogManager.hpp"
 
 void FilesView::addRow(int row, const boost::filesystem::path p)
 {
-   auto cell = mTable->elementAt(row, 0);
-   auto a = new Wt::WAnchor();
-   a->setText(p.filename().string());
-   auto resource = std::make_shared<Wt::WFileResource>(p.string());
-   resource->suggestFileName(p.filename().string());
-   a->setLink(Wt::WLink(resource));
-   a->setMargin(Wt::WLength(50));
-   cell->addWidget(std::unique_ptr<Wt::WAnchor>(a));
+   {
+      auto cell = mTable->elementAt(row, 0);
 
-   cell->clicked().connect(std::bind(&FilesView::onClick, this, std::placeholders::_1, cell, p));
+      auto cb = new Wt::WCheckBox("");
+      cb->setChecked(mSharedFiles.end() != mSharedFiles.find(p));
+      cell->addWidget(std::unique_ptr<Wt::WCheckBox>(cb));
+      cb->checked().connect(std::bind(&FilesView::onChecked, this, p));
+      cb->unChecked().connect(std::bind(&FilesView::onUnChecked, this, p));
+
+      auto a = new Wt::WAnchor();
+      a->setText(p.filename().string());
+      auto resource = std::make_shared<Wt::WFileResource>(p.string());
+      resource->suggestFileName(p.filename().string());
+      a->setLink(Wt::WLink(resource));
+
+      cell->addWidget(std::unique_ptr<Wt::WAnchor>(a));
+
+      cell->clicked().connect(std::bind(&FilesView::onClick, this, std::placeholders::_1, cell, p));
+   }
+}
+
+void FilesView::loadSharedFilesList()
+{
+   std::ifstream d_file("/materia/shared_files_list.txt", std::ios_base::in);
+   std::string line;
+
+   while( std::getline( d_file, line ) ) 
+   {
+      mSharedFiles.insert( line );
+   }
+}
+
+void FilesView::saveSharedFilesList()
+{
+   std::ofstream file("/materia/shared_files_list.txt", std::ios_base::trunc | std::ios_base::out);
+   for(auto p : mSharedFiles)
+   {
+      file << p.string() << std::endl;
+   }
+}
+
+void FilesView::onChecked(const boost::filesystem::path path)
+{
+   mSharedFiles.insert(path);
+   saveSharedFilesList();
+}
+
+void FilesView::onUnChecked(const boost::filesystem::path path)
+{
+   mSharedFiles.erase(path);
+   saveSharedFilesList();
 }
 
 FilesView::FilesView()
 : mUpload(nullptr)
 {
+   setMargin(10);
+
+   loadSharedFilesList();
+
    Wt::WPushButton *uploadButton = addNew<Wt::WPushButton>("Upload");
    uploadButton->setMargin(10, Wt::Side::Top);
    uploadButton->addStyleClass("btn-primary");
@@ -39,7 +85,6 @@ FilesView::FilesView()
    mTable->addStyleClass("table-bordered");
    mTable->addStyleClass("table-hover");
    mTable->addStyleClass("table-striped");
-   mTable->decorationStyle().font().setSize(Wt::WFont::Size::XXLarge);
    gb->addWidget(std::unique_ptr<Wt::WTable>(mTable));
 
    std::vector<boost::filesystem::path> files;

@@ -20,6 +20,7 @@ MateriaClient.cpp
 MainView.cpp
 JournalView.cpp
 FilesView.cpp
+SharedFilesView.cpp
 strategy/GoalsComboBox.cpp
 strategy/GoalViewCtrl.hpp
 strategy/GraphView.cpp

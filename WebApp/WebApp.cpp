@@ -1,11 +1,13 @@
 #include "WebApp.hpp"
 #include "MainScreen.hpp"
+#include "SharedFilesView.hpp"
 
 #include <Wt/WBootstrapTheme.h>
 #include <Wt/WOverlayLoadingIndicator.h>
 #include <Wt/WText.h>
 #include <Wt/WLineEdit.h>
 #include <Wt/WPushButton.h>
+#include <Wt/WLabel.h>
 
 #include <future>
 #include <zmq.hpp>
@@ -14,17 +16,25 @@
 WebApp::WebApp(const Wt::WEnvironment & env)
     : Wt::WApplication(env)
 {
-    setLoadingIndicator(std::unique_ptr<Wt::WOverlayLoadingIndicator>(new Wt::WOverlayLoadingIndicator()));
+   setLoadingIndicator(std::unique_ptr<Wt::WOverlayLoadingIndicator>(new Wt::WOverlayLoadingIndicator()));
 
-    setTitle("Materia");
+   setTitle("Materia");
 
-    std::shared_ptr<Wt::WBootstrapTheme> theme(new Wt::WBootstrapTheme);
-    theme->setVersion(Wt::BootstrapVersion::v3);
-    setTheme(theme);
-    useStyleSheet("resources/bootstrap.css");
-    useStyleSheet("custom.css");
+   std::shared_ptr<Wt::WBootstrapTheme> theme(new Wt::WBootstrapTheme);
+   theme->setVersion(Wt::BootstrapVersion::v3);
+   setTheme(theme);
+   useStyleSheet("resources/bootstrap.css");
+   useStyleSheet("custom.css");
 
-    showLogin();
+   if(internalPath() == "/files")
+   {
+      root()->addWidget(std::make_unique<SharedFilesView>());
+      return;
+   }
+   else
+   {
+      showLogin();
+   }
 }
 
 void WebApp::showLogin()
