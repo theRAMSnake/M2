@@ -16,12 +16,19 @@ private:
    void onIndexSelectionChanged();
    void onSearchClick();
    void onRandomClick();
+   void onSharedPageChecked();
+   void onSharedPageUnchecked();
    void navigate(const materia::Id id, std::size_t pos);
    Wt::WTreeNode* findNodeById(Wt::WTreeNode* node, const materia::Id id);
+
+   bool isPageShared(const std::string& title);
+   void saveSharedPage(const std::string& title, const std::string& content);
+   void eraseSharedPage(const std::string& title) const;
 
    Wt::WTree* mIndexTree = nullptr;
    Wt::WTextEdit* mPageView = nullptr;
    Wt::WPushButton* mSaveBtn = nullptr;
+   Wt::WCheckBox* mIsSharedCheckbox = nullptr;
    JournalModel& mModel;
    Dialog* mDlg;
 };

@@ -31,6 +31,20 @@ WebApp::WebApp(const Wt::WEnvironment & env)
       root()->addWidget(std::make_unique<SharedFilesView>());
       return;
    }
+   else if(boost::filesystem::exists("/materia/shared" + internalPath()))
+   {
+      std::ifstream d_file("/materia/shared" + internalPath(), std::ios_base::in);
+      std::string line;
+      std::string text;
+
+      while( std::getline( d_file, line ) ) 
+      {
+         text += line;
+      }
+
+      root()->addWidget(std::make_unique<Wt::WLabel>(text));
+      return;
+   }
    else
    {
       showLogin();

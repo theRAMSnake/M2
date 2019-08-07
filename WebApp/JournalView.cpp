@@ -10,7 +10,9 @@
 #include <Wt/WPushButton.h>
 #include <Wt/WLineEdit.h>
 #include <Wt/WCssDecorationStyle.h>
+#include <Wt/WCheckBox.h>
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
 
 std::string fetchLine(const std::string& content, const std::size_t pos)
 {
@@ -300,6 +302,11 @@ Wt::WWidget* JournalView::createPageView()
    randomBtn->setMargin(5);
    result->addWidget(std::unique_ptr<Wt::WPushButton>(randomBtn));
 
+   mIsSharedCheckbox = new Wt::WCheckBox("Shared");
+   mIsSharedCheckbox->checked().connect(std::bind(&JournalView::onSharedPageChecked, this));
+   mIsSharedCheckbox->unChecked().connect(std::bind(&JournalView::onSharedPageUnchecked, this));
+   result->addWidget(std::unique_ptr<Wt::WCheckBox>(mIsSharedCheckbox));
+
    mPageView = new Wt::WTextEdit();
    mPageView->setConfigurationSetting("branding", false);
    mPageView->setConfigurationSetting("elementpath", false);
@@ -336,7 +343,44 @@ void JournalView::onSaveClick()
    auto& item = node->getItem();
    mModel.saveContent(item.id, mPageView->text().narrow());
 
+   if(isPageShared(item.id))
+   {
+      saveSharedPage(item.title, mPageView->text().narrow());
+   }
+
    mIndexTree->clearSelection();
+}
+
+void JournalView::saveSharedPage(const std::string& title, const std::string& content)
+{
+   std::ofstream file("/materia/shared/" + title, std::ios_base::trunc | std::ios_base::out);
+   file << content;
+}
+
+void JournalView::onSharedPageChecked()
+{
+   auto node = static_cast<JournalTreeNode*>(*mIndexTree->selectedNodes().begin());
+   auto& item = node->getItem();
+
+   saveSharedPage(item.title, mPageView->text().narrow());
+}
+
+void JournalView::eraseSharedPage(const std::string& title) const
+{
+   boost::filesystem::remove("/materia/shared/" + title);
+}
+
+void JournalView::onSharedPageUnchecked()
+{
+   auto node = static_cast<JournalTreeNode*>(*mIndexTree->selectedNodes().begin());
+   auto& item = node->getItem();
+
+   eraseSharedPage(item.title);
+}
+
+bool JournalView::isPageShared(const std::string& title)
+{
+   return boost::filesystem::exists("/materia/shared/" + title);
 }
 
 void JournalView::onRandomClick()
@@ -362,17 +406,21 @@ void JournalView::onIndexSelectionChanged()
       if(item.isPage)
       {
          mSaveBtn->setEnabled(true);
+         mIsSharedCheckbox->setEnabled(true);
          mPageView->setText(mModel.loadContent(item.id));
+         mIsSharedCheckbox->setChecked(isPageShared(item.title));
       }
       else
       {
          mSaveBtn->setEnabled(false);
          mPageView->setText("");
+         mIsSharedCheckbox->setEnabled(false);
       }
    }
    else
    {
       mSaveBtn->setEnabled(false);
+      mIsSharedCheckbox->setEnabled(false);
       mPageView->setText("");
    }
 }
