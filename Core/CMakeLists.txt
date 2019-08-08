@@ -20,6 +20,7 @@ private/StrategyGraph.cpp
 private/NodeAttributes.cpp
 private/FreeData.cpp
 private/FreeDataInterpreter.cpp
+private/Finance.cpp
 )
 
 find_package(Boost COMPONENTS system REQUIRED)

@@ -12,6 +12,7 @@ class IStrategy_v2;
 class IJournal;
 class IBackuper;
 class IFreeData;
+class IFinance;
 
 struct CoreConfig
 {
@@ -27,6 +28,7 @@ public:
     virtual IJournal& getJournal() = 0;
     virtual IBackuper& getBackuper() = 0;
     virtual IFreeData& getFreeData() = 0;
+    virtual IFinance& getFinance() = 0;
 
     virtual ~ICore(){}
 };

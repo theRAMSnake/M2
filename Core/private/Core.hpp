@@ -8,6 +8,7 @@
 #include "Calendar.hpp"
 #include "Backuper.hpp"
 #include "FreeData.hpp"
+#include "Finance.hpp"
 
 namespace materia
 {
@@ -23,6 +24,7 @@ public:
     IBackuper& getBackuper() override;
     IStrategy_v2& getStrategy_v2() override;
     IFreeData& getFreeData() override;
+    IFinance& getFinance() override;
 
 private:
     Database mDb;
@@ -32,6 +34,7 @@ private:
     freedata::FreeData mFreeData;
     Strategy_v2 mStrategy_v2;
     Backuper mBackuper;
+    Finance mFinance;
 };
 
 std::shared_ptr<ICore> createCore(const CoreConfig& config);

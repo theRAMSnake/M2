@@ -10,10 +10,10 @@ namespace materia
 class FreeDataServiceImpl : public freedata::FreeDataService
 {
 public:
-   FreeDataServiceImpl(ICore& core)
-   : mFd(core.getFreeData())
-   {
-   }
+      FreeDataServiceImpl(ICore& core)
+      : mFd(core.getFreeData())
+      {
+      }
 
    virtual void Get(::google::protobuf::RpcController* controller,
                        const ::common::EmptyMessage* request,

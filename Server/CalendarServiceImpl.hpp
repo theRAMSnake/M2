@@ -31,7 +31,7 @@ public:
    }
 
    virtual void Query(::google::protobuf::RpcController* controller,
-                       const ::calendar::TimeRange* request,
+                       const ::common::TimeRange* request,
                        ::calendar::CalendarItems* response,
                        ::google::protobuf::Closure* done)
    {

@@ -8,7 +8,7 @@ CalendarModel::CalendarModel(ZmqPbChannel& channel)
 
 std::vector<CalendarModel::Item> CalendarModel::query(const std::time_t from, const std::time_t to)
 {
-   calendar::TimeRange t;
+   common::TimeRange t;
    t.set_timestampfrom(from);
    t.set_timestampto(to);
 

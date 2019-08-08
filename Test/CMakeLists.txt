@@ -13,7 +13,8 @@ CalendarTest.cpp
 #StrategyGraphTest.cpp
 #Strategy2Test.cpp
 #FreeDataTest.cpp
-EncDecTest.cpp
+#EncDecTest.cpp
+FinanceTest.cpp
 )
 
 find_package(Boost COMPONENTS unit_test_framework filesystem REQUIRED)

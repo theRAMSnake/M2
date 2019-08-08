@@ -19,6 +19,12 @@ message EmptyMessage
 
 }
 
+message TimeRange
+{
+   int64 timestampFrom = 1;
+   int64 timestampTo = 2;
+}
+
 message UniqueId
 {
    string guid = 1;

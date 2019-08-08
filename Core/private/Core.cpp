@@ -11,6 +11,7 @@ Core::Core(const CoreConfig& config)
 , mFreeData(mDb)
 , mStrategy_v2(mDb, mFreeData)
 , mBackuper(config.dbFileName)
+, mFinance(mDb)
 {
 
 }
@@ -43,6 +44,11 @@ IJournal& Core::getJournal()
 IFreeData& Core::getFreeData()
 {
    return mFreeData;
+}
+
+IFinance& Core::getFinance()
+{
+   return mFinance;
 }
 
 std::shared_ptr<ICore> createCore(const CoreConfig& config)
