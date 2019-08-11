@@ -11,6 +11,7 @@ MateriaClient::MateriaClient(const std::string& password)
     mJournal.reset(new JournalModel(mChannel));
     mStrategy.reset(new StrategyModel(mChannel));
     mFreeData.reset(new FreeDataModel(mChannel));
+    mFinance.reset(new FinanceModel(mChannel));
 }
 
 CalendarModel& MateriaClient::getCalendar()
@@ -26,6 +27,11 @@ InboxModel& MateriaClient::getInbox()
 JournalModel& MateriaClient::getJournal()
 {
    return *mJournal;
+}
+
+FinanceModel& MateriaClient::getFinance()
+{
+   return *mFinance;
 }
 
 StrategyModel& MateriaClient::getStrategy()
