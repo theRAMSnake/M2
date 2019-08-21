@@ -1,4 +1,5 @@
 #include "CommonDialogManager.hpp"
+#include "../WtConverters.hpp"
 #include <Wt/WDialog.h>
 #include <Wt/WLineEdit.h>
 #include <Wt/WLabel.h>
@@ -8,6 +9,7 @@
 #include <Wt/WButtonGroup.h>
 #include <Wt/WRadioButton.h>
 #include <Wt/WComboBox.h>
+#include <Wt/WDateEdit.h>
 #include <boost/range/algorithm/find.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -45,6 +47,31 @@ void CommonDialogManager::queryNumber(const int initialValue, std::function<void
         callback(val); 
     };
     showDialog("Choose number", {{"Number", std::to_string(initialValue)}}, functor);
+}
+
+class DateDialog: public BasicDialog
+{
+public:
+   typedef std::function<void(const boost::gregorian::date)> TOnOkCallback;
+   DateDialog(const boost::gregorian::date initialValue, TOnOkCallback cb)
+   : BasicDialog("Edit date", true)
+   {
+      auto d = contents()->addWidget(std::make_unique<Wt::WDateEdit>());
+      d->setDate(gregorianToWtDate(initialValue));
+
+      setWidth("50%");
+      setHeight("30%");
+
+      finished().connect(std::bind([=]() {
+         cb(WtDateToGregorian(d->date()));
+         delete this;
+      }));
+   }
+};
+
+void CommonDialogManager::queryDate(const boost::gregorian::date initialValue, std::function<void(boost::gregorian::date)>& callback)
+{
+   (new DateDialog(initialValue, callback))->show();
 }
 
 void CommonDialogManager::showConfirmationDialog(const std::string & text, std::function<void(void)>& callback)

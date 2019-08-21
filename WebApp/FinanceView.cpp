@@ -115,6 +115,61 @@ private:
 
 //------------------------------------------------------------------------------------------------------------------------------
 
+class DateCtrl : public Wt::WLabel
+{
+public:
+   using TDateType = boost::gregorian::date;
+
+   boost::signals2::signal<void()> OnChanged;
+
+   DateCtrl(const TDateType& init)
+   {
+      setStyleClass("DateCtrl");
+      setValue(init);
+
+      clicked().connect(std::bind(&DateCtrl::showEditDialog, this));
+   }
+
+   void setValue(const TDateType& value)
+   {
+      mVal = value;
+
+      const std::locale fmt(std::locale::classic(), new boost::gregorian::date_facet("%d/%m/%Y"));
+
+      std::ostringstream os;
+      os.imbue(fmt);
+      os << value;
+      
+      setText(os.str());
+   }
+
+   TDateType getValue() const
+   {
+      return mVal;
+   }
+
+private:
+   void showEditDialog()
+   {
+      std::function<void(const TDateType)> cb = [=] (auto newVal) {
+         setValue(newVal);
+         OnChanged();
+      };
+
+      CommonDialogManager::queryDate(mVal, cb);
+   }
+
+   TDateType mVal;
+};
+
+time_t to_time_t(const boost::gregorian::date& date )
+{
+	using namespace boost::posix_time;
+	static ptime epoch(boost::gregorian::date(1970, 1, 1));
+	time_duration::sec_type secs = (ptime(date,seconds(0)) - epoch).total_seconds();
+	return time_t(secs);
+}
+
 class EventsView : public Wt::WContainerWidget
 {
 public:
@@ -125,37 +180,74 @@ public:
       addWidget(std::unique_ptr<Wt::WGroupBox>(gb));
 
       Wt::WPushButton* addButton = new Wt::WPushButton("Add");
-      //addButton->clicked().connect(std::bind(&EventsView::onAddClick, this));
+      addButton->clicked().connect(std::bind(&EventsView::onAddButtonClicked, this));
       addButton->addStyleClass("btn-primary");
       addButton->setMargin(15, Wt::Side::Right);
       gb->addWidget(std::unique_ptr<Wt::WPushButton>(addButton));
 
-      gb->addWidget(std::make_unique<Wt::WLabel>("Showing events from "));
-      mFrom = gb->addWidget(std::make_unique<Wt::WLabel>(""));
-      gb->addWidget(std::make_unique<Wt::WLabel>(" to "));
-      mTo = gb->addWidget(std::make_unique<Wt::WLabel>(""));
-
       auto now = boost::gregorian::date(boost::gregorian::day_clock::local_day());
 
-      setFrom(now - boost::gregorian::date_duration(5));
-      setTo(now);
+      gb->addWidget(std::make_unique<Wt::WLabel>("Showing events from "));
+      mFrom = gb->addWidget(std::make_unique<DateCtrl>(now - boost::gregorian::date_duration(5)));
+      mFrom->OnChanged.connect(std::bind(&EventsView::refreshTable, this));
+
+      gb->addWidget(std::make_unique<Wt::WLabel>(" to "));
+      mTo = gb->addWidget(std::make_unique<DateCtrl>(now));
+      mTo->OnChanged.connect(std::bind(&EventsView::refreshTable, this));
+
+      mTable = addNew<Wt::WTable>();
+      mTable->setWidth(Wt::WLength("100%"));
+      mTable->addStyleClass("table-bordered");
+      mTable->addStyleClass("table-hover");
+      mTable->addStyleClass("table-striped");
    }
 
 private:
-   void setFrom(const boost::gregorian::date& day )
+
+   void refreshTable()
    {
-      auto t = std::chrono::system_clock::to_time_t(pt);
-      auto ct = std::string(std::ctime(&t));
-      mFrom->setText("<b>" + ct + "</b>");
+      auto categories = mModel.getCategories();
+
+      mTable->clear();
+
+      auto events = mModel.loadEvents(to_time_t(mFrom->getValue()), to_time_t(mTo->getValue()));
+
+      for(auto e : events)
+      {
+         auto catPos = materia::find_by_id(categories, e.categoryId);
+         auto catName = catPos == categories.end() ? e.categoryId.getGuid() : catPos->name;
+
+         auto row = mTable->rowCount();
+         mTable->elementAt(row, 0)->addNew<Wt::WLabel>(catName);
+         mTable->elementAt(row, 1)->addNew<Wt::WLabel>(std::to_string(e.amountOfEuroCents));
+         mTable->elementAt(row, 2)->addNew<Wt::WLabel>(std::to_string(e.timestamp));
+         mTable->elementAt(row, 3)->addNew<Wt::WLabel>(e.details);
+      }
    }
 
-   void setTo(const boost::gregorian::date& day )
+   void onAddButtonClicked()
    {
-      //mTo->setText("<b>" + std::ctime(std::chrono::system_clock::to_time_t(pt)) + "</b>");
+      auto cats = mModel.getCategories();
+
+      auto d = CommonDialogManager::createCustomDialog("Finance event view", FinanceModel::Event{});
+      
+      d->addComboBox("Category", 
+         cats, 
+         cats.begin(), 
+         [](auto x){return x.name;}, 
+         [](FinanceModel::Event& obj, const FinanceModel::Category& selected){obj.categoryId = selected.id;}
+         );
+
+      d->addLineEdit("Details", &FinanceModel::Event::details);
+      d->addDateEdit("Date", &FinanceModel::Event::timestamp, std::time(0));
+      d->addCurrencyEdit("Amount", &FinanceModel::Event::amountOfEuroCents);
+
+      d->onResult.connect([](auto e) { mModel.addEvent(e); refreshTable(); });
+      d->show();
    }
 
-   Wt::WLabel* mFrom;
-   Wt::WLabel* mTo;
+   DateCtrl* mFrom;
+   DateCtrl* mTo;
    Wt::WTable* mTable;
    FinanceModel& mModel;
 };

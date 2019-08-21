@@ -1,4 +1,5 @@
 #include "FinanceModel.hpp"
+#include <messages/common.pb.h>
 
 FinanceModel::FinanceModel(ZmqPbChannel& channel)
 : mService(channel)
@@ -52,4 +53,23 @@ materia::Id FinanceModel::addCategory(const std::string& name)
    mService.getService().AddCategory(nullptr, &itemToAdd, &id, nullptr);
 
    return id.guid();
+}
+
+std::vector<FinanceModel::Event> FinanceModel::loadEvents(const std::time_t timestampFrom, const std::time_t timestampTo)
+{
+   common::TimeRange r;
+   r.set_timestampfrom(timestampFrom);
+   r.set_timestampto(timestampTo);
+
+   finance::EventItems events;
+   mService.getService().QueryEvents(nullptr, &r, &events, nullptr);
+
+   std::vector<Event> result;
+
+   for(auto x : events.items())
+   {
+      result.push_back({x.event_id().guid(), x.category_id().guid(), x.details(), x.timestamp(), x.amount_euro_cents()});
+   }
+
+   return result;
 }

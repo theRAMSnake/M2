@@ -28,3 +28,13 @@ Wt::WTime timestampToWtTime(const std::time_t& timestamp)
 {
     return Wt::WDateTime(std::chrono::system_clock::from_time_t(timestamp)).time();
 }
+
+boost::gregorian::date WtDateToGregorian(const Wt::WDate& date)
+{
+    return boost::gregorian::date(date.year(), static_cast<boost::date_time::months_of_year>(date.month()), date.day());
+}
+
+Wt::WDate gregorianToWtDate(const boost::gregorian::date& src)
+{
+    return Wt::WDate(src.year(), src.month(), src.day());
+}
