@@ -11,6 +11,7 @@
 #include <Wt/WLineEdit.h>
 #include <Wt/WDateEdit.h>
 #include <Wt/WLabel.h>
+#include <Wt/WCheckBox.h>
 #include "../WtConverters.hpp"
 
 enum class FieldType
@@ -99,6 +100,21 @@ public:
       ctrl->setMargin(10, Wt::Side::Bottom);
    }
 
+   void addCheckbox(const std::string& caption, bool T::* field)
+   {
+      auto ctrl = contents()->addNew<Wt::WCheckBox>();
+
+      ctrl->setText(caption);
+      ctrl->setChecked(mVal.*field);
+
+      ctrl->changed().connect([=]()
+      {
+         mVal.*field = ctrl->isChecked();
+      });
+
+      ctrl->setMargin(10, Wt::Side::Bottom);
+   }
+
    void addCurrencyEdit(const std::string& caption, unsigned int T::* field)
    {
       contents()->addNew<Wt::WLabel>(caption)->setMargin(10, Wt::Side::Top);
@@ -155,6 +171,14 @@ public:
    static void showMessage(const std::string& text);
    static void showLinesDialog(const std::vector<Wt::WString>& lines, std::function<void(const std::vector<Wt::WString>&)> callback);
    static void showChoiseDialog(const std::vector<std::string>& options, std::function<void(const std::size_t&)> callback);
+   
+   static void showBinaryChoiseDialog(
+      const std::string& optionA, 
+      const std::string& optionB,
+      std::function<void()> callbackA,
+      std::function<void()> callbackB
+      );
+
    static void showDoubleComboDialog(
       const std::vector<std::string>& options, 
       const std::vector<std::string>& options2, 

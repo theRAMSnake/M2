@@ -4,6 +4,18 @@
 #include "../materia/StrategyModel.hpp"
 
 class INodeTypeSpecifics;
+
+class IOperationProvider
+{
+public:
+    virtual void modify(const StrategyModel::Node& n) = 0;
+    virtual void clone(const StrategyModel::Node& n) = 0;
+    virtual void focus(const StrategyModel::Node& n) = 0;
+    virtual void split(const StrategyModel::Node& n) = 0;
+
+    virtual ~IOperationProvider() {};
+};
+
 class NodeEditDialog: public BasicDialog
 {
 public:
@@ -14,9 +26,7 @@ public:
        const std::vector<StrategyModel::WatchItem>& watchItems, 
        const std::vector<StrategyModel::Goal>& goals, 
        std::function<bool(std::string)> conditionVerifier,
-       TCallback finishedCb,
-       TCallback clonedCb,
-       TCallback focusCb
+       IOperationProvider& opProvider
        );
 
     bool verify() override;
@@ -24,4 +34,5 @@ public:
 private:
 
     std::unique_ptr<INodeTypeSpecifics> mNodeTypeSpecifics;
+    IOperationProvider& mOpProvider;
 };

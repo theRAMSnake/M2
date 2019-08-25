@@ -400,6 +400,21 @@ private:
 class EventsView : public Wt::WContainerWidget
 {
 public:
+   struct WrappedEvent : public FinanceModel::Event
+   {
+      bool isAnnual;
+
+      WrappedEvent(const FinanceModel::Event e)
+      {
+         amountOfEuroCents = e.amountOfEuroCents;
+         categoryId = e.categoryId;
+         details = e.details;
+         eventId = e.eventId;
+         isAnnual = false;
+         timestamp = e.timestamp;
+      }
+   };
+
    EventsView(FinanceModel& model)
    : mModel(model)
    {
@@ -462,34 +477,53 @@ private:
 
          activeElement->doubleClicked().connect(std::bind([=]() 
          {
-            std::vector<std::string> choise = {"Edit", "Erase"};
-            CommonDialogManager::showChoiseDialog(choise, [=](auto selected) 
+            CommonDialogManager::showBinaryChoiseDialog("Edit", "Erase", 
+            [=]() 
             {
-               const bool isEdit = selected == 0;
-               if(isEdit)
-               {
-                  auto d = createDialog(e);
-                  d->onResult.connect([=](auto e) { mModel.modifyEvent(e); refreshTable(); });
-                  d->show();
-               }
-               else
-               {
-                  mModel.deleteEvent(e.eventId);
-                  refreshTable();
-               }
-            });
+               WrappedEvent w(e);
+
+               auto d = createDialog(w);
+               d->onResult.connect([=](auto x) { mModel.modifyEvent(x); refreshTable(); });
+               d->show();
+            },
+            [=]() 
+            {
+               mModel.deleteEvent(e.eventId);
+               refreshTable();
+            }
+            );
          }));
       }
    }
 
    void onAddButtonClicked()
    {
-      auto d = createDialog(FinanceModel::Event{});
-      d->onResult.connect([=](auto e) { mModel.addEvent(e); refreshTable(); });
+      auto d = createDialog(WrappedEvent({}));
+      d->onResult.connect([=](auto e) 
+      {
+         if(e.isAnnual)
+         {
+            for(int i = 0; i < 12; ++i)
+            {
+               auto splitted = e;
+               splitted.details += " " + std::to_string(i+1) + "/12";
+               splitted.amountOfEuroCents = e.amountOfEuroCents / 12;
+               splitted.timestamp = to_time_t(timestampToGregorian(e.timestamp) + boost::gregorian::months(i));
+
+               mModel.addEvent(splitted);
+            }
+         } 
+         else
+         {
+            mModel.addEvent(e);
+         }
+          
+         refreshTable(); 
+      });
       d->show();
    }
 
-   CustomDialog<FinanceModel::Event>* createDialog(const FinanceModel::Event ev)
+   CustomDialog<WrappedEvent>* createDialog(const WrappedEvent ev)
    {
       auto cats = mModel.getCategories();
 
@@ -499,12 +533,13 @@ private:
          cats, 
          cats.begin(), 
          [](auto x){return x.name;}, 
-         [](FinanceModel::Event& obj, const FinanceModel::Category& selected){obj.categoryId = selected.id;}
+         [](WrappedEvent& obj, const FinanceModel::Category& selected){obj.categoryId = selected.id;}
          );
 
-      d->addLineEdit("Details", &FinanceModel::Event::details);
-      d->addDateEdit("Date", &FinanceModel::Event::timestamp, std::time(0));
-      d->addCurrencyEdit("Amount", &FinanceModel::Event::amountOfEuroCents);
+      d->addLineEdit("Details", &WrappedEvent::details);
+      d->addDateEdit("Date", &WrappedEvent::timestamp, std::time(0));
+      d->addCurrencyEdit("Amount", &WrappedEvent::amountOfEuroCents);
+      d->addCheckbox("Annual", &WrappedEvent::isAnnual);
 
       return d;
    }
@@ -530,7 +565,7 @@ FinanceView::FinanceView(FinanceModel& model)
    menu->setWidth(150);
 
    menu->addItem("Monthly", std::unique_ptr<Wt::WWidget>(new MonthlyView(model)));
-   menu->addItem("Anual", std::unique_ptr<Wt::WWidget>(new AnnualView(model)));
+   menu->addItem("Annual", std::unique_ptr<Wt::WWidget>(new AnnualView(model)));
    menu->addItem("Events", std::unique_ptr<Wt::WWidget>(new EventsView(model)));
    menu->addItem("Categories", std::make_unique<CategoriesView>(mFinance));
 

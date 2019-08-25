@@ -286,11 +286,10 @@ NodeEditDialog::NodeEditDialog(
    const std::vector<StrategyModel::WatchItem>& watchItems, 
    const std::vector<StrategyModel::Goal>& goals, 
    std::function<bool(std::string)> conditionVerifier,
-   TCallback finishedCb,
-   TCallback clonedCb,
-   TCallback focusCb
+   IOperationProvider& opProvider
    )
 : BasicDialog("Edit node", true)
+, mOpProvider(opProvider)
 {
    setWindowTitle(node.descriptiveTitle);
 
@@ -299,11 +298,22 @@ NodeEditDialog::NodeEditDialog(
    cloneBtn->setMargin(5, Wt::Side::Left);
    cloneBtn->setStyleClass("btn-primary");
    cloneBtn->clicked().connect(std::bind([=]() {
-      clonedCb(node);
+      mOpProvider.clone(node);
       reject();
    }));
 
    footer()->addWidget(std::move(cloneBtn));
+
+   auto splitBtn = std::make_unique<Wt::WPushButton>("Split");
+   splitBtn->setInline(true);
+   splitBtn->setMargin(5, Wt::Side::Left);
+   splitBtn->setStyleClass("btn-primary");
+   splitBtn->clicked().connect(std::bind([=]() {
+      mOpProvider.split(node);
+      reject();
+   }));
+
+   footer()->addWidget(std::move(splitBtn));
 
    if((node.type == strategy::NodeType::TASK || node.type == strategy::NodeType::COUNTER) && !node.isDone)
    {
@@ -312,7 +322,7 @@ NodeEditDialog::NodeEditDialog(
       focusBtn->setMargin(5, Wt::Side::Left);
       focusBtn->setStyleClass("btn-primary");
       focusBtn->clicked().connect(std::bind([=]() {
-         focusCb(node);
+         mOpProvider.focus(node);
          reject();
       }));
 
@@ -347,13 +357,17 @@ NodeEditDialog::NodeEditDialog(
 
    finished().connect(std::bind([=]() 
    {
-      StrategyModel::Node n = node;
-      n.brief = brief->text().narrow();
-      n.type = NODE_TYPES[types->currentIndex()].first;
+      if(result() == Wt::DialogCode::Accepted)
+      {
+         StrategyModel::Node n = node;
+         n.brief = brief->text().narrow();
+         n.type = NODE_TYPES[types->currentIndex()].first;
 
-      mNodeTypeSpecifics->updateNode(n);
+         mNodeTypeSpecifics->updateNode(n);
+         
+         mOpProvider.modify(n);
+      }
       
-      finishedCb(n);
       delete this;
    }));
 }

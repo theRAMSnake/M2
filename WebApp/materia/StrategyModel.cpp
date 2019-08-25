@@ -312,7 +312,7 @@ materia::Id StrategyModel::createNode(const materia::Id& graphId)
    return materia::Id(id.guid());
 }
 
-void StrategyModel::cloneNode(const materia::Id& graphId, const Node& node)
+materia::Id StrategyModel::cloneNode(const materia::Id& graphId, const Node& node)
 {
    auto newNodeId = createNode(graphId);
 
@@ -320,6 +320,8 @@ void StrategyModel::cloneNode(const materia::Id& graphId, const Node& node)
    clonedNode.id = newNodeId;
 
    updateNode(graphId, clonedNode);
+
+   return newNodeId;
 }
 
 void StrategyModel::focusNode(const materia::Id& graphId, const Node& node)
@@ -396,4 +398,56 @@ std::optional<StrategyModel::Goal> StrategyModel::getGoal(const materia::Id& id)
    {
       return std::optional<StrategyModel::Goal>();
    }
+}
+
+void StrategyModel::splitNodeVertical(const materia::Id& graphId, const Node& node)
+{
+   auto newNodeId = cloneNode(graphId, node);
+
+   auto g = getGraph(graphId);
+   std::vector<StrategyModel::Link> inboundLinks;
+   std::copy_if(g->links.begin(), g->links.end(), std::back_inserter(inboundLinks), [&](auto l)
+   {
+      return l.to == node.id;
+   });
+
+   std::vector<StrategyModel::Link> outboundLinks;
+   std::copy_if(g->links.begin(), g->links.end(), std::back_inserter(outboundLinks), [&](auto l)
+   {
+      return l.from == node.id;
+   });
+
+   for(auto l : inboundLinks)
+   {
+      createLink(graphId, l.from, newNodeId);
+   }
+
+   for(auto l : outboundLinks)
+   {
+      createLink(graphId, newNodeId, l.to);
+   }
+}
+
+void StrategyModel::splitNodeHorizontal(const materia::Id& graphId, const Node& node)
+{
+   auto newNodeId = cloneNode(graphId, node);
+
+   auto g = getGraph(graphId);
+   std::vector<StrategyModel::Link> outboundLinks;
+   std::copy_if(g->links.begin(), g->links.end(), std::back_inserter(outboundLinks), [&](auto l)
+   {
+      return l.from == node.id;
+   });
+
+   for(auto l : outboundLinks)
+   {
+      deleteLink(graphId, l.from, l.to);
+   }
+
+   for(auto l : outboundLinks)
+   {
+      createLink(graphId, newNodeId, l.to);
+   }
+
+   createLink(graphId, node.id, newNodeId);
 }

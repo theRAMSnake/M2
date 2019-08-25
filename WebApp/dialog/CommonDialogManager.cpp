@@ -281,6 +281,29 @@ void CommonDialogManager::showChoiseDialog(const std::vector<std::string>& optio
     dialog->show();
 }
 
+void CommonDialogManager::showBinaryChoiseDialog(
+      const std::string& optionA, 
+      const std::string& optionB,
+      std::function<void()> callbackA,
+      std::function<void()> callbackB
+      )
+{
+    std::vector<std::string> choise = {optionA, optionB};
+    CommonDialogManager::showChoiseDialog(choise, [=](auto selected) 
+    {
+        const bool isA = selected == 0;
+
+        if(isA)
+        {
+            callbackA();
+        }
+        else
+        {
+            callbackB();
+        }
+    });
+}
+
 void CommonDialogManager::showDoubleComboDialog(
     const std::vector<std::string>& options, 
     const std::vector<std::string>& options2, 

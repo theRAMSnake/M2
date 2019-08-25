@@ -609,6 +609,65 @@ std::vector<std::shared_ptr<IGraphElement>> buildCompositeGraphView(
    return result;
 }
 
+//-----------------------------------------------------------------------------------------------------------------------------------
+void NodeOperationProvider::modify(const StrategyModel::Node& n)
+{
+   mModel.updateNode(mId, n);
+   OnDone();
+}
+
+NodeOperationProvider::NodeOperationProvider(const materia::Id id, StrategyModel& model)
+: mId(id)
+, mModel(model)
+{
+
+}
+
+void NodeOperationProvider::clone(const StrategyModel::Node& n)
+{
+   mModel.cloneNode(mId, n);
+   OnDone();
+}
+
+void NodeOperationProvider::focus(const StrategyModel::Node& n)
+{
+   std::function<void(const int)> continuation = [=] (const int val)
+   {
+      
+      for(int i = 0; i < val; ++i)
+      {
+         mModel.focusNode(mId, n);
+      }
+      
+      OnDone();
+   };
+
+   if(n.type == strategy::NodeType::COUNTER)
+   {
+      CommonDialogManager::queryNumber(1, continuation);
+   }
+   else
+   {
+      continuation(1);
+   }
+}
+
+void NodeOperationProvider::split(const StrategyModel::Node& n)
+{
+   CommonDialogManager::showBinaryChoiseDialog("Vertical", "Horizontal", 
+   [=]() 
+   {
+      mModel.splitNodeVertical(mId, n);
+      OnDone();
+   },
+   [=]() 
+   {
+      mModel.splitNodeHorizontal(mId, n);
+      OnDone();
+   }
+   );
+}
+
 void GraphView::reset()
 {
    mImpl->clear();
@@ -623,6 +682,9 @@ void GraphView::assign(const materia::Id& id, const StrategyModel::Graph& g, con
    
    mImpl->setStyleClass("GraphView");
    mImpl->show();
+
+   mOpProvider.reset(new NodeOperationProvider(mId, mModel));
+   mOpProvider->OnDone.connect(std::bind(&GraphView::refreshGraph, this));
 
    auto cgv = mImpl->addWidget(std::make_unique<CompositeGraphView>(900, 350, buildCompositeGraphView(900u, 350u, g, caption)));
    cgv->OnElementClicked.connect(std::bind(&GraphView::OnElementClicked, this, std::placeholders::_1, std::placeholders::_2));
@@ -680,38 +742,6 @@ void GraphView::OnNodeClicked(const StrategyModel::Node& node, const Wt::WMouseE
       }
       else if(node.type != strategy::NodeType::GOAL)
       {
-         std::function<void(const StrategyModel::Node)> doneCallback = [=] (const StrategyModel::Node outNode) {
-            mModel.updateNode(mId, outNode);
-            refreshGraph();
-         };
-
-         std::function<void(const StrategyModel::Node)> cloneCallback = [=] (const StrategyModel::Node outNode) {
-            mModel.cloneNode(mId, outNode);
-            refreshGraph();
-         };
-
-         std::function<void(const StrategyModel::Node)> focusCallback = [=] (const StrategyModel::Node outNode) {
-
-            std::function<void(const int)> continuation = [=] (const int val) {
-               
-               for(int i = 0; i < val; ++i)
-               {
-                  mModel.focusNode(mId, outNode);
-               }
-               
-               refreshGraph();
-            };
-
-            if(outNode.type == strategy::NodeType::COUNTER)
-            {
-               CommonDialogManager::queryNumber(1, continuation);
-            }
-            else
-            {
-               continuation(1);
-            }
-         };
-
          std::function<bool(std::string)> conditionVerifier = [=] (std::string expr)->bool {
                return mFreeData.checkExpression(expr);
             };
@@ -721,9 +751,7 @@ void GraphView::OnNodeClicked(const StrategyModel::Node& node, const Wt::WMouseE
             mModel.getWatchItems(), 
             mModel.getGoals(), 
             conditionVerifier, 
-            doneCallback, 
-            cloneCallback, 
-            focusCallback
+            *mOpProvider
             );
 
          dlg->show();

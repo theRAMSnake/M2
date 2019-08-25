@@ -75,8 +75,10 @@ public:
    materia::Id createNode(const materia::Id& graphId);
    void deleteNode(const materia::Id& graphId, const materia::Id& nodeId);
    void updateNode(const materia::Id& graphId, const Node& node);
-   void cloneNode(const materia::Id& graphId, const Node& node);
+   materia::Id cloneNode(const materia::Id& graphId, const Node& node);
    void focusNode(const materia::Id& graphId, const Node& node);
+   void splitNodeVertical(const materia::Id& graphId, const Node& node);
+   void splitNodeHorizontal(const materia::Id& graphId, const Node& node);
 
    void createLink(const materia::Id& graphId, const materia::Id& fromNodeId, const materia::Id& toNodeId);
    void deleteLink(const materia::Id& graphId, const materia::Id& fromNodeId, const materia::Id& toNodeId);
