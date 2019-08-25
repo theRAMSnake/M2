@@ -31,6 +31,9 @@ public:
    materia::Id addCategory(const std::string& name);
 
    std::vector<Event> loadEvents(const std::time_t timestampFrom, const std::time_t timestampTo);
+   materia::Id addEvent(const Event& ev);
+   void deleteEvent(const materia::Id& id);
+   void modifyEvent(const Event& ev);
 
 private:
    MateriaServiceProxy<finance::FinanceService> mService;

@@ -10,4 +10,7 @@ boost::gregorian::date WtDateToGregorian(const Wt::WDate& date);
 
 Wt::WDate timestampToWtDate(const std::time_t& timestamp);
 Wt::WTime timestampToWtTime(const std::time_t& timestamp);
+boost::gregorian::date timestampToGregorian(const std::time_t& timestamp);
 Wt::WDate gregorianToWtDate(const boost::gregorian::date& src);
+
+std::string currencyToString(const unsigned int cents);

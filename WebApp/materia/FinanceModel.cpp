@@ -73,3 +73,39 @@ std::vector<FinanceModel::Event> FinanceModel::loadEvents(const std::time_t time
 
    return result;
 }
+
+materia::Id FinanceModel::addEvent(const Event& ev)
+{
+   finance::EventInfo itemToAdd;
+   itemToAdd.set_amount_euro_cents(ev.amountOfEuroCents);
+   itemToAdd.set_details(ev.details);
+   itemToAdd.set_timestamp(ev.timestamp);
+   itemToAdd.mutable_category_id()->set_guid(ev.categoryId.getGuid());
+
+   common::UniqueId id;
+   mService.getService().AddEvent(nullptr, &itemToAdd, &id, nullptr);
+
+   return id.guid();
+}
+
+void FinanceModel::deleteEvent(const materia::Id& id)
+{
+   common::UniqueId idMsg;
+   idMsg.set_guid(id.getGuid());
+
+   common::OperationResultMessage dummy;
+   mService.getService().DeleteEvent(nullptr, &idMsg, &dummy, nullptr);
+}
+
+void FinanceModel::modifyEvent(const Event& ev)
+{
+   finance::EventInfo item;
+   item.mutable_event_id()->set_guid(ev.eventId.getGuid());
+   item.set_amount_euro_cents(ev.amountOfEuroCents);
+   item.set_details(ev.details);
+   item.set_timestamp(ev.timestamp);
+   item.mutable_category_id()->set_guid(ev.categoryId.getGuid());
+
+   common::OperationResultMessage res;
+   mService.getService().ReplaceEvent(nullptr, &item, &res, nullptr);
+}

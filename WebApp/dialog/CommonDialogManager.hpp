@@ -3,11 +3,14 @@
 #include <vector>
 #include <functional>
 #include <boost/date_time/gregorian/greg_date.hpp>
+#include <boost/signals2.hpp>
 #include <boost/format.hpp>
+#include <iomanip>
 #include <Wt/WDialog.h>
 #include <Wt/WComboBox.h>
 #include <Wt/WLineEdit.h>
 #include <Wt/WDateEdit.h>
+#include <Wt/WLabel.h>
 #include "../WtConverters.hpp"
 
 enum class FieldType
@@ -36,6 +39,8 @@ template<class T>
 class CustomDialog : public BasicDialog
 {
 public:
+   boost::signals2::signal<void(T)> onResult;
+
    CustomDialog(const std::string& title, const T& initialValue)
    : BasicDialog(title)
    , mVal(initialValue)
@@ -45,7 +50,8 @@ public:
 
    void onAccepted() override
    {
-
+      onResult(mVal);
+      accept();
    }
 
    template<class Y, class Getter, class Assigner>
@@ -57,6 +63,7 @@ public:
       const Assigner assigner)
    {
       contents()->addNew<Wt::WLabel>(caption);
+      
       auto combo = contents()->addNew<Wt::WComboBox>();
 
       for(auto iter = values.begin(); iter != values.end(); ++iter)
@@ -65,6 +72,7 @@ public:
          if(iter == init)
          {
             combo->setCurrentIndex(combo->count() - 1);
+            assigner(mVal, *iter);
          }
       }  
 
@@ -72,11 +80,13 @@ public:
       {
          assigner(mVal, values[combo->currentIndex()]);
       });
+
+      combo->setMargin(10, Wt::Side::Bottom);
    }
 
    void addLineEdit(const std::string& caption, std::string T::* field)
    {
-      contents()->addNew<Wt::WLabel>(caption);
+      contents()->addNew<Wt::WLabel>(caption)->setMargin(10, Wt::Side::Top);
       auto ctrl = contents()->addNew<Wt::WLineEdit>();
 
       ctrl->setText(mVal.*field);
@@ -85,14 +95,16 @@ public:
       {
          mVal.*field = ctrl->text().narrow();
       });
+
+      ctrl->setMargin(10, Wt::Side::Bottom);
    }
 
    void addCurrencyEdit(const std::string& caption, unsigned int T::* field)
    {
-      contents()->addNew<Wt::WLabel>(caption);
+      contents()->addNew<Wt::WLabel>(caption)->setMargin(10, Wt::Side::Top);
       auto ctrl = contents()->addNew<Wt::WLineEdit>();
 
-      ctrl->setText(boost::str(boost::format("%1%.%+2d%") % std::to_string(mVal.*field / 100) % std::to_string(mVal.*field % 100)));
+      ctrl->setText(currencyToString(mVal.*field));
 
       ctrl->changed().connect([=]()
       {
@@ -106,14 +118,15 @@ public:
 
          mVal.*field = (euro * 100 + cents);
       });
+
+      ctrl->setMargin(10, Wt::Side::Bottom);
    }
 
    void addDateEdit(const std::string& caption, std::time_t T::* field, const std::time_t init)
    {
-      contents()->addNew<Wt::WLabel>(caption);
+      contents()->addNew<Wt::WLabel>(caption)->setMargin(10, Wt::Side::Top);
       auto ctrl = contents()->addWidget(Wt::cpp14::make_unique<Wt::WDateEdit>());
       ctrl->setDate(timestampToWtDate(init));
-      ctrl->setWidth(Wt::WLength("15%"));
 
       mVal.*field = init;
 
@@ -121,6 +134,8 @@ public:
       {
          mVal.*field = WtDateToTimeStamp(ctrl->date());
       });
+
+      ctrl->setMargin(10, Wt::Side::Bottom);
    }
 
 private:

@@ -1,6 +1,8 @@
 #include "WtConverters.hpp"
 #include <Wt/WTime.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/format.hpp>
+#include <iomanip>
 
 std::time_t WtDateTimeToTimestamp(const Wt::WDate& date, const Wt::WTime& time)
 {
@@ -17,6 +19,11 @@ std::time_t WtDateToTimeStamp(const Wt::WDate& date)
 {
     return boost::posix_time::to_time_t(boost::posix_time::ptime(
         boost::gregorian::date(date.year(), static_cast<boost::date_time::months_of_year>(date.month()), date.day())));
+}
+
+boost::gregorian::date timestampToGregorian(const std::time_t& timestamp)
+{
+    return WtDateToGregorian(timestampToWtDate(timestamp));
 }
 
 Wt::WDate timestampToWtDate(const std::time_t& timestamp)
@@ -37,4 +44,11 @@ boost::gregorian::date WtDateToGregorian(const Wt::WDate& date)
 Wt::WDate gregorianToWtDate(const boost::gregorian::date& src)
 {
     return Wt::WDate(src.year(), src.month(), src.day());
+}
+
+std::string currencyToString(const unsigned int cents)
+{
+    return boost::str(boost::format("%1%.%2%") 
+         % std::to_string(cents / 100) 
+         % boost::io::group(std::setw(2), std::setfill('0'), std::to_string(cents % 100)));
 }

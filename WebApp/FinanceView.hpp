@@ -9,8 +9,5 @@ public:
    FinanceView(FinanceModel& model);
 
 private:
-   void showCategories();
-
-   Wt::WPushButton* mCategoriesBtn;
    FinanceModel& mFinance;
 };
