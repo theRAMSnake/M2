@@ -1,6 +1,7 @@
 package snakesoft.minion.Models
 
 import calendar.Calendar
+import common.Common
 import snakesoft.minion.materia.CalendarServiceProxy
 import snakesoft.minion.materia.MateriaConnection
 import snakesoft.minion.materia.MateriaUnreachableException
@@ -87,7 +88,7 @@ class CalendarModel(private val Db: LocalDatabase)
 
         val result = mutableListOf<CalendarItem>()
 
-        val queryResult = proxy.query(Calendar.TimeRange.newBuilder().setTimestampFrom(System.currentTimeMillis() / 1000 - threeYears).
+        val queryResult = proxy.query(Common.TimeRange.newBuilder().setTimestampFrom(System.currentTimeMillis() / 1000 - threeYears).
                 setTimestampTo(System.currentTimeMillis() / 1000 + threeYears).build())
 
         for(x in queryResult.itemsList)

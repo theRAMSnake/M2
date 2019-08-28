@@ -13,6 +13,7 @@ object UIManager
         addMenuItem<FocusActivity, T>(menu, "Focus", c)
         addMenuItem<JournalActivity, T>(menu, "Journal", c)
         addMenuItem<ResourcesActivity, T>(menu, "FreeData", c)
+        addMenuItem<FinanceActivity, T>(menu, "Finance", c)
     }
 
     private inline fun <reified A : Activity, T> addMenuItem(menu: Menu, text: String, c: AnkoContext<T>)

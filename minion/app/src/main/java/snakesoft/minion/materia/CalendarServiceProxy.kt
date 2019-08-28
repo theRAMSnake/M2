@@ -8,7 +8,7 @@ import common.Common
 class CalendarServiceProxy(private val mMateriaConnection: MateriaConnection) {
 
     @Throws(InvalidProtocolBufferException::class, MateriaUnreachableException::class)
-    fun query(input: Calendar.TimeRange): Calendar.CalendarItems {
+    fun query(input: Common.TimeRange): Calendar.CalendarItems {
         return Calendar.CalendarItems.parseFrom(mMateriaConnection.sendMessage(
                 input.toByteString(),
                 "CalendarService",
