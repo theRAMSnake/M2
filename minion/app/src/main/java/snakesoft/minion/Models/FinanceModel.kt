@@ -26,12 +26,20 @@ data class FinanceEvent(
         var amountCents: Long
 )
 
+@Serializable
+data class DetailsToCategoryMapping(
+        @Serializable(with = UUIDSerializer::class)
+        var id: UUID,
+        var details: String
+)
+
 class FinanceModel(private val Db: LocalDatabase)
 {
     var LastSMSReadDate = System.currentTimeMillis() / 1000 - 60 * 60 * 24 * 7
     var Events = listOf<FinanceEvent>()
     var Categories = listOf<FinanceCategory>()
     private var LastDeleted = FinanceEvent(getInvalidId(), getInvalidId(), "", 0, 0)
+    private var DetailsToCategoryMap = listOf<DetailsToCategoryMapping>()
 
     init
     {
@@ -80,6 +88,9 @@ class FinanceModel(private val Db: LocalDatabase)
         json = Json.stringify(FinanceCategory.serializer().list, Categories.toList())
         Db.put("FinanceCategories", json)
 
+        json = Json.stringify(DetailsToCategoryMapping.serializer().list, DetailsToCategoryMap.toList())
+        Db.put("DetailsToCategoryMap", json)
+
         Db.put("LastSMSReadDate", LastSMSReadDate.toString())
     }
 
@@ -106,6 +117,7 @@ class FinanceModel(private val Db: LocalDatabase)
             Events = Json.parse(FinanceEvent.serializer().list, Db["FinanceEvents"])
             Categories = Json.parse(FinanceCategory.serializer().list, Db["FinanceCategories"])
             LastSMSReadDate = Db["LastSMSReadDate"].toLong()
+            DetailsToCategoryMap = Json.parse(DetailsToCategoryMapping.serializer().list, Db["DetailsToCategoryMap"])
         }
         catch(ex: Exception)
         {
@@ -141,7 +153,20 @@ class FinanceModel(private val Db: LocalDatabase)
 
     fun addPreEvent(date: Long, details: String, amount: Long)
     {
-        addEvent(FinanceEvent(getInvalidId(), getInvalidId(), details, date, amount))
+        addEvent(FinanceEvent(getInvalidId(), autodetectCategory(details), details, date, amount))
+    }
+
+    private fun autodetectCategory(details: String): UUID
+    {
+        for(x in DetailsToCategoryMap)
+        {
+            if(x.details == details)
+            {
+                return x.id
+            }
+        }
+
+        return getInvalidId()
     }
 
     fun updateLastSMSReadDate(date: Long) {
@@ -149,10 +174,15 @@ class FinanceModel(private val Db: LocalDatabase)
         saveState()
     }
 
-    fun updateEvent(item: FinanceEvent) {
+    fun updateEvent(item: FinanceEvent)
+    {
         Events.first {it.eventId == item.eventId}
         Events = Events.filter { it.eventId != item.eventId }
         Events = Events + listOf(item)
+
+        DetailsToCategoryMap = DetailsToCategoryMap.filter {it.details == it.details}
+        DetailsToCategoryMap += listOf(DetailsToCategoryMapping(item.categoryId, item.details))
+
         saveState()
     }
 }

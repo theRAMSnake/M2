@@ -10,9 +10,12 @@ import android.provider.Telephony
 import android.support.v7.app.AppCompatActivity
 import android.view.Gravity
 import org.jetbrains.anko.*
+import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.design.navigationView
 import org.jetbrains.anko.support.v4._DrawerLayout
 import org.jetbrains.anko.support.v4.drawerLayout
+import snakesoft.minion.Models.GlobalModel
+import snakesoft.minion.Models.InboxItem
 
 fun createStateColors(): ColorStateList
 {

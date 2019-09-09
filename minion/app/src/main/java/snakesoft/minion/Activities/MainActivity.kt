@@ -1,25 +1,30 @@
 package snakesoft.minion.Activities
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Telephony
 import android.util.Log
+import android.widget.Toast
 import kotlinx.coroutines.GlobalScope
 import org.jetbrains.anko.AnkoViewDslMarker
 import org.jetbrains.anko.backgroundColor
+import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.setContentView
 import org.jetbrains.anko.support.v4._DrawerLayout
+import snakesoft.minion.ClipboardListenerService
+import snakesoft.minion.Models.Event1
 
 class MainActivity : AppCompatActivity()
 {
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
+
+        val intent = Intent(applicationContext, ClipboardListenerService::class.java)
+        startService(intent)
+
         MainActivityUI().setContentView(this)
     }
 }

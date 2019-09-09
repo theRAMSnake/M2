@@ -36,6 +36,7 @@
         <activity android:name=".Activities.FinanceActivity" />
         <activity android:name=".Activities.CalendarItemViewActivity" />
         <activity android:name=".Activities.WpActivity"></activity>
+        <service android:name=".ClipboardListenerService"></service>
     </application>
 
 </manifest>
