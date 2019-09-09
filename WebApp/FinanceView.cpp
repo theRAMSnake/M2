@@ -526,18 +526,23 @@ private:
    CustomDialog<WrappedEvent>* createDialog(const WrappedEvent ev)
    {
       auto cats = mModel.getCategories();
+      auto selectedCat = materia::find_by_id(cats, ev.categoryId);
+      if(selectedCat == cats.end())
+      {
+         selectedCat = cats.begin();
+      }
 
       auto d = CommonDialogManager::createCustomDialog("Finance event view", ev);
       
       d->addComboBox("Category", 
          cats, 
-         cats.begin(), 
+         selectedCat, 
          [](auto x){return x.name;}, 
          [](WrappedEvent& obj, const FinanceModel::Category& selected){obj.categoryId = selected.id;}
          );
 
       d->addLineEdit("Details", &WrappedEvent::details);
-      d->addDateEdit("Date", &WrappedEvent::timestamp, std::time(0));
+      d->addDateEdit("Date", &WrappedEvent::timestamp, ev.timestamp == 0 ? time(0) : ev.timestamp);
       d->addCurrencyEdit("Amount", &WrappedEvent::amountOfEuroCents);
       d->addCheckbox("Annual", &WrappedEvent::isAnnual);
 

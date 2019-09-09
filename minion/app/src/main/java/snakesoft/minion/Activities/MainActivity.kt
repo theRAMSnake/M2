@@ -1,15 +1,19 @@
 package snakesoft.minion.Activities
 
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Telephony
+import android.util.Log
+import kotlinx.coroutines.GlobalScope
 import org.jetbrains.anko.AnkoViewDslMarker
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.setContentView
 import org.jetbrains.anko.support.v4._DrawerLayout
-import org.jetbrains.anko.textView
-
 
 class MainActivity : AppCompatActivity()
 {

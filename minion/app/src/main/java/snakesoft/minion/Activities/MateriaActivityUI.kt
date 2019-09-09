@@ -1,8 +1,13 @@
 package snakesoft.minion.Activities
 
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.os.Bundle
+import android.provider.Telephony
+import android.support.v7.app.AppCompatActivity
 import android.view.Gravity
 import org.jetbrains.anko.*
 import org.jetbrains.anko.design.navigationView

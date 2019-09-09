@@ -28,6 +28,7 @@ data class FinanceEvent(
 
 class FinanceModel(private val Db: LocalDatabase)
 {
+    var LastSMSReadDate = System.currentTimeMillis() / 1000 - 60 * 60 * 24 * 7
     var Events = listOf<FinanceEvent>()
     var Categories = listOf<FinanceCategory>()
     private var LastDeleted = FinanceEvent(getInvalidId(), getInvalidId(), "", 0, 0)
@@ -43,16 +44,24 @@ class FinanceModel(private val Db: LocalDatabase)
         observer.beginSync("Finance")
 
         val proxy = FinanceServiceProxy(connection)
+        val newEvents = mutableListOf<FinanceEvent>()
 
         //Push events
         for (i in Events)
         {
-            proxy.addEvent(toProto(i))
+            if(i.categoryId != getInvalidId())
+            {
+                proxy.addEvent(toProto(i))
+            }
+            else
+            {
+                newEvents.add(i)
+            }
         }
         observer.itemsModified(Events.size)
 
         //Clear events
-        Events = listOf()
+        Events = newEvents
 
         //Load categories
         Categories = queryCategories(proxy)
@@ -70,6 +79,8 @@ class FinanceModel(private val Db: LocalDatabase)
 
         json = Json.stringify(FinanceCategory.serializer().list, Categories.toList())
         Db.put("FinanceCategories", json)
+
+        Db.put("LastSMSReadDate", LastSMSReadDate.toString())
     }
 
     @Throws(MateriaUnreachableException::class)
@@ -81,7 +92,7 @@ class FinanceModel(private val Db: LocalDatabase)
 
         for(x in queryResult.itemsList)
         {
-            result.add(FinanceCategory(java.util.UUID.fromString(x.id.guid), x.name))
+            result.add(FinanceCategory(UUID.fromString(x.id.guid), x.name))
         }
 
         return result
@@ -94,6 +105,7 @@ class FinanceModel(private val Db: LocalDatabase)
         {
             Events = Json.parse(FinanceEvent.serializer().list, Db["FinanceEvents"])
             Categories = Json.parse(FinanceCategory.serializer().list, Db["FinanceCategories"])
+            LastSMSReadDate = Db["LastSMSReadDate"].toLong()
         }
         catch(ex: Exception)
         {
@@ -109,13 +121,15 @@ class FinanceModel(private val Db: LocalDatabase)
 
     fun addEvent(item: FinanceEvent)
     {
-        Events = Events + listOf(item)
+        var itemWithId = item
+        itemWithId.eventId = UUID.randomUUID()
+        Events = Events + listOf(itemWithId)
         saveState()
     }
 
     fun deleteEvent(id: UUID)
     {
-        LastDeleted = GlobalModel.FinanceModel.Events.first {it.eventId == id}
+        LastDeleted = Events.first {it.eventId == id}
         Events = Events.filter { it.eventId != id }
         saveState()
     }
@@ -123,5 +137,22 @@ class FinanceModel(private val Db: LocalDatabase)
     fun restoreLastEvent()
     {
         addEvent(LastDeleted)
+    }
+
+    fun addPreEvent(date: Long, details: String, amount: Long)
+    {
+        addEvent(FinanceEvent(getInvalidId(), getInvalidId(), details, date, amount))
+    }
+
+    fun updateLastSMSReadDate(date: Long) {
+        LastSMSReadDate = date
+        saveState()
+    }
+
+    fun updateEvent(item: FinanceEvent) {
+        Events.first {it.eventId == item.eventId}
+        Events = Events.filter { it.eventId != item.eventId }
+        Events = Events + listOf(item)
+        saveState()
     }
 }
