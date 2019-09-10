@@ -56,8 +56,14 @@ class FinanceActivity : AppCompatActivity()
                         curData.address == "BOC Message" &&
                         curData.body.startsWith("Your"))
                 {
-                    GlobalModel.FinanceModel.addPreEvent(curData.date, extractDetails(curData.body), extractAmount(curData.body))
-                    GlobalModel.FinanceModel.updateLastSMSReadDate(curData.date)
+                    try {
+                        GlobalModel.FinanceModel.addPreEvent(curData.date, extractDetails(curData.body), extractAmount(curData.body))
+                        GlobalModel.FinanceModel.updateLastSMSReadDate(curData.date)
+                    }
+                    catch (ex: Exception)
+                    {
+                        continue
+                    }
                 }
 
                 // use msgData
