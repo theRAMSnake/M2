@@ -15,6 +15,7 @@ private:
    void onSaveClick();
    void onIndexSelectionChanged();
    void onSearchClick();
+   void onMoveClick();
    void onRandomClick();
    void onSharedPageChecked();
    void onSharedPageUnchecked();

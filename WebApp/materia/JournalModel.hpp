@@ -39,6 +39,7 @@ public:
    std::vector<IndexItem> getChildren(const materia::Id& id);
    IndexItem addIndexItem(const bool isPage, const std::string& name, const materia::Id& parentId);
    void renameIndexItem(const materia::Id& id, const std::string& name);
+   void moveIndexItem(const materia::Id& id, const materia::Id& newParentId);
    void deleteItem(const materia::Id& id);
    void clearItem(const materia::Id& id);
    materia::Id searchIndex(const std::string& name);

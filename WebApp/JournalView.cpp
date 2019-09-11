@@ -279,6 +279,12 @@ Wt::WWidget* JournalView::createPageView()
 {
    auto result = new Wt::WContainerWidget();
 
+   auto moveBtn = new Wt::WPushButton("Move");
+   moveBtn->addStyleClass("btn-primary");
+   moveBtn->clicked().connect(std::bind(&JournalView::onMoveClick, this));
+   moveBtn->setMargin(5);
+   result->addWidget(std::unique_ptr<Wt::WPushButton>(moveBtn));
+
    auto searchBtn = new Wt::WPushButton("Search");
    searchBtn->addStyleClass("btn-primary");
    searchBtn->clicked().connect(std::bind(&JournalView::onSearchClick, this));
@@ -345,6 +351,92 @@ void JournalView::onSaveClick()
    }
 
    mIndexTree->clearSelection();
+}
+
+class FolderTreeNode : public Wt::WTreeNode
+{
+public:
+   FolderTreeNode(const IndexItem& item, JournalModel& model)
+   : Wt::WTreeNode(item.id == materia::Id::Invalid ? "Journal" : item.title)
+   , mItem(item)
+   , mModel(model)
+   {
+      auto iconName = "resources/Folder.gif";
+      setLabelIcon(std::make_unique<Wt::WIconPair>(iconName, iconName, false));
+   }
+
+   void populate() override
+   {
+      auto ch = mModel.getChildren(mItem.id);
+
+      for(auto x : ch)
+      {
+         if(!x.isPage)
+         {
+            addChildNode(std::make_unique<FolderTreeNode>(x, mModel));
+         }
+      }
+   }
+
+   const IndexItem& getItem()
+   {
+      return mItem;
+   }
+
+private:
+
+   const IndexItem mItem;
+   JournalModel& mModel;
+};
+
+class FolderSelectionDialog : public BasicDialog
+{
+public:
+   FolderSelectionDialog(JournalModel& model, std::function<void(materia::Id)> cb)
+   : BasicDialog("Select folder", true)
+   {
+      std::unique_ptr<Wt::WTree> tree = std::make_unique<Wt::WTree>();
+      IndexItem empty;
+      auto root = std::make_unique<FolderTreeNode>(empty, model);
+      tree->setTreeRoot(std::move(root));
+      tree->setSelectionMode(Wt::SelectionMode::Single);
+
+      tree->treeRoot()->label()->setTextFormat(Wt::TextFormat::Plain);
+      tree->treeRoot()->setLoadPolicy(Wt::ContentLoading::NextLevel);
+      tree->treeRoot()->expand();
+
+      auto treePtr = tree.get();
+
+      contents()->addWidget(std::move(tree));
+
+      setWidth("50%");
+      setHeight("70%");
+
+      finished().connect(std::bind([=]() {
+         if(!treePtr->selectedNodes().empty())
+         {
+            auto node = static_cast<FolderTreeNode*>(*treePtr->selectedNodes().begin());
+            cb(node->getItem().id);
+         }
+         delete this;
+      }));
+   }
+};
+
+void JournalView::onMoveClick()
+{
+   if(!mIndexTree->selectedNodes().empty())
+   {
+      auto node = static_cast<JournalTreeNode*>(*mIndexTree->selectedNodes().begin());
+      auto& item = node->getItem();
+
+      auto dlg = new FolderSelectionDialog(mModel, [=](materia::Id newFolderId){
+         mModel.moveIndexItem(item.id, newFolderId);
+         auto freeNode = node->parentNode()->removeChildNode(node);
+         findNodeById(mIndexTree->treeRoot(), newFolderId)->addChildNode(std::move(freeNode));
+      });
+      dlg->show();
+   }
 }
 
 void JournalView::saveSharedPage(const std::string& title, const std::string& content)

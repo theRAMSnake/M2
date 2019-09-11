@@ -101,6 +101,20 @@ void JournalModel::renameIndexItem(const materia::Id& id, const std::string& nam
    mService.getService().UpdateIndexItem(nullptr, &params, &dummy, nullptr);
 }
 
+void JournalModel::moveIndexItem(const materia::Id& id, const materia::Id& newParentId)
+{
+   auto newItem = *loadIndexItem(id);
+   newItem.parentFolderId = newParentId;
+
+   journal::JournalItem params;
+   params.mutable_id()->set_guid(newItem.id.getGuid());
+   params.mutable_folderid()->set_guid(newItem.parentFolderId.getGuid());
+   params.set_title(newItem.title);
+
+   common::OperationResultMessage dummy;
+   mService.getService().UpdateIndexItem(nullptr, &params, &dummy, nullptr);
+}
+
 void JournalModel::deleteItem(const materia::Id& id)
 {
    common::UniqueId request;
