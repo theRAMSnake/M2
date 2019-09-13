@@ -10,7 +10,7 @@ fun loadHackernewsPage(): String
 }
 
 @Serializable
-data class HackerNewsItem(val score: Int, val title: String)
+data class HackerNewsItem(val score: Int, val title: String, val url: String)
 
 fun loadItem(id: Int): HackerNewsItem
 {
@@ -36,7 +36,7 @@ fun genHackernewsContent(): String
             val item = loadItem(x)
             if(item.score > 100)
             {
-                allItems.add(item.title)
+                allItems.add("<a href=\"${item.url}\">${item.title}</a>")
                 if(allItems.size > 25)
                 {
                     break

@@ -39,7 +39,7 @@ fun genContentForSubreddit(name: String, reddit: RedditClient): String
    }
 
    items.sortByDescending{ it.score }
-   return composeHtmlList(name, items.take(25).map{it.title})
+   return composeHtmlList(name, items.take(25).map{"<a href=\"${it.url}\">${it.title}</a>"})
 }
 
 fun genRedditContent(): String
