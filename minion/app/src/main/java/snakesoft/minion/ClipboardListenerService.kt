@@ -38,7 +38,8 @@ class ClipboardListenerService : Service()
         clipboard.addPrimaryClipChangedListener(ClipboardListener)
 
         ClipboardListener.OnNewText += { s ->
-            GlobalModel.InboxModel.Items.add(InboxItem(getInvalidId(), s))
+            if(GlobalModel.InboxModel.Items.getAvailableItems().find { it.text == s } == null)
+                GlobalModel.InboxModel.Items.add(InboxItem(getInvalidId(), s))
         }
     }
 }

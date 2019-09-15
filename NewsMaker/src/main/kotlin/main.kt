@@ -17,7 +17,9 @@ fun genNewsFile(): String
     val cal = java.util.Calendar.getInstance()
     val filename = "${cal.get(Calendar.DAY_OF_MONTH)}_${cal.get(Calendar.MONTH)}_${cal.get(Calendar.YEAR)}"
 
-    var filecontent = genRedditContent()
+    var filecontent = "<head><style>a { text-decoration: none;} </style> </head><body>"
+
+    filecontent += genRedditContent()
     try
     {
         filecontent += genHackernewsContent()
@@ -55,6 +57,8 @@ fun genNewsFile(): String
     {
         filecontent += "<h1>Metacritic Failed</h1>"
     }
+
+    filecontent += "</body>"
 
     File(filename).writeText(filecontent)
 
