@@ -12,7 +12,7 @@ main.cpp
 
 LIST(APPEND CMAKE_MODULE_PATH "..")
 
-find_package(ZeroMQ REQUIRED)
+
 find_package(Boost COMPONENTS system date_time filesystem REQUIRED)
 
 target_link_libraries(m2tools m2common ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread dl)

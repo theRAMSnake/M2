@@ -20,6 +20,7 @@ public:
    materia::Id add(const Item& item);
    void replace(const Item& item);
    void erase(const materia::Id& id);
+   void clear();
 
 private:
    MateriaServiceProxy<inbox::InboxService> mService;

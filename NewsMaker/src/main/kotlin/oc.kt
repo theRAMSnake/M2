@@ -30,6 +30,12 @@ fun genOpenCriticContent(): String
     val allGames = mutableListOf<String>()
     val r = khttp.get("https://opencritic.com/browse/pc/last90/score")
     allGames += parseOcPage(r.text)
+
+    val r2 = khttp.get("https://www.opencritic.com/browse/pc/last90/score?page=2")
+    allGames += parseOcPage(r2.text)
+
+    val r3 = khttp.get("https://www.opencritic.com/browse/pc/last90/score?page=3")
+    allGames += parseOcPage(r3.text)
     
     allGames.shuffle()
     return composeHtmlList("Top Opencritic games", allGames.take(3)) 

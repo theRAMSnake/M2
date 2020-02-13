@@ -49,7 +49,7 @@ fun genRedditContent(): String
    val adapter = OkHttpNetworkAdapter(userAgent);
    val reddit = OAuthHelper.automatic(adapter, credentials);
 
-   val subreddits = listOf("WorldNews", "Science", "Space", "VrGaming", "Programming", "Productivity", "Investing")
+   val subreddits = listOf("WorldNews", "Science", "Space", "VrGaming", "Programming", "MachineLearning", "Nutrition", "Investing", "StrategyGames")
 
    var result = ""
    for(x in subreddits)

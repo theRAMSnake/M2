@@ -33,15 +33,6 @@ fun genNewsFile(): String
 
     try
     {
-        filecontent += genOpenCriticContent()
-    }
-    catch(e: Exception)
-    {
-        filecontent += "<h1>OC Failed </h1>"
-    }
-
-    try
-    {
         filecontent += genNextLaunchContent()
     }
     catch(e: Exception)

@@ -36,6 +36,7 @@ class FinanceActivity : AppCompatActivity()
 
     private fun readSMSs()
     {
+        val lastDate = GlobalModel.FinanceModel.LastSMSReadDate
         val cursor = contentResolver.query(Uri.parse("content://sms/inbox"), null, null, null, null)
 
         if (cursor!!.moveToFirst()) { // must check the result to prevent exception
@@ -52,7 +53,7 @@ class FinanceActivity : AppCompatActivity()
                     }
                 }
 
-                if(curData.date > GlobalModel.FinanceModel.LastSMSReadDate &&
+                if(curData.date > lastDate &&
                         curData.address == "BOC Message" &&
                         curData.body.startsWith("Your"))
                 {

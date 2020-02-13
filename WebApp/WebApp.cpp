@@ -100,7 +100,7 @@ bool WebApp::checkMateriaAvailabilityAndPassword(const std::string& str)
    zmq::message_t req (envelope.ByteSizeLong());
    envelope.SerializeToArray(req.data (), req.size());
    
-   socket.send (req);
+   socket.send (req, zmq::send_flags::none);
    
    zmq::message_t resp;
 

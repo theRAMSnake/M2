@@ -53,3 +53,11 @@ void InboxModel::erase(const materia::Id& id)
    common::OperationResultMessage dummy;
    mService.getService().DeleteItem(nullptr, &idMsg, &dummy, nullptr);
 }
+
+void InboxModel::clear()
+{
+   for(auto& i : get())
+   {
+      erase(i.id);
+   }
+}

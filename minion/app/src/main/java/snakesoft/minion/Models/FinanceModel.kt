@@ -170,7 +170,7 @@ class FinanceModel(private val Db: LocalDatabase)
     }
 
     fun updateLastSMSReadDate(date: Long) {
-        LastSMSReadDate = date
+        LastSMSReadDate = if (date > LastSMSReadDate) date else LastSMSReadDate
         saveState()
     }
 

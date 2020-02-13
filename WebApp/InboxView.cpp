@@ -12,6 +12,12 @@ InboxView::InboxView(InboxModel& model)
    addButton->clicked().connect(std::bind(&InboxView::onAddClick, this));
    addButton->addStyleClass("btn-primary");
    addWidget(std::unique_ptr<Wt::WPushButton>(addButton));
+
+   Wt::WPushButton* clearButton = new Wt::WPushButton("Clear");
+   clearButton->clicked().connect(std::bind(&InboxView::onClearClick, this));
+   clearButton->addStyleClass("btn-primary");
+   addWidget(std::unique_ptr<Wt::WPushButton>(clearButton));
+
    auto gb = new Wt::WGroupBox();
    addWidget(std::unique_ptr<Wt::WGroupBox>(gb));
    
@@ -77,6 +83,16 @@ void InboxView::onAddClick()
    };
 
    CommonDialogManager::showOneLineDialog("Add", "Text", "", elementAddedFunc);
+}
+
+void InboxView::onClearClick()
+{
+   std::function<void()> clearFunc = [=] () {
+         mModel.clear();
+         mTable->clear();
+      };
+
+   CommonDialogManager::showConfirmationDialog("Clear it?", clearFunc);
 }
 
 void InboxView::createCellAtRow(const int row, const InboxModel::Item& item)

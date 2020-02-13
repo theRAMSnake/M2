@@ -11,7 +11,7 @@ add_executable(m2ctrl
 
 LIST(APPEND CMAKE_MODULE_PATH "..")
 
-find_package(ZeroMQ REQUIRED)
+
 find_package(Boost COMPONENTS system REQUIRED)
 
 target_link_libraries(m2ctrl m2common ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread)

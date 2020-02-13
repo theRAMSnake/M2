@@ -9,6 +9,7 @@ include_directories("..")
 add_executable(Test 
 #InboxTest.cpp
 CalendarTest.cpp
+DatabaseTest.cpp
 #JournalTest.cpp
 #StrategyGraphTest.cpp
 #Strategy2Test.cpp
@@ -18,9 +19,9 @@ FinanceTest.cpp
 )
 
 find_package(Boost COMPONENTS unit_test_framework filesystem REQUIRED)
-find_package(ZeroMQ REQUIRED)
 
-target_link_libraries(Test m2common m2core crypto ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread)
+
+target_link_libraries(Test m2common m2core m3core crypto ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread)
 
 add_custom_command(
         TARGET Test POST_BUILD

@@ -48,15 +48,39 @@ void GraphEditDialog::refreshGraph()
    mGraphView->assign(mId, mGraph, "");
 }
 
-void GraphEditDialog::createNode()
-{
-   mModel.createNode(mId);
-   refreshGraph();
-}
-
 inline bool nodesSorter(const StrategyModel::Node& a, const StrategyModel::Node& b)
 {
    return a.descriptiveTitle > b.descriptiveTitle;
+}
+
+void GraphEditDialog::createNode()
+{
+   auto nodes = mGraph.nodes;
+
+   std::sort(nodes.begin(), nodes.end(), nodesSorter);
+
+   std::vector<std::string> choises;
+   choises.push_back("Not set");
+   for(auto g : nodes)
+   {
+      choises.push_back(g.descriptiveTitle);
+   }
+
+   CommonDialogManager::showDoubleComboDialog(choises, choises, [=](auto selected1index, auto selected2index) 
+   {
+      auto newNodeId = mModel.createNode(mId);
+
+      if(selected1index != 0)
+      {
+         mModel.createLink(mId, nodes[selected1index - 1].id, newNodeId);
+      }
+      if(selected2index != 0)
+      {
+         mModel.createLink(mId, newNodeId, nodes[selected2index - 1].id);
+      }
+     
+      refreshGraph();
+   });
 }
 
 void GraphEditDialog::linkNodesRequest()

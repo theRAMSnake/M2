@@ -40,7 +40,7 @@ dialog/Dialog.cpp
 )
 
 find_package(Boost COMPONENTS system regex filesystem REQUIRED)
-find_package(ZeroMQ REQUIRED)
+
 find_package(Wt REQUIRED)
 
 link_directories(/usr/lib64)

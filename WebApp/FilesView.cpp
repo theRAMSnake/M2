@@ -1,5 +1,4 @@
 #include "FilesView.hpp"
-#include <boost/filesystem.hpp>
 #include <Wt/WPushButton.h>
 #include <Wt/WGroupBox.h>
 #include <Wt/WFont.h>
