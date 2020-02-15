@@ -43,7 +43,7 @@ BOOST_FIXTURE_TEST_CASE( DatabaseTest_1, DatabaseTest )
         slot1->clear();
         slot2->clear();
     }
-     {
+    {
         materia3::Database db("tmp.db");
         auto slot1 = db.load(materia::Id("slot1"));
         auto slot2 = db.load(materia::Id("slot2"));
