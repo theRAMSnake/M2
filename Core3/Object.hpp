@@ -26,6 +26,7 @@ public:
 protected:
 
     void registerHandler(const std::string& type, MessageHandler& handler);
+    void sendMessage(const std::string& destination, const std::string& type, const std::string& content);
 
     const materia::Id mId;
     std::unique_ptr<DatabaseSlot>&& mSlot;
