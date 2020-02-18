@@ -19,8 +19,8 @@ BOOST_FIXTURE_TEST_CASE( DatabaseTest_1, DatabaseTest )
     system("rm tmp.db");
     {
         materia3::Database db("tmp.db");
-        auto slot1 = db.allocate(materia::Id("slot1"));
-        auto slot2 = db.allocate(materia::Id("slot2"));
+        auto slot1 = db.allocate(materia::Id("slot1"), "");
+        auto slot2 = db.allocate(materia::Id("slot2"), "");
 
         slot1->put("info1");
         slot2->put("info2");

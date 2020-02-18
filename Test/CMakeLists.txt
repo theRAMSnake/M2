@@ -10,6 +10,7 @@ add_executable(Test
 #InboxTest.cpp
 CalendarTest.cpp
 DatabaseTest.cpp
+Core3Test.cpp
 #JournalTest.cpp
 #StrategyGraphTest.cpp
 #Strategy2Test.cpp

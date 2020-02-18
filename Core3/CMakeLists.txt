@@ -8,7 +8,13 @@ include_directories("..")
 add_library(m3core 
 Database.cpp
 Object.cpp
+Transport.cpp
+Core.cpp
+Json.cpp
+Session.cpp
+Logger.cpp
 types/TextObject.cpp
+persistent/ObjectManager.cpp
 )
 
 find_package(Boost COMPONENTS system REQUIRED)

@@ -9,19 +9,24 @@ namespace materia3
 class Json
 {
 public:
+    Json();
+    Json(const std::string& src);
+
     template<class T>
     void set(const std::string& fname, const T& value)
     {
-
+        mImpl.put(fname, value);
     }
 
-    std::string str() const
+    template<class T>
+    T get(const std::string& fname)
     {
-        std::ostringstream str;
-        boost::property_tree::json_parser::write_json(str, mImpl);
-
-        return str.str();
+        return mImpl.get<T>(fname);
     }
+
+    bool contains(const std::string& fname);
+
+    std::string str() const;
 
 private:
     boost::property_tree::ptree mImpl;
