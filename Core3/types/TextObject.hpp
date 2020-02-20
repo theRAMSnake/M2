@@ -14,7 +14,7 @@ public:
 private:
     void registerHandlers();
 
-    const std::string mText;
+    std::string mText;
 };
 
 }

@@ -12,6 +12,7 @@ public:
 
    void forwardMessage(const materia::Id& destination, const std::string& type, const std::string& content);
    Message pick();
+   bool noResponce();
    void handleMessage(const Message& msg) override;
 
 private:

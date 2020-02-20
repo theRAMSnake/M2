@@ -8,15 +8,21 @@ TextObject::TextObject(const materia::Id id, const std::string& text, std::uniqu
 : Object(id, std::move(slot))
 , mText(text)
 {
-    mSlot->put(mText);
+    Json j;
+    j.set("text", mText);
+
+    mSlot->put(j.str());
 
     registerHandlers();
 }
 
 TextObject::TextObject(const materia::Id id, std::unique_ptr<DatabaseSlot>&& slot)
 : Object(id, std::move(slot))
-, mText(mSlot->get())
 {
+    Json j(mSlot->get());
+
+    mText = j.get<std::string>("text");
+
     registerHandlers();
 }
 

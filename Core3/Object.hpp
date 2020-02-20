@@ -29,6 +29,7 @@ protected:
 
     void registerHandler(const std::string& type, MessageHandler& handler);
     void sendMessage(const materia::Id& destination, const std::string& type, const std::string& content);
+    void sendError(const materia::Id& destination, const std::string& errorMsg);
 
     const materia::Id mId;
     std::unique_ptr<DatabaseSlot> mSlot;

@@ -14,6 +14,7 @@ Json.cpp
 Session.cpp
 Logger.cpp
 types/TextObject.cpp
+types/ListObject.cpp
 persistent/ObjectManager.cpp
 )
 

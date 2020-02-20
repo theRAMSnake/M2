@@ -3,6 +3,7 @@
 #include "Core3/Logger.hpp"
 
 #include "Core3/types/TextObject.hpp"
+#include "Core3/types/ListObject.hpp"
 
 namespace materia3
 {
@@ -28,10 +29,7 @@ ObjectManager::ObjectManager(Database& db)
 
       }
 
-      Json r;
-      r.set("msg", "failed to create object");
-
-      sendMessage(msg.sender, "failure", r.str());
+      sendError(msg.sender, "failed to create object");
       
    });
 
@@ -75,6 +73,10 @@ std::unique_ptr<Object> ObjectManager::restoreObject(const materia::Id& id, std:
    {
       return std::make_unique<TextObject>(id, std::move(slot));
    }
+   else if(slot->getMetadata() == "list")
+   {
+      return std::make_unique<ListObject>(id, true, std::move(slot));
+   }
 
    LOG_WARNING("Unable to restore object of type: " + slot->getMetadata());
    return std::unique_ptr<Object>();
@@ -92,6 +94,14 @@ materia::Id ObjectManager::createObject(const std::string& type, const Json& par
 
          return newId;
       }
+   }
+   else if(type == "list")
+   {
+      materia::Id newId = materia::Id::generate();
+      auto slot = mDb.allocate(newId, "list");
+      ListObject result(newId, false, std::move(slot));
+
+      return newId;
    }
 
    return materia::Id::Invalid;

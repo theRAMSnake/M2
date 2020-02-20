@@ -37,7 +37,7 @@ void Transport::runLoop()
             return;
          }
 
-         curMsg = mQueue.back();
+         curMsg = mQueue.front();
          mQueue.pop();
       }
 
