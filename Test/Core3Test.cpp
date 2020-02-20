@@ -32,20 +32,20 @@ BOOST_FIXTURE_TEST_CASE( Core3Test_1, Core3Test )
 
    BOOST_CHECK_EQUAL(responce.sender, materia::Id("object_manager"));
    BOOST_CHECK_EQUAL(responce.receiver,  materia::Id("test"));
-   BOOST_CHECK_EQUAL(responce.type, "result");
+   BOOST_REQUIRE_EQUAL(responce.type, "result");
 
    materia3::Json r(responce.content);
-   BOOST_CHECK(r.contains("id"));
+   BOOST_CHECK(r.contains("created_id"));
 
-   session.forwardMessage(r.get<materia::Id>("id"), "describe", "");
+   session.forwardMessage(r.get<materia::Id>("created_id"), "describe", "");
 
    auto responce2 = session.pick();
 
-   BOOST_CHECK_EQUAL(responce2.sender, r.get<materia::Id>("id"));
+   BOOST_CHECK_EQUAL(responce2.sender, r.get<materia::Id>("created_id"));
    BOOST_CHECK_EQUAL(responce2.receiver,  materia::Id("test"));
    BOOST_CHECK_EQUAL(responce2.type, "description");
 
    materia3::Json r2(responce2.content);
-   BOOST_CHECK_EQUAL(r2.get<materia::Id>("id"), r.get<materia::Id>("id"));
-   BOOST_CHECK_EQUAL("test", r.get<std::string>("text"));
+   BOOST_CHECK_EQUAL(r2.get<materia::Id>("id"), r.get<materia::Id>("created_id"));
+   BOOST_CHECK_EQUAL("test", r2.get<std::string>("text"));
 }

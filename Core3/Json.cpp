@@ -22,9 +22,9 @@ Json::Json(const std::string& src)
    boost::property_tree::json_parser::read_json(s, mImpl);
 }
 
-bool Json::contains(const std::string& fname)
+bool Json::contains(const std::string& fname) const
 {
-   return mImpl.find(fname) == mImpl.not_found();
+   return mImpl.find(fname) != mImpl.not_found();
 }
 
 }

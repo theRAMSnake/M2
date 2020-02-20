@@ -19,12 +19,12 @@ public:
     }
 
     template<class T>
-    T get(const std::string& fname)
+    T get(const std::string& fname) const
     {
         return mImpl.get<T>(fname);
     }
 
-    bool contains(const std::string& fname);
+    bool contains(const std::string& fname) const;
 
     std::string str() const;
 

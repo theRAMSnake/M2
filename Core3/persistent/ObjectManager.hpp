@@ -1,5 +1,6 @@
 #pragma once
 #include <Core3/Object.hpp>
+#include "../Json.hpp"
 
 namespace materia3
 {
@@ -22,6 +23,7 @@ public:
 
 private:
    std::unique_ptr<Object> restoreObject(const materia::Id& id, std::unique_ptr<DatabaseSlot>& slot);
+   materia::Id createObject(const std::string& type, const Json& params);
 
    Database& mDb;
    std::map<materia::Id, std::unique_ptr<Object>> mTemporaryObjects;

@@ -14,6 +14,7 @@ Transport::Transport(ObjectManager& om)
 Transport::~Transport()
 {
    mStop = true;
+   mCv.notify_one();
    mThread.join();
 }
 
@@ -29,6 +30,11 @@ void Transport::runLoop()
          if(mQueue.empty())
          {
             mCv.wait(l);
+         }
+
+         if(mStop)
+         {
+            return;
          }
 
          curMsg = mQueue.back();

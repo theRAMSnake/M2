@@ -1,4 +1,5 @@
 #include "ObjectManager.hpp"
+#include "../Json.hpp"
 #include "Core3/Logger.hpp"
 
 #include "Core3/types/TextObject.hpp"
@@ -11,15 +12,27 @@ ObjectManager::ObjectManager(Database& db)
 , mDb(db)
 {
    auto f = MessageHandler([=](auto msg){
-      Json p;
-      //Check and use params
+      Json p(msg.content);
+      if(p.contains("type"))
+      {
+         auto newId = createObject(p.get<std::string>("type"), p);
+         if(newId != materia::Id::Invalid)
+         {
+            Json r;
+            r.set("created_id", newId);
 
-      auto newId = createObject(type);
+            sendMessage(msg.sender, "result", r.str());
+
+            return;
+         }
+
+      }
 
       Json r;
-      j.set("id", newId);
+      r.set("msg", "failed to create object");
 
-      sendMessage(msg.sender, "result", r.str());
+      sendMessage(msg.sender, "failure", r.str());
+      
    });
 
    registerHandler("create", f);
@@ -65,6 +78,23 @@ std::unique_ptr<Object> ObjectManager::restoreObject(const materia::Id& id, std:
 
    LOG_WARNING("Unable to restore object of type: " + slot->getMetadata());
    return std::unique_ptr<Object>();
+}
+
+materia::Id ObjectManager::createObject(const std::string& type, const Json& params)
+{
+   if(type == "text")
+   {
+      if(params.contains("text"))
+      {
+         materia::Id newId = materia::Id::generate();
+         auto slot = mDb.allocate(newId, "text");
+         TextObject result(newId, params.get<std::string>("text"), std::move(slot));
+
+         return newId;
+      }
+   }
+
+   return materia::Id::Invalid;
 }
 
 }

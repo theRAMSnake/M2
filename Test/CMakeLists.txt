@@ -16,7 +16,7 @@ Core3Test.cpp
 #Strategy2Test.cpp
 #FreeDataTest.cpp
 #EncDecTest.cpp
-FinanceTest.cpp
+#FinanceTest.cpp
 )
 
 find_package(Boost COMPONENTS unit_test_framework filesystem REQUIRED)
