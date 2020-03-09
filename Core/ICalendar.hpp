@@ -6,11 +6,21 @@
 namespace materia
 {
 
+enum ReccurencyType
+{
+   None,
+   Weekly,
+   Monthly,
+   Quarterly,
+   Yearly
+};
+
 struct CalendarItem
 {
    Id id;
    std::string text;
    std::time_t timestamp;
+   ReccurencyType reccurencyType = ReccurencyType::None;
 };
 
 class ICalendar

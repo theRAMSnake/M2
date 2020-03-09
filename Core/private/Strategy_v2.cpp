@@ -10,7 +10,6 @@ BIND_JSON5(materia::Goal, id, name, notes, focused, achieved)
 BIND_JSON4(materia::RawStrategyGraph, id, nodes, links, nodeAttrs)
 BIND_JSON2(materia::Node, id, type)
 BIND_JSON2(materia::Link, from, to)
-BIND_JSON3(materia::FocusItem, id, graphId, nodeId)
 
 using attr_map = std::pair<materia::Id, std::map<materia::NodeAttributeType, std::string>>; 
 BIND_JSON2(attr_map, first, second)
@@ -24,7 +23,6 @@ namespace materia
 Strategy_v2::Strategy_v2(Database& db, freedata::FreeData& fd)
 : mGraphsStorage(db.getTable("graphs"))
 , mWatchStorage(db.getTable("watchItems"))
-, mFocusStorage(db.getTable("focusItems"))
 , mGoalsStorage(db.getTable("goals"))
 , mFd(fd)
 {
@@ -308,71 +306,6 @@ Id Strategy_v2::addWatchItem(const WatchItem& item)
 void Strategy_v2::replaceWatchItem(const WatchItem& item)
 {
    mWatchStorage->store(item.id, item.text);
-}
-
-std::vector<FocusItem> Strategy_v2::getFocusItems() const
-{
-   std::vector<FocusItem> result;
-
-   mFocusStorage->foreach([&](std::string id, std::string json) 
-   {
-      result.push_back(readJson<FocusItem>(json));
-   });
-
-   return result;
-}
-
-void Strategy_v2::removeFocusItem(const Id& id)
-{
-   mFocusStorage->erase(id);
-}
-
-void Strategy_v2::completeFocusItem(const FocusItem& item)
-{
-   mFocusStorage->erase(item.id);
-
-   makeGraphOperation(item.graphId, [=](auto& g)
-   {
-      auto node = g.getNode(item.nodeId);
-
-      if(node)
-      {
-         NodeAttributes attrs = g.getNodeAttributes(item.nodeId);
-
-         switch(node->type)
-         {
-            case NodeType::Task:
-            {
-               attrs.set<NodeAttributeType::IS_DONE>(true);
-            }  
-            break;
-
-            case NodeType::Counter:
-            {
-               auto val = attrs.get<NodeAttributeType::PROGRESS_CURRENT>();
-               attrs.set<NodeAttributeType::PROGRESS_CURRENT>(val + 1);
-            } 
-            break;
-
-            default:
-               LOG_WARNING("Completion of focus item for node type of " + std::to_string(static_cast<int>(node->type)) + " is not supported");
-               return;
-         }
-
-         g.setNodeAttributes(item.nodeId, node->type, attrs);
-      }
-   });
-}
-
-Id Strategy_v2::addFocusItem(const FocusItem& item)
-{
-   auto newItem = item;
-   newItem.id = Id::generate();
-
-   std::string json = writeJson(newItem);
-   mFocusStorage->store(newItem.id, json);
-
-   return newItem.id;
 }
 
 }

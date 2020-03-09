@@ -23,7 +23,10 @@ public:
    template<class F>
    void read(const std::string& field, F& out)
    {
-      out = m_ptree.get<F>(field);
+      if(m_ptree.get_optional<F>(field))
+      {
+         out = m_ptree.get<F>(field);
+      }
    }
 
    template<class F>

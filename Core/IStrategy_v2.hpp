@@ -72,13 +72,6 @@ struct WatchItem
     std::string text;
 };
 
-struct FocusItem
-{
-   Id graphId;
-   Id nodeId;
-   Id id;
-};
-
 class IStrategy_v2
 {
 public:
@@ -100,11 +93,6 @@ public:
    virtual void removeWatchItem(const Id& id) = 0;
    virtual Id addWatchItem(const WatchItem& item) = 0;
    virtual void replaceWatchItem(const WatchItem& item) = 0;
-
-   virtual std::vector<FocusItem> getFocusItems() const = 0;
-   virtual void removeFocusItem(const Id& id) = 0;
-   virtual void completeFocusItem(const FocusItem& item) = 0;
-   virtual Id addFocusItem(const FocusItem& item) = 0;
 
    virtual ~IStrategy_v2(){}
 };

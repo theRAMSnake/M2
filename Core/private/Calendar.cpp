@@ -1,8 +1,10 @@
 #include "Calendar.hpp"
 #include "Logger.hpp"
 #include "JsonSerializer.hpp"
+#include <boost/date_time/date_duration_types.hpp>
 
-BIND_JSON3(materia::CalendarItem, id, text, timestamp)
+SERIALIZE_AS_INTEGER(materia::ReccurencyType)
+BIND_JSON4(materia::CalendarItem, id, text, timestamp, reccurencyType)
 
 namespace materia
 {
@@ -10,15 +12,39 @@ namespace materia
 Calendar::Calendar(Database& db)
 : mStorage(db.getTable("calendar"))
 {
-    LOG("Start calendar init");
-
     mStorage->foreach([&](std::string id, std::string json) 
     {
-        LOG("Read: " + json);
         mItems.insert(readJson<CalendarItem>(json));
     });
+}
 
-    LOG("End calendar init");
+CalendarItem advance(const CalendarItem& src)
+{
+    CalendarItem result = src;
+
+    switch (src.reccurencyType)
+    {
+    case ReccurencyType::Weekly:
+        result.timestamp += 604800;
+        break;
+
+    case ReccurencyType::Monthly:
+        result.timestamp = boost::posix_time::to_time_t(boost::posix_time::from_time_t(result.timestamp) + boost::gregorian::months(1));
+        break;
+
+    case ReccurencyType::Quarterly:
+        result.timestamp = boost::posix_time::to_time_t(boost::posix_time::from_time_t(result.timestamp) + boost::gregorian::months(3));
+        break;
+
+    case ReccurencyType::Yearly:
+        result.timestamp = boost::posix_time::to_time_t(boost::posix_time::from_time_t(result.timestamp) + boost::gregorian::months(12));
+        break;
+    
+    default:
+        break;
+    }
+
+    return result;
 }
 
 void Calendar::deleteItem(const Id& id)
@@ -26,8 +52,15 @@ void Calendar::deleteItem(const Id& id)
    auto pos = find_by_id(mItems, id);
    if(pos != mItems.end())
    {
-       mItems.erase(pos);
-       mStorage->erase(id);
+       if(pos->reccurencyType != ReccurencyType::None)
+       {
+           replaceItem(advance(*pos));
+       }
+       else
+       {
+           mItems.erase(pos);
+           mStorage->erase(id);
+       }
    }
 }
 
