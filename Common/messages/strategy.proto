@@ -87,17 +87,6 @@ message WatchItems
    repeated WatchItemInfo items = 1;
 }
 
-message FocusItemInfo
-{
-   GraphObjectId details = 1;
-   common.UniqueId id = 2;
-}
-
-message FocusItems
-{
-   repeated FocusItemInfo items = 1;
-}
-
 service StrategyService 
 {
    rpc AddGoal (Goal) returns (common.UniqueId);
@@ -120,9 +109,4 @@ service StrategyService
    rpc DeleteWatchItem (common.UniqueId) returns (common.OperationResultMessage);
    rpc EditWatchItem (WatchItemInfo) returns (common.OperationResultMessage);
    rpc AddWatchItem (WatchItemInfo) returns (common.UniqueId);
-
-   rpc GetFocusItems (common.EmptyMessage) returns (FocusItems);
-   rpc DeleteFocusItem (common.UniqueId) returns (common.OperationResultMessage);
-   rpc CompleteFocusItem (FocusItemInfo) returns (common.OperationResultMessage);
-   rpc AddFocusItem (FocusItemInfo) returns (common.UniqueId);
 }

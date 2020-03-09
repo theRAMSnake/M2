@@ -17,7 +17,6 @@ public:
 
    void modify(const StrategyModel::Node& n) override;
    void clone(const StrategyModel::Node& n) override;
-   void focus(const StrategyModel::Node& n) override;
    void split(const StrategyModel::Node& n) override;
 
 private:

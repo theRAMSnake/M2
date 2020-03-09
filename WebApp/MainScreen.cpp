@@ -1,6 +1,5 @@
 #include "MainScreen.hpp"
 #include "InboxView.hpp"
-#include "ActionsView.hpp"
 #include "FilesView.hpp"
 #include "FinanceView.hpp"
 #include "strategy/StrategyView.hpp"

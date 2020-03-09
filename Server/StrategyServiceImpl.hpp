@@ -310,46 +310,6 @@ public:
       *response = toProto(mStrategy2.addWatchItem({ materia::Id::Invalid, request->text() }));
    }
 
-   virtual void GetFocusItems(::google::protobuf::RpcController* controller,
-                       const ::common::EmptyMessage* request,
-                       ::strategy::FocusItems* response,
-                       ::google::protobuf::Closure* done)
-   {
-      for(auto x : mStrategy2.getFocusItems())
-      {
-         auto item = response->add_items();
-         *item->mutable_details()->mutable_graphid() = toProto(x.graphId);
-         *item->mutable_details()->mutable_objectid() = toProto(x.nodeId);
-         *item->mutable_id() = toProto(x.id);
-      }
-   }
-
-   virtual void DeleteFocusItem(::google::protobuf::RpcController* controller,
-                        const ::common::UniqueId* request,
-                        ::common::OperationResultMessage* response,
-                        ::google::protobuf::Closure* done)
-   {
-      mStrategy2.removeFocusItem(fromProto(*request));
-      response->set_success(true);
-   }
-
-   virtual void CompleteFocusItem(::google::protobuf::RpcController* controller,
-                        const ::strategy::FocusItemInfo* request,
-                        ::common::OperationResultMessage* response,
-                        ::google::protobuf::Closure* done)
-   {
-      mStrategy2.completeFocusItem({fromProto(request->details().graphid()), fromProto(request->details().objectid()), fromProto(request->id())});
-      response->set_success(true);
-   }
-
-   virtual void AddFocusItem(::google::protobuf::RpcController* controller,
-                        const ::strategy::FocusItemInfo* request,
-                        ::common::UniqueId* response,
-                        ::google::protobuf::Closure* done)
-   {
-      *response = toProto(mStrategy2.addFocusItem({fromProto(request->details().graphid()), fromProto(request->details().objectid())}));
-   }
-
 private:
    IStrategy_v2& mStrategy2;
 };

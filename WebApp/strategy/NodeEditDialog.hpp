@@ -10,7 +10,6 @@ class IOperationProvider
 public:
     virtual void modify(const StrategyModel::Node& n) = 0;
     virtual void clone(const StrategyModel::Node& n) = 0;
-    virtual void focus(const StrategyModel::Node& n) = 0;
     virtual void split(const StrategyModel::Node& n) = 0;
 
     virtual ~IOperationProvider() {};

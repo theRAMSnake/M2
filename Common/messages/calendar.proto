@@ -6,11 +6,21 @@ import "common.proto";
 
 package calendar; 
 
+enum ReccurencyType
+{
+   NONE = 0;
+   WEEKLY = 1;
+   MONTHLY = 2;
+   QUORTERLY = 3;
+   YEARLY = 4;
+}
+
 message CalendarItem
 {
    common.UniqueId id = 1;
    string text = 2;
    int64 timestamp = 3;
+   ReccurencyType reccurencyType = 4;
 }
 
 message CalendarItems

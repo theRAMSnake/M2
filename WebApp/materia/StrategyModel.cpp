@@ -6,27 +6,6 @@ StrategyModel::StrategyModel(ZmqPbChannel& channel)
    fetchGoals();
 }
 
-void StrategyModel::deleteTask(const Task& t)
-{
-   common::UniqueId id;
-   id.set_guid(t.id.getGuid());
-
-   common::OperationResultMessage result;
-   mService.getService().DeleteFocusItem(nullptr, &id, &result, nullptr);
-}
-
-void StrategyModel::completeTask(const Task& task)
-{
-   strategy::FocusItemInfo request;
-
-   request.mutable_id()->set_guid(task.id.getGuid());
-   request.mutable_details()->mutable_graphid()->set_guid(task.graphId.getGuid());
-   request.mutable_details()->mutable_objectid()->set_guid(task.nodeId.getGuid());
-
-   common::OperationResultMessage result;
-   mService.getService().CompleteFocusItem(nullptr, &request, &result, nullptr);
-}
-
 void StrategyModel::deleteGoal(const materia::Id& src)
 {
    common::UniqueId id;
@@ -36,50 +15,6 @@ void StrategyModel::deleteGoal(const materia::Id& src)
    mService.getService().DeleteGoal(nullptr, &id, &opResult, nullptr);
 
    mGoals.erase(materia::find_by_id(mGoals, src));
-}
-
-std::vector<StrategyModel::Task> StrategyModel::getActiveTasks()
-{
-   std::vector<StrategyModel::Task> result;
-
-   common::EmptyMessage e;
-   strategy::FocusItems res;
-
-   mService.getService().GetFocusItems(nullptr, &e, &res, nullptr);
-
-   for(auto r : res.items())
-   {
-      result.push_back({r.id().guid(), r.details().graphid().guid(), r.details().objectid().guid(), "???"});
-   }
-
-   std::map<materia::Id, Graph> cache;
-
-   for(auto& x : result)
-   {
-      x.title = "cannot load";
-
-      auto cachePos = cache.find(x.graphId);
-      if(cachePos == cache.end())
-      {
-         auto g = getGraph(x.graphId);
-         if(g)
-         {
-            cache[x.graphId] = *g;
-         }
-      }
-      
-      cachePos = cache.find(x.graphId);
-      if(cachePos != cache.end())
-      {
-         auto nodePos = materia::find_by_id(cachePos->second.nodes, x.nodeId);
-         if(nodePos != cachePos->second.nodes.end())
-         {
-            x.title = createDescriptiveTitle(*nodePos);
-         }
-      }
-   }
-
-   return result;
 }
 
 void StrategyModel::fetchGoals()
@@ -322,16 +257,6 @@ materia::Id StrategyModel::cloneNode(const materia::Id& graphId, const Node& nod
    updateNode(graphId, clonedNode);
 
    return newNodeId;
-}
-
-void StrategyModel::focusNode(const materia::Id& graphId, const Node& node)
-{
-   strategy::FocusItemInfo request;
-   request.mutable_details()->mutable_graphid()->set_guid(graphId.getGuid());
-   request.mutable_details()->mutable_objectid()->set_guid(node.id.getGuid());
-
-   common::UniqueId result;
-   mService.getService().AddFocusItem(nullptr, &request, &result, nullptr);
 }
 
 void StrategyModel::deleteNode(const materia::Id& graphId, const materia::Id& nodeId)

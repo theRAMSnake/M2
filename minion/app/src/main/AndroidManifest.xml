@@ -28,7 +28,6 @@
         <activity android:name=".Activities.InboxActivity" />
         <activity android:name=".Activities.SyncActivity" />
         <activity android:name=".Activities.JournalActivity" />
-        <activity android:name=".Activities.FocusActivity" />
         <activity android:name=".Activities.JournalItemActivity" />
         <activity android:name=".Activities.ResourcesActivity" />
         <activity android:name=".Activities.SyncPrepareActivity" />

@@ -9,9 +9,18 @@
 #include <Wt/WDateEdit.h>
 #include <Wt/WPushButton.h>
 #include <Wt/WCalendar.h>
+#include <Wt/WButtonGroup.h>
+#include <Wt/WRadioButton.h>
 #include <Wt/WCssDecorationStyle.h>
 #include <boost/date_time/gregorian/greg_date.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+
+void addBtn(Wt::WButtonGroup& btnGrp, Wt::WGroupBox& parent, const std::string& text, calendar::ReccurencyType recType)
+{
+   auto btn = parent.addWidget(Wt::cpp14::make_unique<Wt::WRadioButton>(text));
+   btn->setStyleClass("col-md-2");
+   btnGrp.addButton(btn, recType);
+}
 
 class CalendarItemDialog : public Wt::WDialog
 {
@@ -39,6 +48,20 @@ public:
       date->setWidth(Wt::WLength("15%"));
       date->addStyleClass("col-md-6");
 
+      auto gbRecContainer = contents()->addWidget(Wt::cpp14::make_unique<Wt::WGroupBox>());
+      gbRecContainer->addStyleClass("row justify-content-center");
+      gbRecContainer->setMargin(15, Wt::Side::Top);
+
+      mGbRec = std::make_shared<Wt::WButtonGroup>();
+
+      addBtn(*mGbRec, *gbRecContainer, "None", calendar::ReccurencyType::NONE);
+      addBtn(*mGbRec, *gbRecContainer, "Weekly", calendar::ReccurencyType::WEEKLY);
+      addBtn(*mGbRec, *gbRecContainer, "Monthly", calendar::ReccurencyType::MONTHLY);
+      addBtn(*mGbRec, *gbRecContainer, "Quarterly", calendar::ReccurencyType::QUORTERLY);
+      addBtn(*mGbRec, *gbRecContainer, "Yearly", calendar::ReccurencyType::YEARLY);
+
+      mGbRec->setCheckedButton(mGbRec->button(src.reccurencyType));
+
       auto ok = new Wt::WPushButton("Accept");
       ok->setDefault(true);
       ok->clicked().connect(std::bind([=]() {
@@ -63,6 +86,7 @@ public:
             CalendarModel::Item resultItem(src);
             resultItem.text = title->text().narrow();
             resultItem.timestamp = WtDateTimeToTimestamp(date->date(), time->time());
+            resultItem.reccurencyType = static_cast<calendar::ReccurencyType>(mGbRec->checkedId());
 
             cb(resultItem);
         }
@@ -70,6 +94,9 @@ public:
         delete this;
       }));
    }
+
+private:
+   std::shared_ptr<Wt::WButtonGroup> mGbRec;
 };
 
 class MateriaCalendar : public Wt::WCalendar
@@ -336,6 +363,7 @@ void CalendarView::initiateItemAdd(const Wt::WDate date)
 {
    CalendarModel::Item item; 
    item.timestamp = WtDateTimeToTimestamp(date, Wt::WTime(9, 0));
+   item.reccurencyType = calendar::ReccurencyType::NONE;
    CalendarItemDialog* dlg = new CalendarItemDialog(item, [=](const CalendarModel::Item& result) 
    {
       materia::Id id = mCalendar.add(result);

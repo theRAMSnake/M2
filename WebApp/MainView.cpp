@@ -4,7 +4,6 @@
 #include <Wt/WDialog.h>
 #include <Wt/WLabel.h>
 #include "CalendarView.hpp"
-#include "ActionsView.hpp"
 #include "InboxView.hpp"
 #include "JournalView.hpp"
 #include "materia/InboxModel.hpp"
@@ -29,7 +28,6 @@ MainView::MainView(CalendarModel& calendar, StrategyModel& strategy, InboxModel&
    calendarGroup->addStyleClass("col-md-2");
    
    calendarGroup->addWidget(std::unique_ptr<Wt::WWidget>(new CalendarView(calendar)));
-   actionsGroup->addWidget(std::unique_ptr<Wt::WWidget>(new ActionsView(strategy)));
    addWidget(std::unique_ptr<Wt::WGroupBox>(actionsGroup));
    addWidget(std::unique_ptr<Wt::WGroupBox>(calendarGroup));
 

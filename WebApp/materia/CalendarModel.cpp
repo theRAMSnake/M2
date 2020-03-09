@@ -20,8 +20,7 @@ std::vector<CalendarModel::Item> CalendarModel::query(const std::time_t from, co
 
    for(auto x : items.items())
    {
-      result.push_back({x.id().guid(), x.text(), x.timestamp()});
-      std::cout << "===" << x.id().guid() << "===";
+      result.push_back({x.id().guid(), x.text(), x.timestamp(), x.reccurencytype()});
    }
 
    return result;
@@ -52,6 +51,7 @@ materia::Id CalendarModel::add(const Item& item)
    calendar::CalendarItem itemToAdd;
    itemToAdd.set_timestamp(item.timestamp);
    itemToAdd.set_text(item.text);
+   itemToAdd.set_reccurencytype(item.reccurencyType);
 
    common::UniqueId id;
    mService.getService().AddItem(nullptr, &itemToAdd, &id, nullptr);
@@ -65,6 +65,7 @@ void CalendarModel::replace(const Item& item)
    itemToEdit.mutable_id()->set_guid(item.id.getGuid());
    itemToEdit.set_timestamp(item.timestamp);
    itemToEdit.set_text(item.text);
+   itemToEdit.set_reccurencytype(item.reccurencyType);
 
    common::OperationResultMessage dummy;
    mService.getService().EditItem(nullptr, &itemToEdit, &dummy, nullptr);
@@ -74,8 +75,6 @@ void CalendarModel::erase(const materia::Id& id)
 {
    common::UniqueId idMsg;
    idMsg.set_guid(id.getGuid());
-
-   std::cout << "===" << id.getGuid() << "===";
 
    common::OperationResultMessage dummy;
    mService.getService().DeleteItem(nullptr, &idMsg, &dummy, nullptr);

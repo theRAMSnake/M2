@@ -629,29 +629,6 @@ void NodeOperationProvider::clone(const StrategyModel::Node& n)
    OnDone();
 }
 
-void NodeOperationProvider::focus(const StrategyModel::Node& n)
-{
-   std::function<void(const int)> continuation = [=] (const int val)
-   {
-      
-      for(int i = 0; i < val; ++i)
-      {
-         mModel.focusNode(mId, n);
-      }
-      
-      OnDone();
-   };
-
-   if(n.type == strategy::NodeType::COUNTER)
-   {
-      CommonDialogManager::queryNumber(1, continuation);
-   }
-   else
-   {
-      continuation(1);
-   }
-}
-
 void NodeOperationProvider::split(const StrategyModel::Node& n)
 {
    CommonDialogManager::showBinaryChoiseDialog("Vertical", "Horizontal", 

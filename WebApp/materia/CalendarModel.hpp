@@ -15,6 +15,7 @@ public:
       materia::Id id;
       std::string text;
       std::time_t timestamp;
+      calendar::ReccurencyType reccurencyType;
    };
 
    std::vector<Item> query(const std::time_t from, const std::time_t to);

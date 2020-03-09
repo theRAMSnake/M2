@@ -11,7 +11,6 @@ main.cpp
 WebApp.cpp
 MainScreen.cpp
 InboxView.cpp
-ActionsView.cpp
 strategy/StrategyView.cpp
 WtConverters.cpp
 CalendarView.cpp

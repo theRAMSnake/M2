@@ -13,13 +13,14 @@ calendar::CalendarItem toProto(const CalendarItem& x)
    result.mutable_id()->CopyFrom(toProto(x.id));
    result.set_timestamp(x.timestamp);
    result.set_text(x.text);
+   result.set_reccurencytype(static_cast<calendar::ReccurencyType>(x.reccurencyType));
 
    return result;
 }
 
 CalendarItem fromProto(const calendar::CalendarItem& x)
 {
-   return {fromProto(x.id()), x.text(), x.timestamp()};
+   return {fromProto(x.id()), x.text(), x.timestamp(), static_cast<ReccurencyType>(x.reccurencytype())};
 }
 
 class CalendarServiceImpl : public calendar::CalendarService

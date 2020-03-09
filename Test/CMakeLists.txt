@@ -7,22 +7,20 @@ include_directories("../build/Common")
 include_directories("..")
 
 add_executable(Test 
-#InboxTest.cpp
+InboxTest.cpp
 CalendarTest.cpp
-DatabaseTest.cpp
-Core3Test.cpp
-#JournalTest.cpp
-#StrategyGraphTest.cpp
-#Strategy2Test.cpp
-#FreeDataTest.cpp
-#EncDecTest.cpp
-#FinanceTest.cpp
+JournalTest.cpp
+StrategyGraphTest.cpp
+Strategy2Test.cpp
+FreeDataTest.cpp
+EncDecTest.cpp
+FinanceTest.cpp
 )
 
 find_package(Boost COMPONENTS unit_test_framework filesystem REQUIRED)
 
 
-target_link_libraries(Test m2common m2core m3core crypto ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread)
+target_link_libraries(Test m2common m2core crypto ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread)
 
 add_custom_command(
         TARGET Test POST_BUILD

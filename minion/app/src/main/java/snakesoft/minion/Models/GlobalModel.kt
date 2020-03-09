@@ -20,7 +20,6 @@ object GlobalModel
     val CalendarModel = CalendarModel(Db)
     val JournalModel = JournalModel(Db)
     val FreeDataModel = FreeDataModel(Db)
-    val FocusDataModel = FocusDataModel(Db)
     val FinanceModel = FinanceModel(Db)
 
     internal fun doSync(syncObserver: SyncObserver, password: String): Boolean
@@ -42,7 +41,6 @@ object GlobalModel
                 CalendarModel.sync(syncObserver, connection)
                 JournalModel.sync(syncObserver, connection)
                 FreeDataModel.sync(syncObserver, connection)
-                FocusDataModel.sync(syncObserver, connection)
                 FinanceModel.sync(syncObserver, connection)
 
                 syncObserver.finish()
@@ -72,7 +70,6 @@ object GlobalModel
         CalendarModel.clear()
         JournalModel.clear()
         FreeDataModel.clear()
-        FocusDataModel.clear()
         FinanceModel.clear()
     }
 }

@@ -61,10 +61,6 @@ public:
       std::string title;
    };
 
-   void deleteTask(const Task& task);
-   void completeTask(const Task& task);
-   std::vector<Task> getActiveTasks();
-
    std::vector<Goal> getGoals();
    std::optional<Goal> getGoal(const materia::Id& id);
    const Goal& addGoal(const bool focused, const std::string& name);
@@ -76,7 +72,6 @@ public:
    void deleteNode(const materia::Id& graphId, const materia::Id& nodeId);
    void updateNode(const materia::Id& graphId, const Node& node);
    materia::Id cloneNode(const materia::Id& graphId, const Node& node);
-   void focusNode(const materia::Id& graphId, const Node& node);
    void splitNodeVertical(const materia::Id& graphId, const Node& node);
    void splitNodeHorizontal(const materia::Id& graphId, const Node& node);
 
