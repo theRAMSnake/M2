@@ -13,6 +13,7 @@ class IJournal;
 class IBackuper;
 class IFreeData;
 class IFinance;
+class IReward;
 
 struct CoreConfig
 {
@@ -29,6 +30,7 @@ public:
     virtual IBackuper& getBackuper() = 0;
     virtual IFreeData& getFreeData() = 0;
     virtual IFinance& getFinance() = 0;
+    virtual IReward& getReward() = 0;
 
     virtual ~ICore(){}
 };

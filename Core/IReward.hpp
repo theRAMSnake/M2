@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Common/Id.hpp>
+#include <string>
+#include <vector>
 
 namespace materia
 {
@@ -11,13 +13,12 @@ struct RewardPoolItem
    std::string name;
    unsigned int amount = 0;
    unsigned int amountMax = 0;
-}
+};
 
 class IReward
 {
 public:
    virtual void addPoints(const unsigned int number) = 0;
-   virtual void spendFromPool(const Id poolId) = 0;
 
    virtual std::vector<RewardPoolItem> getPools() const = 0;
    virtual void removePool(const Id& id) = 0;

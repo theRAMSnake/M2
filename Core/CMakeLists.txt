@@ -21,6 +21,7 @@ private/NodeAttributes.cpp
 private/FreeData.cpp
 private/FreeDataInterpreter.cpp
 private/Finance.cpp
+private/Reward.cpp
 )
 
 find_package(Boost COMPONENTS system REQUIRED)
