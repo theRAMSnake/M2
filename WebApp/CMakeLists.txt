@@ -26,7 +26,6 @@ strategy/GoalViewCtrl.hpp
 strategy/GraphView.cpp
 strategy/GraphEditDialog.cpp
 strategy/NodeEditDialog.cpp
-RewardsSmartPage.cpp
 materia/ZmqPbChannel.cpp
 materia/StrategyModel.cpp
 materia/CalendarModel.cpp

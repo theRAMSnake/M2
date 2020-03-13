@@ -44,3 +44,8 @@ message StringMessage
 {
    string content = 1;
 }
+
+message IntMessage
+{
+   uint32 content = 1;
+}

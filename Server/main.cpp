@@ -11,6 +11,7 @@
 #include "StrategyServiceImpl.hpp"
 #include "JournalServiceImpl.hpp"
 #include "AdminServiceImpl.hpp"
+#include "RewardServiceImpl.hpp"
 #include "FreeDataServiceImpl.hpp"
 #include "FinanceServiceImpl.hpp"
 #include "Common/Codec.hpp"
@@ -106,6 +107,7 @@ int main(int argc, char *argv[])
     logger << "Creating services\n";
 
     gServices.insert({"InboxService", std::make_shared<materia::ServiceWrapper<materia::InboxServiceImpl>>((*core))});
+    gServices.insert({"RewardService", std::make_shared<materia::ServiceWrapper<materia::RewardServiceImpl>>((*core))});
     gServices.insert({"CalendarService", std::make_shared<materia::ServiceWrapper<materia::CalendarServiceImpl>>((*core))});
     gServices.insert({"JournalService", std::make_shared<materia::ServiceWrapper<materia::JournalServiceImpl>>((*core))});
     gServices.insert({"StrategyService", std::make_shared<materia::ServiceWrapper<materia::StrategyServiceImpl>>((*core))});
