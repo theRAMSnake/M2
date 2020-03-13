@@ -24,6 +24,5 @@ BOOST_FIXTURE_TEST_CASE( Test, EncDecTest )
     ctext = c.encrypt(ptext);
     rtext = c.decrypt(ctext);
     
-    std::cout << "Original message:\n" << ptext << std::endl;
-    std::cout << "Recovered message:\n" << rtext << std::endl;
+    BOOST_CHECK_EQUAL(ptext, rtext);
 }

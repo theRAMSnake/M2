@@ -69,7 +69,7 @@ Id Reward::addPool(const RewardPoolItem& item)
    auto newItem = item;
    newItem.id = Id::generate();
 
-   mStorage->store(newItem.id, writeJson(item));
+   mStorage->store(newItem.id, writeJson(newItem));
 
    return newItem.id;
 }
