@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
     while(true)
     {
         zmq::message_t clientMessage;
-        clientSocket.recv (&clientMessage);
+        clientSocket.recv (clientMessage, zmq::recv_flags::none);
         logger << "Received message\n";
 
         std::string received(static_cast<const char *>(clientMessage.data()), clientMessage.size());
@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
         catch(...)
         {
             logger << "Decription failed\n";
-            clientSocket.send (clientMessage);
+            clientSocket.send (clientMessage, zmq::send_flags::none);
             continue;
         }
 
@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
         if(!materiaMsg.ParseFromString(decoded))
         {
             logger << "Cannot parse message, sending it back\n";
-            clientSocket.send (clientMessage);
+            clientSocket.send (clientMessage, zmq::send_flags::none);
             continue;
         }
 
@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
         std::string encoded = codec.encrypt(serialized);
 
         zmq::message_t msgToSend (encoded.data(), encoded.size());
-        clientSocket.send (msgToSend);
+        clientSocket.send (msgToSend, zmq::send_flags::none);
         logger << "Sending responce\n";
 
         if(shutdownFlag)

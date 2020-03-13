@@ -11,6 +11,12 @@ std::string genName()
    return "materia.bu." + std::to_string(time(&t));
 }
 
+std::string genName3()
+{
+   time_t t;
+   return "materia.bu3." + std::to_string(time(&t));
+}
+
 int main(int argc,  char** argv)
 {
    if(argc < 2)
@@ -30,26 +36,27 @@ int main(int argc,  char** argv)
 
    MateriaServiceProxy<admin::AdminService> service(channel);
 
-   common::EmptyMessage empty;
-   admin::BackupChunk chunk;
-   service.getService().StartBackup(nullptr, &empty, &chunk, nullptr);
-
-   std::ofstream stream;
-   auto fname = genName();
-   stream.open(fname, std::ios::out | std::ios::binary | std::ios::trunc);
-
-   stream.write(&chunk.bytes().front(), chunk.bytes().size());
-   std::cout << "Chunk: " << chunk.bytes().size() << "\n";
-
-   while(chunk.has_more())
    {
-      service.getService().Next(nullptr, &empty, &chunk, nullptr);
+      common::EmptyMessage empty;
+      admin::BackupChunk chunk;
+      service.getService().StartBackup(nullptr, &empty, &chunk, nullptr);
+
+      std::ofstream stream;
+      auto fname = genName();
+      stream.open(fname, std::ios::out | std::ios::binary | std::ios::trunc);
+
       stream.write(&chunk.bytes().front(), chunk.bytes().size());
       std::cout << "Chunk: " << chunk.bytes().size() << "\n";
-   }
 
-   stream.close();
-   std::cout << fname;
+      while(chunk.has_more())
+      {
+         service.getService().Next(nullptr, &empty, &chunk, nullptr);
+         stream.write(&chunk.bytes().front(), chunk.bytes().size());
+         std::cout << "Chunk: " << chunk.bytes().size() << "\n";
+      }
+
+      stream.close();
+   }
 
    MateriaServiceProxy<inbox::InboxService> ib(channel);
 

@@ -23,12 +23,12 @@ void ZmqPbChannel::CallMethod(const MethodDescriptor * method, RpcController * c
    std::string encrypted = mCodec.encrypt(toCode);
    
    zmq::message_t req (encrypted.data(), encrypted.size());
-   mZmqSocket.send (req);
+   mZmqSocket.send (req, zmq::send_flags::none);
 
    //-----------------------------------------------------------
 
    zmq::message_t resp;
-   mZmqSocket.recv (&resp);
+   mZmqSocket.recv (resp, zmq::recv_flags::none);
 
    std::string received(static_cast<const char *>(resp.data()), resp.size());
    std::string decoded;
