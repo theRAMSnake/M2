@@ -90,7 +90,7 @@ public:
     RewardPoolView(const RewardModel::Item& item)
     : mItem(item)
     {
-        setWidth(1500);
+        setWidth(1850);
         setHeight(48);
         setMargin(20, Wt::Side::Left);
     }
@@ -107,14 +107,14 @@ protected:
 
       if(mItem.amountMax > 0)
       {
-        double sizePerBlock = paintDevice->width().toPixels() * 0.8 / mItem.amountMax;
+        double sizePerBlock = (paintDevice->width().toPixels() * 0.8) / (mItem.amountMax);
 
         auto greenBrush = Wt::WBrush(Wt::StandardColor::DarkGreen);
         auto grayBrush = Wt::WBrush(Wt::StandardColor::Gray);
 
         for(unsigned int i = 0; i < mItem.amountMax; ++i)
         {
-            painter.fillRect({2 + paintDevice->width().toPixels() / 5 + i * (sizePerBlock + 2), 4, sizePerBlock, paintDevice->height().toPixels() - 8},
+            painter.fillRect({2 + paintDevice->width().toPixels() / 5 + i * (sizePerBlock), 4, sizePerBlock - 4, paintDevice->height().toPixels() - 8},
                 i < mItem.amount ? greenBrush : grayBrush);
         }
       }
