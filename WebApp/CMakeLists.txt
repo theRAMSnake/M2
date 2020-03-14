@@ -21,6 +21,8 @@ JournalView.cpp
 FilesView.cpp
 SharedFilesView.cpp
 FinanceView.cpp
+RewardView.cpp
+WidgetFactory.cpp
 strategy/GoalsComboBox.cpp
 strategy/GoalViewCtrl.hpp
 strategy/GraphView.cpp
@@ -33,6 +35,7 @@ materia/InboxModel.cpp
 materia/JournalModel.cpp
 materia/FreeDataModel.cpp
 materia/FinanceModel.cpp
+materia/RewardModel.cpp
 dialog/CommonDialogManager.cpp
 dialog/Dialog.cpp
 )
