@@ -10,7 +10,7 @@ Core::Core(const CoreConfig& config)
 , mCalendar(mDb, mReward)
 , mJournal(mDb)
 , mFreeData(mDb)
-, mStrategy_v2(mDb, mFreeData)
+, mStrategy_v2(mDb, mFreeData, mReward)
 , mBackuper(config.dbFileName)
 , mFinance(mDb)
 {

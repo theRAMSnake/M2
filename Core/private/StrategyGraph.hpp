@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../IStrategy_v2.hpp"
+#include "../IReward.hpp"
 
 namespace materia
 {
@@ -17,8 +18,8 @@ struct RawStrategyGraph
 class StrategyGraph : public IStrategyGraph
 {
 public:
-   StrategyGraph(const Id& id);
-   StrategyGraph(const RawStrategyGraph& src);
+   StrategyGraph(const Id& id, IReward& reward);
+   StrategyGraph(const RawStrategyGraph& src, IReward& reward);
 
    const std::vector<Link>& getLinks() const override;
    const std::vector<Node>& getNodes() const override;
@@ -47,7 +48,10 @@ private:
    bool isRouteExist(const Id& from, const Id& destination) const;
    Node getGoalNode() const;
 
+   void reward(const NodeType& type, const NodeAttributes& before, const NodeAttributes& after);
+
    RawStrategyGraph mSrc;
+   IReward& mReward;
 };
 
 }

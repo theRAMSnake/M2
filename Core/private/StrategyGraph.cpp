@@ -9,8 +9,9 @@ bool operator == (const materia::Link& a, const materia::Link& b)
    return a.from == b.from && a.to == b.to;
 }
 
-StrategyGraph::StrategyGraph(const RawStrategyGraph& src)
+StrategyGraph::StrategyGraph(const RawStrategyGraph& src, IReward& reward)
 : mSrc(src)
+, mReward(reward)
 {
 
 }
@@ -85,7 +86,8 @@ void StrategyGraph::deleteNode(const Id& objectId)
    }
 }
 
-StrategyGraph::StrategyGraph(const Id& id)
+StrategyGraph::StrategyGraph(const Id& id, IReward& reward)
+: mReward(reward)
 {
    mSrc.id = id;
    mSrc.nodes.push_back({Id::generate(), NodeType::Goal});
@@ -163,7 +165,27 @@ void StrategyGraph::setNodeAttributes(const Id& objectId, const NodeType& type, 
          }
       }
 
+      reward(type, NodeAttributes(mSrc.nodeAttrs[objectId]), attrs);
       mSrc.nodeAttrs[objectId] = modifiedAttrs.toMap();
+   }
+}
+
+void StrategyGraph::reward(const NodeType& type, const NodeAttributes& before, const NodeAttributes& after)
+{
+   if(type == NodeType::Task)
+   {
+      if((!before.contains(NodeAttributeType::IS_DONE) || !before.get<NodeAttributeType::IS_DONE>()) 
+         && (after.contains(NodeAttributeType::IS_DONE) && after.get<NodeAttributeType::IS_DONE>()))
+      {
+         mReward.addPoints(1);
+      }
+   }
+   else if(type == NodeType::Counter)
+   {
+      if(before.get<NodeAttributeType::PROGRESS_CURRENT>() < after.get<NodeAttributeType::PROGRESS_CURRENT>())
+      {
+         mReward.addPoints(after.get<NodeAttributeType::PROGRESS_CURRENT>() - before.get<NodeAttributeType::PROGRESS_CURRENT>());
+      }
    }
 }
 
