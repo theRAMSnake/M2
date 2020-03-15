@@ -4,13 +4,15 @@
 #include <boost/date_time/date_duration_types.hpp>
 
 SERIALIZE_AS_INTEGER(materia::ReccurencyType)
-BIND_JSON4(materia::CalendarItem, id, text, timestamp, reccurencyType)
+SERIALIZE_AS_INTEGER(materia::CalendarEntityType)
+BIND_JSON5(materia::CalendarItem, id, text, timestamp, reccurencyType, entityType)
 
 namespace materia
 {
 
-Calendar::Calendar(Database& db)
+Calendar::Calendar(Database& db, IReward& reward)
 : mStorage(db.getTable("calendar"))
+, mReward(reward)
 {
     mStorage->foreach([&](std::string id, std::string json) 
     {
@@ -52,16 +54,30 @@ void Calendar::deleteItem(const Id& id)
    auto pos = find_by_id(mItems, id);
    if(pos != mItems.end())
    {
-       if(pos->reccurencyType != ReccurencyType::None)
-       {
-           replaceItem(advance(*pos));
-       }
-       else
-       {
-           mItems.erase(pos);
-           mStorage->erase(id);
-       }
+       mItems.erase(pos);
+       mStorage->erase(id);
    }
+}
+
+void Calendar::completeItem(const Id& id)
+{
+    auto pos = find_by_id(mItems, id);
+    if(pos != mItems.end())
+    {
+        if(pos->entityType == CalendarEntityType::Task)
+        {
+            mReward.addPoints(1);
+        }
+
+        if(pos->reccurencyType != ReccurencyType::None)
+        {
+            replaceItem(advance(*pos));
+        }
+        else
+        {
+            deleteItem(id);
+        }
+    }
 }
 
 void Calendar::replaceItem(const CalendarItem& item)

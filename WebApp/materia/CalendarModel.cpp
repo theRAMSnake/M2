@@ -6,6 +6,25 @@ CalendarModel::CalendarModel(ZmqPbChannel& channel)
 
 }
 
+
+calendar::CalendarItem toProto(const CalendarModel::Item& x)
+{
+   calendar::CalendarItem result;
+
+   result.mutable_id()->set_guid(x.id.getGuid());
+   result.set_timestamp(x.timestamp);
+   result.set_text(x.text);
+   result.set_reccurencytype(static_cast<calendar::ReccurencyType>(x.reccurencyType));
+   result.set_entitytype(static_cast<calendar::EntityType>(x.entityType));
+
+   return result;
+}
+
+CalendarModel::Item fromProto(const calendar::CalendarItem& x)
+{
+   return {x.id().guid(), x.text(), x.timestamp(), x.reccurencytype(), x.entitytype()};
+}
+
 std::vector<CalendarModel::Item> CalendarModel::query(const std::time_t from, const std::time_t to)
 {
    common::TimeRange t;
@@ -20,7 +39,7 @@ std::vector<CalendarModel::Item> CalendarModel::query(const std::time_t from, co
 
    for(auto x : items.items())
    {
-      result.push_back({x.id().guid(), x.text(), x.timestamp(), x.reccurencytype()});
+      result.push_back(fromProto(x));
    }
 
    return result;
@@ -40,7 +59,7 @@ std::vector<CalendarModel::Item> CalendarModel::next(const std::time_t from, con
 
    for(auto x : items.items())
    {
-      result.push_back({x.id().guid(), x.text(), x.timestamp()});
+      result.push_back(fromProto(x));
    }
 
    return result;
@@ -48,10 +67,7 @@ std::vector<CalendarModel::Item> CalendarModel::next(const std::time_t from, con
 
 materia::Id CalendarModel::add(const Item& item)
 {
-   calendar::CalendarItem itemToAdd;
-   itemToAdd.set_timestamp(item.timestamp);
-   itemToAdd.set_text(item.text);
-   itemToAdd.set_reccurencytype(item.reccurencyType);
+   calendar::CalendarItem itemToAdd = toProto(item);
 
    common::UniqueId id;
    mService.getService().AddItem(nullptr, &itemToAdd, &id, nullptr);
@@ -61,11 +77,7 @@ materia::Id CalendarModel::add(const Item& item)
 
 void CalendarModel::replace(const Item& item)
 {
-   calendar::CalendarItem itemToEdit;
-   itemToEdit.mutable_id()->set_guid(item.id.getGuid());
-   itemToEdit.set_timestamp(item.timestamp);
-   itemToEdit.set_text(item.text);
-   itemToEdit.set_reccurencytype(item.reccurencyType);
+   calendar::CalendarItem itemToEdit = toProto(item);
 
    common::OperationResultMessage dummy;
    mService.getService().EditItem(nullptr, &itemToEdit, &dummy, nullptr);
@@ -78,4 +90,13 @@ void CalendarModel::erase(const materia::Id& id)
 
    common::OperationResultMessage dummy;
    mService.getService().DeleteItem(nullptr, &idMsg, &dummy, nullptr);
+}
+
+void CalendarModel::complete(const materia::Id& id)
+{
+   common::UniqueId idMsg;
+   idMsg.set_guid(id.getGuid());
+
+   common::OperationResultMessage dummy;
+   mService.getService().CompleteItem(nullptr, &idMsg, &dummy, nullptr);
 }

@@ -12,7 +12,7 @@ public:
 
 private:
    void initiateItemAdd(const Wt::WDate date);
-   void initiateItemDelete(const CalendarModel::Item item);
+   void initiateItemResolve(const CalendarModel::Item item);
    void initiateItemEdit(const CalendarModel::Item item);
 
    void onCalendarClicked();

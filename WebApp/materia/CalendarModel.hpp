@@ -16,6 +16,7 @@ public:
       std::string text;
       std::time_t timestamp;
       calendar::ReccurencyType reccurencyType;
+      calendar::EntityType entityType;
    };
 
    std::vector<Item> query(const std::time_t from, const std::time_t to);
@@ -23,6 +24,7 @@ public:
    materia::Id add(const Item& item);
    void replace(const Item& item);
    void erase(const materia::Id& id);
+   void complete(const materia::Id& id);
 
 private:
    MateriaServiceProxy<calendar::CalendarService> mService;

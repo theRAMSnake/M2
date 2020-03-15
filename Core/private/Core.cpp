@@ -6,13 +6,13 @@ namespace materia
 Core::Core(const CoreConfig& config)
 : mDb(config.dbFileName)
 , mInbox(mDb)
-, mCalendar(mDb)
+, mReward(mDb)
+, mCalendar(mDb, mReward)
 , mJournal(mDb)
 , mFreeData(mDb)
 , mStrategy_v2(mDb, mFreeData)
 , mBackuper(config.dbFileName)
 , mFinance(mDb)
-, mReward(mDb)
 {
 
 }

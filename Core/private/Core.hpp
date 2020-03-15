@@ -31,13 +31,14 @@ public:
 private:
     Database mDb;
     Inbox mInbox;
+    Reward mReward;
     Calendar mCalendar;
     Journal mJournal;
     freedata::FreeData mFreeData;
     Strategy_v2 mStrategy_v2;
     Backuper mBackuper;
     Finance mFinance;
-    Reward mReward;
+    
 };
 
 std::shared_ptr<ICore> createCore(const CoreConfig& config);

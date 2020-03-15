@@ -15,12 +15,19 @@ enum ReccurencyType
    YEARLY = 4;
 }
 
+enum EntityType
+{
+   EVENT = 0;
+   TASK = 1;
+}
+
 message CalendarItem
 {
    common.UniqueId id = 1;
    string text = 2;
    int64 timestamp = 3;
    ReccurencyType reccurencyType = 4;
+   EntityType entityType = 5;
 }
 
 message CalendarItems
@@ -39,6 +46,7 @@ service CalendarService
    rpc Query (common.TimeRange) returns (CalendarItems);
    rpc Next (NextQueryParameters) returns (CalendarItems);
    rpc DeleteItem (common.UniqueId) returns (common.OperationResultMessage);
+   rpc CompleteItem (common.UniqueId) returns (common.OperationResultMessage);
    rpc EditItem (CalendarItem) returns (common.OperationResultMessage);
    rpc AddItem (CalendarItem) returns (common.UniqueId);
    rpc Clear(common.EmptyMessage) returns (common.OperationResultMessage);

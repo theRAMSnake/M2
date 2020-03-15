@@ -9,6 +9,7 @@
 #include <Wt/WDateEdit.h>
 #include <Wt/WPushButton.h>
 #include <Wt/WCalendar.h>
+#include <Wt/WComboBox.h>
 #include <Wt/WButtonGroup.h>
 #include <Wt/WRadioButton.h>
 #include <Wt/WCssDecorationStyle.h>
@@ -62,6 +63,13 @@ public:
 
       mGbRec->setCheckedButton(mGbRec->button(src.reccurencyType));
 
+      auto types = contents()->addWidget(std::make_unique<Wt::WComboBox>());
+      types->insertItem(0, "Event");
+      types->insertItem(1, "Task");
+
+      types->setMargin(10, Wt::Side::Top);
+      types->setCurrentIndex(src.entityType);
+
       auto ok = new Wt::WPushButton("Accept");
       ok->setDefault(true);
       ok->clicked().connect(std::bind([=]() {
@@ -87,6 +95,7 @@ public:
             resultItem.text = title->text().narrow();
             resultItem.timestamp = WtDateTimeToTimestamp(date->date(), time->time());
             resultItem.reccurencyType = static_cast<calendar::ReccurencyType>(mGbRec->checkedId());
+            resultItem.entityType = static_cast<calendar::EntityType>(types->currentIndex());
 
             cb(resultItem);
         }
@@ -342,10 +351,10 @@ CalendarView::CalendarView(CalendarModel& calendar)
    addWidget(std::unique_ptr<Wt::WCalendar>(mCalendarWidget));
 
    mDateCalendar = addWidget(std::unique_ptr<CalendarItemList>(new CalendarItemList("", CalendarItemList::DisplayMode::Time)));
-   mDateCalendar->onItemCtrlClicked().connect([=](CalendarModel::Item x){initiateItemDelete(x);} );
+   mDateCalendar->onItemCtrlClicked().connect([=](CalendarModel::Item x){initiateItemResolve(x);} );
    mDateCalendar->onItemDblClicked().connect([=](CalendarModel::Item x){initiateItemEdit(x);} );
    mNextCalendar = addWidget(std::unique_ptr<CalendarItemList>(new CalendarItemList("Upcoming", CalendarItemList::DisplayMode::Countdown)));
-   mNextCalendar->onItemCtrlClicked().connect([=](CalendarModel::Item x){initiateItemDelete(x);} );
+   mNextCalendar->onItemCtrlClicked().connect([=](CalendarModel::Item x){initiateItemResolve(x);} );
    mNextCalendar->onItemDblClicked().connect([=](CalendarModel::Item x){initiateItemEdit(x);} );
 
    updateNextCalendar();
@@ -364,6 +373,7 @@ void CalendarView::initiateItemAdd(const Wt::WDate date)
    CalendarModel::Item item; 
    item.timestamp = WtDateTimeToTimestamp(date, Wt::WTime(9, 0));
    item.reccurencyType = calendar::ReccurencyType::NONE;
+   item.entityType = calendar::EntityType::EVENT;
    CalendarItemDialog* dlg = new CalendarItemDialog(item, [=](const CalendarModel::Item& result) 
    {
       materia::Id id = mCalendar.add(result);
@@ -389,10 +399,17 @@ void CalendarView::initiateItemAdd(const Wt::WDate date)
    dlg->show();
 }
 
-void CalendarView::initiateItemDelete(const CalendarModel::Item item)
+void CalendarView::initiateItemResolve(const CalendarModel::Item item)
 {
-   std::function<void()> elementDeletedFunc = [=] () {
-      mCalendar.erase(item.id);
+   std::function<void(const bool)> resolveFunc = [=] (const bool erase) {
+      if(erase)
+      {
+         mCalendar.erase(item.id);
+      }
+      else
+      {
+         mCalendar.complete(item.id);
+      }
 
       mDateCalendar->removeItem(item);
       if(mNextCalendar->removeItem(item))
@@ -407,9 +424,20 @@ void CalendarView::initiateItemDelete(const CalendarModel::Item item)
          mDateCalendar->clearAll();
       }
 
-      };
+   };
 
-   CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
+   CommonDialogManager::showBinaryChoiseDialog("Complete", "Erase", 
+      [=]() 
+      {
+         std::function<void()> f = std::bind(resolveFunc, false);
+         CommonDialogManager::showConfirmationDialog("Complete it?", f);
+      },
+      [=]() 
+      {
+         std::function<void()> f = std::bind(resolveFunc, true);
+         CommonDialogManager::showConfirmationDialog("Delete it?", f);
+      }
+   );
 }
 
 void CalendarView::initiateItemEdit(const CalendarModel::Item item)

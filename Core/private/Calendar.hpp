@@ -3,6 +3,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <set>
 #include "../ICalendar.hpp"
+#include "../IReward.hpp"
 #include "Database.hpp"
 
 namespace materia
@@ -19,9 +20,10 @@ struct CompareByTime
 class Calendar : public ICalendar
 {
 public:
-   Calendar(Database& db);
+   Calendar(Database& db, IReward& reward);
 
    void deleteItem(const Id& id) override;
+   void completeItem(const Id& id) override;
    void replaceItem(const CalendarItem& item) override;
    Id insertItem(const CalendarItem& item) override;
 
@@ -31,6 +33,8 @@ public:
 private:
    std::multiset<CalendarItem, CompareByTime> mItems;
    std::unique_ptr<DatabaseTable> mStorage;
+
+   IReward& mReward;
 };
 
 }

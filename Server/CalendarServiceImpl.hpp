@@ -14,13 +14,16 @@ calendar::CalendarItem toProto(const CalendarItem& x)
    result.set_timestamp(x.timestamp);
    result.set_text(x.text);
    result.set_reccurencytype(static_cast<calendar::ReccurencyType>(x.reccurencyType));
+   result.set_entitytype(static_cast<calendar::EntityType>(x.entityType));
 
    return result;
 }
 
 CalendarItem fromProto(const calendar::CalendarItem& x)
 {
-   return {fromProto(x.id()), x.text(), x.timestamp(), static_cast<ReccurencyType>(x.reccurencytype())};
+   return {fromProto(x.id()), x.text(), x.timestamp(), 
+      static_cast<ReccurencyType>(x.reccurencytype()),
+      static_cast<CalendarEntityType>(x.entitytype())};
 }
 
 class CalendarServiceImpl : public calendar::CalendarService
@@ -63,6 +66,15 @@ public:
                        ::google::protobuf::Closure* done)
    {
       mCalendar.deleteItem(fromProto(*request));
+      response->set_success(true);
+   }
+
+   virtual void CompleteItem(::google::protobuf::RpcController* controller,
+                       const ::common::UniqueId* request,
+                       ::common::OperationResultMessage* response,
+                       ::google::protobuf::Closure* done)
+   {
+      mCalendar.completeItem(fromProto(*request));
       response->set_success(true);
    }
 
