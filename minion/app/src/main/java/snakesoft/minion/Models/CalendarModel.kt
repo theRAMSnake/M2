@@ -48,7 +48,7 @@ class CalendarModel(private val Db: LocalDatabase)
                 }
                 StatusOfChange.Delete ->
                 {
-                    proxy.deleteItem(toProto(i.id))
+                    proxy.completeItem(toProto(i.id))
                     numModifications++
                 }
                 StatusOfChange.Add ->

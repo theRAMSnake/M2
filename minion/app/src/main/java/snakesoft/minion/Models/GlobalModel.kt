@@ -21,6 +21,7 @@ object GlobalModel
     val JournalModel = JournalModel(Db)
     val FreeDataModel = FreeDataModel(Db)
     val FinanceModel = FinanceModel(Db)
+    val RewardModel = RewardModel(Db)
 
     internal fun doSync(syncObserver: SyncObserver, password: String): Boolean
     {
@@ -42,6 +43,7 @@ object GlobalModel
                 JournalModel.sync(syncObserver, connection)
                 FreeDataModel.sync(syncObserver, connection)
                 FinanceModel.sync(syncObserver, connection)
+                RewardModel.sync(syncObserver, connection)
 
                 syncObserver.finish()
 
@@ -71,5 +73,6 @@ object GlobalModel
         JournalModel.clear()
         FreeDataModel.clear()
         FinanceModel.clear()
+        RewardModel.clear()
     }
 }

@@ -17,6 +17,12 @@ message CategoryItems
    repeated CategoryInfo items = 1;
 }
 
+enum EventType
+{
+   SPENDING = 0;
+   EARNING = 1;
+}
+
 message EventInfo
 {
    common.UniqueId event_id = 1;
@@ -24,6 +30,7 @@ message EventInfo
    string details = 3;
    uint32 amount_euro_cents = 4;
    int32 timestamp = 5;
+   EventType type = 6;
 }
 
 message EventItems

@@ -55,7 +55,7 @@ materia::Id FinanceModel::addCategory(const std::string& name)
    return id.guid();
 }
 
-std::vector<FinanceModel::Event> FinanceModel::loadEvents(const std::time_t timestampFrom, const std::time_t timestampTo)
+std::vector<FinanceModel::Event> FinanceModel::loadEvents(const std::time_t timestampFrom, const std::time_t timestampTo, finance::EventType type)
 {
    common::TimeRange r;
    r.set_timestampfrom(timestampFrom);
@@ -68,7 +68,10 @@ std::vector<FinanceModel::Event> FinanceModel::loadEvents(const std::time_t time
 
    for(auto x : events.items())
    {
-      result.push_back({x.event_id().guid(), x.category_id().guid(), x.details(), x.timestamp(), x.amount_euro_cents()});
+      if(x.type() == type)
+      {
+         result.push_back({x.event_id().guid(), x.category_id().guid(), x.details(), x.timestamp(), x.amount_euro_cents(), x.type()});
+      }
    }
 
    return result;
@@ -81,6 +84,7 @@ materia::Id FinanceModel::addEvent(const Event& ev)
    itemToAdd.set_details(ev.details);
    itemToAdd.set_timestamp(ev.timestamp);
    itemToAdd.mutable_category_id()->set_guid(ev.categoryId.getGuid());
+   itemToAdd.set_type(ev.eventType);
 
    common::UniqueId id;
    mService.getService().AddEvent(nullptr, &itemToAdd, &id, nullptr);
@@ -105,6 +109,7 @@ void FinanceModel::modifyEvent(const Event& ev)
    item.set_details(ev.details);
    item.set_timestamp(ev.timestamp);
    item.mutable_category_id()->set_guid(ev.categoryId.getGuid());
+   item.set_type(ev.eventType);
 
    common::OperationResultMessage res;
    mService.getService().ReplaceEvent(nullptr, &item, &res, nullptr);

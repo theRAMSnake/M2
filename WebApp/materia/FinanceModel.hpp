@@ -21,6 +21,7 @@ public:
       std::string details;
       std::time_t timestamp;
       unsigned int amountOfEuroCents;
+      finance::EventType eventType;
    };
 
    FinanceModel(ZmqPbChannel& channel);
@@ -30,7 +31,7 @@ public:
    void eraseCategory(const materia::Id& id);
    materia::Id addCategory(const std::string& name);
 
-   std::vector<Event> loadEvents(const std::time_t timestampFrom, const std::time_t timestampTo);
+   std::vector<Event> loadEvents(const std::time_t timestampFrom, const std::time_t timestampTo, finance::EventType type);
    materia::Id addEvent(const Event& ev);
    void deleteEvent(const materia::Id& id);
    void modifyEvent(const Event& ev);

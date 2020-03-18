@@ -7,7 +7,7 @@
 namespace materia
 {
 
-finance::CategoryInfo toProto(const SpendingCategory& x)
+finance::CategoryInfo toProto(const FinanceCategory& x)
 {
    finance::CategoryInfo result;
 
@@ -17,12 +17,12 @@ finance::CategoryInfo toProto(const SpendingCategory& x)
    return result;
 }
 
-SpendingCategory fromProto(const finance::CategoryInfo& x)
+FinanceCategory fromProto(const finance::CategoryInfo& x)
 {
    return {fromProto(x.id()), x.name()};
 }
 
-finance::EventInfo toProto(const SpendingEvent& x)
+finance::EventInfo toProto(const FinanceEvent& x)
 {
    finance::EventInfo result;
 
@@ -31,13 +31,14 @@ finance::EventInfo toProto(const SpendingEvent& x)
    result.set_details(x.details);
    result.set_amount_euro_cents(x.amountEuroCents);
    result.set_timestamp(x.timestamp);
+   result.set_type(static_cast<finance::EventType>(x.type));
 
    return result;
 }
 
-SpendingEvent fromProto(const finance::EventInfo& x)
+FinanceEvent fromProto(const finance::EventInfo& x)
 {
-   return {fromProto(x.event_id()), fromProto(x.category_id()), x.details(), x.amount_euro_cents(), x.timestamp()};
+   return {fromProto(x.event_id()), fromProto(x.category_id()), static_cast<EventType>(x.type()), x.details(), x.amount_euro_cents(), x.timestamp()};
 }
 
 class FinanceServiceImpl : public finance::FinanceService
@@ -90,7 +91,7 @@ public:
                         ::common::OperationResultMessage* response,
                         ::google::protobuf::Closure* done)
    {
-      mFinance.removeSpendingEvent(fromProto(*request));
+      mFinance.removeEvent(fromProto(*request));
       response->set_success(true);
    }
 
@@ -99,7 +100,7 @@ public:
                         ::common::OperationResultMessage* response,
                         ::google::protobuf::Closure* done)
    {
-      mFinance.replaceSpendingEvent(fromProto(*request));
+      mFinance.replaceEvent(fromProto(*request));
       response->set_success(true);
    }
 
@@ -108,7 +109,7 @@ public:
                         ::common::UniqueId* response,
                         ::google::protobuf::Closure* done)
    {
-      response->CopyFrom(toProto(mFinance.addSpendingEvent(fromProto(*request))));
+      response->CopyFrom(toProto(mFinance.addEvent(fromProto(*request))));
    }
 
    virtual void QueryEvents(::google::protobuf::RpcController* controller,

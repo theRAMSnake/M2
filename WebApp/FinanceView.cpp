@@ -268,7 +268,7 @@ private:
       mTable->clear();
 
       auto events = mModel.loadEvents(to_time_t(alignToStartOfMonth(date)),
-         to_time_t(date.end_of_month() + boost::gregorian::date_duration(1)));
+         to_time_t(date.end_of_month() + boost::gregorian::date_duration(1)), finance::EventType::SPENDING);
 
       auto categories = mModel.getCategories();
 
@@ -322,17 +322,15 @@ public:
       mTable->addStyleClass("table-striped");
       mTable->decorationStyle().font().setSize(Wt::WFont::Size::Medium);
       mTable->setMargin(25, Wt::Side::Top);
-
-      //refreshTable();
    }
 
 private:
    void refreshTable()
    {
-      unsigned int grandTotal = 0;
-      std::map<materia::Id, std::map<boost::gregorian::date, unsigned int>> amountByCategory;
+      int grandTotal = 0;
+      std::map<materia::Id, std::map<boost::gregorian::date, int>> amountByCategory;
       std::map<boost::gregorian::date, int> months;
-      std::map<boost::gregorian::date, unsigned int> total_per_month;
+      std::map<boost::gregorian::date, int> total_per_month;
       auto categories = mModel.getCategories();
 
       mTable->clear();
@@ -345,7 +343,17 @@ private:
          months[date] = i;
 
          auto events = mModel.loadEvents(to_time_t(date),
-            to_time_t(date.end_of_month() + boost::gregorian::date_duration(1)));
+            to_time_t(date.end_of_month() + boost::gregorian::date_duration(1)), finance::EventType::SPENDING);
+
+         for(auto e : events)
+         {
+            amountByCategory[e.categoryId][date] -= e.amountOfEuroCents;
+            grandTotal -= e.amountOfEuroCents;
+            total_per_month[date] -= e.amountOfEuroCents;
+         }
+
+         events = mModel.loadEvents(to_time_t(date),
+            to_time_t(date.end_of_month() + boost::gregorian::date_duration(1)), finance::EventType::EARNING);
 
          for(auto e : events)
          {
@@ -412,6 +420,7 @@ public:
          eventId = e.eventId;
          isAnnual = false;
          timestamp = e.timestamp;
+         eventType = e.eventType;
       }
    };
 
@@ -456,7 +465,12 @@ private:
       mTable->clear();
       mTable->setMargin(25, Wt::Side::Top);
 
-      auto events = mModel.loadEvents(to_time_t(mFrom->getValue()), to_time_t(mTo->getValue() + boost::gregorian::date_duration(1)));
+      auto events = mModel.loadEvents(to_time_t(mFrom->getValue()), to_time_t(mTo->getValue() + boost::gregorian::date_duration(1)), 
+         finance::EventType::SPENDING);
+      auto moreEvents = mModel.loadEvents(to_time_t(mFrom->getValue()), to_time_t(mTo->getValue() + boost::gregorian::date_duration(1)), 
+         finance::EventType::EARNING);
+
+      events.insert(events.begin(), moreEvents.begin(), moreEvents.end());
 
       mTable->elementAt(0, 0)->addNew<Wt::WLabel>("<b>Category</b>");
       mTable->elementAt(0, 1)->addNew<Wt::WLabel>("<b>Amount</b>");
@@ -471,7 +485,7 @@ private:
 
          auto row = mTable->rowCount();
          mTable->elementAt(row, 0)->addNew<Wt::WLabel>(catName);
-         auto activeElement = mTable->elementAt(row, 1)->addNew<Wt::WLabel>(currencyToString(e.amountOfEuroCents));
+         auto activeElement = mTable->elementAt(row, 1)->addNew<Wt::WLabel>(currencyToString(e.amountOfEuroCents * e.eventType == finance::EventType::EARNING ? 1 : -1));
          mTable->elementAt(row, 2)->addNew<DateCtrl>(timestampToGregorian(e.timestamp), true);
          mTable->elementAt(row, 3)->addNew<Wt::WLabel>(e.details);
 
@@ -509,6 +523,7 @@ private:
                splitted.details += " " + std::to_string(i+1) + "/12";
                splitted.amountOfEuroCents = e.amountOfEuroCents / 12;
                splitted.timestamp = to_time_t(timestampToGregorian(e.timestamp) + boost::gregorian::months(i));
+               splitted.eventType = e.eventType;
 
                mModel.addEvent(splitted);
             }
@@ -539,6 +554,14 @@ private:
          selectedCat, 
          [](auto x){return x.name;}, 
          [](WrappedEvent& obj, const FinanceModel::Category& selected){obj.categoryId = selected.id;}
+         );
+
+      std::vector<finance::EventType> types = {finance::EventType::SPENDING, finance::EventType::EARNING};
+      d->addComboBox("Type", 
+         types, 
+         types.begin() + ev.eventType, 
+         [](auto x){return std::to_string(x);}, 
+         [](WrappedEvent& obj, const finance::EventType& selected){obj.eventType = selected;}
          );
 
       d->addLineEdit("Details", &WrappedEvent::details);

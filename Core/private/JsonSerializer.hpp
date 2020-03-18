@@ -152,6 +152,10 @@ std::string writeJson(const T& t)
    static void read(JsonReader& r, T& t) { r.read(#F1, t.F1); r.read(#F2, t.F2); r.read(#F3, t.F3); r.read(#F4, t.F4); r.read(#F5, t.F5); } \
    static void write(const T& t, JsonWriter& w) { w.write(#F1, t.F1); w.write(#F2, t.F2); w.write(#F3, t.F3); w.write(#F4, t.F4); w.write(#F5, t.F5);} };
 
+#define BIND_JSON6(T, F1, F2, F3, F4, F5, F6) template<> class JsonMap<T> { public: \
+   static void read(JsonReader& r, T& t) { r.read(#F1, t.F1); r.read(#F2, t.F2); r.read(#F3, t.F3); r.read(#F4, t.F4); r.read(#F5, t.F5); r.read(#F6, t.F6);} \
+   static void write(const T& t, JsonWriter& w) { w.write(#F1, t.F1); w.write(#F2, t.F2); w.write(#F3, t.F3); w.write(#F4, t.F4); w.write(#F5, t.F5); w.write(#F6, t.F6);}};
+
 #define BIND_JSON7(T, F1, F2, F3, F4, F5, F6, F7) template<> class JsonMap<T> { public: \
    static void read(JsonReader& r, T& t) { r.read(#F1, t.F1); r.read(#F2, t.F2); r.read(#F3, t.F3); r.read(#F4, t.F4); r.read(#F5, t.F5); r.read(#F6, t.F6); r.read(#F7, t.F7);} \
    static void write(const T& t, JsonWriter& w) { w.write(#F1, t.F1); w.write(#F2, t.F2); w.write(#F3, t.F3); w.write(#F4, t.F4); w.write(#F5, t.F5); w.write(#F6, t.F6); w.write(#F7, t.F7);} };

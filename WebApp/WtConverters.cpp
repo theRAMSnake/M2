@@ -46,9 +46,16 @@ Wt::WDate gregorianToWtDate(const boost::gregorian::date& src)
     return Wt::WDate(src.year(), src.month(), src.day());
 }
 
-std::string currencyToString(const unsigned int cents)
+std::string currencyToString(const int cents)
 {
-    return boost::str(boost::format("%1%.%2%") 
-         % std::to_string(cents / 100) 
-         % boost::io::group(std::setw(2), std::setfill('0'), std::to_string(cents % 100)));
+    auto result = boost::str(boost::format("%1%.%2%") 
+         % std::to_string(cents / 100)
+         % boost::io::group(std::setw(2), std::setfill('0'), std::to_string(std::abs(cents % 100))));
+
+    if(cents < 0 && std::abs(cents) < 100)
+    {
+        result = "-" + result;
+    }
+
+    return result;
 }

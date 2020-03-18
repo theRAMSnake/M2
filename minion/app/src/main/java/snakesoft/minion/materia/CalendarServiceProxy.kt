@@ -26,11 +26,11 @@ class CalendarServiceProxy(private val mMateriaConnection: MateriaConnection) {
     }
 
     @Throws(InvalidProtocolBufferException::class, MateriaUnreachableException::class)
-    fun deleteItem(id: Common.UniqueId) {
+    fun completeItem(id: Common.UniqueId) {
         mMateriaConnection.sendMessage(
                 id.toByteString(),
                 "CalendarService",
-                "DeleteItem"
+                "CompleteItem"
         )
     }
 

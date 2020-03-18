@@ -56,7 +56,7 @@ BOOST_FIXTURE_TEST_CASE( EditCategory, FinanceTest )
 
 BOOST_FIXTURE_TEST_CASE( AddDeleteSpendingEvent, FinanceTest ) 
 {  
-   BOOST_CHECK(mFinance.addSpendingEvent({materia::Id::Invalid, materia::Id::Invalid, "details", 100, 5}) != materia::Id::Invalid);
+   BOOST_CHECK(mFinance.addEvent({materia::Id::Invalid, materia::Id::Invalid, materia::EventType::Spending, "details", 100, 5}) != materia::Id::Invalid);
 
    auto items = mFinance.queryEvents(0, 10);
    BOOST_CHECK_EQUAL(1, items.size());
@@ -65,7 +65,7 @@ BOOST_FIXTURE_TEST_CASE( AddDeleteSpendingEvent, FinanceTest )
    BOOST_CHECK_EQUAL(5, items[0].timestamp);
    BOOST_CHECK_EQUAL(100, items[0].amountEuroCents);
 
-   mFinance.removeSpendingEvent(items[0].eventId);
+   mFinance.removeEvent(items[0].eventId);
    
    items = mFinance.queryEvents(0, 10);
    BOOST_CHECK_EQUAL(0, items.size());
@@ -73,10 +73,10 @@ BOOST_FIXTURE_TEST_CASE( AddDeleteSpendingEvent, FinanceTest )
 
 BOOST_FIXTURE_TEST_CASE( EditSpendingEvent, FinanceTest )
 {
-   materia::Id newId = mFinance.addSpendingEvent({materia::Id::Invalid, materia::Id::Invalid, "details", 100, 5});
+   materia::Id newId = mFinance.addEvent({materia::Id::Invalid, materia::Id::Invalid, materia::EventType::Spending, "details", 100, 5});
    BOOST_CHECK(newId != materia::Id::Invalid);
 
-   mFinance.replaceSpendingEvent({newId, materia::Id("5"), "other_details", 200, 6});
+   mFinance.replaceEvent({newId, materia::Id("5"), materia::EventType::Spending, "other_details", 200, 6});
 
    auto items = mFinance.queryEvents(0, 10);
    BOOST_CHECK_EQUAL(1, items.size());
@@ -88,9 +88,9 @@ BOOST_FIXTURE_TEST_CASE( EditSpendingEvent, FinanceTest )
 
 BOOST_FIXTURE_TEST_CASE( QuerySpendingEvent, FinanceTest ) 
 {  
-   materia::Id newId = mFinance.addSpendingEvent({materia::Id::Invalid, materia::Id::Invalid, "details", 100, 5});
-   materia::Id newId2 = mFinance.addSpendingEvent({materia::Id::Invalid, materia::Id::Invalid, "details", 100, 10});
-   materia::Id newId3 = mFinance.addSpendingEvent({materia::Id::Invalid, materia::Id::Invalid, "details", 100, 15});
+   materia::Id newId = mFinance.addEvent({materia::Id::Invalid, materia::Id::Invalid, materia::EventType::Spending,"details", 100, 5});
+   materia::Id newId2 = mFinance.addEvent({materia::Id::Invalid, materia::Id::Invalid, materia::EventType::Spending, "details", 100, 10});
+   materia::Id newId3 = mFinance.addEvent({materia::Id::Invalid, materia::Id::Invalid, materia::EventType::Spending, "details", 100, 15});
 
    {
       auto items = mFinance.queryEvents(0, 9);

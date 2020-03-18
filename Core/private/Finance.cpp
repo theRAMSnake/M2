@@ -1,8 +1,10 @@
 #include "Finance.hpp"
 #include "JsonSerializer.hpp"
 
-BIND_JSON2(materia::SpendingCategory, id, name)
-BIND_JSON5(materia::SpendingEvent, eventId, categoryId, details, amountEuroCents, timestamp)
+BIND_JSON2(materia::FinanceCategory, id, name)
+
+SERIALIZE_AS_INTEGER(materia::EventType)
+BIND_JSON6(materia::FinanceEvent, eventId, categoryId, type, details, amountEuroCents, timestamp)
 
 namespace materia
 {
@@ -14,13 +16,13 @@ Finance::Finance(Database& db)
 
 }
 
-std::vector<SpendingCategory> Finance::getCategories() const
+std::vector<FinanceCategory> Finance::getCategories() const
 {
-   std::vector<SpendingCategory> result;
+   std::vector<FinanceCategory> result;
 
    mCategoriesStorage->foreach([&](std::string id, std::string json) 
    {
-      result.push_back(readJson<SpendingCategory>(json));
+      result.push_back(readJson<FinanceCategory>(json));
    });
 
    return result;
@@ -31,7 +33,7 @@ void Finance::removeCategory(const Id& id)
    mCategoriesStorage->erase(id);
 }
 
-Id Finance::addCategory(const SpendingCategory& item)
+Id Finance::addCategory(const FinanceCategory& item)
 {
    auto newItem = item;
    newItem.id = Id::generate();
@@ -42,18 +44,18 @@ Id Finance::addCategory(const SpendingCategory& item)
    return newItem.id;
 }
 
-void Finance::replaceCategory(const SpendingCategory& item)
+void Finance::replaceCategory(const FinanceCategory& item)
 {
    std::string json = writeJson(item);
    mCategoriesStorage->store(item.id, json);
 }
 
-void Finance::removeSpendingEvent(const Id& id)
+void Finance::removeEvent(const Id& id)
 {
    mEventsStorage->erase(id);
 }
 
-Id Finance::addSpendingEvent(const SpendingEvent& item)
+Id Finance::addEvent(const FinanceEvent& item)
 {
    auto newItem = item;
    newItem.eventId = Id::generate();
@@ -64,19 +66,19 @@ Id Finance::addSpendingEvent(const SpendingEvent& item)
    return newItem.eventId;
 }
 
-void Finance::replaceSpendingEvent(const SpendingEvent& item)
+void Finance::replaceEvent(const FinanceEvent& item)
 {
    std::string json = writeJson(item);
    mEventsStorage->store(item.eventId, json);
 }
 
-std::vector<SpendingEvent> Finance::queryEvents(const std::time_t from, const std::time_t to) const
+std::vector<FinanceEvent> Finance::queryEvents(const std::time_t from, const std::time_t to) const
 {
-   std::vector<SpendingEvent> result;
+   std::vector<FinanceEvent> result;
 
    mEventsStorage->foreach([&](std::string id, std::string json) 
    {
-      auto item = readJson<SpendingEvent>(json);
+      auto item = readJson<FinanceEvent>(json);
       if(item.timestamp <= to && item.timestamp >= from)
       {
          result.push_back(item);

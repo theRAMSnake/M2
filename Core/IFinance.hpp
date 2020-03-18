@@ -6,16 +6,24 @@
 namespace materia
 {
 
-struct SpendingCategory
+struct FinanceCategory
 {
    Id id;
    std::string name;
 };
 
-struct SpendingEvent
+enum EventType
+{
+   Spending,
+   Earning
+};
+
+struct FinanceEvent
 {
    Id eventId;
    Id categoryId;
+
+   EventType type = EventType::Spending;
 
    std::string details;
    unsigned int amountEuroCents;
@@ -25,17 +33,17 @@ struct SpendingEvent
 class IFinance
 {
 public:
-    virtual std::vector<SpendingCategory> getCategories() const = 0;
+    virtual std::vector<FinanceCategory> getCategories() const = 0;
 
     virtual void removeCategory(const Id& id) = 0;
-    virtual Id addCategory(const SpendingCategory& item) = 0;
-    virtual void replaceCategory(const SpendingCategory& item) = 0;
+    virtual Id addCategory(const FinanceCategory& item) = 0;
+    virtual void replaceCategory(const FinanceCategory& item) = 0;
 
-    virtual void removeSpendingEvent(const Id& id) = 0;
-    virtual Id addSpendingEvent(const SpendingEvent& item) = 0;
-    virtual void replaceSpendingEvent(const SpendingEvent& item) = 0;
+    virtual void removeEvent(const Id& id) = 0;
+    virtual Id addEvent(const FinanceEvent& item) = 0;
+    virtual void replaceEvent(const FinanceEvent& item) = 0;
 
-    virtual std::vector<SpendingEvent> queryEvents(const std::time_t from, const std::time_t to) const = 0;
+    virtual std::vector<FinanceEvent> queryEvents(const std::time_t from, const std::time_t to) const = 0;
 
     virtual ~IFinance(){}
 };

@@ -12,17 +12,17 @@ class Finance : public IFinance
 public:
    Finance(Database& db);
 
-   std::vector<SpendingCategory> getCategories() const override;
+   std::vector<FinanceCategory> getCategories() const override;
 
    void removeCategory(const Id& id) override;
-   Id addCategory(const SpendingCategory& item) override;
-   void replaceCategory(const SpendingCategory& item) override;
+   Id addCategory(const FinanceCategory& item) override;
+   void replaceCategory(const FinanceCategory& item) override;
 
-   void removeSpendingEvent(const Id& id) override;
-   Id addSpendingEvent(const SpendingEvent& item) override;
-   void replaceSpendingEvent(const SpendingEvent& item) override;
+   void removeEvent(const Id& id) override;
+   Id addEvent(const FinanceEvent& item) override;
+   void replaceEvent(const FinanceEvent& item) override;
 
-   std::vector<SpendingEvent> queryEvents(const std::time_t from, const std::time_t to) const override;
+   std::vector<FinanceEvent> queryEvents(const std::time_t from, const std::time_t to) const override;
    
 private:
    std::unique_ptr<DatabaseTable> mCategoriesStorage;
