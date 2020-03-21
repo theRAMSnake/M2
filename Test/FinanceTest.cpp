@@ -5,6 +5,8 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <Core/ICore.hpp>
 #include <Core/IFinance.hpp>
+#include <Core/IReward.hpp>
+#include <chrono>
 
 static std::shared_ptr<materia::ICore> createTestCore()
 {
@@ -19,7 +21,7 @@ public:
    : mCore(createTestCore())
    , mFinance(mCore->getFinance())
    {
-      
+      mCore->getReward().addPool({materia::Id::Invalid, "pool", 5, 10});
    }
 
 protected:
@@ -108,4 +110,45 @@ BOOST_FIXTURE_TEST_CASE( QuerySpendingEvent, FinanceTest )
       auto items = mFinance.queryEvents(20, 29);
       BOOST_CHECK_EQUAL(0, items.size());
    }
+}
+
+BOOST_FIXTURE_TEST_CASE( AnalisysTest_Critical, FinanceTest )
+{
+   auto time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now() - std::chrono::hours(24*5));
+   mFinance.addEvent({materia::Id::Invalid, materia::Id::Invalid, 
+      materia::EventType::Spending, "details", 100, time});
+   mFinance.addEvent({materia::Id::Invalid, materia::Id::Invalid, materia::EventType::Spending, "details", 100, time});
+   mFinance.addEvent({materia::Id::Invalid, materia::Id::Invalid, materia::EventType::Spending, "details", 100, time});
+
+   mFinance.addEvent({materia::Id::Invalid, materia::Id::Invalid, materia::EventType::Earning, "details", 100, time});
+
+   mCore->onNewDay();
+
+   auto r = mFinance.getReport();
+
+   BOOST_CHECK_EQUAL((int)materia::FinanceStatus::Critical, (int)r.status);
+   BOOST_CHECK_EQUAL(-200, r.balance);
+
+   BOOST_CHECK_EQUAL(3, mCore->getReward().getPools()[0].amount);
+}
+
+BOOST_FIXTURE_TEST_CASE( AnalisysTest_Good, FinanceTest )
+{
+   auto time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now() - std::chrono::hours(24*5));
+   mFinance.addEvent({materia::Id::Invalid, materia::Id::Invalid, 
+      materia::EventType::Spending, "details", 100, time});
+   mFinance.addEvent({materia::Id::Invalid, materia::Id::Invalid, materia::EventType::Spending, "details", 100, time});
+
+   mFinance.addEvent({materia::Id::Invalid, materia::Id::Invalid, materia::EventType::Earning, "details", 100, time});
+   mFinance.addEvent({materia::Id::Invalid, materia::Id::Invalid, materia::EventType::Earning, "details", 100, time});
+   mFinance.addEvent({materia::Id::Invalid, materia::Id::Invalid, materia::EventType::Earning, "details", 100, time});
+
+   mCore->onNewDay();
+
+   auto r = mFinance.getReport();
+
+   BOOST_CHECK_EQUAL((int)materia::FinanceStatus::Great, (int)r.status);
+   BOOST_CHECK_EQUAL(100, r.balance);
+
+   BOOST_CHECK_EQUAL(7, mCore->getReward().getPools()[0].amount);
 }

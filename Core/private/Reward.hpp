@@ -14,6 +14,7 @@ public:
    Reward(Database& db);
 
    void addPoints(const unsigned int number) override;
+   void removePoints(const unsigned int number) override;
 
    std::vector<RewardPoolItem> getPools() const override;
    void removePool(const Id& id) override;

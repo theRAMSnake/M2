@@ -1,7 +1,13 @@
 #include "Finance.hpp"
 #include "JsonSerializer.hpp"
+#include "../IReward.hpp"
+
+#include <chrono>
 
 BIND_JSON2(materia::FinanceCategory, id, name)
+
+SERIALIZE_AS_INTEGER(materia::FinanceStatus)
+BIND_JSON2(materia::FinanceReport, status, balance)
 
 SERIALIZE_AS_INTEGER(materia::EventType)
 BIND_JSON6(materia::FinanceEvent, eventId, categoryId, type, details, amountEuroCents, timestamp)
@@ -9,9 +15,12 @@ BIND_JSON6(materia::FinanceEvent, eventId, categoryId, type, details, amountEuro
 namespace materia
 {
 
+const materia::Id REPORT_ID = materia::Id("r1");
+
 Finance::Finance(Database& db)
 : mCategoriesStorage(db.getTable("finance_categories"))
 , mEventsStorage(db.getTable("finance_events"))
+, mReportsStorage(db.getTable("finance_reports"))
 {
 
 }
@@ -83,6 +92,78 @@ std::vector<FinanceEvent> Finance::queryEvents(const std::time_t from, const std
       {
          result.push_back(item);
       }
+   });
+
+   return result;
+}
+
+void Finance::performAnalisys(IReward& reward)
+{
+   auto now = std::chrono::system_clock::now();
+   auto events = queryEvents(std::chrono::system_clock::to_time_t(now - std::chrono::hours(8760)), std::chrono::system_clock::to_time_t(now));
+
+   unsigned int totalEarnings = 0;
+   unsigned int totalSpendings = 0;
+
+   for(auto& e : events)
+   {
+      if(e.type == EventType::Earning)
+      {
+         totalEarnings += e.amountEuroCents;
+      }
+      else if(e.type == EventType::Spending)
+      {
+         totalSpendings += e.amountEuroCents;
+      }
+   }
+
+   if(totalSpendings == 0)
+   {
+      return;
+   }
+
+   FinanceReport r;
+   r.balance = static_cast<int>(totalEarnings) - static_cast<int>(totalSpendings);
+   auto ratio = static_cast<double>(totalEarnings) / totalSpendings;
+   if(ratio > 1.5)
+   {
+      reward.addPoints(3);
+      r.status = FinanceStatus::Excellent;
+   }
+   else if(ratio > 1.2)
+   {
+      reward.addPoints(2);
+      r.status = FinanceStatus::Great;
+   }
+   else if(ratio > 1.1)
+   {
+      r.status = FinanceStatus::Good;
+      reward.addPoints(1);
+   }
+   else if(ratio > 1)
+   {
+      r.status = FinanceStatus::Ok;
+   }
+   else
+   {
+      r.status = FinanceStatus::Critical;
+      reward.removePoints(2);
+   }
+
+   saveReport(r);
+}
+
+void Finance::saveReport(const FinanceReport& r)
+{
+   mReportsStorage->store(REPORT_ID, writeJson(r));
+}
+
+FinanceReport Finance::getReport() const
+{
+   FinanceReport result;
+   mReportsStorage->foreach([&](std::string id, std::string json) 
+   {
+      result = readJson<FinanceReport>(json);
    });
 
    return result;

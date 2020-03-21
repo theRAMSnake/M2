@@ -19,6 +19,7 @@ class IReward
 {
 public:
    virtual void addPoints(const unsigned int number) = 0;
+   virtual void removePoints(const unsigned int number) = 0;
 
    virtual std::vector<RewardPoolItem> getPools() const = 0;
    virtual void removePool(const Id& id) = 0;

@@ -62,4 +62,9 @@ std::shared_ptr<ICore> createCore(const CoreConfig& config)
    return std::shared_ptr<ICore>(new Core(config));
 }
 
+void Core::onNewDay()
+{
+   mFinance.performAnalisys(mReward);
+}
+
 }

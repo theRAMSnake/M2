@@ -32,6 +32,8 @@ public:
     virtual IFinance& getFinance() = 0;
     virtual IReward& getReward() = 0;
 
+    virtual void onNewDay() = 0;
+
     virtual ~ICore(){}
 };
 

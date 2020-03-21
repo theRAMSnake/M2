@@ -30,6 +30,21 @@ struct FinanceEvent
    std::time_t timestamp;
 };
 
+enum class FinanceStatus
+{
+   Critical,
+   Ok,
+   Good,
+   Great,
+   Excellent
+};
+
+struct FinanceReport
+{
+   FinanceStatus status;
+   int balance;
+};
+
 class IFinance
 {
 public:
@@ -44,6 +59,7 @@ public:
     virtual void replaceEvent(const FinanceEvent& item) = 0;
 
     virtual std::vector<FinanceEvent> queryEvents(const std::time_t from, const std::time_t to) const = 0;
+    virtual FinanceReport getReport() const = 0;
 
     virtual ~IFinance(){}
 };

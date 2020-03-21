@@ -182,9 +182,12 @@ void StrategyGraph::reward(const NodeType& type, const NodeAttributes& before, c
    }
    else if(type == NodeType::Counter)
    {
-      if(before.get<NodeAttributeType::PROGRESS_CURRENT>() < after.get<NodeAttributeType::PROGRESS_CURRENT>())
+      if(before.contains(NodeAttributeType::PROGRESS_CURRENT) && after.contains(NodeAttributeType::PROGRESS_CURRENT))
       {
-         mReward.addPoints(after.get<NodeAttributeType::PROGRESS_CURRENT>() - before.get<NodeAttributeType::PROGRESS_CURRENT>());
+         if(before.get<NodeAttributeType::PROGRESS_CURRENT>() < after.get<NodeAttributeType::PROGRESS_CURRENT>())
+         {
+            mReward.addPoints(after.get<NodeAttributeType::PROGRESS_CURRENT>() - before.get<NodeAttributeType::PROGRESS_CURRENT>());
+         }
       }
    }
 }

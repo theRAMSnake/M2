@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <chrono>
 #include <fstream>
+#include <thread>
 #include <messages/common.pb.h>
 #include "ServiceWrapper.hpp"
 #include "InboxServiceImpl.hpp"
@@ -44,11 +45,33 @@ private:
 };
 
 DoubleLogger logger("m2server.log");
-
+std::mutex gMainMutex;
 std::map<std::string, std::shared_ptr<materia::IService>> gServices;
+static bool shutdownFlag = false;
+
+void timerFunc(materia::ICore* core)
+{
+    auto t = std::time(NULL);
+    auto tm_struct = localtime(&t);
+    int hour = tm_struct->tm_hour;
+
+    if(hour != 0)
+    {
+        std::this_thread::sleep_for(std::chrono::hours(24 - hour));
+    }
+
+    while(true)
+    {
+        std::this_thread::sleep_for(std::chrono::hours(24));
+
+        std::unique_lock<std::mutex> lock(gMainMutex);
+        core->onNewDay();
+    }
+}
 
 common::MateriaMessage handleMessage(const common::MateriaMessage& in)
 {
+    std::unique_lock<std::mutex> lock(gMainMutex); 
     std::chrono::time_point<std::chrono::high_resolution_clock> started =
         std::chrono::high_resolution_clock::now();
 
@@ -84,8 +107,6 @@ common::MateriaMessage handleMessage(const common::MateriaMessage& in)
     return errorMsg;
 }
 
-static bool shutdownFlag = false;
-
 int main(int argc, char *argv[])
 {
     if(argc < 2)
@@ -114,6 +135,8 @@ int main(int argc, char *argv[])
     gServices.insert({"FreeDataService", std::make_shared<materia::ServiceWrapper<materia::FreeDataServiceImpl>>((*core))});
     gServices.insert({"FinanceService", std::make_shared<materia::ServiceWrapper<materia::FinanceServiceImpl>>((*core))});
     gServices.insert({"AdminService", std::make_shared<materia::ServiceWrapper<materia::AdminServiceImpl>>(*core, shutdownFlag)});
+
+    std::thread timerThread(&timerFunc, core.get());
     
     logger << "Start listening\n";
     while(true)
@@ -155,8 +178,9 @@ int main(int argc, char *argv[])
 
         if(shutdownFlag)
         {
-            return 0;
+            break;
         }
     }
+
     return 0;
 }

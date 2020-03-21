@@ -7,6 +7,7 @@ namespace materia
 {
 
 class Database;
+class IReward;
 class Finance : public IFinance
 {
 public:
@@ -23,10 +24,16 @@ public:
    void replaceEvent(const FinanceEvent& item) override;
 
    std::vector<FinanceEvent> queryEvents(const std::time_t from, const std::time_t to) const override;
+   FinanceReport getReport() const override;
+
+   void performAnalisys(IReward& reward);
    
 private:
+   void saveReport(const FinanceReport& r);
+
    std::unique_ptr<DatabaseTable> mCategoriesStorage;
    std::unique_ptr<DatabaseTable> mEventsStorage;
+   std::unique_ptr<DatabaseTable> mReportsStorage;
 };
 
 }

@@ -47,6 +47,41 @@ void Reward::addPoints(const unsigned int number)
    }
 }
 
+void Reward::removePoints(const unsigned int number)
+{
+   srand(time(0));
+
+   auto pools = getPools();
+
+   unsigned int attemptCounter = 0;
+   unsigned int pointsLeft = number;
+   while(!pools.empty() && pointsLeft > 0)
+   {
+      auto& randomItem = pools[rand() % pools.size()];
+
+      if(randomItem.amount < randomItem.amountMax)
+      {
+         randomItem.amount--;
+         pointsLeft--;
+      }
+      else
+      {
+         attemptCounter++;
+         if(attemptCounter == 100)
+         {
+            break;
+         }
+
+         continue;
+      }
+   }
+
+   for(auto& p : pools)
+   {
+      modifyPool(p);
+   }
+}
+
 std::vector<RewardPoolItem> Reward::getPools() const
 {
    std::vector<RewardPoolItem> result;

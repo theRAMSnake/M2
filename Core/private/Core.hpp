@@ -27,6 +27,7 @@ public:
     IFreeData& getFreeData() override;
     IFinance& getFinance() override;
     IReward& getReward() override;
+    void onNewDay() override;
 
 private:
     Database mDb;
