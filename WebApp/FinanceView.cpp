@@ -405,6 +405,21 @@ private:
    FinanceModel& mModel;
 };
 
+std::string to_string(const finance::EventType evType)
+{
+   switch(evType)
+   {
+      case finance::EventType::EARNING:
+         return "Earning";
+
+      case finance::EventType::SPENDING:
+         return "Spending";
+
+      default:
+         return "Unknown";
+   }   
+}
+
 class EventsView : public Wt::WContainerWidget
 {
 public:
@@ -485,7 +500,7 @@ private:
 
          auto row = mTable->rowCount();
          mTable->elementAt(row, 0)->addNew<Wt::WLabel>(catName);
-         auto activeElement = mTable->elementAt(row, 1)->addNew<Wt::WLabel>(currencyToString(e.amountOfEuroCents * e.eventType == finance::EventType::EARNING ? 1 : -1));
+         auto activeElement = mTable->elementAt(row, 1)->addNew<Wt::WLabel>(currencyToString(e.amountOfEuroCents * (e.eventType == finance::EventType::EARNING ? 1 : -1)));
          mTable->elementAt(row, 2)->addNew<DateCtrl>(timestampToGregorian(e.timestamp), true);
          mTable->elementAt(row, 3)->addNew<Wt::WLabel>(e.details);
 
@@ -560,7 +575,7 @@ private:
       d->addComboBox("Type", 
          types, 
          types.begin() + ev.eventType, 
-         [](auto x){return std::to_string(x);}, 
+         [](auto x){return to_string(x);}, 
          [](WrappedEvent& obj, const finance::EventType& selected){obj.eventType = selected;}
          );
 
