@@ -10,6 +10,7 @@
 #include "FreeData.hpp"
 #include "Finance.hpp"
 #include "Reward.hpp"
+#include "Challenge.hpp"
 
 namespace materia
 {
@@ -27,7 +28,9 @@ public:
     IFreeData& getFreeData() override;
     IFinance& getFinance() override;
     IReward& getReward() override;
+    IChallenge& getChallenge() override;
     void onNewDay() override;
+    void onNewWeek() override;
 
 private:
     Database mDb;
@@ -39,7 +42,7 @@ private:
     Strategy_v2 mStrategy_v2;
     Backuper mBackuper;
     Finance mFinance;
-    
+    Challenge mChallenge;
 };
 
 std::shared_ptr<ICore> createCore(const CoreConfig& config);

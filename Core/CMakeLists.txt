@@ -22,6 +22,7 @@ private/FreeData.cpp
 private/FreeDataInterpreter.cpp
 private/Finance.cpp
 private/Reward.cpp
+private/Challenge.cpp
 )
 
 find_package(Boost COMPONENTS system REQUIRED)

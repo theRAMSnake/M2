@@ -40,7 +40,7 @@ private:
    bool getNodeSelfCompleteness(const StrategyGraph& graph, const Node& node);
 
    template<class F>
-   void makeGraphOperation(const Id& graphId, F f)
+   void makeGraphOperation(const Id& id, F f)
    {
       auto graph = loadGraph(graphId);
 

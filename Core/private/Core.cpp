@@ -13,6 +13,7 @@ Core::Core(const CoreConfig& config)
 , mStrategy_v2(mDb, mFreeData, mReward)
 , mBackuper(config.dbFileName)
 , mFinance(mDb)
+, mChallenge(mDb)
 {
 
 }
@@ -57,6 +58,11 @@ IReward& Core::getReward()
    return mReward;
 }
 
+IChallenge& Core::getChallenge()
+{
+   return mChallenge;
+}
+
 std::shared_ptr<ICore> createCore(const CoreConfig& config)
 {
    return std::shared_ptr<ICore>(new Core(config));
@@ -65,6 +71,11 @@ std::shared_ptr<ICore> createCore(const CoreConfig& config)
 void Core::onNewDay()
 {
    mFinance.performAnalisys(mReward);
+}
+
+void Core::onNewWeek()
+{
+   mChallenge.resetWeekly();
 }
 
 }

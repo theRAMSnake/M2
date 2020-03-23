@@ -16,6 +16,7 @@ FreeDataTest.cpp
 EncDecTest.cpp
 FinanceTest.cpp
 RewardTest.cpp
+ChallengeTest.cpp
 )
 
 find_package(Boost COMPONENTS unit_test_framework filesystem REQUIRED)
