@@ -15,6 +15,7 @@
 #include "RewardServiceImpl.hpp"
 #include "FreeDataServiceImpl.hpp"
 #include "FinanceServiceImpl.hpp"
+#include "ChallengeServiceImpl.hpp"
 #include "Common/Codec.hpp"
 
 class DoubleLogger
@@ -136,6 +137,7 @@ int main(int argc, char *argv[])
     gServices.insert({"StrategyService", std::make_shared<materia::ServiceWrapper<materia::StrategyServiceImpl>>((*core))});
     gServices.insert({"FreeDataService", std::make_shared<materia::ServiceWrapper<materia::FreeDataServiceImpl>>((*core))});
     gServices.insert({"FinanceService", std::make_shared<materia::ServiceWrapper<materia::FinanceServiceImpl>>((*core))});
+    //gServices.insert({"ChallengeService", std::make_shared<materia::ServiceWrapper<materia::ChallengeServiceImpl>>((*core))});
     gServices.insert({"AdminService", std::make_shared<materia::ServiceWrapper<materia::AdminServiceImpl>>(*core, shutdownFlag)});
 
     std::thread timerThread(&timerFunc, core.get());
