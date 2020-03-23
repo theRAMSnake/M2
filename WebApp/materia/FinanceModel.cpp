@@ -114,3 +114,12 @@ void FinanceModel::modifyEvent(const Event& ev)
    common::OperationResultMessage res;
    mService.getService().ReplaceEvent(nullptr, &item, &res, nullptr);
 }
+
+FinanceModel::Report FinanceModel::getReport()
+{
+   common::EmptyMessage empty;
+   finance::FinanceReport report;
+   mService.getService().GetReport(nullptr, &empty, &report, nullptr);
+
+   return {report.balance(), report.status()};
+}

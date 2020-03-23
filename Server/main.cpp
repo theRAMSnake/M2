@@ -62,10 +62,12 @@ void timerFunc(materia::ICore* core)
 
     while(true)
     {
+        {
+            std::unique_lock<std::mutex> lock(gMainMutex);
+            core->onNewDay();
+        }
+        
         std::this_thread::sleep_for(std::chrono::hours(24));
-
-        std::unique_lock<std::mutex> lock(gMainMutex);
-        core->onNewDay();
     }
 }
 

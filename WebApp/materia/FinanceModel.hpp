@@ -24,6 +24,12 @@ public:
       finance::EventType eventType;
    };
 
+   struct Report
+   {
+      int balance;
+      finance::FinanceStatus status;
+   };
+
    FinanceModel(ZmqPbChannel& channel);
 
    std::vector<Category> getCategories();
@@ -35,6 +41,8 @@ public:
    materia::Id addEvent(const Event& ev);
    void deleteEvent(const materia::Id& id);
    void modifyEvent(const Event& ev);
+
+   Report getReport();
 
 private:
    MateriaServiceProxy<finance::FinanceService> mService;

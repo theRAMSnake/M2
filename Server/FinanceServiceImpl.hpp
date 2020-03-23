@@ -125,6 +125,16 @@ public:
       }
    }
 
+   virtual void GetReport(::google::protobuf::RpcController* controller,
+      const ::common::EmptyMessage* request,
+      ::finance::FinanceReport* response,
+      ::google::protobuf::Closure* done)
+   {
+      auto result = mFinance.getReport();
+      response->set_status(static_cast<finance::FinanceStatus>(result.status));
+      response->set_balance(result.balance);  
+   }
+
 private:
    IFinance& mFinance;
 };

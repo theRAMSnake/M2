@@ -38,6 +38,21 @@ message EventItems
    repeated EventInfo items = 1;
 }
 
+enum FinanceStatus
+{
+   CRITICAL = 0;
+   OK = 1;
+   GOOD = 2;
+   GREAT = 3;
+   EXCELLENT = 4;
+}
+
+message FinanceReport
+{
+   int32 balance = 1;
+   FinanceStatus status = 2;
+}
+
 service FinanceService 
 {
    rpc GetCategories (common.EmptyMessage) returns (CategoryItems);
@@ -50,4 +65,5 @@ service FinanceService
    rpc AddEvent (EventInfo) returns (common.UniqueId);
 
    rpc QueryEvents (common.TimeRange) returns (EventItems);
+   rpc GetReport (common.EmptyMessage) returns (FinanceReport);
 }

@@ -25,7 +25,7 @@ MainScreen::MainScreen(MateriaClient& client)
 
     menu_->addItem("MainView", std::make_unique<MainView>(
         client.getCalendar(), 
-        client.getStrategy(),
+        client.getFinance(),
         client.getInbox(),
         client.getJournal()));
     menu_->addItem("Journal", std::make_unique<JournalView>(client.getJournal()));
