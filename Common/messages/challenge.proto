@@ -8,13 +8,13 @@ package challenge;
 
 message StageLayer
 {
-    repeated boolean stages = 1;
+    repeated bool stages = 1;
 }
 
 enum PointsLayerType
 {
-    TOTAL = 1;
-    WEEKLY = 2;
+    TOTAL = 0;
+    WEEKLY = 1;
 }
 
 message PointsLayer
