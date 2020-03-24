@@ -23,6 +23,7 @@ SharedFilesView.cpp
 FinanceView.cpp
 RewardView.cpp
 WidgetFactory.cpp
+ChallengeView.cpp
 strategy/GoalsComboBox.cpp
 strategy/GoalViewCtrl.hpp
 strategy/GraphView.cpp
@@ -36,6 +37,7 @@ materia/JournalModel.cpp
 materia/FreeDataModel.cpp
 materia/FinanceModel.cpp
 materia/RewardModel.cpp
+materia/ChallengeModel.cpp
 dialog/CommonDialogManager.cpp
 dialog/Dialog.cpp
 )

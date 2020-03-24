@@ -5,6 +5,7 @@
 #include "strategy/StrategyView.hpp"
 #include "JournalView.hpp"
 #include "RewardView.hpp"
+#include "ChallengeView.hpp"
 
 #include <Wt/WNavigationBar.h>
 #include <Wt/WText.h>
@@ -33,4 +34,5 @@ MainScreen::MainScreen(MateriaClient& client)
     menu_->addItem("Files", std::make_unique<FilesView>());
     menu_->addItem("Finance", std::make_unique<FinanceView>(client.getFinance()));
     menu_->addItem("Reward", std::make_unique<RewardView>(client.getReward()));
+    menu_->addItem("Challenge", std::make_unique<ChallengeView>(client.getChallenge()));
 }
