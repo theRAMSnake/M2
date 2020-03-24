@@ -42,7 +42,7 @@ private:
    template<class F>
    void makeGraphOperation(const Id& id, F f)
    {
-      auto graph = loadGraph(graphId);
+      auto graph = loadGraph(id);
 
       if(graph)
       {

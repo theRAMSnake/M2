@@ -12,7 +12,7 @@ struct StagesLayer
     std::vector<bool> stages;
 };
 
-enum PointsLayerType
+enum class PointsLayerType
 {
     Total,
     Weekly

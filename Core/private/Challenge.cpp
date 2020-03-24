@@ -1,4 +1,5 @@
 #include "Challenge.hpp"
+#include "JsonSerializer.hpp"
 
 BIND_JSON1(materia::StagesLayer, stages)
 
@@ -23,7 +24,7 @@ std::vector<ChallengeItem> Challenge::get() const
 
     mStorage->foreach([&](std::string id, std::string json) 
     {
-        result.push_back(readJson<Challenge>(json));
+        result.push_back(readJson<ChallengeItem>(json));
     });
 
     return result;
@@ -38,22 +39,27 @@ Id Challenge::addChallenge(const std::string& name, const unsigned int maxLevels
 {
    auto newItem = ChallengeItem{Id::generate(), name, 1, maxLevels};
 
-   mStorage->store(newItem.eventId, writeJson(newItem));
+   mStorage->store(newItem.id, writeJson(newItem));
 
-   return newItem.eventId;
+   return newItem.id;
 }
 
 Id Challenge::addLayer(const Id& id, const ChallengeLayer& layer)
 {
+    Id result;
+
     makeItemOperation(id, [=](auto& i)
     {
         auto newLayer = layer;
         newLayer.id = Id::generate();
+        result = newLayer.id;
 
         i.layers.push_back(newLayer);
 
         return true;
     });
+
+    return result;
 }
 
 void Challenge::removeLayer(const Id& challengeId, const Id& layerId)
@@ -78,9 +84,9 @@ void Challenge::toggleStage(const Id& challengeId, const Id& layerId, const unsi
     {
         auto pos = find_by_id(i.layers, layerId);
 
-        if(pos != i.layers.end() && std::holds_alternative<StageLayer>(*pos))
+        if(pos != i.layers.end() && std::holds_alternative<StagesLayer>(*pos))
         {
-            auto& layer = std::get<StageLayer>(*pos);
+            auto& layer = std::get<StagesLayer>(*pos);
 
             if(ordinalNumber < layer.stages.size())
             {
@@ -115,25 +121,29 @@ void Challenge::addPoints(const Id& challengeId, const Id& layerId, const unsign
 
 void Challenge::resetWeekly()
 {
-    makeItemOperation(challengeId, [=](auto& i)
+    auto items = get();
+    for(auto& i : items)
     {
-        bool hasChanges = false;
-        for(auto& l : i.layers)
+        makeItemOperation(i.id, [=](auto& i)
         {
-            if(std::holds_alternative<PointsLayer>(l))
+            bool hasChanges = false;
+            for(auto& l : i.layers)
             {
-                auto& layer = std::get<PointsLayer>(l);
-
-                if(layer.type == PointsLayerType::Weekly)
+                if(std::holds_alternative<PointsLayer>(l))
                 {
-                    layer.numPoints = 0;
-                    hasChanges = true;
+                    auto& layer = std::get<PointsLayer>(l);
+
+                    if(layer.type == PointsLayerType::Weekly)
+                    {
+                        layer.numPoints = 0;
+                        hasChanges = true;
+                    }
                 }
             }
-        }
 
-        return hasChanges;
-    });
+            return hasChanges;
+        });
+    }
 }
 
 bool Challenge::isItemComplete(const ChallengeItem& item) const
@@ -145,18 +155,18 @@ bool Challenge::isItemComplete(const ChallengeItem& item) const
 
     for(auto& l : item.layers)
     {
-        if(std::holds_alternative<PointsLayer>(l))
+        if(std::holds_alternative<PointsLayer>(l.parameters))
         {
-            auto& layer = std::get<PointsLayer>(l);
+            auto& layer = std::get<PointsLayer>(l.parameters);
 
             if(layer.numPoints < layer.pointsToNextLevel)
             {
                 return false;
             }
         }
-        else if(std::holds_alternative<StageLayer>(l))
+        else if(std::holds_alternative<StageLayer>(l.parameters))
         {
-            auto& layer = std::get<StageLayer>(l);
+            auto& layer = std::get<StageLayer>(l.parameters);
 
             if(std::find(layer.stages.begin(), layer.stages.end(), false) != layer.stages.end())
             {

@@ -29,10 +29,10 @@ private:
     template<class F>
     void makeItemOperation(const Id& itemId, F f)
     {
-        auto ch = mStorage->load(id);
+        auto ch = mStorage->load(itemId);
         if(ch)
         {
-            auto item = readJson<ChallengeItem>(*ch);
+            auto item = readItem(*ch);
             if(f(item))
             {
                 if(isItemComplete(item))
@@ -40,10 +40,13 @@ private:
                     advance(item);
                 }
 
-                mStorage->store(id, writeJson(item));
+                mStorage->store(itemId, writeItem(item));
             }
         }
     }
+
+    ChallengeItem readItem(const std::string& json) const;
+    std::string writeItem(const ChallengeItem& item) const;
 
     bool isItemComplete(const ChallengeItem& item) const;
     void advance(ChallengeItem& item) const;
