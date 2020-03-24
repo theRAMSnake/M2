@@ -66,6 +66,12 @@ void timerFunc(materia::ICore* core)
         {
             std::unique_lock<std::mutex> lock(gMainMutex);
             core->onNewDay();
+
+            tm_struct = localtime(&t);
+            if(tm_struct.tm_wday == 1 /*Monday*/)
+            {
+                core->onNewWeek();
+            }
         }
         
         std::this_thread::sleep_for(std::chrono::hours(24));

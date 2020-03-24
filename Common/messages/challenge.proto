@@ -59,6 +59,12 @@ message AddChallengeParams
     uint32 maxLevels = 2;
 }
 
+message AddLayerParams
+{
+    common.UniqueId parentId = 1;
+    Layer layer = 2;
+}
+
 message ToggleStageParams
 {
     LayerId id = 1;
@@ -77,8 +83,8 @@ service ChallengeService
    rpc DeleteItem (common.UniqueId) returns (common.OperationResultMessage);
    rpc AddItem (AddChallengeParams) returns (common.UniqueId);
 
-   rpc DeleteLayer (common.IdSet) returns (common.OperationResultMessage);
-   rpc AddLayer (LayerId) returns (common.UniqueId);
+   rpc DeleteLayer (LayerId) returns (common.OperationResultMessage);
+   rpc AddLayer (AddLayerParams) returns (LayerId);
 
    rpc ToggleStage(ToggleStageParams) returns (common.OperationResultMessage);
    rpc AddPoints(AddPointsParams) returns (common.OperationResultMessage);
