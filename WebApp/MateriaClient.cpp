@@ -13,6 +13,7 @@ MateriaClient::MateriaClient(const std::string& password)
     mFreeData.reset(new FreeDataModel(mChannel));
     mFinance.reset(new FinanceModel(mChannel));
     mReward.reset(new RewardModel(mChannel));
+    mChallenge.reset(new ChallengeModel(mChannel));
 }
 
 CalendarModel& MateriaClient::getCalendar()
@@ -48,4 +49,9 @@ StrategyModel& MateriaClient::getStrategy()
 FreeDataModel& MateriaClient::getFreeData()
 {
    return *mFreeData;
+}
+
+ChallengeModel& MateriaClient::getChallenge()
+{
+   return *mChallenge;
 }

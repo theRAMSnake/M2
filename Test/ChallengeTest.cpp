@@ -19,9 +19,9 @@ protected:
    materia::IChallenge* mCh;
 };
 
-BOOST_FIXTURE_TEST_CASE( AddDeleteCh, ChTest ) 
+BOOST_FIXTURE_TEST_CASE( AddDeleteCh, ChallengeTest ) 
 {
-   BOOST_CHECK(mCh->addChallenge({"ch", 5}) != materia::Id::Invalid);
+   BOOST_CHECK(mCh->addChallenge("ch", 5) != materia::Id::Invalid);
 
    auto items = mCh->get();
    BOOST_CHECK_EQUAL(1, items.size());
@@ -35,9 +35,9 @@ BOOST_FIXTURE_TEST_CASE( AddDeleteCh, ChTest )
    BOOST_CHECK_EQUAL(0, items.size());
 }
 
-BOOST_FIXTURE_TEST_CASE( AddRemoveLayer, ChTest ) 
+BOOST_FIXTURE_TEST_CASE( AddRemoveLayer, ChallengeTest ) 
 {
-    auto id = mCh->addChallenge({"ch", 5});
+    auto id = mCh->addChallenge("ch", 5);
 
     auto idStages = mCh->addLayer(id, {materia::Id::Invalid, materia::StagesLayer{5}});
     auto idPoints = mCh->addLayer(id, {materia::Id::Invalid, materia::PointsLayer{0, 10, 5, materia::PointsLayerType::Total}});
@@ -72,9 +72,9 @@ BOOST_FIXTURE_TEST_CASE( AddRemoveLayer, ChTest )
     BOOST_CHECK_EQUAL(0, layers.size());
 }
 
-BOOST_FIXTURE_TEST_CASE( ToggleStage, ChTest ) 
+BOOST_FIXTURE_TEST_CASE( ToggleStage, ChallengeTest ) 
 {
-    auto id = mCh->addChallenge({"ch", 5});
+    auto id = mCh->addChallenge("ch", 5);
     auto idStages = mCh->addLayer(id, {materia::Id::Invalid, materia::StagesLayer{5}});
 
     mCh->toggleStage(id, idStages, 6); //Check no crash
@@ -134,9 +134,9 @@ BOOST_FIXTURE_TEST_CASE( ToggleStage, ChTest )
     BOOST_CHECK_EQUAL(2, items[0].level);
 }
 
-BOOST_FIXTURE_TEST_CASE( AddPoints, ChTest ) 
+BOOST_FIXTURE_TEST_CASE( AddPoints, ChallengeTest ) 
 {
-    auto id = mCh->addChallenge({"ch", 5});
+    auto id = mCh->addChallenge("ch", 5);
     auto idPoints = mCh->addLayer(id, {materia::Id::Invalid, materia::PointsLayer{0, 10, 5, materia::PointsLayerType::Total}});
 
     mCh->addPoints(id, idPoints, 7);
@@ -165,9 +165,9 @@ BOOST_FIXTURE_TEST_CASE( AddPoints, ChTest )
     BOOST_CHECK_EQUAL(2, items[0].level);
 }
 
-BOOST_FIXTURE_TEST_CASE( WeeklyTest, ChTest ) 
+BOOST_FIXTURE_TEST_CASE( WeeklyTest, ChallengeTest ) 
 {
-    auto id = mCh->addChallenge({"ch", 5});
+    auto id = mCh->addChallenge("ch", 5);
     auto idPoints = mCh->addLayer(id, {materia::Id::Invalid, materia::PointsLayer{0, 10, 5, materia::PointsLayerType::Weekly}});
     mCh->addPoints(id, idPoints, 7);
 

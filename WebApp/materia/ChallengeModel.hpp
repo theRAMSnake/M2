@@ -11,5 +11,5 @@ public:
    ChallengeModel(ZmqPbChannel& channel);
 
 private:
-   MateriaServiceProxy<reward::ChallengeService> mService;
+   MateriaServiceProxy<challenge::ChallengeService> mService;
 };

@@ -8,6 +8,7 @@
 #include "materia/FreeDataModel.hpp"
 #include "materia/FinanceModel.hpp"
 #include "materia/RewardModel.hpp"
+#include "materia/ChallengeModel.hpp"
 #include "materia/ZmqPbChannel.hpp"
 
 class MateriaClient
@@ -22,6 +23,7 @@ public:
    FreeDataModel& getFreeData();
    FinanceModel& getFinance();
    RewardModel& getReward();
+   ChallengeModel& getChallenge();
 
 private:
    zmq::context_t mContext;
@@ -35,4 +37,5 @@ private:
    std::unique_ptr<FreeDataModel> mFreeData;
    std::unique_ptr<FinanceModel> mFinance;
    std::unique_ptr<RewardModel> mReward;
+   std::unique_ptr<ChallengeModel> mChallenge;
 };

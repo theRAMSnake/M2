@@ -1,8 +1,10 @@
 #pragma once
 
 #include <map>
+#include <variant>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/lexical_cast.hpp>
 #include "Common/Id.hpp"
 
 template<class T>
@@ -59,6 +61,40 @@ public:
       }
    }
 
+   template<class... T>
+   void read(const std::string& field, std::variant<T...>& out)
+   {
+      auto ch = m_ptree.get_child(field);
+
+      for(auto& c : ch)//Should have exactly one child
+      {
+         JsonReader subReader(c.second.get_value<std::string>());
+
+         auto i = boost::lexical_cast<unsigned int>(c.first);
+         //Hack for now, until we have variant<A,B> only
+         if(i == 0)
+         {
+            using tp = typename std::tuple_element<0, std::tuple<T...> >::type;
+            tp tmp;
+            JsonMap<tp>::read(subReader, tmp);
+
+            out = tmp;
+         }
+         else if(i == 1)
+         {
+            using tp = typename std::tuple_element<1, std::tuple<T...> >::type;
+            tp tmp;
+            JsonMap<tp>::read(subReader, tmp);
+
+            out = tmp;
+         }
+         else
+         {
+            throw -1;
+         }
+      }      
+   }
+
 private:
    boost::property_tree::ptree m_ptree;
 };
@@ -98,6 +134,21 @@ public:
       std::copy(in.begin(), in.end(), items.begin());
 
       write(field, items);
+   }
+
+   template<class... T>
+   void write(const std::string& field, const std::variant<T...>& out)
+   {
+      boost::property_tree::ptree subTree;
+
+      std::visit([&](auto&& arg) {
+         JsonWriter subWriter;
+         JsonMap<std::decay_t<decltype(arg)>>::write(arg, subWriter);
+
+         subTree.put(std::to_string(out.index()), subWriter.getResult());
+      }, out);
+
+      m_ptree.add_child(field, subTree);
    }
 
    std::string getResult()
@@ -160,12 +211,20 @@ std::string writeJson(const T& t)
    static void read(JsonReader& r, T& t) { r.read(#F1, t.F1); r.read(#F2, t.F2); r.read(#F3, t.F3); r.read(#F4, t.F4); r.read(#F5, t.F5); r.read(#F6, t.F6); r.read(#F7, t.F7);} \
    static void write(const T& t, JsonWriter& w) { w.write(#F1, t.F1); w.write(#F2, t.F2); w.write(#F3, t.F3); w.write(#F4, t.F4); w.write(#F5, t.F5); w.write(#F6, t.F6); w.write(#F7, t.F7);} };
 
+#define SERIALIZE_AS_INTEGER(T) namespace std { \
+   static ostream& operator << (ostream& str, const T& t){ str << static_cast<int>(t); return str; } \
+   static istream& operator >> (istream& str, T& t){ int v; str >> v; t = static_cast<T>(v); return str; }}
+
 template<>
 void JsonReader::read<materia::Id>(const std::string& field, materia::Id& out);
 
 template<>
 void JsonWriter::write<materia::Id>(const std::string& field, const materia::Id& in);
 
-#define SERIALIZE_AS_INTEGER(T) namespace std { \
-   static ostream& operator << (ostream& str, const T& t){ str << static_cast<int>(t); return str; } \
-   static istream& operator >> (istream& str, T& t){ int v; str >> v; t = static_cast<T>(v); return str; }}
+template<> 
+class JsonMap<bool> 
+{ 
+public: 
+   static void read(JsonReader& r, bool& t);
+   static void write(const bool& t, JsonWriter& w);
+};

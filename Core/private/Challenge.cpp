@@ -48,7 +48,7 @@ Id Challenge::addLayer(const Id& id, const ChallengeLayer& layer)
 {
     Id result;
 
-    makeItemOperation(id, [=](auto& i)
+    makeItemOperation(id, [&](auto& i)
     {
         auto newLayer = layer;
         newLayer.id = Id::generate();
@@ -84,9 +84,9 @@ void Challenge::toggleStage(const Id& challengeId, const Id& layerId, const unsi
     {
         auto pos = find_by_id(i.layers, layerId);
 
-        if(pos != i.layers.end() && std::holds_alternative<StagesLayer>(*pos))
+        if(pos != i.layers.end() && std::holds_alternative<StagesLayer>(pos->parameters))
         {
-            auto& layer = std::get<StagesLayer>(*pos);
+            auto& layer = std::get<StagesLayer>(pos->parameters);
 
             if(ordinalNumber < layer.stages.size())
             {
@@ -106,9 +106,9 @@ void Challenge::addPoints(const Id& challengeId, const Id& layerId, const unsign
     {
         auto pos = find_by_id(i.layers, layerId);
 
-        if(pos != i.layers.end() && std::holds_alternative<PointsLayer>(*pos))
+        if(pos != i.layers.end() && std::holds_alternative<PointsLayer>(pos->parameters))
         {
-            auto& layer = std::get<PointsLayer>(*pos);
+            auto& layer = std::get<PointsLayer>(pos->parameters);
 
             layer.numPoints += points;
 
@@ -129,9 +129,9 @@ void Challenge::resetWeekly()
             bool hasChanges = false;
             for(auto& l : i.layers)
             {
-                if(std::holds_alternative<PointsLayer>(l))
+                if(std::holds_alternative<PointsLayer>(l.parameters))
                 {
-                    auto& layer = std::get<PointsLayer>(l);
+                    auto& layer = std::get<PointsLayer>(l.parameters);
 
                     if(layer.type == PointsLayerType::Weekly)
                     {
@@ -164,9 +164,9 @@ bool Challenge::isItemComplete(const ChallengeItem& item) const
                 return false;
             }
         }
-        else if(std::holds_alternative<StageLayer>(l.parameters))
+        else if(std::holds_alternative<StagesLayer>(l.parameters))
         {
-            auto& layer = std::get<StageLayer>(l.parameters);
+            auto& layer = std::get<StagesLayer>(l.parameters);
 
             if(std::find(layer.stages.begin(), layer.stages.end(), false) != layer.stages.end())
             {
@@ -184,27 +184,27 @@ bool Challenge::isItemComplete(const ChallengeItem& item) const
 
 void Challenge::advance(ChallengeItem& item) const
 {
-    if(item.level < item.maxLevel)
+    if(item.level < item.maxLevels)
     {
         item.level++;
     }
     
     for(auto& l : item.layers)
     {
-        if(std::holds_alternative<PointsLayer>(l))
+        if(std::holds_alternative<PointsLayer>(l.parameters))
         {
-            auto& layer = std::get<PointsLayer>(l);
+            auto& layer = std::get<PointsLayer>(l.parameters);
 
             layer.numPoints -= layer.pointsToNextLevel;
             layer.pointsToNextLevel += layer.advancementValue;
         }
-        else if(std::holds_alternative<StageLayer>(l))
+        else if(std::holds_alternative<StagesLayer>(l.parameters))
         {
-            auto& layer = std::get<StageLayer>(l);
+            auto& layer = std::get<StagesLayer>(l.parameters);
 
-            for(auto& s : layer.stages)
+            for(std::size_t i = 0; i < layer.stages.size(); ++i)
             {
-                s = false;
+                layer.stages[i] = false;
             }
         }
         else
@@ -212,8 +212,6 @@ void Challenge::advance(ChallengeItem& item) const
             throw -1;
         }
     }
-
-    return true;
 }
 
 }
