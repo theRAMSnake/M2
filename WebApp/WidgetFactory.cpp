@@ -22,3 +22,18 @@ std::unique_ptr<Wt::WTable> createList()
 
    return table;
 }
+
+std::unique_ptr<Wt::WLabel> createLabel(const std::string& text, const FontSize fSize)
+{
+   /*SNAKE*/
+}
+
+std::unique_ptr<SplitWidget> createSplit(const SplitType splitType, const double firstItemPercentage)
+{
+   /*SNAKE*/
+}
+
+SplitWidget::SplitWidget(const SplitType splitType, const double firstItemPercentage)
+{
+   /*SNAKE*/
+}

@@ -8,6 +8,7 @@ public:
    ChallengeView(ChallengeModel& model);
 
 private:
+   void onAddClick();
    void refreshList();
 
    Wt::WTable* mTable = nullptr;

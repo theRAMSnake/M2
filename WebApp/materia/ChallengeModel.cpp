@@ -5,3 +5,8 @@ ChallengeModel::ChallengeModel(ZmqPbChannel& channel)
 {
 
 }
+
+std::vector<ChallengeModel::Item> ChallengeModel::get()
+{
+    /*SNAKE*/
+}
