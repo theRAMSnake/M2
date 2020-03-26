@@ -214,4 +214,14 @@ void Challenge::advance(ChallengeItem& item) const
     }
 }
 
+ChallengeItem Challenge::readItem(const std::string& json) const
+{
+    return readJson<ChallengeItem>(json);
+}
+
+std::string Challenge::writeItem(const ChallengeItem& item) const
+{
+    return writeJson(item);
+}
+
 }

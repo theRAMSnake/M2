@@ -26,12 +26,12 @@ BOOST_FIXTURE_TEST_CASE( AddDeleteCh, ChallengeTest )
    auto items = mCh->get();
    BOOST_CHECK_EQUAL(1, items.size());
    BOOST_CHECK_EQUAL("ch", items[0].name);
-   BOOST_CHECK_EQUAL(0, items[0].level);
-   BOOST_CHECK_EQUAL(5, items[0].maxLevel);
+   BOOST_CHECK_EQUAL(1, items[0].level);
+   BOOST_CHECK_EQUAL(5, items[0].maxLevels);
 
-   mReward->removeChallenge(items[0].id);
+   mCh->removeChallenge(items[0].id);
 
-   items = mReward->getPools();
+   items = mCh->get();
    BOOST_CHECK_EQUAL(0, items.size());
 }
 
@@ -39,7 +39,7 @@ BOOST_FIXTURE_TEST_CASE( AddRemoveLayer, ChallengeTest )
 {
     auto id = mCh->addChallenge("ch", 5);
 
-    auto idStages = mCh->addLayer(id, {materia::Id::Invalid, materia::StagesLayer{5}});
+    auto idStages = mCh->addLayer(id, {materia::Id::Invalid, materia::StagesLayer{std::vector<bool>(5)}});
     auto idPoints = mCh->addLayer(id, {materia::Id::Invalid, materia::PointsLayer{0, 10, 5, materia::PointsLayerType::Total}});
 
     auto items = mCh->get();
@@ -60,7 +60,7 @@ BOOST_FIXTURE_TEST_CASE( AddRemoveLayer, ChallengeTest )
     BOOST_CHECK_EQUAL(0, pointsLayer.numPoints);
     BOOST_CHECK_EQUAL(10, pointsLayer.pointsToNextLevel);
     BOOST_CHECK_EQUAL(5, pointsLayer.advancementValue);
-    BOOST_CHECK_EQUAL(materia::PointsLayerType::Total, pointsLayer.type);
+    BOOST_CHECK_EQUAL(static_cast<int>(materia::PointsLayerType::Total), static_cast<int>(pointsLayer.type));
 
     mCh->removeLayer(id, idStages);
     mCh->removeLayer(id, idPoints);
@@ -68,14 +68,14 @@ BOOST_FIXTURE_TEST_CASE( AddRemoveLayer, ChallengeTest )
     items = mCh->get();
     BOOST_CHECK_EQUAL(1, items.size());
 
-    auto layers = items[0].layers;
+    layers = items[0].layers;
     BOOST_CHECK_EQUAL(0, layers.size());
 }
 
 BOOST_FIXTURE_TEST_CASE( ToggleStage, ChallengeTest ) 
 {
     auto id = mCh->addChallenge("ch", 5);
-    auto idStages = mCh->addLayer(id, {materia::Id::Invalid, materia::StagesLayer{5}});
+    auto idStages = mCh->addLayer(id, {materia::Id::Invalid, materia::StagesLayer{std::vector<bool>(5)}});
 
     mCh->toggleStage(id, idStages, 6); //Check no crash
     mCh->toggleStage(id, idStages, 1);
@@ -134,7 +134,7 @@ BOOST_FIXTURE_TEST_CASE( ToggleStage, ChallengeTest )
     BOOST_CHECK_EQUAL(2, items[0].level);
 }
 
-BOOST_FIXTURE_TEST_CASE( AddPoints, ChallengeTest ) 
+BOOST_FIXTURE_TEST_CASE( AddPoints_ch, ChallengeTest ) 
 {
     auto id = mCh->addChallenge("ch", 5);
     auto idPoints = mCh->addLayer(id, {materia::Id::Invalid, materia::PointsLayer{0, 10, 5, materia::PointsLayerType::Total}});
