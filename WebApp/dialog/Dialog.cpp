@@ -12,11 +12,11 @@ Dialog::Dialog(const std::string& name, std::unique_ptr<Wt::WWidget>&& primaryWi
     ok->setDefault(true);
     ok->setStyleClass("btn-primary");
 
-    ok->clicked().connect(std::bind([=]() {
+    ok->clicked().connect(std::bind([this]() {
         mImpl.accept();
     }));
 
-    mImpl.finished().connect(std::bind([=]() {
+    mImpl.finished().connect(std::bind([this]() {
         OnFinished();
         delete this;
     }));

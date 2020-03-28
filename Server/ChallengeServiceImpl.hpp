@@ -135,8 +135,8 @@ public:
                        ::google::protobuf::Closure* done)
    {
       auto newLayerId = mCh.addLayer(fromProto(request->parentid()), fromProto(request->layer()));
-      *(response->mutable_layer_id()->mutable_a()) = request->id();
-      *(response->mutable_layer_id()->mutable_b()) = toProto(newLayerId);
+      *(response->mutable_a()) = request->parentid();
+      *(response->mutable_b()) = toProto(newLayerId);
    }
 
    virtual void ToggleStage(::google::protobuf::RpcController* controller,
@@ -160,3 +160,5 @@ public:
 private:
    materia::IChallenge& mCh;
 };
+
+}

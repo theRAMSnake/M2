@@ -1,26 +1,34 @@
 #include "ChallengeView.hpp"
+#include "WidgetFactory.hpp"
 
-void drawLayer(Wt::WPainter& p, const PointsLayer& l)
+#include <Wt/WPainter.h>
+#include <Wt/WPaintedWidget.h>
+#include <Wt/WGroupBox.h>
+#include <fmt/format.h>
+
+#include <variant>
+
+void drawLayer(Wt::WPainter& p, const double w, const double h, const PointsLayer& l)
 {
-    if(l.pointsNeeded = 0)
+    if(l.pointsNeeded == 0)
     {
         return;
     }
-    double amountFilled = paintDevice->width().toPixels() * std::min(1.0, double(l.points) / double(l.pointsNeeded);
+    double amountFilled = w * std::min(1.0, double(l.points) / double(l.pointsNeeded));
 
     auto greenBrush = Wt::WBrush(Wt::StandardColor::DarkGreen);
     auto grayBrush = Wt::WBrush(Wt::StandardColor::Gray);
 
-    painter.fillRect({2, 4, amountFilled, paintDevice->height().toPixels() - 8}, greenBrush);
-    painter.fillRect({2 + amountFilled, 4, 1.0 - amountFilled, paintDevice->height().toPixels() - 8}, grayBrush);
+    p.fillRect({2, 4, amountFilled, (double)h - 8}, greenBrush);
+    p.fillRect({2 + amountFilled, 4, 1.0 - amountFilled, (double)h - 8}, grayBrush);
 
-    painter.drawText({0, 0, paintDevice->width().toPixels(), paintDevice->height().toPixels()}, 
+    p.drawText({0, 0, (double)w, (double)h}, 
         Wt::AlignmentFlag::Center | Wt::AlignmentFlag::Middle, 
-        std::format("{}: {}/{}", item.type, item.points, item.pointsNeeded)
+        fmt::format("{}: {}/{}", l.type, l.points, l.pointsNeeded)
         );
 }
 
-void drawLayer(Wt::WPainter& p, const StagesLayer& l)
+void drawLayer(Wt::WPainter& p, const double w, const double h, const StagesLayer& l)
 {
     /*SNAKE*/
 }
@@ -31,15 +39,15 @@ class LayerView : public Wt::WPaintedWidget
 public:
     LayerView(const materia::Id id, const LayerT& l, ChallengeModel& model)
     : mId(id)
-    , mItem(item)
+    , mItem(l)
     , mModel(model)
     {
         setWidth(1850);
         setHeight(32);
         setMargin(20, Wt::Side::Left);
 
-        clicked().connect(&LayerView<LayerT>::onClicked, this, std::placeholders::_1);
-        doubleclicked().connect(&LayerView<LayerT>::onDoubleClicked, this);
+        clicked().connect(std::bind(&LayerView<LayerT>::onClicked, this, std::placeholders::_1));
+        doubleClicked().connect(std::bind(&LayerView<LayerT>::onDoubleClicked, this));
     }
 
 protected:
@@ -47,7 +55,7 @@ protected:
     {
         Wt::WPainter painter(paintDevice);
 
-        drawLayer(painter, l);
+        drawLayer(painter, paintDevice->width().toPixels(), paintDevice->height().toPixels(), mItem);
     }
 
 private:
@@ -76,19 +84,21 @@ public:
     {
         setMargin(20, Wt::Side::Left);
 
-        auto vs = addWidget(createSplit(Split::Vertical), 0.2);
+        auto vs = addWidget(createSplit(SplitType::Vertical, 0.2));
 
-        vs->first.addWidget(createLabel(item.name, FontSize::Big));
-        vs->first.addWidget(createLabel(std::format("Level {}/{}", item.level, item.maxLevel), FontSize::Small));
-        vs->first.addWidget(createButton("X", std::bind(&ChallengeModel::onDeleteClick, this))));
-        vs->first.addWidget(createButton("+", std::bind(&ChallengeModel::onAddClick, this))));
+        vs->first.addWidget(createLabel(item.name, Wt::FontSize::Large));
+        vs->first.addWidget(createLabel(fmt::format("Level {}/{}", item.level, item.levelMax), Wt::FontSize::Small));
+        vs->first.addWidget(createButton("X", std::bind(&ChallengeItemView::onDeleteClick, this)));
+        vs->first.addWidget(createButton("+", std::bind(&ChallengeItemView::onAddClick, this)));
 
-        auto& t = *vs->second.addWidget(createTable());
-        for(auto& l : item.layers)
+        auto& t = *vs->second.addWidget(createList());
+        for(std::size_t i = 0; i < item.layers.size(); ++i)
         {
+            auto cell = t.elementAt(i, 0);
+
             std::visit([&](auto&& arg) {
-                t.addWidget(std::make_unique<LayerView<std::decay_t<decltype(arg)>::value>>(l.id, arg, mModel));
-            }, l.params);
+                cell->addWidget(std::make_unique<LayerView<std::decay_t<decltype(arg)>>>(item.layers[i].id, arg, model));
+            }, item.layers[i].params);
         }
     }
 
@@ -111,7 +121,7 @@ private:
 ChallengeView::ChallengeView(ChallengeModel& model)
 : mModel(model)
 {
-   addWidget(createButton("Add", std::bind(&ChallengeModel::onAddClick, this)));
+   addWidget(createButton("Add", std::bind(&ChallengeView::onAddClick, this)));
 
    auto gb = addWidget(std::make_unique<Wt::WGroupBox>());
    mTable = gb->addWidget(createList());

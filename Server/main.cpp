@@ -68,7 +68,7 @@ void timerFunc(materia::ICore* core)
             core->onNewDay();
 
             tm_struct = localtime(&t);
-            if(tm_struct.tm_wday == 1 /*Monday*/)
+            if(tm_struct->tm_wday == 1 /*Monday*/)
             {
                 core->onNewWeek();
             }

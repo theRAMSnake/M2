@@ -77,7 +77,7 @@ public:
          }
       }  
 
-      combo->changed().connect([=]()
+      combo->changed().connect([=, this]()
       {
          assigner(mVal, values[combo->currentIndex()]);
       });
@@ -92,7 +92,7 @@ public:
 
       ctrl->setText(mVal.*field);
 
-      ctrl->changed().connect([=]()
+      ctrl->changed().connect([=, this]()
       {
          mVal.*field = ctrl->text().narrow();
       });
@@ -107,7 +107,7 @@ public:
       ctrl->setText(caption);
       ctrl->setChecked(mVal.*field);
 
-      ctrl->changed().connect([=]()
+      ctrl->changed().connect([=, this]()
       {
          mVal.*field = ctrl->isChecked();
       });
@@ -122,7 +122,7 @@ public:
 
       ctrl->setText(currencyToString(mVal.*field));
 
-      ctrl->changed().connect([=]()
+      ctrl->changed().connect([=, this]()
       {
          auto str = ctrl->text().narrow();
          std::istringstream iss (str);
@@ -146,7 +146,7 @@ public:
 
       mVal.*field = init;
 
-      ctrl->changed().connect([=]()
+      ctrl->changed().connect([=, this]()
       {
          mVal.*field = WtDateToTimeStamp(ctrl->date());
       });

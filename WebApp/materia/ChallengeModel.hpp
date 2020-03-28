@@ -5,9 +5,26 @@
 #include "ZmqPbChannel.hpp"
 #include "MateriaServiceProxy.hpp"
 
+#include <boost/signals2.hpp>
+
+#include <variant>
+
+struct PointsLayer
+{
+   unsigned int points;
+   unsigned int pointsNeeded;
+   challenge::PointsLayerType type;
+};
+
+struct StagesLayer
+{
+   /*SNAKE*/
+};
+
 struct ChallengeLayer
 {
-    /*SNAKE*/
+   materia::Id id;
+   std::variant<StagesLayer, PointsLayer> params;
 };
 
 class ChallengeModel

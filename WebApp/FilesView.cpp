@@ -104,7 +104,7 @@ FilesView::FilesView()
       addRow(i, files[i]);
    }
 
-   uploadButton->clicked().connect([=] {
+   uploadButton->clicked().connect([this] {
       mUpload->upload();
    });
 
@@ -123,7 +123,7 @@ void FilesView::createNewFileUpload()
    mUpload->setProgressBar(Wt::cpp14::make_unique<Wt::WProgressBar>());
    mUpload->setMargin(10, Wt::Side::Right);
 
-   mUpload->uploaded().connect([=] {
+   mUpload->uploaded().connect([=, this] {
       auto src = boost::filesystem::path(mUpload->spoolFileName());
       auto dest = boost::filesystem::path("/materia/files") / boost::filesystem::path(mUpload->clientFileName().narrow()).filename();
 
@@ -149,7 +149,7 @@ void FilesView::onClick(Wt::WMouseEvent ev, Wt::WTableCell* cell, const boost::f
 {
    if(ev.modifiers().test(Wt::KeyboardModifier::Control))
    {
-      std::function<void()> elementDeletedFunc = [=] () {
+      std::function<void()> elementDeletedFunc = [=, this] () {
          mTable->removeRow(cell->row());
          boost::filesystem::remove(path);
          };

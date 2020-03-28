@@ -38,7 +38,7 @@ InboxView::InboxView(InboxModel& model)
 
 void InboxView::onItemDoubleClick(Wt::WTableCell* cell, const std::string& itemId)
 {
-   std::function<void(std::string)> elementModifiedFunc = [=] (std::string a) {
+   std::function<void(std::string)> elementModifiedFunc = [=, this] (std::string a) {
       static_cast<Wt::WText*>(cell->widget(0))->setText(a);
       commitItemEdit(itemId, a);
    };
@@ -50,7 +50,7 @@ void InboxView::onClick(Wt::WMouseEvent ev, Wt::WTableCell* cell, const std::str
 {
    if(ev.modifiers().test(Wt::KeyboardModifier::Control))
    {
-      std::function<void()> elementDeletedFunc = [=] () {
+      std::function<void()> elementDeletedFunc = [=, this] () {
          mTable->removeRow(cell->row());
          commitItemDelete(itemId);
          };
@@ -77,7 +77,7 @@ materia::Id InboxView::commitItemAdd(const std::string& text)
 
 void InboxView::onAddClick()
 {
-   std::function<void(std::string)> elementAddedFunc = [=] (std::string a) {
+   std::function<void(std::string)> elementAddedFunc = [=, this] (std::string a) {
       auto id = commitItemAdd(a);
       createCellAtRow(mTable->rowCount(), {id, a});
    };
@@ -87,7 +87,7 @@ void InboxView::onAddClick()
 
 void InboxView::onClearClick()
 {
-   std::function<void()> clearFunc = [=] () {
+   std::function<void()> clearFunc = [this] () {
          mModel.clear();
          mTable->clear();
       };

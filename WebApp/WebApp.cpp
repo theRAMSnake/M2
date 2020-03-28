@@ -62,7 +62,7 @@ void WebApp::showLogin()
    Wt::WLineEdit *edit = new Wt::WLineEdit();
    edit->setEchoMode(Wt::EchoMode::Password);
    edit->setFocus();
-   edit->enterPressed().connect(std::bind([=] () {
+   edit->enterPressed().connect(std::bind([=, this] () {
       onPasswordSent(edit->text());
    }));
    mLoginScreen->addWidget(std::unique_ptr<Wt::WLineEdit>(edit));
@@ -105,7 +105,7 @@ bool WebApp::checkMateriaAvailabilityAndPassword(const std::string& str)
    zmq::message_t resp;
 
    auto start = std::chrono::system_clock::now();
-   while(!socket.recv (&resp, ZMQ_NOBLOCK))
+   while(!socket.recv (resp, zmq::recv_flags::dontwait))
    {
       auto now = std::chrono::system_clock::now();
       
