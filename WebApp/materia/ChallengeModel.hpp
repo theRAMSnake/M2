@@ -13,12 +13,13 @@ struct PointsLayer
 {
    unsigned int points;
    unsigned int pointsNeeded;
+   unsigned int pointsAdvance;
    challenge::PointsLayerType type;
 };
 
 struct StagesLayer
 {
-   /*SNAKE*/
+   std::vector<bool> stages;
 };
 
 struct ChallengeLayer
