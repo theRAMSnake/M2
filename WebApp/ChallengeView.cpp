@@ -8,6 +8,28 @@
 
 #include <variant>
 
+void fillLayerDetails(CustomDialog<StagesLayer>& dlg)
+{
+    d->addCheckboxSet("Stages", &StagesLayer::stages);
+}
+
+void fillLayerDetails(CustomDialog<PointsLayer>& dlg)
+{
+    /*SNAKE*/
+}
+
+template<class LayerT>
+CustomDialog<LayerT>* createDialog(const LayerT item)
+{
+    auto d = CommonDialogManager::createCustomDialog("Layer view", item);
+    
+    fillLayerDetails(*d);
+
+    return d;
+}
+
+//-----------------------------------------------------------------------------------------------------
+
 void drawLayer(Wt::WPainter& p, const double w, const double h, const PointsLayer& l)
 {
     if(l.pointsNeeded == 0)
@@ -30,7 +52,21 @@ void drawLayer(Wt::WPainter& p, const double w, const double h, const PointsLaye
 
 void drawLayer(Wt::WPainter& p, const double w, const double h, const StagesLayer& l)
 {
-    /*SNAKE*/
+    if(l.stages.empty())
+    {
+        return;
+    }
+
+    double sizePerBlock = (w * 0.8) / (mItem.amountMax);
+
+    auto greenBrush = Wt::WBrush(Wt::StandardColor::DarkGreen);
+    auto grayBrush = Wt::WBrush(Wt::StandardColor::Gray);
+
+    for(unsigned int i = 0; i < l.stages.size(); ++i)
+    {
+        painter.fillRect({2 + w / 5 + i * (sizePerBlock), 4, sizePerBlock - 4, h - 8},
+            l.stages[i] ? greenBrush : grayBrush);
+    }
 }
 
 template<class LayerT>
@@ -61,12 +97,25 @@ protected:
 private:
     void onClicked(Wt::WMouseEvent ev)
     {
-        /*SNAKE*/
+        if(ev.modifiers().test(Wt::KeyboardModifier::Control))
+        {
+            std::function<void()> elementDeletedFunc = [=] () {
+                mModel.eraseLayer(mId);
+                };
+
+            CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
+        }
     }
 
     void onDoubleClicked()
     {
-        /*SNAKE*/
+        auto dlg = createDialog<LayerT>(item);
+        d->onResult.connect([=](auto e)
+        {
+            mModel.apply(mParentId, mId, e);
+        });
+
+        dlg->show();
     }
 
     const materia::Id mId;

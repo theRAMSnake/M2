@@ -115,6 +115,24 @@ public:
       ctrl->setMargin(10, Wt::Side::Bottom);
    }
 
+   void addCheckboxSet(const std::string& caption, std::vector<bool> T::* field)
+   {
+      for(std::size_t i = 0; i < field->size(); ++i)
+      {
+         auto ctrl = contents()->addNew<Wt::WCheckBox>();
+
+         ctrl->setText(std::to_string(i + 1));
+         ctrl->setChecked((mVal.*field)[i]);
+
+         ctrl->changed().connect([=, this]()
+         {
+            (mVal.*field)[i] = ctrl->isChecked();
+         });
+
+         ctrl->setMargin(10, Wt::Side::Bottom);
+      }
+   }
+
    void addCurrencyEdit(const std::string& caption, unsigned int T::* field)
    {
       contents()->addNew<Wt::WLabel>(caption)->setMargin(10, Wt::Side::Top);

@@ -45,7 +45,11 @@ public:
    };
 
    std::vector<Item> get();
+   void eraseLayer(materia::Id chId, materia::Id lId);
+   void apply(materia::Id chId, materia::Id lId, const PointsLayer& p);
+   void apply(materia::Id chId, materia::Id lId, const StagesLayer& p);
 
 private:
+   std::vector<ChallengeModel::Item> mItems;
    MateriaServiceProxy<challenge::ChallengeService> mService;
 };
