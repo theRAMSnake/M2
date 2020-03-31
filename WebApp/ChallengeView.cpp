@@ -15,7 +15,7 @@ void fillLayerDetails(CustomDialog<StagesLayer>& dlg)
 
 void fillLayerDetails(CustomDialog<PointsLayer>& dlg)
 {
-    /*SNAKE*/
+    d->addNumberEdit("Points", &Stages);
 }
 
 template<class LayerT>
@@ -124,12 +124,43 @@ private:
 };
 
 //-------------------------------------------------------------------------------------------------------
+struct WrappedUnsignedInt
+{
+    unsigned int val;
+};
+CustomDialog<WrappedUnsignedInt>* createNewStagesDialog()
+{
+    auto d = CommonDialogManager::createCustomDialog("Create stages layer", result);
+    
+    d->addNumberEdit("Num stages", &WrappedUnsignedInt::val);
+
+    return d;
+}
+
+CustomDialog<PointsLayer>* createNewPointsDialog()
+{
+    auto d = CommonDialogManager::createCustomDialog("Create points layer", result);
+    
+    d->addNumberEdit("Points needed", &PointsLayer::pointsNeeded);
+    d->addNumberEdit("Points advance", &PointsLayer::pointsAdvance);
+
+    std::vector<challenge::PointsLayerType> types = {challenge::PointsLayerType::WEEKLY, challenge::PointsLayerType::TOTAL};
+      d->addComboBox("Type", 
+         types, 
+         types.begin() + ev.eventType, 
+         [](auto x){return to_string(x);}, 
+         [](PointsLayer& obj, const challenge::PointsLayerType& selected){obj.type = selected;}
+         );
+
+    return d;
+}
 
 class ChallengeItemView : public Wt::WContainerWidget
 {
 public:
     ChallengeItemView(const ChallengeModel::Item& item, ChallengeModel& model)
     : mItem(item)
+    , mModel(model)
     {
         setMargin(20, Wt::Side::Left);
 
@@ -154,14 +185,46 @@ public:
 private:
     void onAddClick()
     {
-        /*SNAKE*/
+        std::vector<std::string> choise = {"Stages", "Points"};
+        CommonDialogManager::showChoiseDialog(choise, [=](auto selected) {
+            const bool isStages = selected == 0;
+
+            if(isStages)
+            {
+                auto d = createNewStagesDialog();
+                d->onResult.connect([=](auto e)
+                {
+                    mModel.createStagesLayer(mItem.id, e.val);
+                });
+
+                dlg->show();
+            }
+            else
+            {
+                auto d = createNewPointsDialog();
+                d->onResult.connect([=](auto e)
+                {
+                    mModel.createPointsLayer(mItem.id, e);
+                });
+
+                dlg->show();
+            }
+        });
     }
 
     void onDeleteClick()
     {
-        /*SNAKE*/
+        if(ev.modifiers().test(Wt::KeyboardModifier::Control))
+        {
+            std::function<void()> elementDeletedFunc = [=] () {
+                mModel.eraseChallenge(mItem.id);
+                };
+
+            CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
+        }
     }
 
+    ChallengeModel& mModel;
     const ChallengeModel::Item mItem;
 };
 
@@ -193,7 +256,25 @@ void ChallengeView::refreshList()
     }
 }
 
+CustomDialog<std::pair<std::string, unsigned int>>* createNewChallengeDialog()
+{
+    using ItemType = std::pair<std::string, unsigned int> ;
+    ItemType result {"", 1};
+    auto d = CommonDialogManager::createCustomDialog("Create challenge", result);
+    
+    d->addLineEdit("Name", &ItemType::first);
+    d->addNumberEdit("Max level", &ItemType::second);
+
+    return d;
+}
+
 void ChallengeView::onAddClick()
 {
-    /*SNAKE*/
+    auto dlg = createNewChallengeDialog();
+    d->onResult.connect([=](auto e)
+    {
+        mModel.createChallenge(e.first, e.second);
+    });
+
+    dlg->show();
 }

@@ -156,6 +156,24 @@ public:
       ctrl->setMargin(10, Wt::Side::Bottom);
    }
 
+   void addNumberEdit(const std::string& caption, unsigned int T::* field)
+   {
+      contents()->addNew<Wt::WLabel>(caption)->setMargin(10, Wt::Side::Top);
+      auto ctrl = contents()->addNew<Wt::WLineEdit>();
+
+      ctrl->setText(std::to_string(mVal.*field));
+
+      ctrl->changed().connect([=, this]()
+      {
+         auto str = ctrl->text().narrow();
+         std::istringstream iss (str);
+
+         iss >> mVal.*field;
+      });
+
+      ctrl->setMargin(10, Wt::Side::Bottom);
+   }
+
    void addDateEdit(const std::string& caption, std::time_t T::* field, const std::time_t init)
    {
       contents()->addNew<Wt::WLabel>(caption)->setMargin(10, Wt::Side::Top);

@@ -15,6 +15,7 @@ struct PointsLayer
    unsigned int pointsNeeded;
    unsigned int pointsAdvance;
    challenge::PointsLayerType type;
+   unsigned int newPoints = 0;
 };
 
 struct StagesLayer
@@ -45,9 +46,16 @@ public:
    };
 
    std::vector<Item> get();
+
+   void createChallenge(const std::string& name, const unsigned int maxLevel);
+
    void eraseLayer(materia::Id chId, materia::Id lId);
+   void eraseChallenge(materia::Id chId);
    void apply(materia::Id chId, materia::Id lId, const PointsLayer& p);
    void apply(materia::Id chId, materia::Id lId, const StagesLayer& p);
+
+   void createPointsLayer(materia::Id chId, const PointsLayer& p);
+   void createStagesLayer(materia::Id chId, const unsigned int& numStages);
 
 private:
    std::vector<ChallengeModel::Item> mItems;
