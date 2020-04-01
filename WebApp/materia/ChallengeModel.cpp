@@ -16,7 +16,7 @@ std::vector<ChallengeModel::Item> ChallengeModel::get()
 
     for(auto x : items.items())
     {
-        ChallengeModel::Item r {x.id(), x.name(), x.level(), x.levelMax()};
+        ChallengeModel::Item r {x.id().guid(), x.name(), x.level(), x.maxlevels()};
 
         for(auto& l : x.layers())
         {
@@ -26,16 +26,16 @@ std::vector<ChallengeModel::Item> ChallengeModel::get()
 
                 for(auto s : l.stage_layer().stages())
                 {
-                    newLayer.push_back(s);
+                    newLayer.stages.push_back(s);
                 }
 
-                r.layers.push_back(newLayer);
+                r.layers.push_back({l.id().b().guid(), newLayer});
             }
             else if(l.has_points_layer())
             {
-                auto& src = l.pointsLayer;
-                PointsLayer pointsLayer {src.points(), src.pointsNeeded(), src.pointsAdvance(), src.type()};
-                r.layers.push_back(pointsLayer);
+                auto& src = l.points_layer();
+                PointsLayer pointsLayer {src.numpoints(), src.pointstonextlevel(), src.advancementvalue(), src.type()};
+                r.layers.push_back({l.id().b().guid(), pointsLayer});
             }
         }
 
@@ -63,31 +63,30 @@ void ChallengeModel::apply(materia::Id chId, materia::Id lId, const PointsLayer&
 {
     if(p.newPoints != 0)
     {
-        challenge::AddPointsParams p;
-        p.mutable_id()->mutable_a()->set_guid(chId.getGuid());
-        p.mutable_id()->mutable_b()->set_guid(lId.getGuid());
+        challenge::AddPointsParams pts;
+        pts.mutable_id()->mutable_a()->set_guid(chId.getGuid());
+        pts.mutable_id()->mutable_b()->set_guid(lId.getGuid());
 
-        auto& oldLayer = std::get<PointsLayer>(*materia::find_by_id(materia::find_by_id(mItems, chId)->layers, lId));
-        p.set_points(p.newPoints);
+        pts.set_points(p.newPoints);
 
         common::OperationResultMessage msg;
-        mService.getService().AddPoints(nullptr, &p, &msg, nullptr);
+        mService.getService().AddPoints(nullptr, &pts, &msg, nullptr);
 
         changed();
     }
 }
 
-void ChallengeModel::apply(materia::Id chId, materia::Id lId, const StagesLayer& p)
+void ChallengeModel::apply(materia::Id chId, materia::Id lId, const StagesLayer& l)
 {
     challenge::ToggleStageParams p;
     p.mutable_id()->mutable_a()->set_guid(chId.getGuid());
     p.mutable_id()->mutable_b()->set_guid(lId.getGuid());
 
-    auto& oldLayer = std::get<StagesLayer>(*materia::find_by_id(materia::find_by_id(mItems, chId)->layers, lId));
+    auto& oldLayer = std::get<StagesLayer>(materia::find_by_id(materia::find_by_id(mItems, chId)->layers, lId)->params);
 
     for(std::size_t i = 0; i < oldLayer.stages.size(); ++i)
     {
-        if(oldLayer[i] != p[i])
+        if(oldLayer.stages[i] != l.stages[i])
         {
             p.set_ordinal_number(i);
             common::OperationResultMessage msg;
@@ -102,9 +101,9 @@ void ChallengeModel::createChallenge(const std::string& name, const unsigned int
 {
     challenge::AddChallengeParams p;
     p.set_name(name);
-    p.set_max_levels(name);
+    p.set_maxlevels(maxLevel);
 
-    common::OperationResultMessage msg;
+    common::UniqueId msg;
     mService.getService().AddItem(nullptr, &p, &msg, nullptr);
 
     changed();
@@ -116,7 +115,7 @@ void ChallengeModel::eraseChallenge(materia::Id chId)
     id.set_guid(chId.getGuid());
 
     common::OperationResultMessage msg;
-    mService.getService().DeleteChallenge(nullptr, &id, &msg, nullptr);
+    mService.getService().DeleteItem(nullptr, &id, &msg, nullptr);
 
     changed();
 }
@@ -124,28 +123,28 @@ void ChallengeModel::eraseChallenge(materia::Id chId)
 void ChallengeModel::createPointsLayer(materia::Id chId, const PointsLayer& p)
 {
     challenge::AddLayerParams prms;
-    prms.mutable_id()->set_guid(chId);
+    prms.mutable_parentid()->set_guid(chId);
     auto& dst = *prms.mutable_layer()->mutable_points_layer();
 
     dst.set_pointstonextlevel(p.pointsNeeded);
     dst.set_advancementvalue(p.pointsAdvance);
     dst.set_type(p.type);
 
-    common::UniqueId result;
+    challenge::LayerId result;
     mService.getService().AddLayer(nullptr, &prms, &result, nullptr);
 }
 
 void ChallengeModel::createStagesLayer(materia::Id chId, const unsigned int& numStages)
 {
     challenge::AddLayerParams prms;
-    prms.mutable_id()->set_guid(chId);
-    auto& dst = *prms.mutable_layer()->mutable_stages_layer();
+    prms.mutable_parentid()->set_guid(chId);
+    auto& dst = *prms.mutable_layer()->mutable_stage_layer();
 
     for(unsigned int i = 0; i < numStages; ++i)
     {
-        dst.add_stages();
+        dst.add_stages(false);
     }
 
-    common::UniqueId result;
+    challenge::LayerId result;
     mService.getService().AddLayer(nullptr, &prms, &result, nullptr);
 }

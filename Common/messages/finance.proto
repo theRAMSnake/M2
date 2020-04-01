@@ -28,7 +28,7 @@ message EventInfo
    common.UniqueId event_id = 1;
    common.UniqueId category_id = 2;
    string details = 3;
-   int32 amount_euro_cents = 4;
+   uint32 amount_euro_cents = 4;
    int32 timestamp = 5;
    EventType type = 6;
 }

@@ -41,7 +41,7 @@ public:
 
       auto ok = new Wt::WPushButton("Accept");
       ok->setDefault(true);
-      ok->clicked().connect(std::bind([=]() {
+      ok->clicked().connect(std::bind([this]() {
         accept();
       }));
       footer()->addWidget(std::unique_ptr<Wt::WPushButton>(ok));
@@ -52,7 +52,7 @@ public:
 
       rejectWhenEscapePressed();
 
-      finished().connect(std::bind([=]() {
+      finished().connect(std::bind([=, this]() {
         if (result() == Wt::DialogCode::Accepted)
         {
            cb(mTitle->text().narrow(), mDesc->text().narrow(), cmb->getSelectedGoalId());

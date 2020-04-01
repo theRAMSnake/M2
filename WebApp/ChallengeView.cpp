@@ -1,5 +1,6 @@
 #include "ChallengeView.hpp"
 #include "WidgetFactory.hpp"
+#include "dialog/CommonDialogManager.hpp"
 
 #include <Wt/WPainter.h>
 #include <Wt/WPaintedWidget.h>
@@ -10,12 +11,12 @@
 
 void fillLayerDetails(CustomDialog<StagesLayer>& dlg)
 {
-    d->addCheckboxSet("Stages", &StagesLayer::stages);
+    dlg.addCheckboxSet("Stages", &StagesLayer::stages);
 }
 
 void fillLayerDetails(CustomDialog<PointsLayer>& dlg)
 {
-    d->addNumberEdit("Points", &Stages);
+    dlg.addNumberEdit("Points", &PointsLayer::newPoints);
 }
 
 template<class LayerT>
@@ -57,14 +58,14 @@ void drawLayer(Wt::WPainter& p, const double w, const double h, const StagesLaye
         return;
     }
 
-    double sizePerBlock = (w * 0.8) / (mItem.amountMax);
+    double sizePerBlock = (w * 0.8) / (l.stages.size());
 
     auto greenBrush = Wt::WBrush(Wt::StandardColor::DarkGreen);
     auto grayBrush = Wt::WBrush(Wt::StandardColor::Gray);
 
     for(unsigned int i = 0; i < l.stages.size(); ++i)
     {
-        painter.fillRect({2 + w / 5 + i * (sizePerBlock), 4, sizePerBlock - 4, h - 8},
+        p.fillRect({2 + w / 5 + i * (sizePerBlock), 4, sizePerBlock - 4, h - 8},
             l.stages[i] ? greenBrush : grayBrush);
     }
 }
@@ -73,8 +74,9 @@ template<class LayerT>
 class LayerView : public Wt::WPaintedWidget
 {
 public:
-    LayerView(const materia::Id id, const LayerT& l, ChallengeModel& model)
-    : mId(id)
+    LayerView(const materia::Id chId, const materia::Id layerId, const LayerT& l, ChallengeModel& model)
+    : mChId(chId)
+    , mLayerId(layerId)
     , mItem(l)
     , mModel(model)
     {
@@ -99,8 +101,8 @@ private:
     {
         if(ev.modifiers().test(Wt::KeyboardModifier::Control))
         {
-            std::function<void()> elementDeletedFunc = [=] () {
-                mModel.eraseLayer(mId);
+            std::function<void()> elementDeletedFunc = [=, this] () {
+                mModel.eraseLayer(mChId, mLayerId);
                 };
 
             CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
@@ -109,16 +111,17 @@ private:
 
     void onDoubleClicked()
     {
-        auto dlg = createDialog<LayerT>(item);
-        d->onResult.connect([=](auto e)
+        auto dlg = createDialog<LayerT>(mItem);
+        dlg->onResult.connect([this](auto e)
         {
-            mModel.apply(mParentId, mId, e);
+            mModel.apply(mChId, mLayerId, e);
         });
 
         dlg->show();
     }
 
-    const materia::Id mId;
+    const materia::Id mChId;
+    const materia::Id mLayerId;
     const LayerT mItem;
     ChallengeModel& mModel;
 };
@@ -130,7 +133,8 @@ struct WrappedUnsignedInt
 };
 CustomDialog<WrappedUnsignedInt>* createNewStagesDialog()
 {
-    auto d = CommonDialogManager::createCustomDialog("Create stages layer", result);
+    WrappedUnsignedInt v;
+    auto d = CommonDialogManager::createCustomDialog("Create stages layer", v);
     
     d->addNumberEdit("Num stages", &WrappedUnsignedInt::val);
 
@@ -139,7 +143,7 @@ CustomDialog<WrappedUnsignedInt>* createNewStagesDialog()
 
 CustomDialog<PointsLayer>* createNewPointsDialog()
 {
-    auto d = CommonDialogManager::createCustomDialog("Create points layer", result);
+    auto d = CommonDialogManager::createCustomDialog("Create points layer", {});
     
     d->addNumberEdit("Points needed", &PointsLayer::pointsNeeded);
     d->addNumberEdit("Points advance", &PointsLayer::pointsAdvance);
@@ -177,7 +181,7 @@ public:
             auto cell = t.elementAt(i, 0);
 
             std::visit([&](auto&& arg) {
-                cell->addWidget(std::make_unique<LayerView<std::decay_t<decltype(arg)>>>(item.layers[i].id, arg, model));
+                cell->addWidget(std::make_unique<LayerView<std::decay_t<decltype(arg)>>>(mItem.id, item.layers[i].id, arg, model));
             }, item.layers[i].params);
         }
     }

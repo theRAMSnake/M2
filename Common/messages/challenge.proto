@@ -19,9 +19,9 @@ enum PointsLayerType
 
 message PointsLayer
 {
-    int32 numPoints = 1;
-    int32 pointsToNextLevel = 2;
-    int32 advancementValue = 3;
+    uint32 numPoints = 1;
+    uint32 pointsToNextLevel = 2;
+    uint32 advancementValue = 3;
     PointsLayerType type = 4;
 }
 
@@ -42,8 +42,8 @@ message Item
 {
     common.UniqueId id = 1;
     string name = 2;
-    int32 level = 3;
-    int32 maxLevels = 4;
+    uint32 level = 3;
+    uint32 maxLevels = 4;
 
     repeated Layer layers = 5;
 }
@@ -56,7 +56,7 @@ message ChallengeItems
 message AddChallengeParams
 {
     string name = 1;
-    int32 maxLevels = 2;
+    uint32 maxLevels = 2;
 }
 
 message AddLayerParams
@@ -68,13 +68,13 @@ message AddLayerParams
 message ToggleStageParams
 {
     LayerId id = 1;
-    int32 ordinal_number = 2;
+    uint32 ordinal_number = 2;
 }
 
 message AddPointsParams
 {
     LayerId id = 1;
-    int32 points = 2;
+    uint32 points = 2;
 }
 
 service ChallengeService 

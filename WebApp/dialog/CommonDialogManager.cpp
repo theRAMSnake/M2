@@ -62,7 +62,7 @@ public:
       setWidth("50%");
       setHeight("30%");
 
-      finished().connect(std::bind([=]() {
+      finished().connect(std::bind([=, this]() {
          cb(WtDateToGregorian(d->date()));
          delete this;
       }));
@@ -128,7 +128,7 @@ BasicDialog::BasicDialog(const std::string& caption, const bool suppressEnter)
     footer()->addWidget(std::unique_ptr<Wt::WPushButton>(cancel));
     rejectWhenEscapePressed();
 
-    ok->clicked().connect(std::bind([=]() {
+    ok->clicked().connect(std::bind([=, this]() {
         onAccepted();
     }));
 

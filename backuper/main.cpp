@@ -32,7 +32,7 @@ int main(int argc,  char** argv)
    ZmqPbChannel channel(socket, "backuper", password);
 
    const std::string ip = "localhost";
-   socket.connect("tcp://188.116.57.62:5757");
+   socket.connect("tcp://62.171.175.23:5757");
 
    MateriaServiceProxy<admin::AdminService> service(channel);
 

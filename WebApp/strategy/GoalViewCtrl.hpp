@@ -31,7 +31,7 @@ public:
       
       contents()->addWidget(std::unique_ptr<Wt::WTextArea>(mNotes));
 
-      finished().connect(std::bind([=]() {
+      finished().connect(std::bind([=, this]() {
         if (result() == Wt::DialogCode::Accepted)
         {
            StrategyModel::Goal newGoal = subject;
@@ -209,7 +209,7 @@ private:
       {
          if(event.modifiers().test(Wt::KeyboardModifier::Control))
          {
-            std::function<void()> elementDeletedFunc = [=] () {
+            std::function<void()> elementDeletedFunc = [this] () {
                mModel.deleteGoal(mGoal->id);
                detach();
             };

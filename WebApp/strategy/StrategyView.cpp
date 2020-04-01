@@ -39,7 +39,7 @@ public:
       mValue->setDecimals(0);
       mValue->setSingleStep(1);
       
-      finished().connect(std::bind([=]() {
+      finished().connect(std::bind([=, this]() {
         if (result() == Wt::DialogCode::Accepted)
         {
            FreeDataModel::Block newBlock = subject;
@@ -140,7 +140,7 @@ private:
       {
          if(event.modifiers().test(Wt::KeyboardModifier::Control))
          {
-            std::function<void()> elementDeletedFunc = [=] () {
+            std::function<void()> elementDeletedFunc = [=, this] () {
                mStrategyModel.remove(mBlock.name);
                parent()->removeChild(this);
             };
@@ -197,7 +197,7 @@ private:
       {
          if(event.modifiers().test(Wt::KeyboardModifier::Control))
          {
-            std::function<void()> elementDeletedFunc = [=] () {
+            std::function<void()> elementDeletedFunc = [=, this] () {
                mStrategyModel.deleteWatchItem(mItem.id);
                parent()->removeChild(this);
             };
@@ -206,7 +206,7 @@ private:
          }
          else
          {
-            std::function<void(std::string)> nextFunc = [=](std::string name){
+            std::function<void(std::string)> nextFunc = [=, this](std::string name){
                 onEditDialogOk(name);
             };
 
@@ -305,7 +305,7 @@ void StrategyView::onAddGoalClick()
       choise.push_back("Active");
    }
 
-   CommonDialogManager::showChoiseDialog(choise, [=](auto selected) {
+   CommonDialogManager::showChoiseDialog(choise, [=, this](auto selected) {
       const bool isActive = selected == 1;
 
       std::function<void(std::string)> nextFunc = [this, isActive](std::string title){
@@ -322,7 +322,7 @@ void StrategyView::onAddGoalClick()
 
 void StrategyView::onAddFreeDataBlock()
 {     
-   std::function<void(std::string)> nextFunc = [=](std::string name){
+   std::function<void(std::string)> nextFunc = [=, this](std::string name){
 
       auto item = mFdModel.get(name);
       if(!item)
@@ -339,7 +339,7 @@ void StrategyView::onAddFreeDataBlock()
 
 void StrategyView::onAddWatchItemClick()
 {     
-   std::function<void(std::string)> nextFunc = [=](std::string name){
+   std::function<void(std::string)> nextFunc = [=, this](std::string name){
       auto item = mStrategyModel.addWatchItem(name);
       
       mMainToolbar->addWidget(std::make_unique<WatchItemCtrl>(item, mStrategyModel));
