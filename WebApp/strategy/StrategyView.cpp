@@ -373,7 +373,7 @@ void StrategyView::putGoal(const StrategyModel::Goal& goal)
 void StrategyView::onBacklogClick()
 {
    Dialog* dlg = new Dialog("Backlog View", std::make_unique<BacklogView>(mStrategyModel, mFdModel));
-   dlg->OnFinished.connect(std::bind([=]() {
+   dlg->OnFinished.connect(std::bind([this]() {
          layGoals();
    }));
    dlg->show();

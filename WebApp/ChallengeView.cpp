@@ -31,6 +31,21 @@ CustomDialog<LayerT>* createDialog(const LayerT item)
 
 //-----------------------------------------------------------------------------------------------------
 
+std::string to_string(const challenge::PointsLayerType src)
+{
+    switch (src)
+    {
+    case challenge::PointsLayerType::WEEKLY:
+        return "Weekly";
+
+    case challenge::PointsLayerType::TOTAL:
+        return "Total";
+    
+    default:
+        return "?";
+    }
+}
+
 void drawLayer(Wt::WPainter& p, const double w, const double h, const PointsLayer& l)
 {
     if(l.pointsNeeded == 0)
@@ -43,11 +58,11 @@ void drawLayer(Wt::WPainter& p, const double w, const double h, const PointsLaye
     auto grayBrush = Wt::WBrush(Wt::StandardColor::Gray);
 
     p.fillRect({2, 4, amountFilled, (double)h - 8}, greenBrush);
-    p.fillRect({2 + amountFilled, 4, 1.0 - amountFilled, (double)h - 8}, grayBrush);
+    p.fillRect({2 + amountFilled, 4, w - amountFilled, (double)h - 8}, grayBrush);
 
     p.drawText({0, 0, (double)w, (double)h}, 
         Wt::AlignmentFlag::Center | Wt::AlignmentFlag::Middle, 
-        fmt::format("{}: {}/{}", l.type, l.points, l.pointsNeeded)
+        fmt::format("{}: {}/{}", to_string(l.type), l.points, l.pointsNeeded)
         );
 }
 
@@ -143,7 +158,7 @@ CustomDialog<WrappedUnsignedInt>* createNewStagesDialog()
 
 CustomDialog<PointsLayer>* createNewPointsDialog()
 {
-    auto d = CommonDialogManager::createCustomDialog("Create points layer", {});
+    auto d = CommonDialogManager::createCustomDialog<PointsLayer>("Create points layer", {});
     
     d->addNumberEdit("Points needed", &PointsLayer::pointsNeeded);
     d->addNumberEdit("Points advance", &PointsLayer::pointsAdvance);
@@ -151,7 +166,7 @@ CustomDialog<PointsLayer>* createNewPointsDialog()
     std::vector<challenge::PointsLayerType> types = {challenge::PointsLayerType::WEEKLY, challenge::PointsLayerType::TOTAL};
       d->addComboBox("Type", 
          types, 
-         types.begin() + ev.eventType, 
+         types.begin(), 
          [](auto x){return to_string(x);}, 
          [](PointsLayer& obj, const challenge::PointsLayerType& selected){obj.type = selected;}
          );
@@ -170,10 +185,10 @@ public:
 
         auto vs = addWidget(createSplit(SplitType::Vertical, 0.2));
 
-        vs->first.addWidget(createLabel(item.name, Wt::FontSize::Large));
-        vs->first.addWidget(createLabel(fmt::format("Level {}/{}", item.level, item.levelMax), Wt::FontSize::Small));
-        vs->first.addWidget(createButton("X", std::bind(&ChallengeItemView::onDeleteClick, this)));
-        vs->first.addWidget(createButton("+", std::bind(&ChallengeItemView::onAddClick, this)));
+        vs->first.addWidget(createButton("X", std::bind(&ChallengeItemView::onDeleteClick, this), 3));
+        vs->first.addWidget(createButton("+", std::bind(&ChallengeItemView::onAddClick, this), 3));
+        vs->first.addWidget(createLabel(item.name, Wt::FontSize::XXLarge))->setMargin(10, Wt::Side::Left);
+        vs->first.addWidget(createLabel(fmt::format(" lvl {}/{}", item.level, item.levelMax), Wt::FontSize::XSmall));
 
         auto& t = *vs->second.addWidget(createList());
         for(std::size_t i = 0; i < item.layers.size(); ++i)
@@ -190,46 +205,43 @@ private:
     void onAddClick()
     {
         std::vector<std::string> choise = {"Stages", "Points"};
-        CommonDialogManager::showChoiseDialog(choise, [=](auto selected) {
+        CommonDialogManager::showChoiseDialog(choise, [=, this](auto selected) {
             const bool isStages = selected == 0;
 
             if(isStages)
             {
                 auto d = createNewStagesDialog();
-                d->onResult.connect([=](auto e)
+                d->onResult.connect([=, this](auto e)
                 {
                     mModel.createStagesLayer(mItem.id, e.val);
                 });
 
-                dlg->show();
+                d->show();
             }
             else
             {
                 auto d = createNewPointsDialog();
-                d->onResult.connect([=](auto e)
+                d->onResult.connect([=, this](auto e)
                 {
                     mModel.createPointsLayer(mItem.id, e);
                 });
 
-                dlg->show();
+                d->show();
             }
         });
     }
 
     void onDeleteClick()
     {
-        if(ev.modifiers().test(Wt::KeyboardModifier::Control))
-        {
-            std::function<void()> elementDeletedFunc = [=] () {
-                mModel.eraseChallenge(mItem.id);
-                };
+        std::function<void()> elementDeletedFunc = [this] () {
+            mModel.eraseChallenge(mItem.id);
+            };
 
-            CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
-        }
+        CommonDialogManager::showConfirmationDialog("Delete it?", elementDeletedFunc);
     }
 
-    ChallengeModel& mModel;
     const ChallengeModel::Item mItem;
+    ChallengeModel& mModel;
 };
 
 //----------------------------------------------------------------------------------------------------
@@ -275,7 +287,7 @@ CustomDialog<std::pair<std::string, unsigned int>>* createNewChallengeDialog()
 void ChallengeView::onAddClick()
 {
     auto dlg = createNewChallengeDialog();
-    d->onResult.connect([=](auto e)
+    dlg->onResult.connect([this](auto e)
     {
         mModel.createChallenge(e.first, e.second);
     });

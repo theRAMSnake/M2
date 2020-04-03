@@ -117,7 +117,7 @@ public:
 
    void addCheckboxSet(const std::string& caption, std::vector<bool> T::* field)
    {
-      for(std::size_t i = 0; i < field->size(); ++i)
+      for(std::size_t i = 0; i < (mVal.*field).size(); ++i)
       {
          auto ctrl = contents()->addNew<Wt::WCheckBox>();
 

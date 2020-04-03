@@ -72,7 +72,7 @@ public:
 
       auto ok = new Wt::WPushButton("Accept");
       ok->setDefault(true);
-      ok->clicked().connect(std::bind([=]() {
+      ok->clicked().connect(std::bind([=, this]() {
           if (time->validate() == Wt::ValidationState::Valid && 
             date->validate() == Wt::ValidationState::Valid &&
             !title->text().empty())
@@ -88,7 +88,7 @@ public:
 
       rejectWhenEscapePressed();
 
-      finished().connect(std::bind([=]() {
+      finished().connect(std::bind([=, this]() {
         if (result() == Wt::DialogCode::Accepted)
         {
             CalendarModel::Item resultItem(src);

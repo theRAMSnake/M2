@@ -183,7 +183,7 @@ private:
       {
         if(mItem.id != materia::Id::Invalid)
         {
-          std::function<void()> elementDeletedFunc = [=] () {
+          std::function<void()> elementDeletedFunc = [this] () {
               mModel.deleteItem(mItem.id);
               parentNode()->removeChildNode(this);
             };
@@ -193,9 +193,9 @@ private:
       else if(ev.modifiers().test(Wt::KeyboardModifier::Control) && !mItem.isPage)
       {
          CommonDialogManager::showBinaryChoiseDialog("Clear", "Erase", 
-         [=]() 
+         [this]() 
          {
-            std::function<void()> elementClearFunc = [=] () {
+            std::function<void()> elementClearFunc = [this] () {
                mModel.clearItem(mItem.id);
                for(auto c : childNodes())
                {
@@ -205,9 +205,9 @@ private:
 
             CommonDialogManager::showConfirmationDialog("Clear it?", elementClearFunc);
          },
-         [=]() 
+         [this]() 
          {
-            std::function<void()> elementDeletedFunc = [=] () {
+            std::function<void()> elementDeletedFunc = [this] () {
                mModel.deleteItem(mItem.id);
                parentNode()->removeChildNode(this);
             };

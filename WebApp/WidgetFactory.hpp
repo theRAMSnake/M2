@@ -28,7 +28,7 @@ public:
     Wt::WContainerWidget& second;
 };
 
-std::unique_ptr<Wt::WPushButton> createButton(const std::string& text, std::function<void()> handler);
+std::unique_ptr<Wt::WPushButton> createButton(const std::string& text, std::function<void()> handler, const int margin = 10);
 std::unique_ptr<Wt::WTable> createList();
 std::unique_ptr<SplitWidget> createSplit(const SplitType splitType, const double firstItemPercentage);
 std::unique_ptr<Wt::WLabel> createLabel(const std::string& text, const Wt::WFont::Size fSize);

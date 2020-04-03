@@ -4,12 +4,12 @@
 
 #include <fmt/format.h>
 
-std::unique_ptr<Wt::WPushButton> createButton(const std::string& text, std::function<void()> handler)
+std::unique_ptr<Wt::WPushButton> createButton(const std::string& text, std::function<void()> handler, const int margin)
 {
    auto result = std::make_unique<Wt::WPushButton>(text);
    result->clicked().connect(handler);
    result->addStyleClass("btn-primary");
-   result->setMargin(10);
+   result->setMargin(margin);
    return result;
 }
 

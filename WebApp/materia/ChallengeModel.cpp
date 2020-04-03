@@ -132,6 +132,8 @@ void ChallengeModel::createPointsLayer(materia::Id chId, const PointsLayer& p)
 
     challenge::LayerId result;
     mService.getService().AddLayer(nullptr, &prms, &result, nullptr);
+
+    changed();
 }
 
 void ChallengeModel::createStagesLayer(materia::Id chId, const unsigned int& numStages)
@@ -147,4 +149,6 @@ void ChallengeModel::createStagesLayer(materia::Id chId, const unsigned int& num
 
     challenge::LayerId result;
     mService.getService().AddLayer(nullptr, &prms, &result, nullptr);
+
+    changed();
 }
