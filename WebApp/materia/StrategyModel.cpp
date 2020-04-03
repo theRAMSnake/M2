@@ -170,6 +170,18 @@ std::string StrategyModel::createDescriptiveTitle(const StrategyModel::Node& nod
          return "Wait for " + pos->title;
       }
    }
+   else if(node.type == strategy::NodeType::CHALLENGE)
+   {
+      auto pos = materia::find_by_id(getChallenges(), node.challengeReference);
+      if(pos == mGoals.end())
+      {
+         return "Wait for '" + node.challengeReference.getGuid() + "'";
+      }
+      else
+      {
+         return "Wait for " + pos->title;
+      }
+   }
    else if(node.type == strategy::NodeType::WAIT)
    {
       char buffer[256];

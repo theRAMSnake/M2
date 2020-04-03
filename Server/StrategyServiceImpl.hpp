@@ -46,6 +46,7 @@ strategy::NodeType toProto(const materia::NodeType& src)
       case materia::NodeType::Reference: return strategy::NodeType::REFERENCE;
       case materia::NodeType::Milestone: return strategy::NodeType::MILESTONE;
       case materia::NodeType::Condition: return strategy::NodeType::CONDITION;
+      case materia::NodeType::Challenge: return strategy::NodeType::CHALLENGE;
    }
    
    return strategy::NodeType::BLANK;
@@ -64,6 +65,7 @@ materia::NodeType fromProto(const strategy::NodeType src)
       case strategy::NodeType::REFERENCE: return materia::NodeType::Reference;
       case strategy::NodeType::MILESTONE: return materia::NodeType::Milestone;
       case strategy::NodeType::CONDITION: return materia::NodeType::Condition;
+      case strategy::NodeType::CHALLENGE: return materia::NodeType::Challenge;
 
    default:
       return materia::NodeType::Blank;
@@ -185,6 +187,10 @@ public:
             {
                attrs.set_fd_expression(srcAttrs.get<NodeAttributeType::CONDITION_EXPRESSION>());
             }
+            if(srcAttrs.contains(NodeAttributeType::CHALLENGE_REFERENCE))
+            {
+               attrs.mutable_challenge_reference()->CopyFrom(toProto(srcAttrs.get<NodeAttributeType::CHALLENGE_REFERENCE>()));
+            }
          }
       }
    }
@@ -247,6 +253,11 @@ public:
       if(srcAttrs.fd_expression().size() > 0)
       {
          attrs.set<materia::NodeAttributeType::CONDITION_EXPRESSION>(srcAttrs.fd_expression());
+      }
+
+      if(!srcAttrs.challenge_reference().guid().empty())
+      {
+         attrs.set<materia::NodeAttributeType::CHALLENGE_REFERENCE>(fromProto(srcAttrs.challenge_reference()));
       }
 
       mStrategy2.setNodeAttributes(graphId, nodeId, fromProto(request->node_type()), attrs);

@@ -30,6 +30,19 @@ std::vector<ChallengeItem> Challenge::get() const
     return result;
 }
 
+std::optional<ChallengeItem> Challenge::get(const Id& id)
+{
+    auto loaded = mStorage->load(id);
+    if(loaded)
+    {
+        return readJson<ChallengeItem>(*loaded);
+    }
+    else
+    {
+        return std::optional<ChallengeItem>();
+    }
+}
+
 void Challenge::removeChallenge(const Id& id)
 {
     mStorage->erase(id);

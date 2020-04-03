@@ -39,10 +39,10 @@ private:
     Calendar mCalendar;
     Journal mJournal;
     freedata::FreeData mFreeData;
+    Challenge mChallenge;
     Strategy_v2 mStrategy_v2;
     Backuper mBackuper;
     Finance mFinance;
-    Challenge mChallenge;
 };
 
 std::shared_ptr<ICore> createCore(const CoreConfig& config);

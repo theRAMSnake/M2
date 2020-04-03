@@ -41,6 +41,7 @@ public:
       materia::Id graphReference;
       std::time_t requiredTimestamp;
       std::string condition;
+      materia::Id challengeReference;
    };
 
    struct Link

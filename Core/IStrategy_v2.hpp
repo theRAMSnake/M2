@@ -36,7 +36,8 @@ enum class NodeType
    Wait = 5,
    Reference = 6,
    Milestone = 7,
-   Condition = 8
+   Condition = 8,
+   Challenge = 9
 };
 
 struct Node

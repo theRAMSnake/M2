@@ -47,6 +47,7 @@ class IChallenge
 {
 public:
     virtual std::vector<ChallengeItem> get() const = 0;
+    virtual std::optional<ChallengeItem> get(const Id& id) = 0;
 
     virtual void removeChallenge(const Id& id) = 0;
     virtual Id addChallenge(const std::string& name, const unsigned int maxLevels) = 0;

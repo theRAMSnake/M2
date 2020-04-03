@@ -49,6 +49,7 @@ enum NodeType
    REFERENCE = 6;
    MILESTONE = 7;
    CONDITION = 8;
+   CHALLENGE = 9;
 }
 
 message NodeAttributes
@@ -61,6 +62,7 @@ message NodeAttributes
    int32 required_timestamp = 6;
    common.UniqueId graph_reference = 7;
    string fd_expression = 8;
+   common.UniqueId challenge_reference = 9;
 }
 
 message NodeProperties

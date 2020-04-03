@@ -16,7 +16,8 @@ enum class NodeAttributeType
    WATCH_ITEM_REFERENCE = 5,
    REQUIRED_TIMESTAMP = 6,
    GOAL_REFERENCE = 7,
-   CONDITION_EXPRESSION = 8
+   CONDITION_EXPRESSION = 8,
+   CHALLENGE_REFERENCE = 9
 };
 
 template<NodeAttributeType ATR_TYPE>
@@ -45,6 +46,9 @@ struct NodeAttributeTraits<NodeAttributeType::GOAL_REFERENCE> { using Type = Id;
 
 template<>
 struct NodeAttributeTraits<NodeAttributeType::CONDITION_EXPRESSION> { using Type = std::string; };
+
+template<>
+struct NodeAttributeTraits<NodeAttributeType::CHALLENGE_REFERENCE> { using Type = Id; };
 
 class NodeAttributes
 {

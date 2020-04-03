@@ -4,6 +4,7 @@
 #include <Core/ICore.hpp>
 #include <Core/IStrategy_v2.hpp>
 #include <Core/IFreeData.hpp>
+#include <Core/IChallenge.hpp>
 
 extern std::shared_ptr<materia::ICore> createTestCore();
 
@@ -56,6 +57,7 @@ public:
    StrategyGraphTest()
    : mCore(createTestCore())
    , mStrategy(mCore->getStrategy_v2())
+   , mChallenge(mCore->getChallenge())
    {
       for(int i = 0; i < 3; ++i)
       {
@@ -77,6 +79,7 @@ protected:
 
    std::shared_ptr<materia::ICore> mCore;
    materia::IStrategy_v2& mStrategy;
+   materia::IChallenge& mChallenge;
 };
 
 BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_AddGoal, StrategyGraphTest )  
@@ -619,6 +622,28 @@ BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_Completeness_Watch, StrategyGraphTest
    BOOST_CHECK(!IsNodeDone(graphId, nodeId));
 
    mStrategy.removeWatchItem(watchItemId);
+
+   BOOST_CHECK(IsNodeDone(graphId, nodeId));
+}
+
+BOOST_FIXTURE_TEST_CASE( StrategyGraphTest_Completeness_Challenge, StrategyGraphTest )
+{
+   //Challenge node is done, when the challenge item reaches its max level
+
+   auto chId = mChallenge.addChallenge("test", 3);
+   auto lId = mChallenge.addLayer(chId, {materia::Id::Invalid, materia::PointsLayer{0, 10, 0, materia::PointsLayerType::Total}});
+
+   auto graphId = mGoals[0].id;
+   auto nodeId = mStrategy.createNode(graphId);
+
+   materia::NodeAttributes attrs;
+   attrs.set<materia::NodeAttributeType::CHALLENGE_REFERENCE>(chId);
+   attrs.set<materia::NodeAttributeType::BRIEF>("test");
+   mStrategy.setNodeAttributes(graphId, nodeId, materia::NodeType::Challenge, attrs);
+
+   BOOST_CHECK(!IsNodeDone(graphId, nodeId));
+
+   mChallenge.addPoints(chId, lId, 1000);
 
    BOOST_CHECK(IsNodeDone(graphId, nodeId));
 }

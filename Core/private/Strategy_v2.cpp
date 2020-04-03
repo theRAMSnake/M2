@@ -20,12 +20,13 @@ BIND_JSON2(attr_map_node, first, second)
 namespace materia
 {
 
-Strategy_v2::Strategy_v2(Database& db, freedata::FreeData& fd, IReward& reward)
+Strategy_v2::Strategy_v2(Database& db, freedata::FreeData& fd, IReward& reward, IChallenge& challenge)
 : mGraphsStorage(db.getTable("graphs"))
 , mWatchStorage(db.getTable("watchItems"))
 , mGoalsStorage(db.getTable("goals"))
 , mFd(fd)
 , mReward(reward)
+, mChallenge(challenge)
 {
    
 }
@@ -104,6 +105,12 @@ bool Strategy_v2::getNodeSelfCompleteness(const StrategyGraph& graph, const Node
       {
          auto w = getWatchItems();
          return find_by_id(w, attrs.get<NodeAttributeType::WATCH_ITEM_REFERENCE>()) == w.end();
+      }
+
+   case NodeType::Challenge:
+      {
+         auto ch = mChallenge.get(attrs.get<NodeAttributeType::CHALLENGE_REFERENCE>());
+         return ch && ch->level == ch->maxLevels;
       }
    }
 

@@ -144,6 +144,7 @@ const std::map<NodeType, std::vector<NodeAttributeType>> REQUIRED_ATTRIBUTES_PER
       {NodeType::Watch, {NodeAttributeType::WATCH_ITEM_REFERENCE}},
       {NodeType::Milestone, {NodeAttributeType::BRIEF}},
       {NodeType::Condition, {NodeAttributeType::CONDITION_EXPRESSION}},
+      {NodeType::Challenge, {NodeAttributeType::CHALLENGE_REFERENCE}}
    }; 
 
 void StrategyGraph::setNodeAttributes(const Id& objectId, const NodeType& type, const NodeAttributes& attrs)

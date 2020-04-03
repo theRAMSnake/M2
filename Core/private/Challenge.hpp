@@ -13,6 +13,7 @@ public:
     Challenge(Database& db);
 
     std::vector<ChallengeItem> get() const override;
+    std::optional<ChallengeItem> get(const Id& id) override;
 
     void removeChallenge(const Id& id) override;
     Id addChallenge(const std::string& name, const unsigned int maxLevels) override;
@@ -35,7 +36,7 @@ private:
             auto item = readItem(*ch);
             if(f(item))
             {
-                if(isItemComplete(item))
+                while(isItemComplete(item) && item.level != item.maxLevels)
                 {
                     advance(item);
                 }

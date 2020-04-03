@@ -10,10 +10,10 @@ Core::Core(const CoreConfig& config)
 , mCalendar(mDb, mReward)
 , mJournal(mDb)
 , mFreeData(mDb)
-, mStrategy_v2(mDb, mFreeData, mReward)
+, mChallenge(mDb)
+, mStrategy_v2(mDb, mFreeData, mReward, mChallenge)
 , mBackuper(config.dbFileName)
 , mFinance(mDb)
-, mChallenge(mDb)
 {
 
 }
