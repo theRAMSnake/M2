@@ -30,7 +30,7 @@ MainScreen::MainScreen(MateriaClient& client)
         client.getInbox(),
         client.getJournal()));
     menu_->addItem("Journal", std::make_unique<JournalView>(client.getJournal()));
-    menu_->addItem("Strategy", std::make_unique<StrategyView>(client.getStrategy(), client.getFreeData()));
+    menu_->addItem("Strategy", std::make_unique<StrategyView>(client.getStrategy(), client.getFreeData(), client.getChallenge()));
     menu_->addItem("Files", std::make_unique<FilesView>());
     menu_->addItem("Finance", std::make_unique<FinanceView>(client.getFinance()));
     menu_->addItem("Reward", std::make_unique<RewardView>(client.getReward()));

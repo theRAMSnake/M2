@@ -28,7 +28,7 @@ public:
       
       contents()->addWidget(std::unique_ptr<Wt::WTextArea>(mNotes));
 
-      finished().connect(std::bind([=]() {
+      finished().connect(std::bind([=, this]() {
         if (result() == Wt::DialogCode::Accepted)
         {
            StrategyModel::Goal newGoal = subject;
@@ -128,6 +128,10 @@ public:
          painter.setFont(createFont(Wt::FontSize::Small));
          painter.drawText(mImageRect, Wt::AlignmentFlag::Center | Wt::AlignmentFlag::Middle, 
             std::to_string(mNode.progress.first) + "/" + std::to_string(mNode.progress.second));
+      }
+      else if(mNode.type == strategy::NodeType::CHALLENGE)
+      {
+         painter.drawImage(mImageRect, Wt::WPainter::Image("resources/achievement.png", 48, 48));
       }
       
       if(mNode.type != strategy::NodeType::GOAL)
@@ -632,12 +636,12 @@ void NodeOperationProvider::clone(const StrategyModel::Node& n)
 void NodeOperationProvider::split(const StrategyModel::Node& n)
 {
    CommonDialogManager::showBinaryChoiseDialog("Vertical", "Horizontal", 
-   [=]() 
+   [=, this]() 
    {
       mModel.splitNodeVertical(mId, n);
       OnDone();
    },
-   [=]() 
+   [=, this]() 
    {
       mModel.splitNodeHorizontal(mId, n);
       OnDone();
@@ -667,9 +671,10 @@ void GraphView::assign(const materia::Id& id, const StrategyModel::Graph& g, con
    cgv->OnElementClicked.connect(std::bind(&GraphView::OnElementClicked, this, std::placeholders::_1, std::placeholders::_2));
 }
 
-GraphView::GraphView(StrategyModel& model, FreeDataModel& freeData)
+GraphView::GraphView(StrategyModel& model, FreeDataModel& freeData, ChallengeModel& chModel)
 : mModel(model)
 , mFreeData(freeData)
+, mChModel(chModel)
 {
    mImpl = setImplementation(std::make_unique<Wt::WContainerWidget>());
    mImpl->hide();
@@ -710,7 +715,7 @@ void GraphView::OnNodeClicked(const StrategyModel::Node& node, const Wt::WMouseE
    {
       if(ev.modifiers().test(Wt::KeyboardModifier::Control))
       {
-         std::function<void()> elementDeletedFunc = [=] () {
+         std::function<void()> elementDeletedFunc = [=, this] () {
             mModel.deleteNode(mId, node.id);
             refreshGraph();
          };
@@ -719,7 +724,7 @@ void GraphView::OnNodeClicked(const StrategyModel::Node& node, const Wt::WMouseE
       }
       else if(node.type != strategy::NodeType::GOAL)
       {
-         std::function<bool(std::string)> conditionVerifier = [=] (std::string expr)->bool {
+         std::function<bool(std::string)> conditionVerifier = [=, this] (std::string expr)->bool {
                return mFreeData.checkExpression(expr);
             };
 
@@ -727,6 +732,7 @@ void GraphView::OnNodeClicked(const StrategyModel::Node& node, const Wt::WMouseE
             node, 
             mModel.getWatchItems(), 
             mModel.getGoals(), 
+            mChModel.get(),
             conditionVerifier, 
             *mOpProvider
             );
@@ -735,7 +741,7 @@ void GraphView::OnNodeClicked(const StrategyModel::Node& node, const Wt::WMouseE
       }
       else if(node.type == strategy::NodeType::GOAL)
       {
-         std::function<void(const StrategyModel::Goal)> callback = [=] (const StrategyModel::Goal out) {
+         std::function<void(const StrategyModel::Goal)> callback = [=, this] (const StrategyModel::Goal out) {
             mModel.modifyGoal(out);
             refreshGraph();
          };
@@ -752,7 +758,7 @@ void GraphView::OnLinkClicked(const StrategyModel::Link& link, const Wt::WMouseE
    {
       if(ev.modifiers().test(Wt::KeyboardModifier::Control))
       {
-         std::function<void()> elementDeletedFunc = [=] () {
+         std::function<void()> elementDeletedFunc = [=, this] () {
             mModel.deleteLink(mId, link.from, link.to);
             refreshGraph();
          };

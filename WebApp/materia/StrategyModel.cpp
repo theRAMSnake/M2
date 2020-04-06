@@ -1,7 +1,8 @@
 #include "StrategyModel.hpp"
 
-StrategyModel::StrategyModel(ZmqPbChannel& channel)
+StrategyModel::StrategyModel(ZmqPbChannel& channel, ChallengeModel& chModel)
 : mService(channel)
+, mChModel(chModel)
 {
    fetchGoals();
 }
@@ -172,8 +173,9 @@ std::string StrategyModel::createDescriptiveTitle(const StrategyModel::Node& nod
    }
    else if(node.type == strategy::NodeType::CHALLENGE)
    {
-      auto pos = materia::find_by_id(getChallenges(), node.challengeReference);
-      if(pos == mGoals.end())
+      auto chs = mChModel.get();
+      auto pos = materia::find_by_id(chs, node.challengeReference);
+      if(pos == chs.end())
       {
          return "Wait for '" + node.challengeReference.getGuid() + "'";
       }
@@ -229,7 +231,8 @@ std::optional<StrategyModel::Graph> StrategyModel::getGraph(const materia::Id& s
             x.attrs().watch_item_reference().guid(),
             x.attrs().graph_reference().guid(),
             x.attrs().required_timestamp(),
-            x.attrs().fd_expression()
+            x.attrs().fd_expression(),
+            x.attrs().challenge_reference().guid()
             });
 
          g.nodes.back().descriptiveTitle = createDescriptiveTitle(g.nodes.back());
@@ -319,6 +322,7 @@ void StrategyModel::updateNode(const materia::Id& graphId, const Node& node)
    attrs->mutable_graph_reference()->set_guid(node.graphReference.getGuid());
    attrs->set_required_timestamp(node.requiredTimestamp);
    attrs->set_fd_expression(node.condition);
+   attrs->mutable_challenge_reference()->set_guid(node.challengeReference.getGuid());
 
    common::OperationResultMessage opResult;
    mService.getService().ModifyNode(nullptr, &props, &opResult, nullptr);

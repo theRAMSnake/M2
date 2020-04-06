@@ -2,6 +2,7 @@
 #include <boost/test/unit_test.hpp>
 #include <Core/ICore.hpp>
 #include <Core/IChallenge.hpp>
+#include <Core/IReward.hpp>
 
 class ChallengeTest
 {
@@ -11,12 +12,14 @@ public:
       system("rm Test.db");
       mCore = materia::createCore({"Test.db"});
       mCh = &mCore->getChallenge();
+      mReward = &mCore->getReward();
    }
 
 protected:
 
    std::shared_ptr<materia::ICore> mCore;
    materia::IChallenge* mCh;
+   materia::IReward* mReward;
 };
 
 BOOST_FIXTURE_TEST_CASE( AddDeleteCh, ChallengeTest ) 
@@ -182,4 +185,19 @@ BOOST_FIXTURE_TEST_CASE( WeeklyTest, ChallengeTest )
     auto pts = std::get<materia::PointsLayer>(layers[0].parameters);
     BOOST_CHECK_EQUAL(0, pts.numPoints);
     BOOST_CHECK_EQUAL(1, items[0].level);
+}
+
+BOOST_FIXTURE_TEST_CASE( ChallengeRewarded, ChallengeTest ) 
+{
+   auto chId = mCh->addChallenge("test", 3);
+   auto lId = mCh->addLayer(chId, {materia::Id::Invalid, materia::PointsLayer{0, 10, 0, materia::PointsLayerType::Total}});
+
+   BOOST_CHECK(mReward->addPool({materia::Id::Invalid, "text", 0, 100}) != materia::Id::Invalid);
+
+   mCh->addPoints(chId, lId, 1000);
+
+   auto items = mReward->getPools();
+   BOOST_CHECK_EQUAL(1, items.size());
+   BOOST_CHECK_EQUAL("text", items[0].name);
+   BOOST_CHECK_EQUAL(10, items[0].amount);
 }

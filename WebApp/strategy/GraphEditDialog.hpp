@@ -9,7 +9,7 @@ class GraphEditDialog: public BasicDialog
 {
 public:
    typedef std::function<void(const StrategyModel::Graph&, const StrategyModel::Goal&)> TOnOkCallback;
-   GraphEditDialog(const StrategyModel::Goal& goal, StrategyModel& model, FreeDataModel& fd, TOnOkCallback cb);
+   GraphEditDialog(const StrategyModel::Goal& goal, StrategyModel& model, FreeDataModel& fd, ChallengeModel& chModel, TOnOkCallback cb);
 
 private:
    void refreshGraph();

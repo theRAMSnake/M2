@@ -91,6 +91,7 @@ struct GoalViewCtrlConstructionParams
 {
    StrategyModel& model;
    FreeDataModel& freeData;
+   ChallengeModel& chModel;
    bool isActiveSlot;
 };
 
@@ -101,6 +102,7 @@ public:
    GoalViewCtrl(GoalViewCtrlConstructionParams& p)
    : mModel(p.model)
    , mFreeData(p.freeData)
+   , mChModel(p.chModel)
    , mIsActiveSlot(p.isActiveSlot)
    {
       setStyleClass(GoalViewCtrlTraits<isCompact>::emptyStyleClass);
@@ -108,7 +110,7 @@ public:
 
       if(!isCompact)
       {
-         mGraphView = addWidget(std::make_unique<GraphView>(mModel, mFreeData));
+         mGraphView = addWidget(std::make_unique<GraphView>(mModel, mFreeData, mChModel));
          mGraphView->OnCaptionClicked.connect(std::bind(&GoalViewCtrl<isCompact>::onBoundClicked, this, std::placeholders::_1));
       }
       else
@@ -224,7 +226,8 @@ private:
          }
          else
          {
-            GraphEditDialog* dlg = new GraphEditDialog(*mGoal, mModel, mFreeData, [&] (auto graph, auto goal) {mGraph = graph; mGoal = goal; render();});
+            GraphEditDialog* dlg = new GraphEditDialog(*mGoal, mModel, mFreeData, mChModel,
+               [&] (auto graph, auto goal) {mGraph = graph; mGoal = goal; render();});
             dlg->show();
          }
       }
@@ -261,6 +264,7 @@ private:
    static constexpr char MY_MIME_TYPE[] = "GoalViewCtrl";
    StrategyModel& mModel;
    FreeDataModel& mFreeData;
+   ChallengeModel& mChModel;
    Wt::WLabel* mName = nullptr;
    GraphView* mGraphView = nullptr;
    std::optional<StrategyModel::Goal> mGoal;

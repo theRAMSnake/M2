@@ -7,7 +7,7 @@
 #include <Wt/WLineEdit.h>
 #include <Wt/WTextArea.h>
 
-GraphEditDialog::GraphEditDialog(const StrategyModel::Goal& goal, StrategyModel& model, FreeDataModel& fd, TOnOkCallback cb)
+GraphEditDialog::GraphEditDialog(const StrategyModel::Goal& goal, StrategyModel& model, FreeDataModel& fd, ChallengeModel& chModel, TOnOkCallback cb)
 : BasicDialog("Edit graph", true)
 , mId(goal.id)
 , mModel(model)
@@ -28,14 +28,14 @@ GraphEditDialog::GraphEditDialog(const StrategyModel::Goal& goal, StrategyModel&
    linkBtn->clicked().connect(this, &GraphEditDialog::linkNodesRequest);
    tb->addButton(std::move(linkBtn));
 
-   mGraphView = contents()->addWidget(std::make_unique<GraphView>(mModel, fd));
+   mGraphView = contents()->addWidget(std::make_unique<GraphView>(mModel, fd, chModel));
 
    refreshGraph();
 
    setWidth("50%");
    setHeight("70%");
 
-   finished().connect(std::bind([=]() {
+   finished().connect(std::bind([=, this]() {
       cb(*mModel.getGraph(mId), mGoal);
       delete this;
    }));
@@ -66,7 +66,7 @@ void GraphEditDialog::createNode()
       choises.push_back(g.descriptiveTitle);
    }
 
-   CommonDialogManager::showDoubleComboDialog(choises, choises, [=](auto selected1index, auto selected2index) 
+   CommonDialogManager::showDoubleComboDialog(choises, choises, [=, this](auto selected1index, auto selected2index) 
    {
       auto newNodeId = mModel.createNode(mId);
 
@@ -95,7 +95,7 @@ void GraphEditDialog::linkNodesRequest()
       choises.push_back(g.descriptiveTitle);
    }
 
-   CommonDialogManager::showDoubleComboDialog(choises, choises, [=](auto selected1index, auto selected2index) 
+   CommonDialogManager::showDoubleComboDialog(choises, choises, [=, this](auto selected1index, auto selected2index) 
    {
       mModel.createLink(mId, nodes[selected1index].id, nodes[selected2index].id);
       refreshGraph();

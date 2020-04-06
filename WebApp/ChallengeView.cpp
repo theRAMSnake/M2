@@ -187,18 +187,26 @@ public:
 
         vs->first.addWidget(createButton("X", std::bind(&ChallengeItemView::onDeleteClick, this), 3));
         vs->first.addWidget(createButton("+", std::bind(&ChallengeItemView::onAddClick, this), 3));
-        vs->first.addWidget(createLabel(item.name, Wt::FontSize::XXLarge))->setMargin(10, Wt::Side::Left);
+        vs->first.addWidget(createLabel(item.title, Wt::FontSize::XXLarge))->setMargin(10, Wt::Side::Left);
         vs->first.addWidget(createLabel(fmt::format(" lvl {}/{}", item.level, item.levelMax), Wt::FontSize::XSmall));
 
-        auto& t = *vs->second.addWidget(createList());
-        for(std::size_t i = 0; i < item.layers.size(); ++i)
+        if(item.level != item.levelMax)
         {
-            auto cell = t.elementAt(i, 0);
+            auto& t = *vs->second.addWidget(createList());
+            for(std::size_t i = 0; i < item.layers.size(); ++i)
+            {
+                auto cell = t.elementAt(i, 0);
 
-            std::visit([&](auto&& arg) {
-                cell->addWidget(std::make_unique<LayerView<std::decay_t<decltype(arg)>>>(mItem.id, item.layers[i].id, arg, model));
-            }, item.layers[i].params);
+                std::visit([&](auto&& arg) {
+                    cell->addWidget(std::make_unique<LayerView<std::decay_t<decltype(arg)>>>(mItem.id, item.layers[i].id, arg, model));
+                }, item.layers[i].params);
+            }
         }
+        else
+        {
+            vs->second.addWidget(createLabel("Completed!", Wt::FontSize::XXLarge))->setMargin(10, Wt::Side::Left);
+        }
+        
     }
 
 private:
