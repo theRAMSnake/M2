@@ -6,6 +6,7 @@
 #include <fstream>
 #include <thread>
 #include <messages/common.pb.h>
+#include <fmt/format.h>
 #include "ServiceWrapper.hpp"
 #include "InboxServiceImpl.hpp"
 #include "CalendarServiceImpl.hpp"
@@ -68,6 +69,8 @@ void timerFunc(materia::ICore* core)
             core->onNewDay();
 
             tm_struct = localtime(&t);
+
+            core->getInbox().add({materia::Id::Invalid, fmt::format("timer ticked with {}", tm_struct->tm_wday)});
             if(tm_struct->tm_wday == 1 /*Monday*/)
             {
                 core->onNewWeek();

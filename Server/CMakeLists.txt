@@ -14,7 +14,7 @@ ProtoConvertion.cpp
 
 find_package(Boost COMPONENTS system REQUIRED)
 
-target_link_libraries(m2server m2common m2core ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread)
+target_link_libraries(m2server m2common m2core ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread fmt)
 
 add_custom_command(
         TARGET m2server POST_BUILD
