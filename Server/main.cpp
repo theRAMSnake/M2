@@ -68,6 +68,7 @@ void timerFunc(materia::ICore* core)
             std::unique_lock<std::mutex> lock(gMainMutex);
             core->onNewDay();
 
+            t = std::time(NULL);
             tm_struct = localtime(&t);
 
             core->getInbox().add({materia::Id::Invalid, fmt::format("timer ticked with {}", tm_struct->tm_wday)});
