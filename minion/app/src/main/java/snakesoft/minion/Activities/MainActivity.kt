@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity()
 
         val intent = Intent(applicationContext, ClipboardListenerService::class.java)
         startService(intent)
+        startForegroundService(intent)
 
         MainActivityUI().setContentView(this)
     }

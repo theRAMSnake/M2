@@ -60,12 +60,12 @@ android {
         pickFirst 'META-INF/plexus/components.xml'
     }
 
-    compileSdkVersion 26
+    compileSdkVersion 29
     buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "snakesoft.minion"
         minSdkVersion 23
-        targetSdkVersion 25
+        targetSdkVersion 29
         multiDexEnabled true
         versionCode 1
         versionName "1.0"

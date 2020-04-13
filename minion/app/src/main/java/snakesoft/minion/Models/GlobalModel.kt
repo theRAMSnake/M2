@@ -7,7 +7,7 @@ import snakesoft.minion.materia.MateriaUnreachableException
 
 object GlobalModel
 {
-    var Ip: String = "188.116.57.62"
+    var Ip: String = "62.171.175.23"
         set(value)
         {
             field = value

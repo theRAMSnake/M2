@@ -7,19 +7,19 @@ import java.util.concurrent.TimeUnit
 
 fun publishFile(filename: String, password: String)
 {
-    val p = Runtime.getRuntime().exec("./m2tools $password News $filename")
+    val p = Runtime.getRuntime().exec("./m2tools $password createPage News $filename")
     p.waitFor()
     Runtime.getRuntime().exec("rm $filename")
 }
 
-fun genNewsFile(): String
+fun genNewsFile(password: String): String
 {
     val cal = java.util.Calendar.getInstance()
     val filename = "${cal.get(Calendar.DAY_OF_MONTH)}_${cal.get(Calendar.MONTH)}_${cal.get(Calendar.YEAR)}"
 
     var filecontent = "<head><style>a { text-decoration: none;} </style> </head><body>"
 
-    filecontent += genRedditContent()
+    filecontent += genRedditContent(password)
     try
     {
         filecontent += genHackernewsContent()
@@ -58,7 +58,7 @@ fun genNewsFile(): String
 
 fun main(args: Array<String>)
 {
-    val filename = genNewsFile()
+    val filename = genNewsFile(args[0])
     publishFile(filename, args[0])
 
     println("Done")
