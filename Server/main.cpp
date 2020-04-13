@@ -184,6 +184,8 @@ void legacyFunc(std::string password, materia::ICore* core)
 
 void newFunc(std::string password, materia::ICore* core)
 {
+    Codec codec(password);
+    
     zmq::context_t context (1);
     zmq::socket_t clientSocket (context, ZMQ_REP);
     clientSocket.bind ("tcp://*:5756");
