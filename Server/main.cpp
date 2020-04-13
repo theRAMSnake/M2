@@ -120,25 +120,13 @@ common::MateriaMessage handleMessage(const common::MateriaMessage& in)
     return errorMsg;
 }
 
-int main(int argc, char *argv[])
+void legacyFunc(std::string password, materia::ICore* core)
 {
-    if(argc < 2)
-    {
-       std::cout << "Please specify password";
-       return -1;
-    }
-
-    std::string password = argv[1];
     Codec codec(password);
 
     zmq::context_t context (1);
     zmq::socket_t clientSocket (context, ZMQ_REP);
     clientSocket.bind ("tcp://*:5757");
-
-    logger << "Creating core\n";
-    auto core = materia::createCore({"/materia/materia.db"});
-
-    logger << "Creating services\n";
 
     gServices.insert({"InboxService", std::make_shared<materia::ServiceWrapper<materia::InboxServiceImpl>>((*core))});
     gServices.insert({"RewardService", std::make_shared<materia::ServiceWrapper<materia::RewardServiceImpl>>((*core))});
@@ -149,10 +137,7 @@ int main(int argc, char *argv[])
     gServices.insert({"FinanceService", std::make_shared<materia::ServiceWrapper<materia::FinanceServiceImpl>>((*core))});
     gServices.insert({"ChallengeService", std::make_shared<materia::ServiceWrapper<materia::ChallengeServiceImpl>>((*core))});
     gServices.insert({"AdminService", std::make_shared<materia::ServiceWrapper<materia::AdminServiceImpl>>(*core, shutdownFlag)});
-
-    std::thread timerThread(&timerFunc, core.get());
     
-    logger << "Start listening\n";
     while(true)
     {
         zmq::message_t clientMessage;
@@ -195,6 +180,65 @@ int main(int argc, char *argv[])
             break;
         }
     }
+}
+
+void newFunc(std::string password, materia::ICore* core)
+{
+    zmq::context_t context (1);
+    zmq::socket_t clientSocket (context, ZMQ_REP);
+    clientSocket.bind ("tcp://*:5756");
+
+    while(true)
+    {
+        zmq::message_t clientMessage;
+        clientSocket.recv (clientMessage, zmq::recv_flags::none);
+        logger << "Received message\n";
+
+        std::string received(static_cast<const char *>(clientMessage.data()), clientMessage.size());
+        std::string decoded;
+        
+        try
+        {
+            decoded = codec.decrypt(received);
+        }
+        catch(...)
+        {
+            logger << "Decription failed\n";
+            clientSocket.send (clientMessage, zmq::send_flags::none);
+            continue;
+        }
+        
+        std::string encoded = codec.encrypt("empty responce");
+
+        zmq::message_t msgToSend (encoded.data(), encoded.size());
+        clientSocket.send (msgToSend, zmq::send_flags::none);
+
+        if(shutdownFlag)
+        {
+            break;
+        }
+    }
+}
+
+int main(int argc, char *argv[])
+{
+    if(argc < 2)
+    {
+       std::cout << "Please specify password";
+       return -1;
+    }
+
+    std::string password = argv[1];
+
+    auto core = materia::createCore({"/materia/materia.db"});
+
+    std::thread legacyThread(&legacyFunc, password, core.get());
+    std::thread webThread(&webFunc, password, core.get());
+    std::thread timerThread(&timerFunc, core.get());
+    
+    legacyThread.join();
+    webThread.join();
+    timerThread.join();
 
     return 0;
 }
