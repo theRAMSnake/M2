@@ -185,7 +185,7 @@ void legacyFunc(std::string password, materia::ICore* core)
 void newFunc(std::string password, materia::ICore* core)
 {
     Codec codec(password);
-    
+
     zmq::context_t context (1);
     zmq::socket_t clientSocket (context, ZMQ_REP);
     clientSocket.bind ("tcp://*:5756");
@@ -235,7 +235,7 @@ int main(int argc, char *argv[])
     auto core = materia::createCore({"/materia/materia.db"});
 
     std::thread legacyThread(&legacyFunc, password, core.get());
-    std::thread webThread(&webFunc, password, core.get());
+    std::thread webThread(&newFunc, password, core.get());
     std::thread timerThread(&timerFunc, core.get());
     
     legacyThread.join();
