@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../IChallenge.hpp"
+#include "../IReward.hpp"
 #include "Database.hpp"
 
 namespace materia
@@ -10,7 +11,7 @@ class Database;
 class Challenge : public IChallenge
 {
 public:
-    Challenge(Database& db);
+    Challenge(Database& db, IReward& reward);
 
     std::vector<ChallengeItem> get() const override;
     std::optional<ChallengeItem> get(const Id& id) override;
@@ -52,6 +53,7 @@ private:
     bool isItemComplete(const ChallengeItem& item) const;
     void advance(ChallengeItem& item) const;
 
+    IReward& mReward;
     std::unique_ptr<DatabaseTable> mStorage;
 };
 

@@ -9,11 +9,11 @@ MateriaClient::MateriaClient(const std::string& password)
     mCalendar.reset(new CalendarModel(mChannel));
     mInbox.reset(new InboxModel(mChannel));
     mJournal.reset(new JournalModel(mChannel));
-    mStrategy.reset(new StrategyModel(mChannel));
+    mChallenge.reset(new ChallengeModel(mChannel));
+    mStrategy.reset(new StrategyModel(mChannel, *mChallenge));
     mFreeData.reset(new FreeDataModel(mChannel));
     mFinance.reset(new FinanceModel(mChannel));
     mReward.reset(new RewardModel(mChannel));
-    mChallenge.reset(new ChallengeModel(mChannel));
 }
 
 CalendarModel& MateriaClient::getCalendar()

@@ -39,7 +39,7 @@ public:
    struct Item
    {
       materia::Id id;
-      std::string name;
+      std::string title;
       unsigned int level;
       unsigned int levelMax;
       std::vector<ChallengeLayer> layers;

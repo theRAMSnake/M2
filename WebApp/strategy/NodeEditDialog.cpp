@@ -244,7 +244,8 @@ std::vector<std::pair<strategy::NodeType, std::string>> NODE_TYPES = {
    {strategy::NodeType::WAIT, "Wait"},
    {strategy::NodeType::REFERENCE, "Reference"},
    {strategy::NodeType::MILESTONE, "Milestone"},
-   {strategy::NodeType::CONDITION, "Condition"}
+   {strategy::NodeType::CONDITION, "Condition"},
+   {strategy::NodeType::CHALLENGE, "Challenge"}
 };
 
 INodeTypeSpecifics* createNodeSpecifics(
@@ -252,6 +253,7 @@ INodeTypeSpecifics* createNodeSpecifics(
    const StrategyModel::Node& node, 
    const std::vector<StrategyModel::WatchItem>& watchItems, 
    const std::vector<StrategyModel::Goal>& goals, 
+   const std::vector<ChallengeModel::Item>& chs, 
    std::function<bool(std::string)> conditionVerifier,
    Wt::WContainerWidget& contents
    )
@@ -273,6 +275,9 @@ INodeTypeSpecifics* createNodeSpecifics(
       case strategy::NodeType::REFERENCE:
          return new ReferencedNodeSpecifics<StrategyModel::Goal>(node, &StrategyModel::Node::graphReference, goals, contents);
 
+      case strategy::NodeType::CHALLENGE:
+         return new ReferencedNodeSpecifics<ChallengeModel::Item>(node, &StrategyModel::Node::challengeReference, chs, contents);
+
       case strategy::NodeType::CONDITION:
          return new ConditionNodeSpecifics(node, conditionVerifier, contents);
 
@@ -285,6 +290,7 @@ NodeEditDialog::NodeEditDialog(
    const StrategyModel::Node& node, 
    const std::vector<StrategyModel::WatchItem>& watchItems, 
    const std::vector<StrategyModel::Goal>& goals, 
+   const std::vector<ChallengeModel::Item>& chs, 
    std::function<bool(std::string)> conditionVerifier,
    IOperationProvider& opProvider
    )
@@ -297,7 +303,7 @@ NodeEditDialog::NodeEditDialog(
    cloneBtn->setInline(true);
    cloneBtn->setMargin(5, Wt::Side::Left);
    cloneBtn->setStyleClass("btn-primary");
-   cloneBtn->clicked().connect(std::bind([=]() {
+   cloneBtn->clicked().connect(std::bind([=, this]() {
       mOpProvider.clone(node);
       reject();
    }));
@@ -308,7 +314,7 @@ NodeEditDialog::NodeEditDialog(
    splitBtn->setInline(true);
    splitBtn->setMargin(5, Wt::Side::Left);
    splitBtn->setStyleClass("btn-primary");
-   splitBtn->clicked().connect(std::bind([=]() {
+   splitBtn->clicked().connect(std::bind([=, this]() {
       mOpProvider.split(node);
       reject();
    }));
@@ -330,17 +336,17 @@ NodeEditDialog::NodeEditDialog(
       }
    }
 
-   mNodeTypeSpecifics.reset(createNodeSpecifics(node.type, node, watchItems, goals, conditionVerifier, *contents()));
+   mNodeTypeSpecifics.reset(createNodeSpecifics(node.type, node, watchItems, goals, chs, conditionVerifier, *contents()));
 
-   types->changed().connect(std::bind([=](){
+   types->changed().connect(std::bind([=, this](){
       mNodeTypeSpecifics->cleanUp(*contents());
-      mNodeTypeSpecifics.reset(createNodeSpecifics(NODE_TYPES[types->currentIndex()].first, node, watchItems, goals, conditionVerifier, *contents()));
+      mNodeTypeSpecifics.reset(createNodeSpecifics(NODE_TYPES[types->currentIndex()].first, node, watchItems, goals, chs, conditionVerifier, *contents()));
    }));
 
    setWidth("50%");
    setHeight("50%");
 
-   finished().connect(std::bind([=]() 
+   finished().connect(std::bind([=, this]() 
    {
       if(result() == Wt::DialogCode::Accepted)
       {

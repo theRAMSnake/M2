@@ -7,7 +7,7 @@ class IGoalViewCtrl;
 class StrategyView : public Wt::WContainerWidget
 {
 public:
-   StrategyView(StrategyModel& strategy, FreeDataModel& fd);
+   StrategyView(StrategyModel& strategy, FreeDataModel& fd, ChallengeModel& chModel);
 
 private:
    void onAddGoalClick();
@@ -23,6 +23,7 @@ private:
 
    StrategyModel& mStrategyModel;
    FreeDataModel& mFdModel;
+   ChallengeModel& mChModel;
    Wt::WToolBar* mMainToolbar;
    std::vector<IGoalViewCtrl*> mGoalCtrls;
 };

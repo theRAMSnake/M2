@@ -29,7 +29,7 @@ class GraphView: public Wt::WCompositeWidget
 public:
    boost::signals2::signal<void(Wt::WMouseEvent)> OnCaptionClicked;
 
-   GraphView(StrategyModel& model, FreeDataModel& freeData);
+   GraphView(StrategyModel& model, FreeDataModel& freeData, ChallengeModel& chModel);
 
    void reset();
    void assign(const materia::Id& id, const StrategyModel::Graph& g, const std::string& caption);
@@ -44,6 +44,7 @@ private:
    Wt::WContainerWidget* mImpl;
    StrategyModel& mModel;
    FreeDataModel& mFreeData;
+   ChallengeModel& mChModel;
    materia::Id mId;
    std::unique_ptr<NodeOperationProvider> mOpProvider;
 };

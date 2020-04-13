@@ -3,13 +3,14 @@
 #include <vector>
 #include <Common/Id.hpp>
 #include "ZmqPbChannel.hpp"
+#include "ChallengeModel.hpp"
 #include "MateriaServiceProxy.hpp"
 #include <messages/strategy.pb.h>
 
 class StrategyModel
 {
 public:
-   StrategyModel(ZmqPbChannel& channel);
+   StrategyModel(ZmqPbChannel& channel, ChallengeModel& chModel);
 
    struct Task
    {
@@ -91,4 +92,5 @@ private:
 
    std::vector<Goal> mGoals;
    MateriaServiceProxy<strategy::StrategyService> mService;
+   ChallengeModel& mChModel;
 };

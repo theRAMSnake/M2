@@ -12,8 +12,9 @@ BIND_JSON5(materia::ChallengeItem, id, name, level, maxLevels, layers)
 namespace materia
 {
 
-Challenge::Challenge(Database& db)
-: mStorage(db.getTable("challenge"))
+Challenge::Challenge(Database& db, IReward& reward)
+: mReward(reward)
+, mStorage(db.getTable("challenge"))
 {
     
 }
@@ -200,6 +201,7 @@ void Challenge::advance(ChallengeItem& item) const
     if(item.level < item.maxLevels)
     {
         item.level++;
+        mReward.addPoints(5);
     }
     
     for(auto& l : item.layers)
