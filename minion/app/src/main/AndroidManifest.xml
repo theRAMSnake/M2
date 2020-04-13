@@ -33,9 +33,9 @@
         <activity android:name=".Activities.SyncPrepareActivity" />
         <activity android:name=".Activities.CalendarActivity" />
         <activity android:name=".Activities.FinanceActivity" />
-        <activity android:name=".Activities.CalendarItemViewActivity" />
-        <activity android:name=".Activities.RewardActivity"></activity>
-        <service android:name=".ClipboardListenerService"></service>
+        <activity android:name=".Activities.RewardActivity" />
+
+        <service android:name=".ClipboardListenerService" />
     </application>
 
 </manifest>

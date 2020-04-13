@@ -30,7 +30,9 @@ class JournalItemActivityUI(val itemId: UUID) : AnkoComponent<JournalItemActivit
     {
         linearLayout {
             webView {
-                loadData(GlobalModel.JournalModel.loadPage(itemId), "text/html", "UTF-8")
+                //val str = Base64.encodeToString(GlobalModel.JournalModel.loadPage(itemId), Base64.NO_PADDING)
+                //loadData(str, "text/html", "base64")
+                loadDataWithBaseURL(null, GlobalModel.JournalModel.loadPage(itemId), "text/html", null, null)
             }
         }
     }
