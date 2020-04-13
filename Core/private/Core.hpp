@@ -18,7 +18,7 @@ namespace materia
 class Core : public ICore
 {
 public:
-    Core(const CoreConfig& config);
+    Core(Database& db, const std::string& dbFileName);
 
     IInbox& getInbox() override;
     ICalendar& getCalendar() override;
@@ -33,7 +33,7 @@ public:
     void onNewWeek() override;
 
 private:
-    Database mDb;
+    Database& mDb;
     Inbox mInbox;
     Reward mReward;
     Calendar mCalendar;
@@ -44,7 +44,5 @@ private:
     Backuper mBackuper;
     Finance mFinance;
 };
-
-std::shared_ptr<ICore> createCore(const CoreConfig& config);
 
 }

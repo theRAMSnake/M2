@@ -2,7 +2,7 @@
 #include <exception>
 #include <messages/common.pb.h>
 #include <google/protobuf/service.h>
-#include <Core/ICore.hpp>
+#include <Core/ICore3.hpp>
 
 namespace materia
 {

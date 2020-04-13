@@ -1,6 +1,6 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
-#include <Core/ICore.hpp>
+#include <Core/ICore3.hpp>
 #include <Core/IFreeData.hpp>
 
 extern std::shared_ptr<materia::ICore> createTestCore();
