@@ -7,7 +7,9 @@ function TestRequest(props) {
     return (
         <Card className="container">
             <h2 className="card-heading">111</h2>
-            <Button variant="contained" color="primary" type="button" onClick={() => { MateriaRequest.req(); }}>Request</Button>
+            <Button variant="contained" color="primary" type="button" onClick={() => { 
+                MateriaRequest.req({"sss":5}); 
+            }}>Request</Button>
         </Card>
     );
 }

@@ -2,11 +2,11 @@ import Auth from '../modules/Auth';
 
 class MateriaRequest
 {
-    static req()
+    static req(op)
     {
         const xhr = new XMLHttpRequest();
-        xhr.open('get', '/api/test');
-        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.open('post', '/api/materia');
+        xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8');
         xhr.setRequestHeader('Authorization', `bearer ${Auth.getToken()}`);
         xhr.responseType = 'json';
         xhr.addEventListener('load', () => {
@@ -17,7 +17,7 @@ class MateriaRequest
             alert("not authorized");
         }
         });
-        xhr.send();
+        xhr.send(JSON.stringify(op));
     }
 }
 

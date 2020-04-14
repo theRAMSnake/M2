@@ -12,7 +12,9 @@ async function materiaGet(req)
     var key = crypto.createHash('sha256').update(pass, 'utf8').digest();
 
     const IV = key.subarray(0, 16);
-    var plaintext = 'test';
+    var plaintext = req;
+
+    console.log(plaintext);
  
     let cipher = crypto.createCipheriv('aes-256-cbc', key, IV);
     cipher.setAutoPadding(true);
@@ -30,9 +32,9 @@ async function materiaGet(req)
     return (decrypted + decipher.final('utf8'));
 }
 
-router.get('/test', (req, res) => 
+router.post('/materia', (req, res) => 
 {
-    materiaGet(req).then( (results) =>
+    materiaGet(JSON.stringify(req.body)).then( (results) =>
     {
         res.status(200).json({
             message: results.toString()
