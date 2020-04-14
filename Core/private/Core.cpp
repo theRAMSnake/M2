@@ -3,8 +3,8 @@
 namespace materia
 {
 
-Core::Core(const CoreConfig& config)
-: mDb(config.dbFileName)
+Core::Core(Database& db, const std::string& dbFileName)
+: mDb(db)
 , mInbox(mDb)
 , mReward(mDb)
 , mCalendar(mDb, mReward)
@@ -12,7 +12,7 @@ Core::Core(const CoreConfig& config)
 , mFreeData(mDb)
 , mChallenge(mDb, mReward)
 , mStrategy_v2(mDb, mFreeData, mReward, mChallenge)
-, mBackuper(config.dbFileName)
+, mBackuper(dbFileName)
 , mFinance(mDb)
 {
 
@@ -61,11 +61,6 @@ IReward& Core::getReward()
 IChallenge& Core::getChallenge()
 {
    return mChallenge;
-}
-
-std::shared_ptr<ICore> createCore(const CoreConfig& config)
-{
-   return std::shared_ptr<ICore>(new Core(config));
 }
 
 void Core::onNewDay()

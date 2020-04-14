@@ -3,7 +3,7 @@
 #include <boost/test/unit_test.hpp>
 #include "boost/date_time/gregorian/gregorian.hpp"
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <Core/ICore.hpp>
+#include <Core/ICore3.hpp>
 #include <Core/IFinance.hpp>
 #include <Core/IReward.hpp>
 #include <chrono>

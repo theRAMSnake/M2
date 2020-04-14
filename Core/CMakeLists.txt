@@ -7,6 +7,7 @@ include_directories("..")
 
 add_library(m2core 
 private/Core.cpp
+private/Core3.cpp
 private/Impl.cpp
 private/Database.cpp
 private/Calendar.cpp

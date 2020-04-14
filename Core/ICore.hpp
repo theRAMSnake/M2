@@ -40,6 +40,4 @@ public:
     virtual ~ICore(){}
 };
 
-std::shared_ptr<ICore> createCore(const CoreConfig& config);
-
 }

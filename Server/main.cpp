@@ -182,7 +182,7 @@ void legacyFunc(std::string password, materia::ICore* core)
     }
 }
 
-void newFunc(std::string password, materia::ICore* core)
+void newFunc(std::string password, materia::ICore3* core)
 {
     Codec codec(password);
 
@@ -210,7 +210,7 @@ void newFunc(std::string password, materia::ICore* core)
             continue;
         }
         
-        std::string encoded = codec.encrypt("empty responce");
+        std::string encoded = codec.encrypt(core->executeCommandJson(decoded));
 
         zmq::message_t msgToSend (encoded.data(), encoded.size());
         clientSocket.send (msgToSend, zmq::send_flags::none);

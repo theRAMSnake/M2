@@ -4,7 +4,7 @@
 #include <boost/filesystem.hpp>
 #include "boost/date_time/gregorian/gregorian.hpp"
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <Core/ICore.hpp>
+#include <Core/ICore3.hpp>
 #include <Core/ICalendar.hpp>
 
 std::shared_ptr<materia::ICore> createTestCore()
