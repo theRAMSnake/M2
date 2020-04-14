@@ -19,6 +19,20 @@
 #include "ChallengeServiceImpl.hpp"
 #include "Common/Codec.hpp"
 
+std::string string_to_hex(const std::string& input)
+{
+    static const char hex_digits[] = "0123456789ABCDEF";
+
+    std::string output;
+    output.reserve(input.length() * 2);
+    for (unsigned char c : input)
+    {
+        output.push_back(hex_digits[c >> 4]);
+        output.push_back(hex_digits[c & 15]);
+    }
+    return output;
+}
+
 class DoubleLogger
 {
 public:
@@ -198,7 +212,7 @@ void newFunc(std::string password, materia::ICore3* core)
         std::string received(static_cast<const char *>(clientMessage.data()), clientMessage.size());
         std::string decoded;
 
-        logger << "Received message " << std::hex << received << "\n";
+        logger << "Received message " << string_to_hex(received) << "\n";
         
         try
         {
@@ -207,7 +221,7 @@ void newFunc(std::string password, materia::ICore3* core)
         catch(...)
         {
             logger << "Decription failed\n";
-            logger << "against " << std::hex << codec.encrypt("test") << "\n";
+            logger << "against " << string_to_hex(codec.encrypt("test")) << "\n";
             clientSocket.send (clientMessage, zmq::send_flags::none);
             continue;
         }
