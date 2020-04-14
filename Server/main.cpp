@@ -85,7 +85,6 @@ void timerFunc(materia::ICore* core)
             t = std::time(NULL);
             tm_struct = localtime(&t);
 
-            core->getInbox().add({materia::Id::Invalid, fmt::format("timer ticked with {}", tm_struct->tm_wday)});
             if(tm_struct->tm_wday == 1 /*Monday*/)
             {
                 core->onNewWeek();

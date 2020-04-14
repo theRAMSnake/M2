@@ -5,6 +5,7 @@ namespace materia
 
 Core3::Core3(const CoreConfig& config)
 : mDb(config.dbFileName)
+, mTypeSystem(mDb)
 , mOldCore(mDb, config.dbFileName)
 {
 

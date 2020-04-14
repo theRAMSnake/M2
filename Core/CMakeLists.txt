@@ -8,6 +8,7 @@ include_directories("..")
 add_library(m2core 
 private/Core.cpp
 private/Core3.cpp
+private/TypeSystem.cpp
 private/Impl.cpp
 private/Database.cpp
 private/Calendar.cpp
@@ -28,4 +29,4 @@ private/Challenge.cpp
 
 find_package(Boost COMPONENTS system REQUIRED)
 
-target_link_libraries(m2core sqlite3 ${Boost_LIBRARIES} pthread)
+target_link_libraries(m2core sqlite3 ${Boost_LIBRARIES} pthread fmt)
