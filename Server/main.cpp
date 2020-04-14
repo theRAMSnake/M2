@@ -206,6 +206,7 @@ void newFunc(std::string password, materia::ICore3* core)
         catch(...)
         {
             logger << "Decription failed\n";
+            logger << "against " << codec.encrypt("test") << "\n";
             clientSocket.send (clientMessage, zmq::send_flags::none);
             continue;
         }
