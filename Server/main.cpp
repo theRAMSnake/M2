@@ -194,7 +194,7 @@ void newFunc(std::string password, materia::ICore* core)
     {
         zmq::message_t clientMessage;
         clientSocket.recv (clientMessage, zmq::recv_flags::none);
-        logger << "Received message\n";
+        logger << "Received message " << clientMessage.data() << "\n";
 
         std::string received(static_cast<const char *>(clientMessage.data()), clientMessage.size());
         std::string decoded;
