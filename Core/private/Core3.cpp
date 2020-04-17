@@ -1,4 +1,5 @@
 #include "Core3.hpp"
+#include ""
 
 namespace materia
 {
@@ -68,12 +69,21 @@ void Core3::onNewWeek()
 
 std::shared_ptr<ICore3> createCore(const CoreConfig& config)
 {
-    return std::make_shared<Core3>(config);
+   return std::make_shared<Core3>(config);
 }
 
 std::string Core3::executeCommandJson(const std::string& json)
 {
-    return "Not implemented";
+   try
+   {
+      auto cmd = parseCommand(json);
+
+      return execute(cmd);
+   }
+   catch(std::exception ex)
+   {
+      return ErrorResponce(ex);
+   }
 }
 
 }
