@@ -1,6 +1,6 @@
 #include "TypeSystem.hpp"
 #include "JsonSerializer.hpp"
-#include <fmt/format.hpp>
+#include <fmt/format.h>
 
 BIND_JSON2(materia::TypeDef, domain, name)
 
@@ -37,7 +37,11 @@ std::optional<TypeDef> TypeSystem::get(const std::string& domain, const std::str
     }
     else
     {
-        return mStorage->load(getId(domain, name));
+        auto loaded = mStorage->load(getId(domain, name));
+        if(loaded)
+        {
+            return readJson<TypeDef>(*loaded);
+        }
     }
 
     return std::optional<TypeDef>();
@@ -49,36 +53,40 @@ std::vector<TypeDef> TypeSystem::get() const
 
     mStorage->foreach([&](std::string id, std::string json) 
     {
-        mItems.push_back({id, readJson<TypeDef>(json)});
+        result.push_back(readJson<TypeDef>(json));
     });
 
     result.insert(result.end(), gCoreTypes.begin(), gCoreTypes.end());
     return result;
 }
 
-void TypeSystem::add(const TypeDef& newType)
+Id TypeSystem::add(const TypeDef& newType)
 {
     if(newType.domain == "core")
     {
-        throw new std::exception("Core types cannot be added");
+        throw std::runtime_error("Core types cannot be added");
     }
 
     if(get(newType.domain, newType.name))
     {
-        throw new std::exception(fmt::format("The type {}/{} already exist", newType.domain, newType.name));
+        throw std::runtime_error(fmt::format("The type {}/{} already exist", newType.domain, newType.name));
     }
 
-    mStorage->store(getId(newtype.domain, newtype.name), writeJson(newItem));
+    onAdded(newType);
+
+    auto id = getId(newType.domain, newType.name);
+    mStorage->store(id, writeJson(newType));
+    return id;
 }
 
 void TypeSystem::remove(const std::string& domain, const std::string& name)
 {
-    if(newType.domain == "core")
+    if(domain == "core")
     {
-        throw new std::exception("Core types cannot be removed");
+        throw std::runtime_error("Core types cannot be removed");
     }
 
-    mStorage->erase(getId(newtype.domain, newtype.name));
+    mStorage->erase(getId(domain, name));
 }
 
 }

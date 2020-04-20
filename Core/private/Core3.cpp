@@ -1,5 +1,6 @@
 #include "Core3.hpp"
-#include ""
+#include "CommandParser.hpp"
+#include "JsonSerializer.hpp"
 
 namespace materia
 {
@@ -7,6 +8,7 @@ namespace materia
 Core3::Core3(const CoreConfig& config)
 : mDb(config.dbFileName)
 , mTypeSystem(mDb)
+, mObjManager(mDb, mTypeSystem)
 , mOldCore(mDb, config.dbFileName)
 {
 
@@ -72,17 +74,57 @@ std::shared_ptr<ICore3> createCore(const CoreConfig& config)
    return std::make_shared<Core3>(config);
 }
 
+std::string formatResponce(const ExecutionResult& result)
+{
+   boost::property_tree::ptree responce;
+
+   if(std::holds_alternative<Success>(result))
+   {
+      responce.put("success", "");
+   }
+   else if(std::holds_alternative<ObjectList>(result))
+   {
+      responce.put("object_list", "");
+   }
+   else if(std::holds_alternative<std::string>(result))
+   {
+      responce.put("result", "");
+   }
+   else if(std::holds_alternative<Id>(result))
+   {
+      responce.put("id", std::get<Id>(result));
+   }
+   else
+   {
+      throw std::runtime_error("Cannot format responce");
+   }
+
+   return writeJson(responce);
+}
+
+std::string formatErrorResponce(const std::string& errorText)
+{
+   boost::property_tree::ptree err;
+   err.put("error", errorText);
+
+   return writeJson(err);
+}
+
 std::string Core3::executeCommandJson(const std::string& json)
 {
    try
    {
       auto cmd = parseCommand(json);
 
-      return execute(cmd);
+      return formatResponce(cmd->execute(mObjManager));
    }
-   catch(std::exception ex)
+   catch(std::exception& ex)
    {
-      return ErrorResponce(ex);
+      return formatErrorResponce(ex.what());
+   }
+   catch(...)
+   {
+      return formatErrorResponce("Uknown error");
    }
 }
 

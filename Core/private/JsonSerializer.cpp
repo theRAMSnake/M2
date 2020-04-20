@@ -21,3 +21,13 @@ void JsonMap<bool>::write(const bool& t, JsonWriter& w)
 {
    w.write("value", t);
 }
+
+void JsonMap<boost::property_tree::ptree>::read(JsonReader& r, boost::property_tree::ptree& t)
+{
+   r.read(t);
+}
+
+void JsonMap<boost::property_tree::ptree>::write(const boost::property_tree::ptree& t, JsonWriter& w)
+{
+   w.write(t);
+}

@@ -31,6 +31,11 @@ public:
       }
    }
 
+   void read(boost::property_tree::ptree& out)
+   {
+      out = m_ptree;
+   }
+
    template<class F>
    void read(const std::string& field, std::vector<F>& out)
    {
@@ -106,6 +111,11 @@ public:
    void write(const std::string& field, const F& in)
    {
       m_ptree.put(field, in);
+   }
+
+   void write(const boost::property_tree::ptree& out)
+   {
+      m_ptree = out;
    }
 
    template<class F>
@@ -227,4 +237,12 @@ class JsonMap<bool>
 public: 
    static void read(JsonReader& r, bool& t);
    static void write(const bool& t, JsonWriter& w);
+};
+
+template<> 
+class JsonMap<boost::property_tree::ptree> 
+{ 
+public: 
+   static void read(JsonReader& r, boost::property_tree::ptree& t);
+   static void write(const boost::property_tree::ptree& t, JsonWriter& w);
 };

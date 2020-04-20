@@ -3,6 +3,7 @@
 #include "../ICore3.hpp"
 #include "Core.hpp"
 #include "TypeSystem.hpp"
+#include "ObjectManager.hpp"
 
 namespace materia
 {
@@ -29,6 +30,7 @@ public:
 private:
     Database mDb;
     TypeSystem mTypeSystem;
+    ObjectManager mObjManager;
     Core mOldCore;
 };
 
