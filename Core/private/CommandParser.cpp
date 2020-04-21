@@ -36,8 +36,15 @@ boost::property_tree::ptree parseParams(const boost::property_tree::ptree& src)
 
 std::unique_ptr<Filter> parseFilter(const boost::property_tree::ptree& src)
 {
-    // >, <, =, contains, and, or
-    throw -1;
+    auto filter = src.get_optional<std::string>("filter");
+    if(filter)
+    {
+        return parseExpression(*filter);
+    }
+    else
+    {
+        return std::unique_ptr<Filter>();
+    }
 }
 
 Command* parseCreate(const boost::property_tree::ptree& src)
@@ -55,7 +62,7 @@ Command* parseQuery(const boost::property_tree::ptree& src)
    auto tpName = getOrThrow<std::string>(src, "type.name", "Type name is not specified");
    auto filter = parseFilter(src);
 
-   return new QueryCommand({tpDomain, tpName}, std::move(filter));
+   return new QueryCommand({tpDomain, tpName}, filter);
 }
 
 Command* parseDestroy(const boost::property_tree::ptree& src)

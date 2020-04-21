@@ -84,7 +84,14 @@ std::string formatResponce(const ExecutionResult& result)
    }
    else if(std::holds_alternative<ObjectList>(result))
    {
-      responce.put("object_list", "");
+      auto& ol = std::get<ObjectList>(result);
+      Params subParams;
+      for(auto& o: ol)
+      {
+         subParams.push_back({"", o});
+      }
+
+      responce.add_child("object_list", subParams);
    }
    else if(std::holds_alternative<std::string>(result))
    {

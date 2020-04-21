@@ -59,13 +59,100 @@ BOOST_FIXTURE_TEST_CASE( TestInvalid, NewAPITest )
 
 BOOST_FIXTURE_TEST_CASE( TestCreate, NewAPITest ) 
 {  
-    boost::property_tree::ptree createType;
-    createType.put("operation", "create");
-    createType.put("type.domain", "test");
-    createType.put("type.name", "tp");
-    createType.put("params.some", "a");
+    boost::property_tree::ptree create;
+    create.put("operation", "create");
+    create.put("type.domain", "test");
+    create.put("type.name", "tp");
+    create.put("params.some", "a");
 
-    BOOST_CHECK(expectId(mCore->executeCommandJson(writeJson(createType))));
+    BOOST_CHECK(expectId(mCore->executeCommandJson(writeJson(create))));
 
-    //SNAKE: check
+    boost::property_tree::ptree query;
+    query.put("operation", "query");
+    query.put("type.domain", "test");
+    query.put("type.name", "tp");
+
+    auto result = mCore->executeCommandJson(writeJson(query));
+
+    auto ol = readJson<boost::property_tree::ptree>(result);
+    
+    unsigned int counter = 0;
+    for(auto& v : ol.get_child("object_list"))
+    {
+       (void)v;
+       counter++;
+    }
+
+    BOOST_CHECK_EQUAL(1, counter);
+}
+
+BOOST_FIXTURE_TEST_CASE( TestDelete, NewAPITest ) 
+{ 
+    boost::property_tree::ptree create;
+    create.put("operation", "create");
+    create.put("type.domain", "test");
+    create.put("type.name", "tp");
+    create.put("params.some", "a");
+
+    auto r = readJson<boost::property_tree::ptree>(mCore->executeCommandJson(writeJson(create)));
+
+    boost::property_tree::ptree destroy;
+    destroy.put("operation", "destroy");
+    destroy.put("type.domain", "test");
+    destroy.put("type.name", "tp");
+    destroy.put("id", r.get<std::string>("id"));
+
+    mCore->executeCommandJson(writeJson(destroy));
+
+    boost::property_tree::ptree query;
+    query.put("operation", "query");
+    query.put("type.domain", "test");
+    query.put("type.name", "tp");
+
+    auto result = mCore->executeCommandJson(writeJson(query));
+
+    auto ol = readJson<boost::property_tree::ptree>(result);
+    
+    unsigned int counter = 0;
+    for(auto& v : ol.get_child("object_list"))
+    {
+       (void)v;
+       counter++;
+    }
+
+    BOOST_CHECK_EQUAL(0, counter);
+}
+
+BOOST_FIXTURE_TEST_CASE( TestModify, NewAPITest ) 
+{ 
+    boost::property_tree::ptree create;
+    create.put("operation", "create");
+    create.put("type.domain", "test");
+    create.put("type.name", "tp");
+    create.put("params.some", "a");
+
+    auto r = readJson<boost::property_tree::ptree>(mCore->executeCommandJson(writeJson(create)));
+
+    boost::property_tree::ptree modify;
+    modify.put("operation", "modify");
+    modify.put("type.domain", "test");
+    modify.put("type.name", "tp");
+    modify.put("params.some", "b");
+    modify.put("params.id", r.get<std::string>("id"));
+
+    mCore->executeCommandJson(writeJson(modify));
+
+    boost::property_tree::ptree query;
+    query.put("operation", "query");
+    query.put("type.domain", "test");
+    query.put("type.name", "tp");
+
+    auto result = mCore->executeCommandJson(writeJson(query));
+
+    auto ol = readJson<boost::property_tree::ptree>(result);
+    
+    for(auto& v : ol.get_child("object_list"))
+    {
+       BOOST_CHECK_EQUAL("b", v.second.get<std::string>("some"));
+    }
 }

@@ -20,9 +20,43 @@ public:
 
         auto value = params;
         value.put("id", newId);
-        mTable->store(newId, writeJson(params));
+        mTable->store(newId, writeJson(value));
 
         return newId;
+    }
+
+    std::vector<Params> queryAll() override
+    {
+        std::vector<Params> result;
+
+        mTable->foreach([&](std::string id, std::string json) 
+        {
+            result.push_back(readJson<boost::property_tree::ptree>(json));
+        });
+
+        return result;
+    }
+
+    void destroy(const Id id) override
+    {
+        mTable->erase(id);
+    }
+
+    void modify(const Params& params) override
+    {
+        auto id = getOrThrow<Id>(params, "id", "Id is not specified");
+
+        auto obj = mTable->load(id);
+
+        if(obj)
+        {
+            mTable->store(id, writeJson(params));
+        }
+        else
+        {
+            throw std::runtime_error(fmt::format("Object not found: {}", id.getGuid()));
+        }
+        
     }
 
 private:
@@ -43,6 +77,28 @@ public:
         auto tpDomain = getOrThrow<std::string>(params, "type.domain", "Type domain is not specified");
         auto tpName = getOrThrow<std::string>(params, "type.name", "Type name is not specified");
         return mTs.add({tpDomain, tpName, false});
+    }
+
+    std::vector<Params> queryAll() override
+    {
+        std::vector<Params> result;
+
+        for(auto & t : mTs.get())
+        {
+            result.push_back(toPropertyTree(t));
+        }
+
+        return result;
+    }
+
+    void destroy(const Id id) override
+    {
+        mTs.remove(id);
+    }
+
+    void modify(const Params& params) override
+    {
+        throw std::logic_error("Types cannot be modified");
     }
 
 private:
@@ -82,6 +138,32 @@ Id ObjectManager::create(const TypeDef& type, const Params& params)
     auto& handler = *getOrThrow(mHandlers, {type.domain, type.name}, fmt::format("Type cannot be handled: {}.{}", type.domain, type.name));
 
     return handler.create(params);
+}
+
+std::vector<Params> ObjectManager::query(const TypeDef& type)
+{
+    auto& handler = *getOrThrow(mHandlers, {type.domain, type.name}, fmt::format("Type cannot be handled: {}.{}", type.domain, type.name));
+
+    return handler.queryAll();
+}
+
+std::vector<Params> ObjectManager::query(const TypeDef& type, const Filter& filter)
+{
+    throw std::logic_error("not implemented");
+}
+
+void ObjectManager::destroy(const TypeDef& type, const Id id)
+{
+    auto& handler = *getOrThrow(mHandlers, {type.domain, type.name}, fmt::format("Type cannot be handled: {}.{}", type.domain, type.name));
+
+    return handler.destroy(id);
+}
+
+void ObjectManager::modify(const TypeDef& type, const Params& params)
+{
+    auto& handler = *getOrThrow(mHandlers, {type.domain, type.name}, fmt::format("Type cannot be handled: {}.{}", type.domain, type.name));
+
+    return handler.modify(params);
 }
 
 }

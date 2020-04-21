@@ -89,4 +89,14 @@ void TypeSystem::remove(const std::string& domain, const std::string& name)
     mStorage->erase(getId(domain, name));
 }
 
+void TypeSystem::remove(const Id id)
+{
+    mStorage->erase(id);
+}
+
+boost::property_tree::ptree toPropertyTree(const TypeDef t)
+{
+    return readJson<boost::property_tree::ptree>(writeJson(t));
+}
+
 }

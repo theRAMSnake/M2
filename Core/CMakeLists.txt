@@ -10,6 +10,7 @@ private/Core.cpp
 private/Core3.cpp
 private/TypeSystem.cpp
 private/CommandParser.cpp
+private/Expressions.cpp
 private/Commands.cpp
 private/ObjectManager.cpp
 private/Impl.cpp

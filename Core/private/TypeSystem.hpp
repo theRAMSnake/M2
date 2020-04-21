@@ -4,7 +4,8 @@
 #include <vector>
 #include <memory>
 #include "Database.hpp"
-#include "boost/signals2.hpp"
+#include <boost/signals2.hpp>
+#include <boost/property_tree/ptree.hpp>
 
 namespace materia
 {
@@ -15,6 +16,8 @@ struct TypeDef
     std::string name;
     bool isCoreType;
 };
+
+boost::property_tree::ptree toPropertyTree(const TypeDef t);
 
 class Database;
 class TypeSystem
@@ -29,6 +32,7 @@ public:
 
     Id add(const TypeDef& newType);
     void remove(const std::string& domain, const std::string& name);
+    void remove(const Id id);
 
 private:
     std::unique_ptr<DatabaseTable> mStorage;

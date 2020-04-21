@@ -1,5 +1,6 @@
 #pragma once
 #include <variant>
+#include <vector>
 #include <boost/property_tree/ptree.hpp>
 #include "TypeSystem.hpp"
 #include "ObjectManager.hpp"
@@ -15,26 +16,8 @@ struct Error
 {
     std::string error;
 };
-struct ObjectList
-{
 
-};
-
-using ArgumentValue = std::variant<int, double, std::string, bool>;
-class FilterArgument
-{
-public:
-    virtual ArgumentValue evaluate() const = 0;
-};
-
-class BinaryExpression : public FilterArgument
-{
-public:
-    virtual const FilterArgument& getA() const = 0;
-    virtual const FilterArgument& getB() const = 0;
-};
-
-using Filter = BinaryExpression;
+using ObjectList = std::vector<Params>;
 using ExecutionResult = std::variant<Success, ObjectList, std::string, Id>;
 
 class ObjectManager;
@@ -59,22 +42,34 @@ private:
 class DestroyCommand : public Command
 {
 public:
-    DestroyCommand(const TypeDef& type, const Id& id){}
-    ExecutionResult execute(ObjectManager& objManager) override{return "";}
+    DestroyCommand(const TypeDef& type, const Id& id);
+    ExecutionResult execute(ObjectManager& objManager) override;
+
+private:
+    const TypeDef mType;
+    const Id mId;
 };
 
 class QueryCommand : public Command
 {
 public:
-    QueryCommand(const TypeDef& type, const std::unique_ptr<Filter>& filter){}
-    ExecutionResult execute(ObjectManager& objManager) override{return "";}
+    QueryCommand(const TypeDef& type, std::unique_ptr<Filter>& filter);
+    ExecutionResult execute(ObjectManager& objManager) override;
+
+private:
+    const TypeDef mType;
+    const std::unique_ptr<Filter> mFilter;
 };
 
 class ModifyCommand : public Command
 {
 public:
-    ModifyCommand(const TypeDef& type, const Params& params){}
-    ExecutionResult execute(ObjectManager& objManager) override{return "";}
+    ModifyCommand(const TypeDef& type, const Params& params);
+    ExecutionResult execute(ObjectManager& objManager) override;
+
+private:
+    const TypeDef mType;
+    const Params mParams;
 };
 
 class CallCommand : public Command
