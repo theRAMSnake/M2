@@ -37,6 +37,36 @@ public:
         return result;
     }
 
+    std::vector<Params> query(const Filter& f) override
+    {
+        std::vector<Params> result;
+
+        mTable->foreach([&](std::string id, std::string json) 
+        {
+            auto t = readJson<boost::property_tree::ptree>(json);
+            if(f.evaluate(t))
+            {
+                result.push_back(t);
+            }
+        });
+
+        return result;
+    }
+
+    Params query(const Id& id)
+    {
+        auto obj = mTable->load(id);
+
+        if(obj)
+        {
+            return readJson<Params>(obj);
+        }
+        else
+        {
+            throw std::runtime_error(fmt::format("Object not found: {}", id.getGuid()));
+        }
+    }
+
     void destroy(const Id id) override
     {
         mTable->erase(id);
@@ -56,7 +86,6 @@ public:
         {
             throw std::runtime_error(fmt::format("Object not found: {}", id.getGuid()));
         }
-        
     }
 
 private:
@@ -91,6 +120,22 @@ public:
         return result;
     }
 
+    std::vector<Params> query(const Filter& f) override
+    {
+        std::vector<Params> result;
+
+        for(auto & t : mTs.get())
+        {
+            auto pt = toPropertyTree(t);
+            if(f.evaluate(pt))
+            {
+                result.push_back(pt);
+            }
+        }
+
+        return result;
+    }
+
     void destroy(const Id id) override
     {
         mTs.remove(id);
@@ -99,6 +144,19 @@ public:
     void modify(const Params& params) override
     {
         throw std::logic_error("Types cannot be modified");
+    }
+
+    Params query(const Id& id)
+    {
+        auto obj = mTs.get(id);
+        if(obj)
+        {
+            return obj;
+        }
+        else
+        {
+            throw std::runtime_error(fmt::format("Object not found: {}", id.getGuid()));
+        }
     }
 
 private:
@@ -149,7 +207,9 @@ std::vector<Params> ObjectManager::query(const TypeDef& type)
 
 std::vector<Params> ObjectManager::query(const TypeDef& type, const Filter& filter)
 {
-    throw std::logic_error("not implemented");
+    auto& handler = *getOrThrow(mHandlers, {type.domain, type.name}, fmt::format("Type cannot be handled: {}.{}", type.domain, type.name));
+
+    return handler.query(filter);
 }
 
 void ObjectManager::destroy(const TypeDef& type, const Id id)
@@ -157,6 +217,13 @@ void ObjectManager::destroy(const TypeDef& type, const Id id)
     auto& handler = *getOrThrow(mHandlers, {type.domain, type.name}, fmt::format("Type cannot be handled: {}.{}", type.domain, type.name));
 
     return handler.destroy(id);
+}
+
+Params ObjectManager::query(const TypeDef& type, const Id id)
+{
+    auto& handler = *getOrThrow(mHandlers, {type.domain, type.name}, fmt::format("Type cannot be handled: {}.{}", type.domain, type.name));
+
+    return handler.query(id);
 }
 
 void ObjectManager::modify(const TypeDef& type, const Params& params)

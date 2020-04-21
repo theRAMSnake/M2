@@ -28,6 +28,7 @@ public:
     TypeSystem(Database& db);
 
     std::optional<TypeDef> get(const std::string& domain, const std::string& name) const;
+    std::optional<TypeDef> get(const Id id) const;
     std::vector<TypeDef> get() const;
 
     Id add(const TypeDef& newType);

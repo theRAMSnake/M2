@@ -12,6 +12,8 @@ public:
     virtual Id create(const Params& params) = 0;
     virtual void modify(const Params& params) = 0;
     virtual std::vector<Params> queryAll() = 0;
+    virtual std::vector<Params> query(const Filter& f) = 0;
+    virtual Params query(const Id& id) = 0;
     virtual void destroy(const Id id) = 0;
 };
 
@@ -26,6 +28,7 @@ public:
     void modify(const TypeDef& type, const Params& params);
     std::vector<Params> query(const TypeDef& type);
     std::vector<Params> query(const TypeDef& type, const Filter& filter);
+    Params query(const TypeDef& type, const Id id);
     void destroy(const TypeDef& type, const Id id);
 
 private:

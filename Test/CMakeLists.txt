@@ -18,6 +18,7 @@ CalendarTest.cpp
 #RewardTest.cpp
 #ChallengeTest.cpp
 NewAPITest.cpp
+ExpressionsTest.cpp
 )
 
 find_package(Boost COMPONENTS unit_test_framework filesystem REQUIRED)

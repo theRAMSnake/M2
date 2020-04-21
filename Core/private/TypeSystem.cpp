@@ -23,6 +23,19 @@ Id getId(const std::string& domain, const std::string& name)
     return Id(domain + "/" + name);
 }
 
+std::tuple<std::string, std::string> fromId(const Id id)
+{
+    auto guid = id.getGuid();
+    auto pos = guid.find('/');
+    return {guid.substr(0, pos), guid.substr(pos + 1)};
+}
+
+std::optional<TypeDef> get(const Id id) const
+{
+    auto [domain, name] = fromId(id);
+    return get(domain, name);
+}
+
 std::optional<TypeDef> TypeSystem::get(const std::string& domain, const std::string& name) const
 {
     if(domain == "core")

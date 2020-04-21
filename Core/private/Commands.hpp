@@ -53,12 +53,13 @@ private:
 class QueryCommand : public Command
 {
 public:
-    QueryCommand(const TypeDef& type, std::unique_ptr<Filter>& filter);
+    QueryCommand(const TypeDef& type, std::unique_ptr<Filter>& filter, std::optional<std::string> id);
     ExecutionResult execute(ObjectManager& objManager) override;
 
 private:
     const TypeDef mType;
     const std::unique_ptr<Filter> mFilter;
+    const Id mId;
 };
 
 class ModifyCommand : public Command

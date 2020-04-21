@@ -156,3 +156,62 @@ BOOST_FIXTURE_TEST_CASE( TestModify, NewAPITest )
        BOOST_CHECK_EQUAL("b", v.second.get<std::string>("some"));
     }
 }
+
+BOOST_FIXTURE_TEST_CASE( TestQueryId, NewAPITest ) 
+{ 
+    boost::property_tree::ptree create;
+    create.put("operation", "create");
+    create.put("type.domain", "test");
+    create.put("type.name", "tp");
+    create.put("params.some", "a");
+
+    std::string r;
+    for(std::size_t i = 0; i < 3; ++i)
+    {
+        r = mCore->executeCommandJson(writeJson(create));
+    }
+
+    boost::property_tree::ptree query;
+    query.put("operation", "query");
+    query.put("type.domain", "test");
+    query.put("type.name", "tp");
+    query.put("id", r.get<std::string>("id"));
+
+    auto result = mCore->executeCommandJson(writeJson(query));
+
+    auto ol = readJson<boost::property_tree::ptree>(result);
+    
+    for(auto& v : ol.get_child("object_list"))
+    {
+       BOOST_CHECK_EQUAL(r.get<std::string>("id"), v.second.get<std::string>("id"));
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE( TestQueryFilter, NewAPITest ) 
+{ 
+    boost::property_tree::ptree create;
+    create.put("operation", "create");
+    create.put("type.domain", "test");
+    create.put("type.name", "tp");
+    
+    for(std::size_t i = 0; i < 5; ++i)
+    {
+        create.put("params.some", i);
+        mCore->executeCommandJson(writeJson(create));
+    }
+
+    boost::property_tree::ptree query;
+    query.put("operation", "query");
+    query.put("type.domain", "test");
+    query.put("type.name", "tp");
+    query.put("filter", "some < 3");
+
+    auto result = mCore->executeCommandJson(writeJson(query));
+
+    auto ol = readJson<boost::property_tree::ptree>(result);
+    
+    for(auto& v : ol.get_child("object_list"))
+    {
+       BOOST_CHECK(v.second.get<int>("some") < 3);
+    }
+}

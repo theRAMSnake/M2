@@ -28,16 +28,28 @@ ExecutionResult ModifyCommand::execute(ObjectManager& objManager)
     return Success{};
 }
 
-QueryCommand::QueryCommand(const TypeDef& type, std::unique_ptr<Filter>& filter)
+QueryCommand::QueryCommand(const TypeDef& type, std::unique_ptr<Filter>& filter, std::optional<std::string> id)
 : mType(type)
 , mFilter(std::move(filter))
+, mId(id ? Id(id) : Id::Invalid)
 {
 
 }
 
 ExecutionResult QueryCommand::execute(ObjectManager& objManager)
 {
-    return static_cast<bool>(mFilter) ? objManager.query(mType, *mFilter) : objManager.query(mType);
+    if(mId != Id::Invalid)
+    {
+        return objManager.query(mType, mId);
+    }
+    else if(static_cast<bool>(mFilter))
+    {
+        return objManager.query(mType, *mFilter);
+    }
+    else
+    {
+        return objManager.query(mType);
+    }
 }
 
 DestroyCommand::DestroyCommand(const TypeDef& type, const Id& id)
