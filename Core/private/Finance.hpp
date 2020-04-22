@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../IFinance.hpp"
+#include "../IInbox.hpp"
 #include "Database.hpp"
 
 namespace materia
@@ -26,7 +27,7 @@ public:
    std::vector<FinanceEvent> queryEvents(const std::time_t from, const std::time_t to) const override;
    FinanceReport getReport() const override;
 
-   void performAnalisys(IReward& reward);
+   void performAnalisys(IReward& reward, IInbox& inbox);
    
 private:
    void saveReport(const FinanceReport& r);

@@ -65,13 +65,13 @@ IChallenge& Core::getChallenge()
 
 void Core::onNewDay()
 {
-   mFinance.performAnalisys(mReward);
-
    if(mInbox.get().size() == 0 && rand() % 10 == 0)
    {
       mReward.addPoints(1);
       mInbox.add({Id::Invalid, "Extra point awarded for empty inbox."});
    }
+
+   mFinance.performAnalisys(mReward, mInbox);
 }
 
 void Core::onNewWeek()

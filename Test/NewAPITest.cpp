@@ -171,11 +171,13 @@ BOOST_FIXTURE_TEST_CASE( TestQueryId, NewAPITest )
         r = mCore->executeCommandJson(writeJson(create));
     }
 
+    auto tr = readJson<boost::property_tree::ptree>(r);
+
     boost::property_tree::ptree query;
     query.put("operation", "query");
     query.put("type.domain", "test");
     query.put("type.name", "tp");
-    query.put("id", r.get<std::string>("id"));
+    query.put("id", tr.get<std::string>("id"));
 
     auto result = mCore->executeCommandJson(writeJson(query));
 
@@ -183,7 +185,7 @@ BOOST_FIXTURE_TEST_CASE( TestQueryId, NewAPITest )
     
     for(auto& v : ol.get_child("object_list"))
     {
-       BOOST_CHECK_EQUAL(r.get<std::string>("id"), v.second.get<std::string>("id"));
+       BOOST_CHECK_EQUAL(tr.get<std::string>("id"), v.second.get<std::string>("id"));
     }
 }
 

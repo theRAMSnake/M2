@@ -28,10 +28,10 @@ ExecutionResult ModifyCommand::execute(ObjectManager& objManager)
     return Success{};
 }
 
-QueryCommand::QueryCommand(const TypeDef& type, std::unique_ptr<Filter>& filter, std::optional<std::string> id)
+QueryCommand::QueryCommand(const TypeDef& type, std::unique_ptr<Filter>& filter, boost::optional<std::string> id)
 : mType(type)
 , mFilter(std::move(filter))
-, mId(id ? Id(id) : Id::Invalid)
+, mId(static_cast<bool>(id) ? Id(*id) : Id::Invalid)
 {
 
 }
@@ -40,7 +40,7 @@ ExecutionResult QueryCommand::execute(ObjectManager& objManager)
 {
     if(mId != Id::Invalid)
     {
-        return objManager.query(mType, mId);
+        return ObjectList{objManager.query(mType, mId)};
     }
     else if(static_cast<bool>(mFilter))
     {

@@ -44,7 +44,7 @@ public:
         mTable->foreach([&](std::string id, std::string json) 
         {
             auto t = readJson<boost::property_tree::ptree>(json);
-            if(f.evaluate(t))
+            //if(resolveExpression<bool>(f.evaluate(t)))
             {
                 result.push_back(t);
             }
@@ -59,7 +59,7 @@ public:
 
         if(obj)
         {
-            return readJson<Params>(obj);
+            return readJson<Params>(*obj);
         }
         else
         {
@@ -127,7 +127,7 @@ public:
         for(auto & t : mTs.get())
         {
             auto pt = toPropertyTree(t);
-            if(f.evaluate(pt))
+            //if(resolveExpression<bool>(f.evaluate(t)))
             {
                 result.push_back(pt);
             }
@@ -151,7 +151,7 @@ public:
         auto obj = mTs.get(id);
         if(obj)
         {
-            return obj;
+            return toPropertyTree(*obj);
         }
         else
         {

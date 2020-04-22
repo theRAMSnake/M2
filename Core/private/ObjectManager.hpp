@@ -6,6 +6,8 @@
 namespace materia
 {
 
+using Filter = Expression;
+
 class ITypeHandler
 {
 public:
@@ -16,8 +18,6 @@ public:
     virtual Params query(const Id& id) = 0;
     virtual void destroy(const Id id) = 0;
 };
-
-using Filter = Expression;
 
 class ObjectManager
 {

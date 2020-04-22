@@ -1,6 +1,7 @@
 #include "Finance.hpp"
 #include "JsonSerializer.hpp"
 #include "../IReward.hpp"
+#include "../IInbox.hpp"
 
 #include <chrono>
 
@@ -97,7 +98,7 @@ std::vector<FinanceEvent> Finance::queryEvents(const std::time_t from, const std
    return result;
 }
 
-void Finance::performAnalisys(IReward& reward)
+void Finance::performAnalisys(IReward& reward, IInbox& inbox)
 {
    auto now = std::chrono::system_clock::now();
    auto events = queryEvents(std::chrono::system_clock::to_time_t(now - std::chrono::hours(8760)), std::chrono::system_clock::to_time_t(now));
@@ -147,7 +148,13 @@ void Finance::performAnalisys(IReward& reward)
    else
    {
       r.status = FinanceStatus::Critical;
-      reward.removePoints(2);
+      auto p = (r.balance * -1) / 100000 * 5;
+      reward.removePoints(3);
+
+      if(p > rand() % 100)
+      {
+         inbox.add({Id::Invalid, "Work hard curse with p = " + std::to_string(p)});
+      }
    }
 
    saveReport(r);

@@ -1,4 +1,7 @@
 #include "Expressions.hpp"
+#include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
+#include <fmt/format.h>
 
 namespace materia
 {
@@ -26,10 +29,9 @@ struct Token
 
 bool isInteger(const std::string& src)
 {
-    int number;
     try
     {
-        number = boost::lexical_cast<int>(word);
+        boost::lexical_cast<int>(src);
         return true;
     }
     catch(boost::bad_lexical_cast& e)
@@ -106,16 +108,23 @@ std::vector<Token> tokenize(const std::string& src)
 
 bool isValue(const Token& t)
 {
-    return t.type == TokenType.Identifier ||
-        t.type == TokenType.String ||
-        t.type == TokenType.Int ||
-        t.type == TokenType.Double ||
-        t.type == TokenType.Bool;
+    return t.type == TokenType::Identifier ||
+        t.type == TokenType::String ||
+        t.type == TokenType::Int ||
+        t.type == TokenType::Double ||
+        t.type == TokenType::Bool;
 }
 
 //SNAKE:
-std::shared_ptr<Expression> createValueExpression(const Token& t);
-std::shared_ptr<Expression> createBinaryExpression(const Token& t);
+std::shared_ptr<Expression> createValueExpression(const Token t)
+{
+    throw -1;
+}
+
+std::shared_ptr<Expression> createBinaryExpression(const Token t)
+{
+    throw -1;
+}
 
 std::unique_ptr<Expression> parseExpression(const std::string& src)
 {
@@ -133,7 +142,7 @@ std::unique_ptr<Expression> parseExpression(const std::string& src)
 
             if(currentOperator)
             {
-                currentExp = createBinaryExpression(currentExp, exp, *currentOperator);
+                //currentExp = createBinaryExpression(currentExp, exp, *currentOperator);
                 currentOperator.reset();
             }
             else if(currentExp == nullptr)
@@ -149,7 +158,7 @@ std::unique_ptr<Expression> parseExpression(const std::string& src)
         {
             if(!currentOperator && currentExp != nullptr)
             {
-                currentOperator.reset(t.type);
+                currentOperator = t.type;
             }
             else
             {
@@ -158,7 +167,7 @@ std::unique_ptr<Expression> parseExpression(const std::string& src)
         }
     }
 
-    return currentExp;
+    return std::unique_ptr<Expression>();//currentExp;
 }
 
 }

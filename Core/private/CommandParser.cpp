@@ -62,7 +62,7 @@ Command* parseQuery(const boost::property_tree::ptree& src)
    auto tpName = getOrThrow<std::string>(src, "type.name", "Type name is not specified");
    auto filter = parseFilter(src);
 
-   return new QueryCommand({tpDomain, tpName}, filter, src.get_value_optional<std::string>("id"));
+   return new QueryCommand({tpDomain, tpName}, filter, src.get_optional<std::string>("id"));
 }
 
 Command* parseDestroy(const boost::property_tree::ptree& src)

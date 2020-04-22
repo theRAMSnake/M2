@@ -30,7 +30,7 @@ std::tuple<std::string, std::string> fromId(const Id id)
     return {guid.substr(0, pos), guid.substr(pos + 1)};
 }
 
-std::optional<TypeDef> get(const Id id) const
+std::optional<TypeDef> TypeSystem::get(const Id id) const
 {
     auto [domain, name] = fromId(id);
     return get(domain, name);
