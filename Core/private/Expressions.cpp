@@ -24,6 +24,20 @@ struct Token
     std::string symbol;
 };
 
+bool isInteger(const std::string& src)
+{
+    int number;
+    try
+    {
+        number = boost::lexical_cast<int>(word);
+        return true;
+    }
+    catch(boost::bad_lexical_cast& e)
+    {
+        return false;
+    }
+}
+
 Token parseToken(const std::string& src)
 {
     if(src == ">")
@@ -58,6 +72,22 @@ Token parseToken(const std::string& src)
     {
         return {TokenType::String, src};
     }
+    else if(src.front() == '.')
+    {
+        return {TokenType::Identifier, src};
+    }
+    else if(src.find('.') != std::string::npos)
+    {
+        return {TokenType::Double, src};
+    }
+    else if(isInteger(src))
+    {
+        return {TokenType::Int, src};
+    }
+    else
+    {
+        throw std::runtime_error(fmt::format("Unrecognisable token {}", src));
+    }
 }
 
 std::vector<Token> tokenize(const std::string& src)
@@ -70,10 +100,20 @@ std::vector<Token> tokenize(const std::string& src)
     {
         result.push_back(parseToken(r));
     }
+
+    return result;
+}
+
+bool isValue(const Token& t)
+{
+    return t.type == TokenType.Identifier ||
+        t.type == TokenType.String ||
+        t.type == TokenType.Int ||
+        t.type == TokenType.Double ||
+        t.type == TokenType.Bool;
 }
 
 //SNAKE:
-bool isValue(const Token& t);
 std::shared_ptr<Expression> createValueExpression(const Token& t);
 std::shared_ptr<Expression> createBinaryExpression(const Token& t);
 

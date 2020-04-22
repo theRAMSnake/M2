@@ -204,7 +204,7 @@ BOOST_FIXTURE_TEST_CASE( TestQueryFilter, NewAPITest )
     query.put("operation", "query");
     query.put("type.domain", "test");
     query.put("type.name", "tp");
-    query.put("filter", "some < 3");
+    query.put("filter", ".some < 3");
 
     auto result = mCore->executeCommandJson(writeJson(query));
 
