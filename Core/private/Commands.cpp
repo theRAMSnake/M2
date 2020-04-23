@@ -28,7 +28,7 @@ ExecutionResult ModifyCommand::execute(ObjectManager& objManager)
     return Success{};
 }
 
-QueryCommand::QueryCommand(const TypeDef& type, std::unique_ptr<Filter>& filter, boost::optional<std::string> id)
+QueryCommand::QueryCommand(const TypeDef& type, std::shared_ptr<Filter>& filter, boost::optional<std::string> id)
 : mType(type)
 , mFilter(std::move(filter))
 , mId(static_cast<bool>(id) ? Id(*id) : Id::Invalid)

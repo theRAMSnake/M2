@@ -17,6 +17,6 @@ public:
     virtual ~Expression(){}
 };
 
-std::unique_ptr<Expression> parseExpression(const std::string& src);
+std::shared_ptr<Expression> parseExpression(const std::string& src);
 
 }

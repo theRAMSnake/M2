@@ -115,59 +115,250 @@ bool isValue(const Token& t)
         t.type == TokenType::Bool;
 }
 
-//SNAKE:
+bool isComparison(const Token& t)
+{
+    return t.type == TokenType::Operator_Equals ||
+        t.type == TokenType::Operator_Contains ||
+        t.type == TokenType::Operator_Greater ||
+        t.type == TokenType::Operator_Less;
+}
+
+bool isLogical(const Token& t)
+{
+    return t.type == TokenType::Operator_And ||
+        t.type == TokenType::Operator_Or;
+}
+
+class IdentifierExpression : public Expression
+{
+public:
+    IdentifierExpression(const Token t)
+    : mIdentifier(t.symbol.substr(1))
+    {
+
+    }
+
+    Value evaluate(const Params& object) const
+    {
+        try
+        {
+            return object.get<int>(mIdentifier);
+        }
+        catch(...)
+        {
+            try
+            {
+                return object.get<double>(mIdentifier);
+            }
+            catch(...)
+            {
+                try
+                {
+                    return object.get<bool>(mIdentifier);
+                }
+                catch(...)
+                {
+                    try
+                    {
+                        return object.get<std::string>(mIdentifier);
+                    }
+                    catch(...)
+                    {
+
+                    }
+                }
+            }
+        }
+
+        return Value();
+    }
+
+private:
+    std::string mIdentifier;
+};
+
+class StringExpression : public Expression
+{
+public:
+    StringExpression(const Token t)
+    : mStr(t.symbol.substr(1, t.symbol.size() - 2))
+    {
+
+    }
+
+    Value evaluate(const Params& object) const
+    {
+        return mStr;
+    }
+
+private:
+    std::string mStr;
+};
+
+class IntExpression : public Expression
+{
+public:
+    IntExpression(const Token t)
+    : mVal(boost::lexical_cast<int>(t.symbol))
+    {
+
+    }
+
+    Value evaluate(const Params& object) const
+    {
+        return mVal;
+    }
+
+private:
+    int mVal;
+};
+
+class DoubleExpression : public Expression
+{
+public:
+    DoubleExpression(const Token t)
+    : mVal(boost::lexical_cast<double>(t.symbol))
+    {
+
+    }
+
+    Value evaluate(const Params& object) const
+    {
+        return mVal;
+    }
+
+private:
+    double mVal;
+};
+
+class BoolExpression : public Expression
+{
+public:
+    BoolExpression(const Token t)
+    : mVal(t.symbol == "true")
+    {
+
+    }
+
+    Value evaluate(const Params& object) const
+    {
+        return mVal;
+    }
+
+private:
+    bool mVal;
+};
+
 std::shared_ptr<Expression> createValueExpression(const Token t)
 {
-    throw -1;
+    switch(t.type)
+    {
+        case TokenType::Identifier:
+            return std::make_shared<IdentifierExpression>(t);
+
+        case TokenType::String:
+            return std::make_shared<StringExpression>(t);
+
+        case TokenType::Int:
+            return std::make_shared<IntExpression>(t);
+
+        case TokenType::Double:
+            return std::make_shared<DoubleExpression>(t);
+
+        case TokenType::Bool:
+            return std::make_shared<BoolExpression>(t);
+
+        default:
+            throw std::runtime_error(fmt::format("Expression of type {} is not supported", t.type));
+    }
 }
 
-std::shared_ptr<Expression> createBinaryExpression(const Token t)
+class BinaryExpression : public Expression
 {
-    throw -1;
+public:
+    BinaryExpression(std::shared_ptr<Expression> arg1, std::shared_ptr<Expression> arg2, std::function<Value(Value, Value)> vFunc)
+    : mArg1(arg1)
+    , mArg2(arg2)
+    , mVfunc(vFunc)
+    {
+
+    }
+
+    Value evaluate(const Params& object) const
+    {
+        auto a1 = mArg1->evaluate(object);
+        auto a2 = mArg2->evaluate(object);
+
+        return mVfunc(a1, a2);
+    }
+
+private:
+    std::shared_ptr<Expression> mArg1;
+    std::shared_ptr<Expression> mArg2;
+    std::function<Value(Value, Value)> mVfunc;
+};
+
+std::shared_ptr<Expression> createBinaryExpression(std::shared_ptr<Expression> arg1, std::shared_ptr<Expression> arg2, const TokenType t)
+{
+    switch(t)
+    {
+        case TokenType::Operator_Less:
+            return std::make_shared<BinaryExpression>(arg1, arg2, [](auto a1, auto a2) { return a1 < a2;} );
+
+        case TokenType::Operator_Greater:
+            return std::make_shared<BinaryExpression>(arg1, arg2, [](auto a1, auto a2) { return a1 > a2;});
+
+        case TokenType::Operator_Equals:
+            return std::make_shared<BinaryExpression>(arg1, arg2, [](auto a1, auto a2) { return a1 == a2;});
+
+        case TokenType::Operator_Contains:
+            return std::make_shared<BinaryExpression>(arg1, arg2, [](auto a1, auto a2) { return std::get<std::string>(a1).find(std::get<std::string>(a2)) != std::string::npos;});
+
+        case TokenType::Operator_And:
+            return std::make_shared<BinaryExpression>(arg1, arg2, [](auto a1, auto a2) { return std::get<bool>(a1) && std::get<bool>(a2);});
+
+        case TokenType::Operator_Or:
+            return std::make_shared<BinaryExpression>(arg1, arg2, [](auto a1, auto a2) { return std::get<bool>(a1) || std::get<bool>(a2);});
+
+        default:
+            throw std::runtime_error(fmt::format("Binary expression of type {} is not supported", t));
+    }
 }
 
-std::unique_ptr<Expression> parseExpression(const std::string& src)
+std::shared_ptr<Expression> parseExpression(const std::string& src)
 {
     auto tokens = tokenize(src);
+    std::vector<std::shared_ptr<Expression>> exps;
 
-    std::shared_ptr<Expression> currentExp;
-    std::optional<TokenType> currentOperator;
+    //Expression evaluation order: 1.Value, 2.Comparison, 3.Logical
 
-    //Maybe state based is better if I want to make it more complex
     for(auto t : tokens)
     {
         if(isValue(t))
         {
-            auto exp = createValueExpression(t);
-
-            if(currentOperator)
-            {
-                //currentExp = createBinaryExpression(currentExp, exp, *currentOperator);
-                currentOperator.reset();
-            }
-            else if(currentExp == nullptr)
-            {
-                currentExp = exp;
-            }
-            else
-            {
-                throw std::runtime_error("failed to parse expression");
-            }
+            exps.push_back(createValueExpression(t));
         }
-        else
+    }
+    for(auto t : tokens)
+    {
+        if(isComparison(t))
         {
-            if(!currentOperator && currentExp != nullptr)
-            {
-                currentOperator = t.type;
-            }
-            else
-            {
-                throw std::runtime_error("failed to parse expression");
-            }
+            auto newExp = createBinaryExpression(exps[0], exps[1], t.type);
+            exps.erase(exps.begin(), exps.begin() + 2);
+            exps.push_back(newExp);
+        }
+    }
+    for(auto t : tokens)
+    {
+        if(isLogical(t))
+        {
+            auto newExp = createBinaryExpression(exps[0], exps[1], t.type);
+            exps.erase(exps.begin(), exps.begin() + 2);
+            exps.push_back(newExp);
         }
     }
 
-    return std::unique_ptr<Expression>();//currentExp;
+    return exps.empty() ? nullptr : exps[0];
 }
 
 }

@@ -53,12 +53,12 @@ private:
 class QueryCommand : public Command
 {
 public:
-    QueryCommand(const TypeDef& type, std::unique_ptr<Filter>& filter, boost::optional<std::string> id);
+    QueryCommand(const TypeDef& type, std::shared_ptr<Filter>& filter, boost::optional<std::string> id);
     ExecutionResult execute(ObjectManager& objManager) override;
 
 private:
     const TypeDef mType;
-    const std::unique_ptr<Filter> mFilter;
+    const std::shared_ptr<Filter> mFilter;
     const Id mId;
 };
 

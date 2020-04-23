@@ -34,7 +34,7 @@ boost::property_tree::ptree parseParams(const boost::property_tree::ptree& src)
     }
 }
 
-std::unique_ptr<Filter> parseFilter(const boost::property_tree::ptree& src)
+std::shared_ptr<Filter> parseFilter(const boost::property_tree::ptree& src)
 {
     auto filter = src.get_optional<std::string>("filter");
     if(filter)
@@ -43,7 +43,7 @@ std::unique_ptr<Filter> parseFilter(const boost::property_tree::ptree& src)
     }
     else
     {
-        return std::unique_ptr<Filter>();
+        return std::shared_ptr<Filter>();
     }
 }
 
