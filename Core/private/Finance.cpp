@@ -148,7 +148,7 @@ void Finance::performAnalisys(IReward& reward, IInbox& inbox)
    else
    {
       r.status = FinanceStatus::Critical;
-      auto p = (r.balance * -1) / 100000 * 5;
+      auto p = (r.balance * -1) / 100000 * 10;
       reward.removePoints(3);
 
       if(p > rand() % 100)
