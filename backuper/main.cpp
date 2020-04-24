@@ -4,6 +4,7 @@
 #include "WebApp/materia/MateriaServiceProxy.hpp"
 #include <messages/admin.pb.h>
 #include <messages/inbox.pb.h>
+#include <Common/Password.hpp>
 
 std::string genName()
 {
@@ -19,13 +20,7 @@ std::string genName3()
 
 int main(int argc,  char** argv)
 {
-   if(argc < 2)
-   {
-      std::cout << "Please specify password";
-      return -1;
-   }
-
-   std::string password = argv[1];
+   std::string password = materia::getPassword();
 
    zmq::context_t context(1);
    zmq::socket_t socket(context, ZMQ_REQ);

@@ -11,6 +11,7 @@ add_library(m2common STATIC
    Utils.cpp
    Id.cpp
    Codec.cpp
+   Password.cpp
 )
 
 add_subdirectory(messages)

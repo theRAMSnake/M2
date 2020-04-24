@@ -3,6 +3,7 @@
 #include "WebApp/materia/ZmqPbChannel.hpp"
 #include "WebApp/materia/MateriaServiceProxy.hpp"
 #include <messages/admin.pb.h>
+#include <Common/Password.hpp>
 
 void start(const std::string password)
 {
@@ -41,14 +42,14 @@ void test(const std::string password)
 
 int main(int argc, char *argv[])
 {
-   if(argc < 3)
+   if(argc < 2)
    {
-      std::cout << "Usage m2ctrl <password> <command>";
+      std::cout << "Usage m2ctrl <command>";
       return -1;
    }
 
-   std::string password = argv[1];
-   std::string commandName = argv[2];
+   std::string password = materia::getPassword();
+   std::string commandName = argv[1];
    if(commandName == "start")
    {
       start(password);

@@ -18,6 +18,7 @@
 #include "FinanceServiceImpl.hpp"
 #include "ChallengeServiceImpl.hpp"
 #include "Common/Codec.hpp"
+#include "Common/Password.hpp"
 
 std::string string_to_hex(const std::string& input)
 {
@@ -239,13 +240,7 @@ void newFunc(std::string password, materia::ICore3* core)
 
 int main(int argc, char *argv[])
 {
-    if(argc < 2)
-    {
-       std::cout << "Please specify password";
-       return -1;
-    }
-
-    std::string password = argv[1];
+    std::string password = materia::getPassword();
 
     auto core = materia::createCore({"/materia/materia.db"});
 

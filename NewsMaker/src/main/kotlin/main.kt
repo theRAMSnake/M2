@@ -56,10 +56,16 @@ fun genNewsFile(password: String): String
     return filename
 }
 
+fun readPass(): String
+{
+    return File("/materia/passwd").readText(Charsets.UTF_8)
+}
+
 fun main(args: Array<String>)
 {
-    val filename = genNewsFile(args[0])
-    publishFile(filename, args[0])
+    val pass = readPass()
+    val filename = genNewsFile(pass)
+    publishFile(filename, pass)
 
     println("Done")
 }
