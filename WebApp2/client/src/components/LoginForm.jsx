@@ -2,7 +2,6 @@ import React from 'react';
 import { Card } from '@material-ui/core';
 import { Button } from '@material-ui/core';
 import {TextField} from '@material-ui/core';
-import Auth from '../modules/Auth';
 
 function LoginForm(props) {
     const inputProps = {
@@ -22,14 +21,9 @@ function LoginForm(props) {
                     inputProps={inputProps}
                 />
                 </div>
-        
-                {!props.auth ?
                 <div className="button-line">
                     <Button variant="contained" color="primary" type="submit">Log In</Button>
-                </div> :
-                <div className="button-line">
-                    <Button variant="contained" color="primary" type="submit">Log Out</Button>
-                </div>}
+                </div>
             </form>
         </Card>
     );

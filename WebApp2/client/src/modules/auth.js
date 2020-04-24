@@ -1,3 +1,5 @@
+var callback;
+
 class Auth {
 
     /**
@@ -7,6 +9,7 @@ class Auth {
      */
     static authenticateUser(token) {
       localStorage.setItem('token', token);
+      callback(true);
     }
   
     /**
@@ -24,6 +27,7 @@ class Auth {
      */
     static deauthenticateUser() {
       localStorage.removeItem('token');
+      callback(false);
     }
   
     /**
@@ -35,7 +39,10 @@ class Auth {
     static getToken() {
       return localStorage.getItem('token');
     }
-  
+
+    static setCallback(cb){
+      callback = cb;
+    }
   }
   
   export default Auth;

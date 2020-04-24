@@ -2,7 +2,7 @@ import Auth from '../modules/Auth';
 
 class MateriaRequest
 {
-    static req(op)
+    static req(op, cb)
     {
         const xhr = new XMLHttpRequest();
         xhr.open('post', '/api/materia');
@@ -11,7 +11,7 @@ class MateriaRequest
         xhr.responseType = 'json';
         xhr.addEventListener('load', () => {
         if (xhr.status === 200) {
-            alert(xhr.response.message);
+            cb(xhr.response.message);
         }
         else {
             alert("not authorized");
