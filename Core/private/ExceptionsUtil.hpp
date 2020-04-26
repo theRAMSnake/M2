@@ -15,7 +15,7 @@ T getOrThrow(const boost::property_tree::ptree& src, const std::string& key, con
     }
     catch(...)
     {
-        throw std::runtime_error(fmt::format("Unable to get {}", key));
+        throw std::runtime_error(error);
     }
 }
 

@@ -3,8 +3,9 @@
 namespace materia
 {
 
-CreateCommand::CreateCommand(const TypeDef& type, const Params& params)
-: mType(type)
+CreateCommand::CreateCommand(const std::vector<std::string>& traits, const Id id, const Params& params)
+: mTraits(traits)
+, mId(id)
 , mParams(params)
 {
 
@@ -12,11 +13,11 @@ CreateCommand::CreateCommand(const TypeDef& type, const Params& params)
 
 ExecutionResult CreateCommand::execute(ObjectManager& objManager)
 {
-    return objManager.create(mType, mParams);
+    return objManager.create(mTraits, mId, mParams);
 }
 
-ModifyCommand::ModifyCommand(const TypeDef& type, const Params& params)
-: mType(type)
+ModifyCommand::ModifyCommand(const Id& id, const Params& params)
+: mId(id)
 , mParams(params)
 {
 
@@ -24,44 +25,42 @@ ModifyCommand::ModifyCommand(const TypeDef& type, const Params& params)
 
 ExecutionResult ModifyCommand::execute(ObjectManager& objManager)
 {
-    objManager.modify(mType, mParams);
+    objManager.modify(mId, mParams);
     return Success{};
 }
 
-QueryCommand::QueryCommand(const TypeDef& type, std::shared_ptr<Filter>& filter, boost::optional<std::string> id)
-: mType(type)
+QueryCommand::QueryCommand(std::shared_ptr<Filter>& filter, const std::vector<Id>& ids)
+: mIds(ids)
 , mFilter(std::move(filter))
-, mId(static_cast<bool>(id) ? Id(*id) : Id::Invalid)
 {
 
 }
 
 ExecutionResult QueryCommand::execute(ObjectManager& objManager)
 {
-    if(mId != Id::Invalid)
+    if(!mIds.empty())
     {
-        return ObjectList{objManager.query(mType, mId)};
+        return ObjectList{objManager.query(mIds)};
     }
     else if(static_cast<bool>(mFilter))
     {
-        return objManager.query(mType, *mFilter);
+        return objManager.query(*mFilter);
     }
     else
     {
-        return objManager.query(mType);
+        throw std::runtime_error("Cannot execute query without ids or filter");
     }
 }
 
-DestroyCommand::DestroyCommand(const TypeDef& type, const Id& id)
-: mType(type)
-, mId(id)
+DestroyCommand::DestroyCommand(const Id& id)
+: mId(id)
 {
 
 }
 
 ExecutionResult DestroyCommand::execute(ObjectManager& objManager)
 {
-    objManager.destroy(mType, mId);
+    objManager.destroy(mId);
     return Success{};
 }
 

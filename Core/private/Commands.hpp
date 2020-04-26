@@ -2,7 +2,7 @@
 #include <variant>
 #include <vector>
 #include <boost/property_tree/ptree.hpp>
-#include "TypeSystem.hpp"
+#include "TraitSystem.hpp"
 #include "ObjectManager.hpp"
 
 namespace materia
@@ -31,45 +31,44 @@ public:
 class CreateCommand : public Command
 {
 public:
-    CreateCommand(const TypeDef& type, const Params& params);
+    CreateCommand(const std::vector<std::string>& traits, const Id id, const Params& params);
     ExecutionResult execute(ObjectManager& objManager) override;
 
 private:
-    const TypeDef mType;
+    const std::vector<std::string> mTraits;
+    const Id mId;
     const Params mParams;
 };
 
 class DestroyCommand : public Command
 {
 public:
-    DestroyCommand(const TypeDef& type, const Id& id);
+    DestroyCommand(const Id& id);
     ExecutionResult execute(ObjectManager& objManager) override;
 
 private:
-    const TypeDef mType;
     const Id mId;
 };
 
 class QueryCommand : public Command
 {
 public:
-    QueryCommand(const TypeDef& type, std::shared_ptr<Filter>& filter, boost::optional<std::string> id);
+    QueryCommand(std::shared_ptr<Filter>& filter, const std::vector<Id>& ids);
     ExecutionResult execute(ObjectManager& objManager) override;
 
 private:
-    const TypeDef mType;
+    const std::vector<Id> mIds;
     const std::shared_ptr<Filter> mFilter;
-    const Id mId;
 };
 
 class ModifyCommand : public Command
 {
 public:
-    ModifyCommand(const TypeDef& type, const Params& params);
+    ModifyCommand(const Id& id, const Params& params);
     ExecutionResult execute(ObjectManager& objManager) override;
 
 private:
-    const TypeDef mType;
+    const Id mId;
     const Params mParams;
 };
 

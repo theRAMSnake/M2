@@ -3,6 +3,17 @@
 #include "../Core/private/JsonSerializer.hpp"
 #include <Core/ICore3.hpp>
 
+void putTraits(boost::property_tree::ptree& src, const std::string& trait)
+{
+    boost::property_tree::ptree subParams;
+
+    boost::property_tree::ptree p;
+    p.put("", trait);
+    subParams.push_back({"", p});
+
+    src.add_child("traits", subParams);
+}
+
 class NewAPITest
 {
 public:
@@ -13,10 +24,8 @@ public:
 
       boost::property_tree::ptree createType;
       createType.put("operation", "create");
-      createType.put("type.domain", "core");
-      createType.put("type.name", "type");
-      createType.put("params.type.domain", "test");
-      createType.put("params.type.name", "tp");
+      putTraits(createType, "trait");
+      createType.put("params.name", "tp");
 
       mCore->executeCommandJson(writeJson(createType));
    }
@@ -61,19 +70,19 @@ BOOST_FIXTURE_TEST_CASE( TestCreate, NewAPITest )
 {  
     boost::property_tree::ptree create;
     create.put("operation", "create");
-    create.put("type.domain", "test");
-    create.put("type.name", "tp");
+    
+    putTraits(create, "tp");
     create.put("params.some", "a");
 
     BOOST_CHECK(expectId(mCore->executeCommandJson(writeJson(create))));
 
     boost::property_tree::ptree query;
     query.put("operation", "query");
-    query.put("type.domain", "test");
-    query.put("type.name", "tp");
+    query.put("filter", "IS(tp)");
 
     auto result = mCore->executeCommandJson(writeJson(query));
 
+    std::cout << result;
     auto ol = readJson<boost::property_tree::ptree>(result);
     
     unsigned int counter = 0;
@@ -90,24 +99,22 @@ BOOST_FIXTURE_TEST_CASE( TestDelete, NewAPITest )
 { 
     boost::property_tree::ptree create;
     create.put("operation", "create");
-    create.put("type.domain", "test");
-    create.put("type.name", "tp");
+    
+    putTraits(create, "tp");
     create.put("params.some", "a");
 
     auto r = readJson<boost::property_tree::ptree>(mCore->executeCommandJson(writeJson(create)));
 
     boost::property_tree::ptree destroy;
     destroy.put("operation", "destroy");
-    destroy.put("type.domain", "test");
-    destroy.put("type.name", "tp");
     destroy.put("id", r.get<std::string>("id"));
 
     mCore->executeCommandJson(writeJson(destroy));
 
     boost::property_tree::ptree query;
     query.put("operation", "query");
-    query.put("type.domain", "test");
-    query.put("type.name", "tp");
+    
+    query.put("filter", "IS(tp)");
 
     auto result = mCore->executeCommandJson(writeJson(query));
 
@@ -127,25 +134,23 @@ BOOST_FIXTURE_TEST_CASE( TestModify, NewAPITest )
 { 
     boost::property_tree::ptree create;
     create.put("operation", "create");
-    create.put("type.domain", "test");
-    create.put("type.name", "tp");
+    
+    putTraits(create, "tp");
     create.put("params.some", "a");
 
     auto r = readJson<boost::property_tree::ptree>(mCore->executeCommandJson(writeJson(create)));
 
     boost::property_tree::ptree modify;
     modify.put("operation", "modify");
-    modify.put("type.domain", "test");
-    modify.put("type.name", "tp");
     modify.put("params.some", "b");
-    modify.put("params.id", r.get<std::string>("id"));
+    modify.put("id", r.get<std::string>("id"));
 
     mCore->executeCommandJson(writeJson(modify));
 
     boost::property_tree::ptree query;
     query.put("operation", "query");
-    query.put("type.domain", "test");
-    query.put("type.name", "tp");
+    
+    query.put("filter", "IS(tp)");
 
     auto result = mCore->executeCommandJson(writeJson(query));
 
@@ -161,8 +166,8 @@ BOOST_FIXTURE_TEST_CASE( TestQueryId, NewAPITest )
 { 
     boost::property_tree::ptree create;
     create.put("operation", "create");
-    create.put("type.domain", "test");
-    create.put("type.name", "tp");
+    
+    putTraits(create, "tp");
     create.put("params.some", "a");
 
     std::string r;
@@ -175,9 +180,8 @@ BOOST_FIXTURE_TEST_CASE( TestQueryId, NewAPITest )
 
     boost::property_tree::ptree query;
     query.put("operation", "query");
-    query.put("type.domain", "test");
-    query.put("type.name", "tp");
-    query.put("id", tr.get<std::string>("id"));
+    
+    query.put("filter", "IS(tp) AND .id = \"" + tr.get<std::string>("id") + "\"");
 
     auto result = mCore->executeCommandJson(writeJson(query));
 
@@ -193,8 +197,8 @@ BOOST_FIXTURE_TEST_CASE( TestQueryFilter, NewAPITest )
 { 
     boost::property_tree::ptree create;
     create.put("operation", "create");
-    create.put("type.domain", "test");
-    create.put("type.name", "tp");
+    
+    putTraits(create, "tp");
     
     for(std::size_t i = 0; i < 5; ++i)
     {
@@ -202,11 +206,15 @@ BOOST_FIXTURE_TEST_CASE( TestQueryFilter, NewAPITest )
         mCore->executeCommandJson(writeJson(create));
     }
 
+    boost::property_tree::ptree create2;
+    create2.put("operation", "create");
+    create2.put("trait", "tp");
+    mCore->executeCommandJson(writeJson(create2));
+
     boost::property_tree::ptree query;
     query.put("operation", "query");
-    query.put("type.domain", "test");
-    query.put("type.name", "tp");
-    query.put("filter", ".some < 3");
+    
+    query.put("filter", "IS(tp) AND .some < 3");
 
     auto result = mCore->executeCommandJson(writeJson(query));
 

@@ -2,6 +2,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 #include <fmt/format.h>
+#include <iostream>
 
 namespace materia
 {
@@ -13,6 +14,7 @@ enum class TokenType
     Int,
     Double,
     Bool,
+    Is,
     Operator_Less,
     Operator_Greater,
     Operator_Equals,
@@ -86,6 +88,10 @@ Token parseToken(const std::string& src)
     {
         return {TokenType::Int, src};
     }
+    else if(src.size() > 3 && src[0] == 'I' && src[1] == 'S' && src[2] == '(' && src.find(')') != std::string::npos)
+    {
+        return {TokenType::Is, src.substr(3, src.find(')') - 3)};
+    }
     else
     {
         throw std::runtime_error(fmt::format("Unrecognisable token {}", src));
@@ -112,7 +118,8 @@ bool isValue(const Token& t)
         t.type == TokenType::String ||
         t.type == TokenType::Int ||
         t.type == TokenType::Double ||
-        t.type == TokenType::Bool;
+        t.type == TokenType::Bool ||
+        t.type == TokenType::Is;
 }
 
 bool isComparison(const Token& t)
@@ -170,11 +177,46 @@ public:
             }
         }
 
-        return Value();
+        return Value("");
     }
 
 private:
     std::string mIdentifier;
+};
+
+//Copy
+static std::vector<std::string> parseTraits(const boost::property_tree::ptree& src)
+{
+    std::vector<std::string> result;
+    auto val = src.get_child_optional("traits");
+    if(val)
+    {
+        for(auto x : *val)
+        {
+            result.push_back(x.second.get_value<std::string>());
+        }
+    }
+
+    return result;
+}
+
+class IsExpression : public Expression
+{
+public:
+    IsExpression(const Token t)
+    : mTraitName(t.symbol)
+    {
+
+    }
+
+    Value evaluate(const Params& object) const
+    {
+        auto traits = parseTraits(object);
+        return std::find(traits.begin(), traits.end(), mTraitName) != traits.end();
+    }
+
+private:
+    std::string mTraitName;
 };
 
 class StringExpression : public Expression
@@ -268,6 +310,9 @@ std::shared_ptr<Expression> createValueExpression(const Token t)
         case TokenType::Bool:
             return std::make_shared<BoolExpression>(t);
 
+        case TokenType::Is:
+            return std::make_shared<IsExpression>(t);
+
         default:
             throw std::runtime_error(fmt::format("Expression of type {} is not supported", t.type));
     }
@@ -325,40 +370,49 @@ std::shared_ptr<Expression> createBinaryExpression(std::shared_ptr<Expression> a
     }
 }
 
+std::shared_ptr<Expression> parseExpression(const std::vector<Token> tokens)
+{
+    //Expression evaluation order: 1.Value, 2.Comparison, 3.Logical
+    if(tokens.size() == 1)
+    {
+        if(!isValue(tokens[0]))
+        {
+            throw std::runtime_error(fmt::format("Unexpected token: {}", tokens[0].symbol));
+        }
+
+        return createValueExpression(tokens[0]);
+    }
+    else if(tokens.size() == 0)
+    {
+        return std::shared_ptr<Expression>();
+    }
+    else
+    {
+        //Find expr of highest order and split tokens
+        auto pos = std::find_if(tokens.begin(), tokens.end(), [](auto x){return isLogical(x);});
+
+        if(pos == tokens.end())
+        {
+            pos = std::find_if(tokens.begin(), tokens.end(), [](auto x){return isComparison(x);});
+
+            if(pos == tokens.end())
+            {
+                throw std::runtime_error(fmt::format("Unexpected token: {}", tokens[1].symbol));
+            }
+        }
+
+        auto t = *pos;
+        std::vector<Token> left(tokens.begin(), pos);
+        std::vector<Token> right(pos + 1, tokens.end());
+
+        return createBinaryExpression(parseExpression(left), parseExpression(right), t.type);
+    }
+}
+
 std::shared_ptr<Expression> parseExpression(const std::string& src)
 {
     auto tokens = tokenize(src);
-    std::vector<std::shared_ptr<Expression>> exps;
-
-    //Expression evaluation order: 1.Value, 2.Comparison, 3.Logical
-
-    for(auto t : tokens)
-    {
-        if(isValue(t))
-        {
-            exps.push_back(createValueExpression(t));
-        }
-    }
-    for(auto t : tokens)
-    {
-        if(isComparison(t))
-        {
-            auto newExp = createBinaryExpression(exps[0], exps[1], t.type);
-            exps.erase(exps.begin(), exps.begin() + 2);
-            exps.push_back(newExp);
-        }
-    }
-    for(auto t : tokens)
-    {
-        if(isLogical(t))
-        {
-            auto newExp = createBinaryExpression(exps[0], exps[1], t.type);
-            exps.erase(exps.begin(), exps.begin() + 2);
-            exps.push_back(newExp);
-        }
-    }
-
-    return exps.empty() ? nullptr : exps[0];
+    return parseExpression(tokens);
 }
 
 }

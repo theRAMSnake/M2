@@ -47,40 +47,66 @@ std::shared_ptr<Filter> parseFilter(const boost::property_tree::ptree& src)
     }
 }
 
+std::vector<std::string> parseTraits(const boost::property_tree::ptree& src)
+{
+    std::vector<std::string> result;
+    auto val = src.get_child_optional("traits");
+    if(val)
+    {
+        for(auto x : *val)
+        {
+            result.push_back(x.second.get_value<std::string>());
+        }
+    }
+
+    return result;
+}
+
 Command* parseCreate(const boost::property_tree::ptree& src)
 {
-   auto tpDomain = getOrThrow<std::string>(src, "type.domain", "Type domain is not specified");
-   auto tpName = getOrThrow<std::string>(src, "type.name", "Type name is not specified");
+   auto traits = parseTraits(src);
+   auto id = src.get_optional<std::string>("defined_id");
    auto params = parseParams(src);
 
-   return new CreateCommand({tpDomain, tpName}, params);
+   return new CreateCommand(traits, id ? Id(*id) : Id::Invalid, params);
+}
+
+std::vector<Id> parseIds(const boost::property_tree::ptree& src)
+{
+    std::vector<Id> result;
+    auto val = src.get_child_optional("ids");
+    if(val)
+    {
+        for(auto x : *val)
+        {
+            result.push_back(Id(x.second.get_value<std::string>()));
+        }
+    }
+
+    return result;
 }
 
 Command* parseQuery(const boost::property_tree::ptree& src)
 {
-   auto tpDomain = getOrThrow<std::string>(src, "type.domain", "Type domain is not specified");
-   auto tpName = getOrThrow<std::string>(src, "type.name", "Type name is not specified");
+   auto ids = parseIds(src);
    auto filter = parseFilter(src);
 
-   return new QueryCommand({tpDomain, tpName}, filter, src.get_optional<std::string>("id"));
+   return new QueryCommand(filter, ids);
 }
 
 Command* parseDestroy(const boost::property_tree::ptree& src)
 {
-   auto tpDomain = getOrThrow<std::string>(src, "type.domain", "Type domain is not specified");
-   auto tpName = getOrThrow<std::string>(src, "type.name", "Type name is not specified");
    auto id = getOrThrow<Id>(src, "id", "Id is not specified");
 
-   return new DestroyCommand({tpDomain, tpName}, id);
+   return new DestroyCommand(id);
 }
 
 Command* parseModify(const boost::property_tree::ptree& src)
 {
-   auto tpDomain = getOrThrow<std::string>(src, "type.domain", "Type domain is not specified");
-   auto tpName = getOrThrow<std::string>(src, "type.name", "Type name is not specified");
+   auto id = getOrThrow<Id>(src, "id", "Id is not specified");
    auto params = parseParams(src);
 
-   return new ModifyCommand({tpDomain, tpName}, params);
+   return new ModifyCommand(id, params);
 }
 
 Command* parseCall(const boost::property_tree::ptree& src)

@@ -8,7 +8,7 @@ include_directories("..")
 add_library(m2core 
 private/Core.cpp
 private/Core3.cpp
-private/TypeSystem.cpp
+private/TraitSystem.cpp
 private/CommandParser.cpp
 private/Expressions.cpp
 private/Commands.cpp

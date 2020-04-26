@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit
 
 fun publishFile(filename: String, password: String)
 {
-    val p = Runtime.getRuntime().exec("./m2tools $password createPage News $filename")
+    val p = Runtime.getRuntime().exec("./m2tools createPage News $filename")
     p.waitFor()
     Runtime.getRuntime().exec("rm $filename")
 }

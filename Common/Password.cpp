@@ -10,7 +10,7 @@ std::string getPassword()
     std::ifstream t("/materia/passwd");
     std::string str((std::istreambuf_iterator<char>(t)),
                     std::istreambuf_iterator<char>());
-    return str;
+    return str.substr(0, str.size() - 1);
 }
 
 }

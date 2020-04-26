@@ -14,25 +14,40 @@ public:
 
     }
 
-    Id create(const Params& params) override
+    Id create(const Id id, const std::vector<std::string>& traits, const Params& params) override
     {
         Id newId = Id::generate();
 
         auto value = params;
         value.put("id", newId);
+
+        Params subParams;
+        for(auto& t: traits)
+        {
+            Params p;
+            p.put("", t);
+            subParams.push_back({"", p});
+        }
+
+        value.add_child("traits", subParams);
+
         mTable->store(newId, writeJson(value));
 
         return newId;
     }
 
-    std::vector<Params> queryAll() override
+    std::vector<Params> query(const std::vector<Id>& ids) override
     {
         std::vector<Params> result;
 
-        mTable->foreach([&](std::string id, std::string json) 
+        for(auto id : ids)
         {
-            result.push_back(readJson<boost::property_tree::ptree>(json));
-        });
+            auto o = get(id);
+            if(o)
+            {
+                result.push_back(*o);
+            }
+        }
 
         return result;
     }
@@ -53,7 +68,7 @@ public:
         return result;
     }
 
-    Params query(const Id& id)
+    std::optional<Params> get(const Id& id) override
     {
         auto obj = mTable->load(id);
 
@@ -63,19 +78,22 @@ public:
         }
         else
         {
-            throw std::runtime_error(fmt::format("Object not found: {}", id.getGuid()));
+            return std::optional<Params>();
         }
     }
 
-    void destroy(const Id id) override
+    bool destroy(const Id id) override
     {
-        mTable->erase(id);
+        if(get(id))
+        {
+            mTable->erase(id);
+            return true;
+        }
+        return false;
     }
 
-    void modify(const Params& params) override
+    void modify(const Id id, const Params& params) override
     {
-        auto id = getOrThrow<Id>(params, "id", "Id is not specified");
-
         auto obj = mTable->load(id);
 
         if(obj)
@@ -92,29 +110,33 @@ private:
     std::unique_ptr<DatabaseTable> mTable;
 };
 
-class TypeTypeHandler : public ITypeHandler
+class TraitTypeHandler : public ITypeHandler
 {
 public:
-    TypeTypeHandler(TypeSystem& ts)
+    TraitTypeHandler(TraitSystem& ts)
     : mTs(ts)
     {
 
     }
 
-    Id create(const Params& params) override
+    Id create(const Id id, const std::vector<std::string>& traits, const Params& params) override
     {
-        auto tpDomain = getOrThrow<std::string>(params, "type.domain", "Type domain is not specified");
-        auto tpName = getOrThrow<std::string>(params, "type.name", "Type name is not specified");
-        return mTs.add({tpDomain, tpName, false});
+        auto trait = getOrThrow<std::string>(params, "name", "Trait name is not specified");
+        return mTs.add({trait, false});
     }
 
-    std::vector<Params> queryAll() override
+    std::vector<Params> query(const std::vector<Id>& ids) override
     {
         std::vector<Params> result;
 
-        for(auto & t : mTs.get())
+        for(auto & id : ids)
         {
-            result.push_back(toPropertyTree(t));
+            auto o = mTs.get(id);
+
+            if(o)
+            {
+                result.push_back(toPropertyTree(*o));
+            }
         }
 
         return result;
@@ -136,17 +158,17 @@ public:
         return result;
     }
 
-    void destroy(const Id id) override
+    bool destroy(const Id id) override
     {
-        mTs.remove(id);
+        return mTs.remove(id);
     }
 
-    void modify(const Params& params) override
+    void modify(const Id id, const Params& params) override
     {
         throw std::logic_error("Types cannot be modified");
     }
 
-    Params query(const Id& id)
+    std::optional<Params> get(const Id& id) override
     {
         auto obj = mTs.get(id);
         if(obj)
@@ -155,82 +177,114 @@ public:
         }
         else
         {
-            throw std::runtime_error(fmt::format("Object not found: {}", id.getGuid()));
+            return {};
         }
     }
 
 private:
-    TypeSystem& mTs;
+    TraitSystem& mTs;
 };
 
 //-------------------------------------------------------------------------------------------------
-std::string typeToTableName(const TypeDef& td)
-{
-    return td.domain + "_" + td.name;
-}
 
-ObjectManager::ObjectManager(Database& db, TypeSystem& types)
+ObjectManager::ObjectManager(Database& db, TraitSystem& types)
 : mDb(db)
 , mTypes(types)
 {
-    mTypes.onAdded.connect(std::bind(&ObjectManager::onNewTypeAdded, this, std::placeholders::_1));
+    mHandlers["trait"] = std::make_shared<TraitTypeHandler>(mTypes);
 
-    for(auto t : mTypes.get())
+    mDefaultHandler = std::make_shared<GenericTypeHandler>(mDb.getTable("objects"));
+    mHandlers[""] = mDefaultHandler;
+}
+
+Id ObjectManager::create(const std::vector<std::string>& traits, const Id id, const Params& params)
+{
+    if(traits.empty())
     {
-        if(t.domain != "core")
+        throw std::runtime_error("Cannot create object without traits");
+    }
+
+    auto& handler = getHandler(traits[0]);
+
+    if(id != Id::Invalid && lookup(id))
+    {
+        throw std::runtime_error(fmt::format("Object with id {} already exist", id.getGuid()));
+    }
+
+    return handler.create((id == Id::Invalid ? Id::generate() : id), traits, params);
+}
+
+std::vector<Params> ObjectManager::query(const std::vector<Id>& ids)
+{
+    std::vector<Params> objects;
+
+    for(auto& h : mHandlers)
+    {
+        auto newObjects = h.second->query(ids);
+        objects.insert(objects.end(), newObjects.begin(), newObjects.end());
+    }
+
+    return objects;
+}
+
+std::vector<Params> ObjectManager::query(const Filter& filter)
+{
+    std::vector<Params> objects;
+
+    for(auto& h : mHandlers)
+    {
+        auto newObjects = h.second->query(filter);
+        objects.insert(objects.end(), newObjects.begin(), newObjects.end());
+    }
+
+    return objects;
+}
+
+void ObjectManager::destroy(const Id id)
+{
+    std::vector<Params> objects;
+
+    for(auto& h : mHandlers)
+    {
+        if(h.second->destroy(id))
         {
-            mHandlers[{t.domain, t.name}] = std::make_shared<GenericTypeHandler>(mDb.getTable(typeToTableName(t)));
+            break;
+        }
+    }
+}
+
+void ObjectManager::modify(const Id id, const Params& params)
+{
+    auto o = lookup(id);
+    if(o)
+    {
+        auto [handler, object] = *o;
+        handler.modify(id, params);
+    }
+}
+
+ITypeHandler& ObjectManager::getHandler(const std::string& traitName)
+{
+    if(mHandlers.find(traitName) != mHandlers.end())
+    {
+        return *mHandlers[traitName];
+    }
+
+    return *mDefaultHandler;
+}
+
+std::optional<std::tuple<ITypeHandler&, Params>> ObjectManager::lookup(const Id id)
+{
+    for(auto& h : mHandlers)
+    {
+        auto o = h.second->get(id);
+        if(o)
+        {
+            return std::tuple<ITypeHandler&, Params>(*h.second, *o);
         }
     }
 
-    mHandlers[{"core", "type"}] = std::make_shared<TypeTypeHandler>(mTypes);
-}
-
-void ObjectManager::onNewTypeAdded(const TypeDef type)
-{
-    mHandlers[{type.domain, type.name}] = std::make_shared<GenericTypeHandler>(mDb.getTable(typeToTableName(type)));
-}
-
-Id ObjectManager::create(const TypeDef& type, const Params& params)
-{
-    auto& handler = *getOrThrow(mHandlers, {type.domain, type.name}, fmt::format("Type cannot be handled: {}.{}", type.domain, type.name));
-
-    return handler.create(params);
-}
-
-std::vector<Params> ObjectManager::query(const TypeDef& type)
-{
-    auto& handler = *getOrThrow(mHandlers, {type.domain, type.name}, fmt::format("Type cannot be handled: {}.{}", type.domain, type.name));
-
-    return handler.queryAll();
-}
-
-std::vector<Params> ObjectManager::query(const TypeDef& type, const Filter& filter)
-{
-    auto& handler = *getOrThrow(mHandlers, {type.domain, type.name}, fmt::format("Type cannot be handled: {}.{}", type.domain, type.name));
-
-    return handler.query(filter);
-}
-
-void ObjectManager::destroy(const TypeDef& type, const Id id)
-{
-    auto& handler = *getOrThrow(mHandlers, {type.domain, type.name}, fmt::format("Type cannot be handled: {}.{}", type.domain, type.name));
-
-    return handler.destroy(id);
-}
-
-Params ObjectManager::query(const TypeDef& type, const Id id)
-{
-    auto& handler = *getOrThrow(mHandlers, {type.domain, type.name}, fmt::format("Type cannot be handled: {}.{}", type.domain, type.name));
-
-    return handler.query(id);
-}
-
-void ObjectManager::modify(const TypeDef& type, const Params& params)
-{
-    auto& handler = *getOrThrow(mHandlers, {type.domain, type.name}, fmt::format("Type cannot be handled: {}.{}", type.domain, type.name));
-
-    return handler.modify(params);
+    return std::optional<std::tuple<ITypeHandler&, Params>>();
 }
 
 }
