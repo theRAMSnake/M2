@@ -95,7 +95,17 @@ bool TraitSystem::remove(const Id id)
 
 boost::property_tree::ptree toPropertyTree(const TraitDef t)
 {
-    return readJson<boost::property_tree::ptree>(writeJson(t));
+    auto pt = readJson<boost::property_tree::ptree>(writeJson(t));
+
+    boost::property_tree::ptree subParams;
+
+    boost::property_tree::ptree p;
+    p.put("", "trait");
+    subParams.push_back({"", p});
+
+    pt.add_child("traits", subParams);
+
+    return pt;
 }
 
 }

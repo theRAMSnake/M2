@@ -13,11 +13,12 @@ class MateriaRequest
         if (xhr.status === 200) {
             cb(xhr.response.message);
         }
-        else {
-            alert("not authorized");
+        else 
+        {
+            cb(xhr.statusText);
         }
         });
-        xhr.send(JSON.stringify(op));
+        xhr.send(op);
     }
 }
 
