@@ -48,8 +48,17 @@ const useStyles = makeStyles((theme) =>
   }),
 );
 
-function SearchBar(props) {
+function SearchBar(props) 
+{
     const classes = useStyles();
+
+    function onKeyPress(e) 
+    {
+        if(e.keyCode == 13)
+        {
+            props.onSubmit(e.target.value);
+        }
+    }
 
     return (
         <div className={classes.search}>
@@ -62,7 +71,7 @@ function SearchBar(props) {
                 root: classes.inputRoot,
                 input: classes.inputInput,
               }}
-              inputProps={{ 'aria-label': 'search' }}
+              inputProps={{ 'aria-label': 'search', onKeyDown:onKeyPress }}
             />
         </div>
     );

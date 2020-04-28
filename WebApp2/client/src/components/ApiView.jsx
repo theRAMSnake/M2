@@ -27,9 +27,9 @@ function ApiView(props) {
 
     return (
             <Grid container direction="column" justify="space-around" alignItems="center">
-                <TextField id="id_input" label="Input" variant="outlined" multiline="true" rows="14" fullWidth="true" margin="normal" inputProps={{onChange:reqChanged}} />
+                <TextField id="id_input" label="Input" variant="outlined" multiline="true" rows="12" fullWidth="true" margin="normal" inputProps={{onChange:reqChanged}} />
                 <Button variant="contained" color="primary" size="small" onClick={send_clicked}>Send</Button>
-                <TextField id="id_output" label="Output" variant="outlined" multiline="true" rows="14" fullWidth="true" margin="normal" inputProps={{readOnly:true}} value={lastResponce}/>
+                <TextField id="id_output" label="Output" variant="outlined" multiline="true" rows="12" fullWidth="true" margin="normal" inputProps={{readOnly:true}} value={lastResponce}/>
             </Grid>
     );
 }

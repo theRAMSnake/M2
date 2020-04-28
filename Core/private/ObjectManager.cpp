@@ -16,10 +16,8 @@ public:
 
     Id create(const Id id, const std::vector<std::string>& traits, const Params& params) override
     {
-        Id newId = Id::generate();
-
         auto value = params;
-        value.put("id", newId);
+        value.put("id", id);
 
         Params subParams;
         for(auto& t: traits)
@@ -31,9 +29,9 @@ public:
 
         value.add_child("traits", subParams);
 
-        mTable->store(newId, writeJson(value));
+        mTable->store(id, writeJson(value));
 
-        return newId;
+        return id;
     }
 
     std::vector<Params> query(const std::vector<Id>& ids) override
