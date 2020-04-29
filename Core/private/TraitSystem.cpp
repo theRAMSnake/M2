@@ -96,6 +96,7 @@ bool TraitSystem::remove(const Id id)
 boost::property_tree::ptree toPropertyTree(const TraitDef t)
 {
     auto pt = readJson<boost::property_tree::ptree>(writeJson(t));
+    pt.put("id", getId(t.name));
 
     boost::property_tree::ptree subParams;
 
