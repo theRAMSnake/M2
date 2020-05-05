@@ -41,16 +41,19 @@ public:
    {
       auto ch = m_ptree.get_child_optional(field);
 
-      for(auto x : *ch)
+      if(ch)
       {
-         std::string json = x.second.get_value<std::string>();
+         for(auto x : *ch)
+         {
+            std::string json = x.second.get_value<std::string>();
 
-         F nextItem;
+            F nextItem;
 
-         JsonReader subReader(json);
-         JsonMap<F>::read(subReader, nextItem);
+            JsonReader subReader(json);
+            JsonMap<F>::read(subReader, nextItem);
 
-         out.push_back(nextItem);
+            out.push_back(nextItem);
+         }
       }
    }
 
