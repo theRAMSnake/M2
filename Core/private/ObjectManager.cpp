@@ -163,7 +163,16 @@ public:
 
     void modify(const Id id, const Params& params) override
     {
-        throw std::logic_error("Types cannot be modified");
+        auto o = mTs.get(id);
+
+        if(o)
+        {
+            mTs.edit(fromPropertyTree(params));
+        }
+        else
+        {
+            throw std::runtime_error(fmt::format("Object not found: {}", id.getGuid()));
+        }
     }
 
     std::optional<Params> get(const Id& id) override

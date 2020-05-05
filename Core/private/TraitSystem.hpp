@@ -17,6 +17,7 @@ struct TraitDef
 };
 
 boost::property_tree::ptree toPropertyTree(const TraitDef t);
+TraitDef fromPropertyTree(const boost::property_tree::ptree& ptree);
 
 class Database;
 class TraitSystem
@@ -33,6 +34,8 @@ public:
     Id add(const TraitDef& newType);
     bool remove(const std::string& name);
     bool remove(const Id id);
+
+    void edit(const TraitDef& type);
 
 private:
     std::unique_ptr<DatabaseTable> mStorage;

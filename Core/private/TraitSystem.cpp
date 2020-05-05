@@ -109,4 +109,14 @@ boost::property_tree::ptree toPropertyTree(const TraitDef t)
     return pt;
 }
 
+TraitDef fromPropertyTree(const boost::property_tree::ptree& ptree)
+{
+    return readJson<TraitDef>(writeJson(ptree));
+}
+
+void TraitSystem::edit(const TraitDef& type)
+{
+    mStorage->store(getId(type.name), writeJson(type));
+}
+
 }
