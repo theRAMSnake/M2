@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import MateriaRequest from '../modules/materia_request'
-import ObjectView from './ObjectView.jsx'
+import ObjectGrid from './ObjectGrid.jsx'
 
 import {
     Box,
@@ -10,12 +10,24 @@ import {
 
 function createRequest(query)
 {
-    const req = {
-        operation: "query",
-        ids: [query]
-    };
-
-    return JSON.stringify(req);
+    if(query.charAt(0) === '>')
+    {
+        const req = {
+            operation: "query",
+            filter: query.substr(1)
+        };
+    
+        return JSON.stringify(req);
+    }
+    else
+    {
+        const req = {
+            operation: "query",
+            ids: [query]
+        };
+    
+        return JSON.stringify(req);
+    }
 }
 
 function QueryView(props) 
@@ -30,23 +42,24 @@ function QueryView(props)
     function getContentFromResponce()
     {
         var obj = JSON.parse(responce);
-        if(obj.object_list.length == 0)
+        if(!obj || !obj.object_list || obj.object_list.length == 0)
         {
-            return (<Typography variant="h6">Nothing was found</Typography>);
+            return (
+                <Box style={{position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)'}}>
+                    <Typography variant="h6">Nothing was found</Typography>
+                </Box>
+            );
         }
-        else if(obj.object_list.length == 1)
-        {
-            return <ObjectView value={obj.object_list[0]}/>;
-        }
-        else
-        {
-            return (<Typography variant="h6">Cannot display results</Typography>);
-        }
+
+        return (<ObjectGrid content={obj.object_list} />);
     }
 
-    return (<Box style={{position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)'}}>
-                {responce === '' ? <CircularProgress /> : getContentFromResponce()}
-            </Box>
+    return (responce === '' ? 
+        <Box style={{position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)'}}>
+            <CircularProgress />
+        </Box> 
+        : 
+        getContentFromResponce()
     );
 }
 

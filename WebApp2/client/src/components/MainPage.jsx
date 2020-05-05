@@ -1,9 +1,11 @@
 import React from 'react';
 import clsx from 'clsx';
 import Auth from '../modules/Auth'
+import m3proxy from '../modules/m3proxy'
 import SearchBar from './SearchBar.jsx'
 import ApiView from './ApiView.jsx'
 import QueryView from './QueryView.jsx'
+import AddItemDialog from './AddItemDialog.jsx'
 
 import {
     AppBar,
@@ -20,6 +22,7 @@ import {
 
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import AddCircleOutlineIcon  from '@material-ui/icons/AddCircleOutline';
 
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 
@@ -67,6 +70,9 @@ function MainPage(props) {
     const [open, setOpen] = React.useState(false);
     const [contentType, setContentType] = React.useState("");
     const [query, setQuery] = React.useState("");
+    const [showAddDlg, setShowAddDlg] = React.useState(false);
+
+    m3proxy.initialize();
 
     function getContentView(ct) 
     {
@@ -96,8 +102,8 @@ function MainPage(props) {
 
     function searchBarSubmit(text)
     {
-        setQuery(text);
         setContentType("query");
+        setQuery(text);
     }
 
     const handleDrawerOpen = () => {
@@ -107,6 +113,16 @@ function MainPage(props) {
     const handleDrawerClose = () => {
         setOpen(false);
     };
+
+    function onAddClicked(e)
+    {
+        setShowAddDlg(true);
+    } 
+
+    function onAddDialogClosed(e)
+    {
+        setShowAddDlg(false);
+    } 
 
     return (
         <div>
@@ -126,9 +142,13 @@ function MainPage(props) {
                     </Typography>
                     <SearchBar onSubmit={searchBarSubmit}/>
                     <div className={classes.grow} />
+                    <IconButton color="inherit" onClick={onAddClicked}>
+                        <AddCircleOutlineIcon/>
+                    </IconButton>
                     <Button variant="contained" color="primary" size="small" onClick={logout_clicked}>Logout</Button>
                 </Toolbar>
             </AppBar>
+            {showAddDlg && <AddItemDialog onClose={onAddDialogClosed}/>}
             {getContentView(contentType)}
             <Drawer
                 className={classes.drawer}

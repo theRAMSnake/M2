@@ -20,6 +20,27 @@ class MateriaRequest
         });
         xhr.send(op);
     }
+
+    static postDelete(s)
+    {
+        var rq = {
+            operation: "destroy",
+            id: s
+        };
+
+        MateriaRequest.req(JSON.stringify(rq), () => {});
+    }
+
+    static postEdit(id, s)
+    {
+        var rq = {
+            operation: "modify",
+            id: id,
+            params: JSON.parse(s)
+        };
+
+        MateriaRequest.req(JSON.stringify(rq), () => {});
+    }
 }
 
 export default MateriaRequest;

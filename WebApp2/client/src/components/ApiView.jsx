@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import MateriaRequest from '../modules/materia_request'
-
+import JSONInput from 'react-json-editor-ajrm';
+import locale    from 'react-json-editor-ajrm/locale/en';
 import {
     Button,
     TextField,
@@ -10,26 +11,26 @@ import {
 function ApiView(props) {
 
     const [lastRequest, setLastRequest] = useState("");
-    const [lastResponce, setLastResponce] = useState("");
+    const [lastResponce, setLastResponce] = useState({});
 
     function send_clicked(e) {
         e.preventDefault();
 
         MateriaRequest.req(lastRequest, (r) => {
-            setLastResponce(r);
+            setLastResponce(JSON.parse(r));
         });
     }
 
     function reqChanged(e) {
-        e.preventDefault();
-        setLastRequest(e.target.value)
+        console.log(e);
+        setLastRequest(e.json);
     }
 
     return (
             <Grid container direction="column" justify="space-around" alignItems="center">
-                <TextField id="id_input" label="Input" variant="outlined" multiline="true" rows="12" fullWidth="true" margin="normal" inputProps={{onChange:reqChanged}} />
+                <JSONInput locale = { locale } height = '40vh' width='100%' onChange={reqChanged}/>
                 <Button variant="contained" color="primary" size="small" onClick={send_clicked}>Send</Button>
-                <TextField id="id_output" label="Output" variant="outlined" multiline="true" rows="12" fullWidth="true" margin="normal" inputProps={{readOnly:true}} value={lastResponce}/>
+                <JSONInput locale = { locale } height = '40vh' width='100%' viewOnly={true} placeholder={lastResponce}/>
             </Grid>
     );
 }

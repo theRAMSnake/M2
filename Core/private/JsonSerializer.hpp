@@ -39,9 +39,9 @@ public:
    template<class F>
    void read(const std::string& field, std::vector<F>& out)
    {
-      auto ch = m_ptree.get_child(field);
+      auto ch = m_ptree.get_child_optional(field);
 
-      for(auto x : ch)
+      for(auto x : *ch)
       {
          std::string json = x.second.get_value<std::string>();
 
