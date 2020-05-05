@@ -2,7 +2,8 @@
 #include "JsonSerializer.hpp"
 #include <fmt/format.h>
 
-BIND_JSON2(materia::TraitDef, name, isCoreTrait)
+BIND_JSON3(materia::TraitDef, name, isCoreTrait, requires)
+BIND_JSON2(materia::Require, field, type)
 
 namespace materia
 {
@@ -64,6 +65,7 @@ Id TraitSystem::add(const TraitDef& newType)
     }
 
     auto id = getId(newType.name);
+
     mStorage->store(id, writeJson(newType));
     return id;
 }
@@ -95,23 +97,60 @@ bool TraitSystem::remove(const Id id)
 
 boost::property_tree::ptree toPropertyTree(const TraitDef t)
 {
-    auto pt = readJson<boost::property_tree::ptree>(writeJson(t));
-    pt.put("id", getId(t.name));
+    boost::property_tree::ptree result;
 
-    boost::property_tree::ptree subParams;
+    result.put("id", getId(t.name));
+    result.put("name", t.name);
+    result.put("isCoreTrait", t.isCoreTrait);
 
-    boost::property_tree::ptree p;
-    p.put("", "trait");
-    subParams.push_back({"", p});
+    {
+        boost::property_tree::ptree subParams;
 
-    pt.add_child("traits", subParams);
+        boost::property_tree::ptree p;
+        p.put("", "trait");
+        subParams.push_back({"", p});
 
-    return pt;
+        result.add_child("traits", subParams);
+    }
+    {
+        boost::property_tree::ptree subParams;
+
+        for(auto r : t.requires)
+        {
+            boost::property_tree::ptree p;
+            p.put("field", r.field);
+            p.put("type", r.type);
+            subParams.push_back({"", p});
+        }
+
+        result.add_child("requires", subParams);
+    }
+
+    return result;
 }
 
 TraitDef fromPropertyTree(const boost::property_tree::ptree& ptree)
 {
-    return readJson<TraitDef>(writeJson(ptree));
+    try
+    {
+        TraitDef result = { ptree.get<std::string>("name"), ptree.get<bool>("isCoreTrait") };
+
+        auto r = ptree.get_child_optional("requires");
+
+        if(r)
+        {
+            for(auto& v : *r)
+            {
+                result.requires.push_back({v.second.get<std::string>("field"), v.second.get<std::string>("type")});
+            }
+        }
+        
+        return result;
+    }
+    catch(...)
+    {
+        throw std::runtime_error("Cannot convert prop tree to TraitDef");
+    }
 }
 
 void TraitSystem::edit(const TraitDef& type)

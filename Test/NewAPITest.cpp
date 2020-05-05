@@ -82,7 +82,6 @@ BOOST_FIXTURE_TEST_CASE( TestCreate, NewAPITest )
 
     auto result = mCore->executeCommandJson(writeJson(query));
 
-    std::cout << result;
     auto ol = readJson<boost::property_tree::ptree>(result);
     
     unsigned int counter = 0;
@@ -140,8 +139,21 @@ BOOST_FIXTURE_TEST_CASE( TestModify, NewAPITest )
 
     auto r = readJson<boost::property_tree::ptree>(mCore->executeCommandJson(writeJson(create)));
 
+    boost::property_tree::ptree obj;
+    {
+        boost::property_tree::ptree query;
+        query.put("operation", "query");
+        query.put("filter", "IS(tp)");
+
+        auto result = mCore->executeCommandJson(writeJson(query));
+        auto ol = readJson<boost::property_tree::ptree>(result);
+
+        obj = ol.get_child("object_list").begin()->second;
+    }
+
     boost::property_tree::ptree modify;
     modify.put("operation", "modify");
+    modify.put_child("params", obj);
     modify.put("params.some", "b");
     modify.put("id", r.get<std::string>("id"));
 
@@ -149,7 +161,6 @@ BOOST_FIXTURE_TEST_CASE( TestModify, NewAPITest )
 
     boost::property_tree::ptree query;
     query.put("operation", "query");
-    
     query.put("filter", "IS(tp)");
 
     auto result = mCore->executeCommandJson(writeJson(query));

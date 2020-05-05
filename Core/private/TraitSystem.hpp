@@ -10,10 +10,17 @@
 namespace materia
 {
 
+struct Require
+{
+    std::string field;
+    std::string type;
+};
+
 struct TraitDef
 {
     std::string name;
     bool isCoreTrait;
+    std::vector<Require> requires;
 };
 
 boost::property_tree::ptree toPropertyTree(const TraitDef t);

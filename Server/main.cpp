@@ -226,7 +226,10 @@ void newFunc(std::string password, materia::ICore3* core)
             continue;
         }
         
-        std::string encoded = codec.encrypt(core->executeCommandJson(decoded));
+        logger << "In: " << decoded << "\n";
+        auto result = core->executeCommandJson(decoded);
+        logger << "Out: " << result << "\n";
+        std::string encoded = codec.encrypt(result);
 
         zmq::message_t msgToSend (encoded.data(), encoded.size());
         clientSocket.send (msgToSend, zmq::send_flags::none);

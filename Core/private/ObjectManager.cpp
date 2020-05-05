@@ -1,6 +1,7 @@
 #include "ObjectManager.hpp"
 #include "JsonSerializer.hpp"
 #include "ExceptionsUtil.hpp"
+#include "TypeName.hpp"
 
 namespace materia
 {
@@ -8,8 +9,9 @@ namespace materia
 class GenericTypeHandler : public ITypeHandler
 {
 public:
-    GenericTypeHandler(std::unique_ptr<DatabaseTable>&& table)
+    GenericTypeHandler(std::unique_ptr<DatabaseTable>&& table, TraitSystem& ts)
     : mTable(std::move(table))
+    , mTs(ts)
     {
 
     }
@@ -29,6 +31,7 @@ public:
 
         value.add_child("traits", subParams);
 
+        validateTraits(value);
         mTable->store(id, writeJson(value));
 
         return id;
@@ -96,6 +99,7 @@ public:
 
         if(obj)
         {
+            validateTraits(params);
             mTable->store(id, writeJson(params));
         }
         else
@@ -105,7 +109,61 @@ public:
     }
 
 private:
+    std::vector<std::string> parseTraits(const boost::property_tree::ptree& src)
+    {
+        //@DUPLICATE
+        std::vector<std::string> result;
+        auto val = src.get_child_optional("traits");
+        if(val)
+        {
+            for(auto x : *val)
+            {
+                result.push_back(x.second.get_value<std::string>());
+            }
+        }
+
+        return result;
+    }
+
+    template<class T>
+    void validateReq(const std::string& traitName, const std::string& fieldName, const Params& params)
+    {
+        getOrThrow<T>(params, fieldName, fmt::format("Trait {} requires {} of type {}", traitName, fieldName, TypeName<T>::get()));
+    }
+
+    void validateTrait(const TraitDef& trait, const Params& params)
+    {
+        for(auto r : trait.requires)
+        {
+            if(r.type == "bool")
+                return validateReq<bool>(trait.name, r.field, params);
+
+            if(r.type == "string")
+                return validateReq<std::string>(trait.name, r.field, params);
+
+            if(r.type == "int")
+                return validateReq<int>(trait.name, r.field, params);
+
+            if(r.type == "double")
+                return validateReq<double>(trait.name, r.field, params);
+
+            else
+                throw std::runtime_error(fmt::format("Internal error, unexpected type {}", r.type));
+        }
+    }
+
+    void validateTraits(const Params& params)
+    {
+        auto traits = parseTraits(params);
+
+        for(auto t : traits)
+        {
+            validateTrait(*mTs.get(t), params);
+        }
+    }
+
     std::unique_ptr<DatabaseTable> mTable;
+    TraitSystem& mTs;
 };
 
 class TraitTypeHandler : public ITypeHandler
@@ -119,8 +177,11 @@ public:
 
     Id create(const Id id, const std::vector<std::string>& traits, const Params& params) override
     {
-        auto trait = getOrThrow<std::string>(params, "name", "Trait name is not specified");
-        return mTs.add({trait, false});
+        auto newParams = params;
+        auto trait = getOrThrow<std::string>(newParams, "name", "Trait name is not specified");
+        newParams.put("isCoreTrait", false);
+
+        return mTs.add(fromPropertyTree(newParams));
     }
 
     std::vector<Params> query(const std::vector<Id>& ids) override
@@ -200,7 +261,7 @@ ObjectManager::ObjectManager(Database& db, TraitSystem& types)
 {
     mHandlers["trait"] = std::make_shared<TraitTypeHandler>(mTypes);
 
-    mDefaultHandler = std::make_shared<GenericTypeHandler>(mDb.getTable("objects"));
+    mDefaultHandler = std::make_shared<GenericTypeHandler>(mDb.getTable("objects"), mTypes);
     mHandlers[""] = mDefaultHandler;
 }
 
