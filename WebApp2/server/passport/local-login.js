@@ -17,7 +17,7 @@ module.exports = new LocalStrategy({
         };
     
         // create a token string
-        const token = jwt.sign(payload, config.jwtSecret);
+        const token = jwt.sign(payload, config.jwtSecret, { expiresIn: '1 day' });
         const user = {
             name: 'snake'
           };

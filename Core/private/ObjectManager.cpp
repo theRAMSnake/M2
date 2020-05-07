@@ -6,6 +6,8 @@
 namespace materia
 {
 
+const unsigned int QUERY_LIMIT = 50;
+
 class GenericTypeHandler : public ITypeHandler
 {
 public:
@@ -43,6 +45,11 @@ public:
 
         for(auto id : ids)
         {
+            if(result.size() > QUERY_LIMIT)
+            {
+                break;
+            }
+
             auto o = get(id);
             if(o)
             {
@@ -59,6 +66,11 @@ public:
 
         mTable->foreach([&](std::string id, std::string json) 
         {
+            if(result.size() > QUERY_LIMIT)
+            {
+                return;
+            }
+            
             auto t = readJson<boost::property_tree::ptree>(json);
             if(std::get<bool>(f.evaluate(t)))
             {
@@ -190,6 +202,11 @@ public:
 
         for(auto & id : ids)
         {
+            if(result.size() > QUERY_LIMIT)
+            {
+                break;
+            }
+
             auto o = mTs.get(id);
 
             if(o)
@@ -207,6 +224,11 @@ public:
 
         for(auto & t : mTs.get())
         {
+            if(result.size() > QUERY_LIMIT)
+            {
+                break;
+            }
+
             auto pt = toPropertyTree(t);
             if(std::get<bool>(f.evaluate(pt)))
             {

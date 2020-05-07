@@ -30,6 +30,20 @@ class m3Proxy
     {
         return traits;
     }
+
+    static getTrait(name)
+    {
+        var i = 0;
+        for (i = 0; i < traits.length; i++)
+        {
+            if(traits[i].name === name)
+            {
+                return traits[i];
+            }
+        }
+
+        return {};
+    }
 }
 
 export default m3Proxy;

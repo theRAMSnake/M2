@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import m3proxy from '../modules/m3proxy'
 import MateriaRequest from '../modules/materia_request'
-import JSONInput from 'react-json-editor-ajrm';
-import locale    from 'react-json-editor-ajrm/locale/en';
+import ObjectProperties from './ObjectProperties.jsx'
 
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 
@@ -15,8 +14,7 @@ import {
     FormControl,
     Select,
     InputLabel,
-    TextField,
-    CircularProgress
+    TextField
 } from '@material-ui/core'
 
 const useStyles = makeStyles((theme) =>
@@ -30,12 +28,36 @@ const useStyles = makeStyles((theme) =>
   }),
 );
 
+function createDefault(type)
+{
+    if(type === 'string') return "";
+    if(type === 'bool') return false;
+    if(type === 'int') return 0;
+    if(type === 'double') return 0.0;
+}
+
+function createObjectBody(traitName)
+{
+    var result = {};
+    const trait = m3proxy.getTrait(traitName);
+    if(trait.requires)
+    {
+        var j = 0;
+        for (j = 0; j < trait.requires.length; j++)
+        {
+            result[trait.requires[j].field] = createDefault(trait.requires[j].type);
+        }
+    }
+
+    console.log(result);
+    return result;
+}
+
 function AddItemDialog(props)
 {
-    const [selectedTrait, setSelectedTrait] = useState("")
+    const [selectedTrait, setSelectedTrait] = useState('')
     const [selectedId, setSelectedId] = useState("")
-    const [params, setParams] = useState("{\n}")
-    const [error, setError] = useState("")
+    const [objectBody, setObjectBody] = useState()
     const [requesting, setRequesting] = useState(false)
     const classes = useStyles();
 
@@ -49,12 +71,12 @@ function AddItemDialog(props)
         var req = selectedId === "" ? {
             operation: "create",
             traits: [selectedTrait],
-            params: JSON.parse(params)
+            params: objectBody
         } : {
             operation: "create",
             defined_id: selectedId,
             traits: [selectedTrait],
-            params: JSON.parse(params)
+            params: objectBody
         };
 
         setRequesting(true);
@@ -75,6 +97,7 @@ function AddItemDialog(props)
     function selectedTraitChange(e)
     {
         setSelectedTrait(e.target.value);
+        setObjectBody(createObjectBody(e.target.value));
     }
 
     function onIdChanged(e)
@@ -82,9 +105,9 @@ function AddItemDialog(props)
         setSelectedId(e.target.value);
     }
 
-    function onParamsChanged(e)
+    function onObjectChanged(e)
     {
-        setParams(e.json);
+        setObjectBody(e);
     }
 
     return (
@@ -102,11 +125,12 @@ function AddItemDialog(props)
                             id: 'trait',
                         }}
                         >
+                        <option aria-label="None" value="" />
                         {m3proxy.getTraits().map((obj) => <option aria-label="None" value={obj.name} >{obj.name}</option>)}
                     </Select>
                 </FormControl>
                 <TextField margin="dense" id="id_name" label="Id" fullWidth  inputProps={{onChange: onIdChanged}}/>
-                <JSONInput locale = { locale } height = '30vh' width='100%' onChange={onParamsChanged}/>
+                <ObjectProperties height = '30vh' width='100%' onChange={onObjectChanged} traits={[selectedTrait]} object={objectBody}/>
             </DialogContent>
             {!requesting && <DialogActions>
                 <Button onClick={handleClose} variant="contained" color="primary">

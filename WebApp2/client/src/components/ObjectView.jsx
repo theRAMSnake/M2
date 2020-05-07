@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import MateriaRequest from '../modules/materia_request'
-import JSONInput from 'react-json-editor-ajrm';
-import locale    from 'react-json-editor-ajrm/locale/en';
+import m3proxy from '../modules/m3proxy'
+import ObjectProperties from './ObjectProperties.jsx'
+
+import DefaultThumbnail from './thumbnails/Default.jsx'
+import SimpleThumbnail from './thumbnails/Simple.jsx'
 
 import {
     Card,
@@ -23,6 +26,20 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import EditIcon from '@material-ui/icons/Edit';
 
+function getObjectThumbnail(obj)
+{
+    if(obj.traits.length == 1)
+    {
+        const trait = m3proxy.getTrait(obj.traits[0]);
+        if(trait.requires && trait.requires.length == 1)
+        {
+            return (<SimpleThumbnail value={obj[trait.requires[0].field]}/>);
+        }
+    }
+
+    return (<DefaultThumbnail value={obj}/>);
+}
+
 function ObjectView(props) 
 {
     const obj = props.value;
@@ -30,7 +47,7 @@ function ObjectView(props)
     const [inDeleteDialog, setinDeleteDialog] = useState(false);
     const [inEditDialog, setinEditDialog] = useState(false);
     const [visible, setVisible] = useState(true);
-    const [params, setParams] = useState(JSON.stringify(obj));
+    const [object, setObject] = useState(obj);
 
     function deleteClicked(e){
         setinDeleteDialog(true);
@@ -54,14 +71,14 @@ function ObjectView(props)
         MateriaRequest.postDelete(obj.id);
     }
 
-    function onParamsChanged(e)
+    function onObjectChanged(obj)
     {
-        setParams(e.json);
+        setObject(obj);
     }
 
     function onEditDialogOk(e){
         setinEditDialog(false);
-        MateriaRequest.postEdit(obj.id, params);
+        MateriaRequest.postEdit(obj.id, JSON.stringify(object));
     }
 
     return (
@@ -81,9 +98,9 @@ function ObjectView(props)
                         </IconButton>
                     </div>
                 }/>
+            <Divider/>
             <CardContent>
-                <Divider/>
-                <Typography variant="body1" color="textSecondary"><pre id="json">{JSON.stringify(obj, null, ' ')}</pre></Typography>
+                {getObjectThumbnail(obj)}
             </CardContent>
         </Card>
         <Dialog open={inDeleteDialog} onClose={onDeleteDialogCancel} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
@@ -104,7 +121,7 @@ function ObjectView(props)
         </Dialog>
         <Dialog open={inEditDialog} onClose={onEditDialogCancel} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
             <DialogContent>
-                <JSONInput locale = { locale } height = '80vh' width='50vh' placeholder={obj} onChange={onParamsChanged}/>
+                <ObjectProperties height = '70vh' width='50vh' object={object} onChange={onObjectChanged} traits={obj.traits}/>
             </DialogContent>
             <DialogActions>
                 <Button variant="contained" onClick={onEditDialogCancel} color="primary">
