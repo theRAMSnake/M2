@@ -55,7 +55,7 @@ void WebApp::showLogin()
 {
    mLoginScreen = new Wt::WContainerWidget();
 
-   auto text(new Wt::WText("<p>Password required.</p>"));
+   auto text = new Wt::WText("Password required.");
    text->addStyleClass("text-center h3");
    mLoginScreen->addWidget(std::unique_ptr<Wt::WText>(text));
 
