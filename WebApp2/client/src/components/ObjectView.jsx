@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import MateriaRequest from '../modules/materia_request'
 import m3proxy from '../modules/m3proxy'
 import ObjectProperties from './ObjectProperties.jsx'
+import ListObjectView from './ListObjectView.jsx'
+import ConfirmationDialog from './dialogs/ConfirmationDialog.jsx'
 
 import DefaultThumbnail from './thumbnails/Default.jsx'
 import SimpleThumbnail from './thumbnails/Simple.jsx'
+import ListThumbnail from './thumbnails/List.jsx'
 
 import {
     Card,
@@ -35,6 +38,11 @@ function getObjectThumbnail(obj)
         {
             return (<SimpleThumbnail value={obj[trait.requires[0].field]}/>);
         }
+
+        if(trait.name === 'simple_list')
+        {
+            return (<ListThumbnail value={obj}/>);
+        }
     }
 
     return (<DefaultThumbnail value={obj}/>);
@@ -48,6 +56,8 @@ function ObjectView(props)
     const [inEditDialog, setinEditDialog] = useState(false);
     const [visible, setVisible] = useState(true);
     const [object, setObject] = useState(obj);
+    const [objectInEdit, setObjectInEdit] = useState(obj);
+    const [changed, setChanged] = useState(false);
 
     function deleteClicked(e){
         setinDeleteDialog(true);
@@ -55,6 +65,8 @@ function ObjectView(props)
 
     function editClicked(e){
         setinEditDialog(true);
+        setChanged(false);
+        setObjectInEdit(object);
     }
 
     function onDeleteDialogCancel(e){
@@ -73,12 +85,47 @@ function ObjectView(props)
 
     function onObjectChanged(obj)
     {
-        setObject(obj);
+        setChanged(true);
+        setObjectInEdit(JSON.parse(JSON.stringify(obj)));
     }
 
-    function onEditDialogOk(e){
+    function onObjectChangedAndCommit(obj)
+    {
+        MateriaRequest.postEdit(obj.id, JSON.stringify(obj));
+        setObject(JSON.parse(JSON.stringify(obj)));
+    }
+    
+    function onEditDialogOk(e)
+    {
         setinEditDialog(false);
-        MateriaRequest.postEdit(obj.id, JSON.stringify(object));
+
+        if(changed)
+        {
+            setObject(objectInEdit);
+            MateriaRequest.postEdit(obj.id, JSON.stringify(objectInEdit));
+        }
+    }
+
+    function getObjectDialog()
+    {
+        if(obj.traits.length == 1 && obj.traits[0] === 'simple_list')
+        {
+            return <ListObjectView open={inEditDialog} object={object} onChange={onObjectChangedAndCommit} onClose={onEditDialogCancel}/>
+        }
+
+        return (<Dialog open={inEditDialog} onClose={onEditDialogCancel} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
+            <DialogContent>
+                <ObjectProperties height = '70vh' width='50vh' object={objectInEdit} onChange={onObjectChanged} traits={object.traits}/>
+            </DialogContent>
+            <DialogActions>
+                <Button variant="contained" onClick={onEditDialogCancel} color="primary">
+                    Cancel
+                </Button>
+                <Button variant="contained" onClick={onEditDialogOk} color="primary" autoFocus>
+                    Ok
+                </Button>
+            </DialogActions>
+        </Dialog>);
     }
 
     return (
@@ -86,7 +133,7 @@ function ObjectView(props)
         <Card style={{ width: '25vw', height: '33vh', margin: '5px'}}>
             <CardHeader 
                 avatar={<Avatar><SettingsIcon /></Avatar>}
-                title={<Typography variant="body1" color='primary'>{obj.name ? obj.name : obj.id}</Typography>}
+                title={<Typography variant="body1" color='secondary'>{obj.name ? obj.name : obj.id}</Typography>}
                 subheader={obj.traits.join()}
                 action={
                     <div>
@@ -100,38 +147,11 @@ function ObjectView(props)
                 }/>
             <Divider/>
             <CardContent>
-                {getObjectThumbnail(obj)}
+                {getObjectThumbnail(object)}
             </CardContent>
         </Card>
-        <Dialog open={inDeleteDialog} onClose={onDeleteDialogCancel} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-            <DialogTitle id="alert-dialog-title">{"Are you sure you want to delete object?"}</DialogTitle>
-            <DialogContent>
-                <DialogContentText id="alert-dialog-description">
-                    This will delete object.
-                </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-                <Button variant="contained" onClick={onDeleteDialogCancel} color="primary">
-                    No
-                </Button>
-                <Button variant="contained" onClick={onDeleteDialogOk} color="primary" autoFocus>
-                    Yes
-                </Button>
-            </DialogActions>
-        </Dialog>
-        <Dialog open={inEditDialog} onClose={onEditDialogCancel} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-            <DialogContent>
-                <ObjectProperties height = '70vh' width='50vh' object={object} onChange={onObjectChanged} traits={obj.traits}/>
-            </DialogContent>
-            <DialogActions>
-                <Button variant="contained" onClick={onEditDialogCancel} color="primary">
-                    Cancel
-                </Button>
-                <Button variant="contained" onClick={onEditDialogOk} color="primary" autoFocus>
-                    Ok
-                </Button>
-            </DialogActions>
-        </Dialog>
+        <ConfirmationDialog open={inDeleteDialog} question="delete object" caption="confirm deletion" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
+        {getObjectDialog()}
         </div>
     );
 }
