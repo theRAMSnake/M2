@@ -159,7 +159,7 @@ function MainPage(props) {
             >
                 <div className={classes.drawerHeader}>
                     <MenuIcon className={classes.mar} />
-                    <Typography variant="h6" className={classes.mar} color="primary">
+                    <Typography variant="h6" className={classes.mar} color="secondary">
                         Main menu
                     </Typography>
                     <div className={classes.grow} />
