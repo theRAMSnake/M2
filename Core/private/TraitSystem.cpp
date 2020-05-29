@@ -9,7 +9,8 @@ namespace materia
 {
 
 std::vector<TraitDef> gCoreTypes = {
-    {"trait", true}
+    {"trait", true},
+    {"script", true, {{"code", "string"}}}
 };
 
 TraitSystem::TraitSystem(Database& db)

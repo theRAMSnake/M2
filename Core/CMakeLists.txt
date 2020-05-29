@@ -4,6 +4,7 @@ project(m2core)
 LIST(APPEND CMAKE_MODULE_PATH "..")
 
 include_directories("..")
+include_directories("/usr/include/python3.8")
 
 add_library(m2core 
 private/Core.cpp
@@ -29,8 +30,9 @@ private/FreeDataInterpreter.cpp
 private/Finance.cpp
 private/Reward.cpp
 private/Challenge.cpp
+private/ScriptRunner.cpp
 )
 
-find_package(Boost COMPONENTS system REQUIRED)
+find_package(Boost COMPONENTS system python REQUIRED)
 
-target_link_libraries(m2core sqlite3 ${Boost_LIBRARIES} pthread fmt)
+target_link_libraries(m2core sqlite3 ${Boost_LIBRARIES} pthread python3.8 fmt)
