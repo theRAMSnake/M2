@@ -145,78 +145,42 @@ public:
 
     }
 
-    Value evaluate(const Params& object) const
+    Value evaluate(const Object& object) const
     {
-        try
-        {
-            return object.get<int>(mIdentifier);
-        }
-        catch(...)
-        {
-            try
-            {
-                return object.get<double>(mIdentifier);
-            }
-            catch(...)
-            {
-                try
-                {
-                    return object.get<bool>(mIdentifier);
-                }
-                catch(...)
-                {
-                    try
-                    {
-                        return object.get<std::string>(mIdentifier);
-                    }
-                    catch(...)
-                    {
+        auto t = object[mIdentifier].getType();
 
-                    }
-                }
-            }
+        switch(t)
+        {
+            case Type::Int: return static_cast<int>(object[mIdentifier]);
+            case Type::Double: return static_cast<double>(object[mIdentifier]);
+            case Type::Bool: return static_cast<bool>(object[mIdentifier]);
+            case Type::String: return static_cast<std::string>(object[mIdentifier]);
+            case Type::Array: return Value("");
         }
 
-        return Value("");
+        throw std::runtime_error("Unknown type");
     }
 
 private:
     std::string mIdentifier;
 };
 
-//Copy
-static std::vector<std::string> parseTraits(const boost::property_tree::ptree& src)
-{
-    std::vector<std::string> result;
-    auto val = src.get_child_optional("traits");
-    if(val)
-    {
-        for(auto x : *val)
-        {
-            result.push_back(x.second.get_value<std::string>());
-        }
-    }
-
-    return result;
-}
-
 class IsExpression : public Expression
 {
 public:
     IsExpression(const Token t)
-    : mTraitName(t.symbol)
+    : mTypeName(t.symbol)
     {
 
     }
 
-    Value evaluate(const Params& object) const
+    Value evaluate(const Object& object) const
     {
-        auto traits = parseTraits(object);
-        return std::find(traits.begin(), traits.end(), mTraitName) != traits.end();
+        return object.getTypeName() == mTypeName;
     }
 
 private:
-    std::string mTraitName;
+    std::string mTypeName;
 };
 
 class StringExpression : public Expression
@@ -228,7 +192,7 @@ public:
 
     }
 
-    Value evaluate(const Params& object) const
+    Value evaluate(const Object& object) const
     {
         return mStr;
     }
@@ -246,7 +210,7 @@ public:
 
     }
 
-    Value evaluate(const Params& object) const
+    Value evaluate(const Object& object) const
     {
         return mVal;
     }
@@ -264,7 +228,7 @@ public:
 
     }
 
-    Value evaluate(const Params& object) const
+    Value evaluate(const Object& object) const
     {
         return mVal;
     }
@@ -282,7 +246,7 @@ public:
 
     }
 
-    Value evaluate(const Params& object) const
+    Value evaluate(const Object& object) const
     {
         return mVal;
     }
@@ -329,7 +293,7 @@ public:
 
     }
 
-    Value evaluate(const Params& object) const
+    Value evaluate(const Object& object) const
     {
         auto a1 = mArg1->evaluate(object);
         auto a2 = mArg2->evaluate(object);

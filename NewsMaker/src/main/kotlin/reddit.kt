@@ -45,7 +45,7 @@ fun genContentForSubreddit(name: String, reddit: RedditClient): String
 
 fun loadSubreddits(password: String): List<String>
 {
-    val p = Runtime.getRuntime().exec("./m2tools $password loadPage reddit tmp.page")
+    val p = Runtime.getRuntime().exec("./m2tools loadPage reddit tmp.page")
     p.waitFor()
 
     val lines = File("tmp.page").readLines()

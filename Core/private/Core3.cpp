@@ -1,5 +1,4 @@
 #include "Core3.hpp"
-#include "CommandParser.hpp"
 #include "JsonSerializer.hpp"
 
 namespace materia
@@ -7,7 +6,7 @@ namespace materia
 
 Core3::Core3(const CoreConfig& config)
 : mDb(config.dbFileName)
-, mTypeSystem(mDb)
+, mTypeSystem()
 , mObjManager(mDb, mTypeSystem)
 , mOldCore(mDb, config.dbFileName)
 {
@@ -74,47 +73,41 @@ std::shared_ptr<ICore3> createCore(const CoreConfig& config)
    return std::make_shared<Core3>(config);
 }
 
-std::string formatResponce(const ExecutionResult& result)
+std::string Core3::formatResponce(const ExecutionResult& result)
 {
-   boost::property_tree::ptree responce;
+   Object responce(*mTypeSystem.get("object"), Id::Invalid);
 
    if(std::holds_alternative<Success>(result))
    {
-      responce.put("success", "");
+      responce["success"] = true;
    }
    else if(std::holds_alternative<ObjectList>(result))
    {
-      auto& ol = std::get<ObjectList>(result);
-      Params subParams;
-      for(auto& o: ol)
-      {
-         subParams.push_back({"", o});
-      }
-
-      responce.add_child("object_list", subParams);
+      responce["object_list"] = std::get<ObjectList>(result);
    }
    else if(std::holds_alternative<std::string>(result))
    {
-      responce.put("result", "");
+      responce["result"] = std::get<std::string>(result);
    }
    else if(std::holds_alternative<Id>(result))
    {
-      responce.put("id", std::get<Id>(result));
+      responce["result_id"] = std::get<Id>(result);
    }
    else
    {
       throw std::runtime_error("Cannot format responce");
    }
 
-   return writeJson(responce);
+   return responce.toJson();
 }
 
-std::string formatErrorResponce(const std::string& errorText)
+std::string Core3::formatErrorResponce(const std::string& errorText)
 {
-   boost::property_tree::ptree err;
-   err.put("error", errorText);
+   Object responce(*mTypeSystem.get("object"), Id::Invalid);
 
-   return writeJson(err);
+   responce["error"] = errorText;
+
+   return responce.toJson();
 }
 
 std::string Core3::executeCommandJson(const std::string& json)

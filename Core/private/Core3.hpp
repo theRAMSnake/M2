@@ -2,8 +2,9 @@
 
 #include "../ICore3.hpp"
 #include "Core.hpp"
-#include "TraitSystem.hpp"
+#include "TypeSystem.hpp"
 #include "ObjectManager.hpp"
+#include "CommandParser.hpp"
 
 namespace materia
 {
@@ -28,8 +29,11 @@ public:
     std::string executeCommandJson(const std::string& json) override;
 
 private:
+    std::string formatResponce(const ExecutionResult& result);
+    std::string formatErrorResponce(const std::string& errorText);
+
     Database mDb;
-    TraitSystem mTypeSystem;
+    TypeSystem mTypeSystem;
     ObjectManager mObjManager;
     Core mOldCore;
 };

@@ -1,8 +1,8 @@
 #pragma once
 #include <variant>
 #include <vector>
-#include <boost/property_tree/ptree.hpp>
-#include "TraitSystem.hpp"
+#include <string>
+#include "TypeSystem.hpp"
 #include "ObjectManager.hpp"
 
 namespace materia
@@ -17,8 +17,8 @@ struct Error
     std::string error;
 };
 
-using ObjectList = std::vector<Params>;
-using ExecutionResult = std::variant<Success, ObjectList, std::string, Id>;
+using ObjectList = std::vector<ObjectPtr>;
+using ExecutionResult = std::variant<Success, Error, ObjectList, std::string, Id>;
 
 class ObjectManager;
 class Command
@@ -31,13 +31,13 @@ public:
 class CreateCommand : public Command
 {
 public:
-    CreateCommand(const std::vector<std::string>& traits, const Id id, const Params& params);
+    CreateCommand(const std::optional<Id> id, const std::string& typeName, const std::string& params);
     ExecutionResult execute(ObjectManager& objManager) override;
 
 private:
-    const std::vector<std::string> mTraits;
-    const Id mId;
-    const Params mParams;
+    const std::string mTypeName;
+    const std::optional<Id> mId;
+    const std::string mParams;
 };
 
 class DestroyCommand : public Command
@@ -64,19 +64,12 @@ private:
 class ModifyCommand : public Command
 {
 public:
-    ModifyCommand(const Id& id, const Params& params);
+    ModifyCommand(const Id& id, const std::string& params);
     ExecutionResult execute(ObjectManager& objManager) override;
 
 private:
     const Id mId;
-    const Params mParams;
-};
-
-class CallCommand : public Command
-{
-public:
-    CallCommand(const std::string& name, const Params& params){}
-    ExecutionResult execute(ObjectManager& objManager) override{return "";}
+    const std::string mParams;
 };
 
 class SearchCommand : public Command

@@ -1,10 +1,11 @@
 #include "Commands.hpp"
+#include "JsonRestorationProvider.hpp"
 
 namespace materia
 {
 
-CreateCommand::CreateCommand(const std::vector<std::string>& traits, const Id id, const Params& params)
-: mTraits(traits)
+CreateCommand::CreateCommand(const std::optional<Id> id, const std::string& typeName, const std::string& params)
+: mTypeName(typeName)
 , mId(id)
 , mParams(params)
 {
@@ -13,10 +14,11 @@ CreateCommand::CreateCommand(const std::vector<std::string>& traits, const Id id
 
 ExecutionResult CreateCommand::execute(ObjectManager& objManager)
 {
-    return objManager.create(mTraits, mId, mParams);
+    JsonRestorationProvider provider(mParams);
+    return static_cast<Id>((*objManager.create(mId, mTypeName, provider))["id"]);
 }
 
-ModifyCommand::ModifyCommand(const Id& id, const Params& params)
+ModifyCommand::ModifyCommand(const Id& id, const std::string& params)
 : mId(id)
 , mParams(params)
 {
@@ -25,7 +27,8 @@ ModifyCommand::ModifyCommand(const Id& id, const Params& params)
 
 ExecutionResult ModifyCommand::execute(ObjectManager& objManager)
 {
-    objManager.modify(mId, mParams);
+    JsonRestorationProvider provider(mParams);
+    objManager.modify(mId, provider);
     return Success{};
 }
 

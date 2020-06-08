@@ -9,7 +9,7 @@ include_directories("/usr/include/python3.8")
 add_library(m2core 
 private/Core.cpp
 private/Core3.cpp
-private/TraitSystem.cpp
+private/TypeSystem.cpp
 private/CommandParser.cpp
 private/Expressions.cpp
 private/Commands.cpp
@@ -22,6 +22,7 @@ private/Journal.cpp
 private/Strategy_v2.cpp
 private/Logger.cpp
 private/JsonSerializer.cpp
+private/JsonRestorationProvider.cpp
 private/Backuper.cpp
 private/StrategyGraph.cpp
 private/NodeAttributes.cpp
@@ -30,9 +31,10 @@ private/FreeDataInterpreter.cpp
 private/Finance.cpp
 private/Reward.cpp
 private/Challenge.cpp
-private/ScriptRunner.cpp
+private/Object.cpp
+private/TypeHandler.cpp
 )
 
-find_package(Boost COMPONENTS system python REQUIRED)
+find_package(Boost COMPONENTS system REQUIRED)
 
-target_link_libraries(m2core sqlite3 ${Boost_LIBRARIES} pthread python3.8 fmt)
+target_link_libraries(m2core sqlite3 ${Boost_LIBRARIES} pthread fmt)
