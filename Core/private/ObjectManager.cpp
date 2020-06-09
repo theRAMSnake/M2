@@ -100,4 +100,45 @@ void ObjectManager::modify(const Id id, const IValueProvider& provider)
     }
 }
 
+std::string to_string(const Type t)
+{
+    switch(t)
+    {   
+        case Type::Int: return "int";
+        case Type::Double: return "double";
+        case Type::Bool: return "bool";
+        case Type::String: return "string";
+        case Type::Array: return "array";
+    }
+
+    throw std::runtime_error("unknown type");
+}
+
+std::vector<ObjectPtr> ObjectManager::describe() const
+{
+    std::vector<ObjectPtr> result;
+
+    auto objType = mTypes.get("object");
+    for(auto t : mTypes.get())
+    {
+        auto obj = std::make_shared<Object>(*objType, Id::Invalid);
+        (*obj)["name"] = t.name;
+
+        std::vector<ObjectPtr> fields;
+
+        for(auto f : t.fields)
+        {
+            auto field = std::make_shared<Object>(*objType, Id::Invalid);
+            (*obj)["name"] = f.name;
+            (*obj)["type"] = to_string(f.type);
+        }
+
+        (*obj)["fields"] = fields;
+
+        result.push_back(obj);
+    }
+
+    return result;
+}
+
 }

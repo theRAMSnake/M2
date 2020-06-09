@@ -99,11 +99,16 @@ Command* parseModify(const boost::property_tree::ptree& src)
    return new ModifyCommand(id, writeJson(params));
 }
 
-Command* parseSearch(const boost::property_tree::ptree& src)
+Command* parseDescribe(const boost::property_tree::ptree& src)
 {
-   auto phrase = getOrThrow<std::string>(src, "phrase", "Phrase is not specified");
+   return new DescribeCommand();
+}
 
-   return new SearchCommand(phrase);
+Command* parseChangeType(const boost::property_tree::ptree& src)
+{
+   auto id = getOrThrow<Id>(src, "id", "Id is not specified");
+   auto typeName = getOrThrow<std::string>(src, "typename", "Typename is not specified");
+   return new ChangeTypeCommand(id, typeName);
 }
 
 struct CommandDef
@@ -117,7 +122,8 @@ std::vector<CommandDef> gCommandParsers = {
     {"query", parseQuery},
     {"destroy", parseDestroy},
     {"modify", parseModify},
-    {"search", parseSearch}
+    {"describe", parseDescribe},
+    {"change_type", parseChangeType}
 };
 
 std::unique_ptr<Command> parseCommand(const std::string& json)

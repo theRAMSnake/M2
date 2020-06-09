@@ -72,11 +72,10 @@ private:
     const std::string mParams;
 };
 
-class SearchCommand : public Command
+class DescribeCommand : public Command
 {
 public:
-    SearchCommand(const std::string& phrase){}
-    ExecutionResult execute(ObjectManager& objManager) override{return "";}
+    ExecutionResult execute(ObjectManager& objManager) override;
 };
 
 }

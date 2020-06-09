@@ -67,4 +67,9 @@ ExecutionResult DestroyCommand::execute(ObjectManager& objManager)
     return Success{};
 }
 
+ExecutionResult DescribeCommand::execute(ObjectManager& objManager)
+{
+    return objManager.describe();
+}
+
 }
