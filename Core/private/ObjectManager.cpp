@@ -129,8 +129,10 @@ std::vector<ObjectPtr> ObjectManager::describe() const
         for(auto f : t.fields)
         {
             auto field = std::make_shared<Object>(*objType, Id::Invalid);
-            (*obj)["name"] = f.name;
-            (*obj)["type"] = to_string(f.type);
+            (*field)["name"] = f.name;
+            (*field)["type"] = to_string(f.type);
+
+            fields.push_back(field);
         }
 
         (*obj)["fields"] = fields;
