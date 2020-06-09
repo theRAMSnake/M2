@@ -18,6 +18,7 @@ public:
     std::vector<ObjectPtr> query(const Filter& f);
     void destroy(const Id id);
     std::vector<ObjectPtr> describe() const;
+    ObjectPtr get(const Id id);
 
 private:
     TypeHandler& getHandler(const std::string& typeName);

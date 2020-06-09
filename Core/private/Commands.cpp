@@ -72,4 +72,21 @@ ExecutionResult DescribeCommand::execute(ObjectManager& objManager)
     return objManager.describe();
 }
 
+ChangeTypeCommand::ChangeTypeCommand(const Id& id, const std::string& typeName)
+: mId(id)
+, mTypeName(typeName)
+{
+
+}
+
+ExecutionResult ChangeTypeCommand::execute(ObjectManager& objManager)
+{
+    auto obj = objManager.get(mId);
+    objManager.destroy(mId);
+
+    JsonRestorationProvider provider(obj->toJson());
+    objManager.create(mId, mTypeName, provider);
+    return Success{};
+}
+
 }

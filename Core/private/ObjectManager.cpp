@@ -141,4 +141,17 @@ std::vector<ObjectPtr> ObjectManager::describe() const
     return result;
 }
 
+ObjectPtr ObjectManager::get(const Id id)
+{
+    for(auto& h : mHandlers)
+    {
+        if(h.second->contains(id))
+        {
+            return *h.second->get(id);
+        }
+    }
+
+    throw std::runtime_error(fmt::format("Object with id {} not found", id.getGuid()));
+}
+
 }

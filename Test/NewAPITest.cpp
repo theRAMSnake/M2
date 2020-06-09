@@ -62,7 +62,6 @@ BOOST_FIXTURE_TEST_CASE( TestCreate, NewAPITest )
     query.put("filter", "IS(variable)");
 
     auto result = mCore->executeCommandJson(writeJson(query));
-    std::cout << '!' << result;
 
     auto ol = readJson<boost::property_tree::ptree>(result);
     
@@ -214,4 +213,46 @@ BOOST_FIXTURE_TEST_CASE( TestQueryFilter, NewAPITest )
     {
        BOOST_CHECK(v.second.get<int>("value") < 3);
     }
+}
+
+BOOST_FIXTURE_TEST_CASE( TestDescribe, NewAPITest ) 
+{
+    boost::property_tree::ptree d;
+    d.put("operation", "describe");
+    std::cout << mCore->executeCommandJson(writeJson(d));
+}
+
+BOOST_FIXTURE_TEST_CASE( TestChType, NewAPITest ) 
+{
+    boost::property_tree::ptree create;
+    create.put("operation", "create");
+    create.put("typename", "object");
+    create.put("defined_id", "id");
+    create.put("params.value", "a");
+
+    mCore->executeCommandJson(writeJson(create));
+
+    boost::property_tree::ptree chType;
+    chType.put("operation", "change_type");
+    chType.put("typename", "variable");
+    chType.put("id", "id");
+
+    mCore->executeCommandJson(writeJson(chType));
+
+    boost::property_tree::ptree query;
+    query.put("operation", "query");
+    query.put("filter", "IS(variable)");
+
+    auto result = mCore->executeCommandJson(writeJson(query));
+
+    auto ol = readJson<boost::property_tree::ptree>(result);
+    
+    unsigned int counter = 0;
+    for(auto& v : ol.get_child("object_list"))
+    {
+       (void)v;
+       counter++;
+    }
+
+    BOOST_CHECK_EQUAL(1, counter);
 }
