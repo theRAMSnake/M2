@@ -21,7 +21,6 @@ std::string genName3()
 int main(int argc,  char** argv)
 {
    std::string password = materia::getPassword();
-   std::cout << password;
 
    zmq::context_t context(1);
    zmq::socket_t socket(context, ZMQ_REQ);

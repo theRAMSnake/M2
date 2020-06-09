@@ -47,28 +47,18 @@ std::shared_ptr<Filter> parseFilter(const boost::property_tree::ptree& src)
     }
 }
 
-std::vector<std::string> parseTraits(const boost::property_tree::ptree& src)
-{
-    std::vector<std::string> result;
-    auto val = src.get_child_optional("traits");
-    if(val)
-    {
-        for(auto x : *val)
-        {
-            result.push_back(x.second.get_value<std::string>());
-        }
-    }
-
-    return result;
-}
-
 Command* parseCreate(const boost::property_tree::ptree& src)
 {
-   auto traits = parseTraits(src);
+   auto typeName = getOrThrow<std::string>(src, "typename", "Typename is not specified");
+   std::optional<Id> stdid;
    auto id = src.get_optional<std::string>("defined_id");
+   if(id)
+   {
+       stdid = *id;
+   }
    auto params = parseParams(src);
 
-   return new CreateCommand(traits, id ? Id(*id) : Id::Invalid, params);
+   return new CreateCommand(stdid, typeName, writeJson(params));
 }
 
 std::vector<Id> parseIds(const boost::property_tree::ptree& src)
@@ -106,22 +96,19 @@ Command* parseModify(const boost::property_tree::ptree& src)
    auto id = getOrThrow<Id>(src, "id", "Id is not specified");
    auto params = parseParams(src);
 
-   return new ModifyCommand(id, params);
+   return new ModifyCommand(id, writeJson(params));
 }
 
-Command* parseCall(const boost::property_tree::ptree& src)
+Command* parseDescribe(const boost::property_tree::ptree& src)
 {
-   auto opName = getOrThrow<std::string>(src, "script", "Script is not specified");
-   auto params = parseParams(src);
-
-   return new CallCommand(opName, params);
+   return new DescribeCommand();
 }
 
-Command* parseSearch(const boost::property_tree::ptree& src)
+Command* parseChangeType(const boost::property_tree::ptree& src)
 {
-   auto phrase = getOrThrow<std::string>(src, "phrase", "Phrase is not specified");
-
-   return new SearchCommand(phrase);
+   auto id = getOrThrow<Id>(src, "id", "Id is not specified");
+   auto typeName = getOrThrow<std::string>(src, "typename", "Typename is not specified");
+   return new ChangeTypeCommand(id, typeName);
 }
 
 struct CommandDef
@@ -135,8 +122,8 @@ std::vector<CommandDef> gCommandParsers = {
     {"query", parseQuery},
     {"destroy", parseDestroy},
     {"modify", parseModify},
-    {"call", parseCall},
-    {"search", parseSearch}
+    {"describe", parseDescribe},
+    {"change_type", parseChangeType}
 };
 
 std::unique_ptr<Command> parseCommand(const std::string& json)

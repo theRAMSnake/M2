@@ -4,11 +4,12 @@ project(m2core)
 LIST(APPEND CMAKE_MODULE_PATH "..")
 
 include_directories("..")
+include_directories("/usr/include/python3.8")
 
 add_library(m2core 
 private/Core.cpp
 private/Core3.cpp
-private/TraitSystem.cpp
+private/TypeSystem.cpp
 private/CommandParser.cpp
 private/Expressions.cpp
 private/Commands.cpp
@@ -21,6 +22,7 @@ private/Journal.cpp
 private/Strategy_v2.cpp
 private/Logger.cpp
 private/JsonSerializer.cpp
+private/JsonRestorationProvider.cpp
 private/Backuper.cpp
 private/StrategyGraph.cpp
 private/NodeAttributes.cpp
@@ -29,6 +31,8 @@ private/FreeDataInterpreter.cpp
 private/Finance.cpp
 private/Reward.cpp
 private/Challenge.cpp
+private/Object.cpp
+private/TypeHandler.cpp
 )
 
 find_package(Boost COMPONENTS system REQUIRED)

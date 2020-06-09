@@ -1,43 +1,31 @@
 #pragma once
-#include "TraitSystem.hpp"
+#include "TypeSystem.hpp"
 #include "Database.hpp"
 #include "Expressions.hpp"
+#include "TypeHandler.hpp"
 
 namespace materia
 {
 
-using Filter = Expression;
-
-class ITypeHandler
-{
-public:
-    virtual Id create(const Id id, const std::vector<std::string>& traits, const Params& params) = 0;
-    virtual std::vector<Params> query(const std::vector<Id>& ids) = 0;
-    virtual std::vector<Params> query(const Filter& f) = 0;
-    virtual std::optional<Params> get(const Id& id) = 0;
-    virtual bool destroy(const Id id) = 0;
-    virtual void modify(const Id id, const Params& params) = 0;
-};
-
 class ObjectManager
 {
 public:
-    ObjectManager(Database& db, TraitSystem& types);
+    ObjectManager(Database& db, TypeSystem& types);
 
-    Id create(const std::vector<std::string>& traits, const Id id, const Params& params);
-    void modify(const Id id, const Params& params);
-    std::vector<Params> query(const std::vector<Id>& ids);
-    std::vector<Params> query(const Filter& filter);
+    ObjectPtr create(const std::optional<Id> id, const std::string& type, const IValueProvider& provider);
+    void modify(const Id id, const IValueProvider& provider);
+    std::vector<ObjectPtr> query(const std::vector<Id>& ids);
+    std::vector<ObjectPtr> query(const Filter& f);
     void destroy(const Id id);
+    std::vector<ObjectPtr> describe() const;
+    ObjectPtr get(const Id id);
 
 private:
-    ITypeHandler& getHandler(const std::string& traitName);
-    std::optional<std::tuple<ITypeHandler&, Params>> lookup(const Id id);
+    TypeHandler& getHandler(const std::string& typeName);
 
-    std::map<std::string, std::shared_ptr<ITypeHandler>> mHandlers;
-    std::shared_ptr<ITypeHandler> mDefaultHandler;
+    std::map<std::string, std::shared_ptr<TypeHandler>> mHandlers;
     Database& mDb;
-    TraitSystem& mTypes;
+    TypeSystem& mTypes;
 };
 
 }

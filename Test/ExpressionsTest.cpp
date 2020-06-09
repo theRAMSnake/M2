@@ -18,10 +18,16 @@ protected:
 
 };
 
+materia::TypeDef gType {
+   "test",
+   "test",
+   {{"some", materia::Type::Int}}
+};
+
 BOOST_FIXTURE_TEST_CASE( TestValueExp, ExpressionsTest ) 
 {  
-   materia::Params p;
-   p.put("some", 6);
+   materia::Object p(gType, materia::Id::Invalid);
+   p["some"] = 6;
 
    BOOST_CHECK_EQUAL(5, std::get<int>(materia::parseExpression("5")->evaluate(p)));
    BOOST_CHECK_EQUAL(5.0, std::get<double>(materia::parseExpression("5.0")->evaluate(p)));
@@ -32,8 +38,8 @@ BOOST_FIXTURE_TEST_CASE( TestValueExp, ExpressionsTest )
 
 BOOST_FIXTURE_TEST_CASE( TestSimpleBinaryExp, ExpressionsTest ) 
 {
-   materia::Params p;
-   p.put("some", 6);
+   materia::Object p(gType, materia::Id::Invalid);
+   p["some"] = 6;
 
    BOOST_CHECK_EQUAL(true, std::get<bool>(materia::parseExpression(".some < 10")->evaluate(p)));
    BOOST_CHECK_EQUAL(false, std::get<bool>(materia::parseExpression(".some < 5")->evaluate(p)));
@@ -47,26 +53,27 @@ BOOST_FIXTURE_TEST_CASE( TestSimpleBinaryExp, ExpressionsTest )
 
 BOOST_FIXTURE_TEST_CASE( TestContainsExp, ExpressionsTest ) 
 {
-   materia::Params p;
-   p.put("some", "aaa");
-   p.put("some1", "aa");
-   p.put("some2", "bb");
+   materia::Object p(gType, materia::Id::Invalid);
+   p["som"] = std::string("aaa");
+   p["some1"] = std::string("aa");
+   p["some2"] = std::string("bb");
 
-   BOOST_CHECK_EQUAL(true, std::get<bool>(materia::parseExpression(".some contains .some1")->evaluate(p)));
-   BOOST_CHECK_EQUAL(false, std::get<bool>(materia::parseExpression(".some contains .some2")->evaluate(p)));
+   std::cout << p.toJson();
+   BOOST_CHECK_EQUAL(true, std::get<bool>(materia::parseExpression(".som contains .some1")->evaluate(p)));
+   BOOST_CHECK_EQUAL(false, std::get<bool>(materia::parseExpression(".som contains .some2")->evaluate(p)));
 }
 
 BOOST_FIXTURE_TEST_CASE( TestAndOrExp, ExpressionsTest ) 
 {
-   materia::Params p;
-   p.put("some", "aaa");
-   p.put("some1", "aa");
-   p.put("some3", "bb");
-   p.put("some2", 6);
+   materia::Object p(gType, materia::Id::Invalid);
+   p["some"] = 6;
+   p["som"] = std::string("aaa");
+   p["some1"] = std::string("aa");
+   p["some3"] = std::string("bb");
 
-   BOOST_CHECK_EQUAL(true, std::get<bool>(materia::parseExpression(".some contains .some1 AND .some2 < 10")->evaluate(p)));
-   BOOST_CHECK_EQUAL(false, std::get<bool>(materia::parseExpression(".some contains .some1 AND .some2 < 1")->evaluate(p)));
+   BOOST_CHECK_EQUAL(true, std::get<bool>(materia::parseExpression(".som contains .some1 AND .some < 10")->evaluate(p)));
+   BOOST_CHECK_EQUAL(false, std::get<bool>(materia::parseExpression(".som contains .some1 AND .some < 1")->evaluate(p)));
 
-   BOOST_CHECK_EQUAL(true, std::get<bool>(materia::parseExpression(".some contains .some1 OR .some2 < 10")->evaluate(p)));
-   BOOST_CHECK_EQUAL(false, std::get<bool>(materia::parseExpression(".some contains .some3 OR .some2 < 1")->evaluate(p)));
+   BOOST_CHECK_EQUAL(true, std::get<bool>(materia::parseExpression(".som contains .some1 OR .some < 10")->evaluate(p)));
+   BOOST_CHECK_EQUAL(false, std::get<bool>(materia::parseExpression(".som contains .some3 OR .some < 1")->evaluate(p)));
 }
