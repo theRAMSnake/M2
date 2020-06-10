@@ -1,5 +1,7 @@
 #include "TypeHandler.hpp"
 #include "JsonRestorationProvider.hpp"
+//MH
+#include "JsonSerializer.hpp"
 
 namespace materia
 {
@@ -12,6 +14,38 @@ TypeHandler::TypeHandler(const TypeDef& type, Database& db)
     {
         mIds.insert(id);
     });
+
+    //Migration hack
+    std::vector<ObjectPtr> result;
+    std::vector<Id> waste;
+    auto slStorage = db.getTable("lists");
+
+    mStorage->foreach([&](std::string id, std::string json) 
+    {
+        if(json.find("traits") != std::string::npos)
+        {
+            auto ptree = readJson<boost::property_tree::ptree>(json);
+            auto item = ptree.get_child("items");
+
+            std::vector<std::string> items;
+            for(auto i : item)
+            {
+                items.push_back(i.second.get<std::string>("text"));
+            }
+
+            TypeDef t = {"simple_list", "lists", {{"objects", Type::Array}}};
+            auto newObject = std::make_shared<Object>(t, id);
+            (*newObject)["objects"] = items;
+
+            waste.push_back(id);
+            slStorage->store(id, newObject->toJson());
+        }
+    });
+
+    for(auto i : waste)
+    {
+        mStorage->erase(i);
+    }
 }
 
 ObjectPtr TypeHandler::create(const std::optional<Id> id, const IValueProvider& provider)
