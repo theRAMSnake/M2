@@ -10,6 +10,7 @@ Object::Object(const TypeDef& type, const Id id)
 : mTypeDef(type)
 {
     (*this)["id"] = id;
+    (*this)["typename"] = mTypeDef.name;
 
     for(auto f : mTypeDef.fields)
     {
