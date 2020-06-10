@@ -52,14 +52,14 @@ BOOST_FIXTURE_TEST_CASE( TestCreate, NewAPITest )
 {  
     boost::property_tree::ptree create;
     create.put("operation", "create");
-    create.put("typename", "variable");
+    create.put("typename", "simple_list");
     create.put("params.value", "a");
 
     BOOST_CHECK(expectId(mCore->executeCommandJson(writeJson(create))));
 
     boost::property_tree::ptree query;
     query.put("operation", "query");
-    query.put("filter", "IS(variable)");
+    query.put("filter", "IS(simple_list)");
 
     auto result = mCore->executeCommandJson(writeJson(query));
 

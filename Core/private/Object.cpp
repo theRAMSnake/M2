@@ -20,7 +20,7 @@ Object::Object(const TypeDef& type, const Id id)
             case Type::Double: p = 0.0;break;
             case Type::Bool: p = false;break;
             case Type::String: p = std::string();break;
-            case Type::Array: p = std::string();break;
+            case Type::Array: p = std::vector<std::string>();break;
         }
     }
 }
