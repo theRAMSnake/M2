@@ -5,7 +5,7 @@ const pass = require("../pass");
 const router = new express.Router();
 
 const sock = new zmq.Request
-sock.connect("tcp://62.171.175.23:5756")
+sock.connect("tcp://localhost:5756")
 
 async function materiaGet(req)
 {
@@ -13,8 +13,6 @@ async function materiaGet(req)
 
     const IV = key.subarray(0, 16);
     var plaintext = req;
-
-    console.log(plaintext);
  
     let cipher = crypto.createCipheriv('aes-256-cbc', key, IV);
     cipher.setAutoPadding(true);

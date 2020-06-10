@@ -4,6 +4,8 @@ let pass = 'undefined'
 try
 {
     pass = fs.readFileSync('/materia/passwd', 'utf8');
+    pass = pass.replace("\r", "");
+    pass = pass.replace("\n", "");
 }
 catch (e)
 {
