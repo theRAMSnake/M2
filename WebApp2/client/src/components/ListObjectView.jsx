@@ -73,19 +73,13 @@ export default function ListObjectView(props)
 
     function addItem(newItem)
     {
-        if(!object.items)
+        if(!object.objects)
         {
-            var items = [{
-                text: newItem
-            }];
-
-            object['items'] = items;            
+            object['objects'] = [newItem];            
         }
         else
         {
-            object['items'].push({
-                text: newItem
-            });
+            object['objects'].push(newItem);
         }
 
         props.onChange(JSON.parse(JSON.stringify(object)));
@@ -93,9 +87,7 @@ export default function ListObjectView(props)
 
     function modifyItem(newItem)
     {
-        object['items'][focusedItemIndex] = {
-            text: newItem
-        };
+        object['objects'][focusedItemIndex] = newItem;
 
         props.onChange(JSON.parse(JSON.stringify(object)));
 
@@ -143,7 +135,7 @@ export default function ListObjectView(props)
     {
         setInDeleteDialog(false);
 
-        object['items'].splice(focusedItemIndex, 1);
+        object['objects'].splice(focusedItemIndex, 1);
 
         props.onChange(JSON.parse(JSON.stringify(object)));
 
@@ -158,7 +150,7 @@ export default function ListObjectView(props)
         }
         else
         {
-            return object['items'][focusedItemIndex].text;
+            return object['objects'][focusedItemIndex];
         }
     }
 
@@ -169,16 +161,14 @@ export default function ListObjectView(props)
         if(!object.items)
         {
             var items = [];
-            object['items'] = items;            
+            object['objects'] = items;            
         }
 
         var array = text.split('\n');
         var i = 0;
         for(i = 0; i < array.length; ++i)
         {
-            object['items'].push({
-                text: array[i]
-            });
+            object['objects'].push(array[i]);
         }
 
         props.onChange(JSON.parse(JSON.stringify(object)));
@@ -202,9 +192,9 @@ export default function ListObjectView(props)
 
     function getRandomItemText()
     {
-        if(object.items)
+        if(object.objects)
         {
-            return object.items[Math.floor(Math.random() * object.items.length)].text;
+            return object.objects[Math.floor(Math.random() * object.objects.length)];
         }
 
         return '';
@@ -220,7 +210,7 @@ export default function ListObjectView(props)
         setInClearDialog(false);
 
         var items = [];
-        object['items'] = items;
+        object['objects'] = items;
 
         props.onChange(JSON.parse(JSON.stringify(object)));
     }
@@ -255,12 +245,12 @@ export default function ListObjectView(props)
                     </IconButton>
                 </Toolbar>
             </AppBar>
-            {object.items &&
+            {object.objects &&
             <List>
-                {object.items.map((item, index) =>
+                {object.objects.map((item, index) =>
                     <div>
                         <ListItem button onClick={event => prepareModify(index)}>
-                            <ListItemText primary={item.text} />
+                            <ListItemText primary={item} />
                             <ListItemSecondaryAction>
                                 <IconButton edge="end" aria-label="delete" onClick={() => prepareDelete(index)}>
                                     <DeleteIcon />

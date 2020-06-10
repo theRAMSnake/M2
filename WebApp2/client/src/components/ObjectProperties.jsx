@@ -11,11 +11,11 @@ import {
     Checkbox
 } from '@material-ui/core'
 
-function buildPropertiesTemplate(type)
+function buildPropertiesTemplate(typename)
 {
     var result = [];
 
-    const type = m3proxy.getType(type);
+    const type = m3proxy.getType(typename);
     if(type.fields)
     {
         var j = 0;
@@ -79,13 +79,13 @@ export default function ObjectProperties(props)
     function createPropCtrl(req)
     {
         if(req.type === 'string') 
-            return <TextField inputProps={{onChange: handleFieldChange}} value={props.object[req.field]} fullWidth id={req.field} label={req.field} />;
+            return <TextField inputProps={{onChange: handleFieldChange}} value={props.object[req.name]} fullWidth id={req.name} label={req.name} />;
         if(req.type === 'bool') 
-            return <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: handleCbChange}} id={req.field} checked={props.object[req.field]} />} label={req.field} />
+            return <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: handleCbChange}} id={req.name} checked={props.object[req.name]} />} label={req.name} />
         if(req.type === 'int') 
-            return <TextField inputProps={{onChange: handleIntFieldChange, type: 'number'}} value={props.object[req.field]} id={req.field} fullWidth label={req.field} />;
+            return <TextField inputProps={{onChange: handleIntFieldChange, type: 'number'}} value={props.object[req.name]} id={req.name} fullWidth label={req.name} />;
         if(req.type === 'double') 
-            return <TextField inputProps={{onChange: handleDoubleFieldChange, type: 'number', step:'any'}} value={props.object[req.field]} id={req.field} fullWidth label={req.field} />;
+            return <TextField inputProps={{onChange: handleDoubleFieldChange, type: 'number', step:'any'}} value={props.object[req.name]} id={req.name} fullWidth label={req.name} />;
     }
 
     return (

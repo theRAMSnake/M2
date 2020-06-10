@@ -31,15 +31,15 @@ import EditIcon from '@material-ui/icons/Edit';
 
 function getObjectThumbnail(obj)
 {
-    const type = m3proxy.getType(obj.type);
-    if(type.fields && type.fields.length == 1)
-    {
-        return (<SimpleThumbnail value={obj[type.fields[0].name]}/>);
-    }
-
+    const type = m3proxy.getType(obj.typename);
     if(type.name === 'simple_list')
     {
         return (<ListThumbnail value={obj}/>);
+    }
+
+    if(type.fields && type.fields.length == 1)
+    {
+        return (<SimpleThumbnail value={obj[type.fields[0].name]}/>);
     }
 
     return (<DefaultThumbnail value={obj}/>);
@@ -105,7 +105,7 @@ function ObjectView(props)
 
     function getObjectDialog()
     {
-        if(obj.type === 'simple_list')
+        if(obj.typename === 'simple_list')
         {
             return <ListObjectView open={inEditDialog} object={object} onChange={onObjectChangedAndCommit} onClose={onEditDialogCancel}/>
         }
