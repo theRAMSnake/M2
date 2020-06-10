@@ -31,21 +31,22 @@ const useStyles = makeStyles((theme) =>
 function createDefault(type)
 {
     if(type === 'string') return "";
+    if(type === 'array') return "";
     if(type === 'bool') return false;
     if(type === 'int') return 0;
     if(type === 'double') return 0.0;
 }
 
-function createObjectBody(traitName)
+function createObjectBody(typeName)
 {
     var result = {};
-    const trait = m3proxy.getTrait(traitName);
-    if(trait.requires)
+    const type = m3proxy.getType(typeName);
+    if(type.fields)
     {
         var j = 0;
-        for (j = 0; j < trait.requires.length; j++)
+        for (j = 0; j < type.fields.length; j++)
         {
-            result[trait.requires[j].field] = createDefault(trait.requires[j].type);
+            result[type.fields[j].name] = createDefault(type.fields[j].type);
         }
     }
 
@@ -55,7 +56,7 @@ function createObjectBody(traitName)
 
 function AddItemDialog(props)
 {
-    const [selectedTrait, setSelectedTrait] = useState('')
+    const [selectedType, setSelectedType] = useState('')
     const [selectedId, setSelectedId] = useState("")
     const [objectBody, setObjectBody] = useState()
     const [requesting, setRequesting] = useState(false)
@@ -70,12 +71,12 @@ function AddItemDialog(props)
     {
         var req = selectedId === "" ? {
             operation: "create",
-            traits: [selectedTrait],
+            typename: selectedType,
             params: objectBody
         } : {
             operation: "create",
             defined_id: selectedId,
-            traits: [selectedTrait],
+            typename: selectedType,
             params: objectBody
         };
 
@@ -94,9 +95,9 @@ function AddItemDialog(props)
         });
     }
 
-    function selectedTraitChange(e)
+    function selectedTypeChange(e)
     {
-        setSelectedTrait(e.target.value);
+        setSelectedType(e.target.value);
         setObjectBody(createObjectBody(e.target.value));
     }
 
@@ -115,22 +116,22 @@ function AddItemDialog(props)
             <DialogTitle id="dialog-title">Create new object</DialogTitle>
             <DialogContent>
                 <FormControl className={classes.formControl} fullWidth>
-                    <InputLabel htmlFor="trait">Trait</InputLabel>
+                    <InputLabel htmlFor="type">Type</InputLabel>
                     <Select
                         native
-                        value={selectedTrait}
-                        onChange={selectedTraitChange}
+                        value={selectedType}
+                        onChange={selectedTypeChange}
                         inputProps={{
-                            name: 'trait',
-                            id: 'trait',
+                            name: 'type',
+                            id: 'type',
                         }}
                         >
                         <option aria-label="None" value="" />
-                        {m3proxy.getTraits().map((obj) => <option aria-label="None" value={obj.name} >{obj.name}</option>)}
+                        {m3proxy.getTypes().map((obj) => <option aria-label="None" value={obj.name} >{obj.name}</option>)}
                     </Select>
                 </FormControl>
                 <TextField margin="dense" id="id_name" label="Id" fullWidth  inputProps={{onChange: onIdChanged}}/>
-                <ObjectProperties height = '30vh' width='100%' onChange={onObjectChanged} traits={[selectedTrait]} object={objectBody}/>
+                <ObjectProperties height = '30vh' width='100%' onChange={onObjectChanged} type={selectedType} object={objectBody}/>
             </DialogContent>
             {!requesting && <DialogActions>
                 <Button onClick={handleClose} variant="contained" color="primary">

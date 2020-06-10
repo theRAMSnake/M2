@@ -1,6 +1,6 @@
 import MateriaRequest from '../modules/materia_request'
 
-var traits;
+var types;
 var init = false;
 
 class m3Proxy
@@ -13,12 +13,11 @@ class m3Proxy
         }
 
         const req = {
-            operation: "query",
-            filter: "IS(trait)"
+            operation: "describe"
         };
     
         MateriaRequest.req(JSON.stringify(req), (r) => {
-            traits = JSON.parse(r).object_list;
+            types = JSON.parse(r).object_list;
         });
 
         console.log("m3proxy init started");
@@ -26,19 +25,19 @@ class m3Proxy
         init = true;
     }
 
-    static getTraits()
+    static getTypes()
     {
-        return traits;
+        return types;
     }
 
-    static getTrait(name)
+    static getType(name)
     {
         var i = 0;
-        for (i = 0; i < traits.length; i++)
+        for (i = 0; i < types.length; i++)
         {
-            if(traits[i].name === name)
+            if(types[i].name === name)
             {
-                return traits[i];
+                return types[i];
             }
         }
 

@@ -11,21 +11,17 @@ import {
     Checkbox
 } from '@material-ui/core'
 
-function buildPropertiesTemplate(traits)
+function buildPropertiesTemplate(type)
 {
     var result = [];
 
-    var i = 0;
-    for (i = 0; i < traits.length; i++)
+    const type = m3proxy.getType(type);
+    if(type.fields)
     {
-        const trait = m3proxy.getTrait(traits[i]);
-        if(trait.requires)
+        var j = 0;
+        for (j = 0; j < type.fields.length; j++)
         {
-            var j = 0;
-            for (j = 0; j < trait.requires.length; j++)
-            {
-                result.push(trait.requires[j]);
-            }
+            result.push(type.fields[j]);
         }
     }
 
@@ -34,7 +30,7 @@ function buildPropertiesTemplate(traits)
 
 export default function ObjectProperties(props)
 {
-    const propertiesTemplate = buildPropertiesTemplate(props.traits);
+    const propertiesTemplate = buildPropertiesTemplate(props.type);
 
     const [jsonView, setJsonView] = useState(false);
 

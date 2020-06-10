@@ -31,18 +31,15 @@ import EditIcon from '@material-ui/icons/Edit';
 
 function getObjectThumbnail(obj)
 {
-    if(obj.traits.length == 1)
+    const type = m3proxy.getType(obj.type);
+    if(type.fields && type.fields.length == 1)
     {
-        const trait = m3proxy.getTrait(obj.traits[0]);
-        if(trait.requires && trait.requires.length == 1)
-        {
-            return (<SimpleThumbnail value={obj[trait.requires[0].field]}/>);
-        }
+        return (<SimpleThumbnail value={obj[type.fields[0].name]}/>);
+    }
 
-        if(trait.name === 'simple_list')
-        {
-            return (<ListThumbnail value={obj}/>);
-        }
+    if(type.name === 'simple_list')
+    {
+        return (<ListThumbnail value={obj}/>);
     }
 
     return (<DefaultThumbnail value={obj}/>);
@@ -108,14 +105,14 @@ function ObjectView(props)
 
     function getObjectDialog()
     {
-        if(obj.traits.length == 1 && obj.traits[0] === 'simple_list')
+        if(obj.type === 'simple_list')
         {
             return <ListObjectView open={inEditDialog} object={object} onChange={onObjectChangedAndCommit} onClose={onEditDialogCancel}/>
         }
 
         return (<Dialog open={inEditDialog} onClose={onEditDialogCancel} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
             <DialogContent>
-                <ObjectProperties height = '70vh' width='50vh' object={objectInEdit} onChange={onObjectChanged} traits={object.traits}/>
+                <ObjectProperties height = '70vh' width='50vh' object={objectInEdit} onChange={onObjectChanged} type={object.type}/>
             </DialogContent>
             <DialogActions>
                 <Button variant="contained" onClick={onEditDialogCancel} color="primary">
@@ -134,7 +131,7 @@ function ObjectView(props)
             <CardHeader 
                 avatar={<Avatar><SettingsIcon /></Avatar>}
                 title={<Typography variant="body1" color='secondary'>{obj.name ? obj.name : obj.id}</Typography>}
-                subheader={obj.traits.join()}
+                subheader={obj.type}
                 action={
                     <div>
                         <IconButton onClick={editClicked}>
