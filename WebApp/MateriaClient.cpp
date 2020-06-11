@@ -7,11 +7,9 @@ MateriaClient::MateriaClient(const std::string& password)
 {
     mSocket.connect("tcp://localhost:5757");
     mCalendar.reset(new CalendarModel(mChannel));
-    mInbox.reset(new InboxModel(mChannel));
     mJournal.reset(new JournalModel(mChannel));
     mChallenge.reset(new ChallengeModel(mChannel));
     mStrategy.reset(new StrategyModel(mChannel, *mChallenge));
-    mFreeData.reset(new FreeDataModel(mChannel));
     mFinance.reset(new FinanceModel(mChannel));
     mReward.reset(new RewardModel(mChannel));
 }
@@ -19,11 +17,6 @@ MateriaClient::MateriaClient(const std::string& password)
 CalendarModel& MateriaClient::getCalendar()
 {
    return *mCalendar;
-}
-
-InboxModel& MateriaClient::getInbox()
-{
-   return *mInbox;
 }
 
 JournalModel& MateriaClient::getJournal()
@@ -45,12 +38,6 @@ StrategyModel& MateriaClient::getStrategy()
 {
    return *mStrategy;
 }
-
-FreeDataModel& MateriaClient::getFreeData()
-{
-   return *mFreeData;
-}
-
 ChallengeModel& MateriaClient::getChallenge()
 {
    return *mChallenge;

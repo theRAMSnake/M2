@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDom from 'react-dom';
 import LoginPage from './components/LoginPage.jsx';
 import MainPage from './components/MainPage.jsx';
-import Auth from './modules/Auth';
+import Auth from './modules/auth';
 import { ThemeProvider } from "@material-ui/styles";
 
 import {

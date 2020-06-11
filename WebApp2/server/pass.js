@@ -3,7 +3,8 @@ var fs = require('fs');
 let pass = 'undefined'
 try
 {
-    pass = fs.readFileSync('/materia/pass                          wd', 'utf8');
+    pass = fs.readFileSync('/materia/passwd', 'utf8');
+    pass = pass.replace('\n', '');
 }
 catch (e)
 {

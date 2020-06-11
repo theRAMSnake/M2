@@ -1,6 +1,6 @@
 import React from 'react';
 import LoginForm from './LoginForm.jsx';
-import Auth from '../modules/Auth';
+import Auth from '../modules/auth';
 
 class LoginPage extends React.Component {
     constructor(props) {

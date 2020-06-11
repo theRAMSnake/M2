@@ -1,48 +1,34 @@
 package snakesoft.minion.materia
 
-import com.google.protobuf.InvalidProtocolBufferException
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JSON
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.list
 
-import common.Common
-import inbox.Inbox
+@Serializable
+data class Query(val operation: String = "query", val ids: List<String>)
+
+@Serializable
+data class Object(val id: String, val typename: String, val objects: List<String>)
+
+@Serializable
+data class ListParams(val objects: List<String>)
+
+@Serializable
+data class Modify(val operation: String = "modify", val id: String, val params: ListParams)
+
+@Serializable
+data class ObjectList(val id: String, val typename: String, val object_list: List<Object>)
 
 class InboxServiceProxy(private val mMateriaConnection: MateriaConnection)
 {
-    @Throws(InvalidProtocolBufferException::class, MateriaUnreachableException::class)
-    fun loadInbox(): Inbox.InboxItems
+    fun update(items: List<String>)
     {
-        return Inbox.InboxItems.parseFrom(mMateriaConnection.sendMessage(
-            Common.EmptyMessage.newBuilder().build().toByteString(),
-            "InboxService",
-            "GetInbox"))
-    }
+        val jsonData = JSON.stringify(Query.serializer(), Query("query", listOf("inbox")))
+        val inbox = JSON.parse(ObjectList.serializer(), mMateriaConnection.sendMessage(jsonData)).object_list[0]
 
-    @Throws(InvalidProtocolBufferException::class, MateriaUnreachableException::class)
-    fun deleteItem(id: Common.UniqueId)
-    {
-        mMateriaConnection.sendMessage(
-                id.toByteString(),
-                "InboxService",
-                "DeleteItem"
-        )
-    }
-
-    @Throws(InvalidProtocolBufferException::class, MateriaUnreachableException::class)
-    fun addItem(item: Inbox.InboxItemInfo): Common.UniqueId
-    {
-        return Common.UniqueId.parseFrom(mMateriaConnection.sendMessage(
-                item.toByteString(),
-                "InboxService",
-                "AddItem"
-        ))
-    }
-
-    @Throws(InvalidProtocolBufferException::class, MateriaUnreachableException::class)
-    fun editItem(item: Inbox.InboxItemInfo): Boolean
-    {
-        return Common.OperationResultMessage.parseFrom(mMateriaConnection.sendMessage(
-                item.toByteString(),
-                "InboxService",
-                "EditItem"
-        )).success
+        var md = Modify("modify", inbox.id, ListParams(inbox.objects + items))
+        val jsonDataM = JSON.stringify(Modify.serializer(), md)
+        mMateriaConnection.sendMessage(jsonDataM)
     }
 }

@@ -5,22 +5,15 @@ namespace materia
 
 Core::Core(Database& db, const std::string& dbFileName)
 : mDb(db)
-, mInbox(mDb)
 , mReward(mDb)
 , mCalendar(mDb, mReward)
 , mJournal(mDb)
-, mFreeData(mDb)
 , mChallenge(mDb, mReward)
-, mStrategy_v2(mDb, mFreeData, mReward, mChallenge)
+, mStrategy_v2(mDb, mReward, mChallenge)
 , mBackuper(dbFileName)
 , mFinance(mDb)
 {
 
-}
-
-IInbox& Core::getInbox()
-{
-   return mInbox;
 }
 
 ICalendar& Core::getCalendar()
@@ -43,11 +36,6 @@ IJournal& Core::getJournal()
    return mJournal;
 }
 
-IFreeData& Core::getFreeData()
-{
-   return mFreeData;
-}
-
 IFinance& Core::getFinance()
 {
    return mFinance;
@@ -65,13 +53,7 @@ IChallenge& Core::getChallenge()
 
 void Core::onNewDay()
 {
-   if(mInbox.get().size() == 0 && rand() % 10 == 0)
-   {
-      mReward.addPoints(1);
-      mInbox.add({Id::Invalid, "Extra point awarded for empty inbox."});
-   }
-
-   mFinance.performAnalisys(mReward, mInbox);
+   
 }
 
 void Core::onNewWeek()

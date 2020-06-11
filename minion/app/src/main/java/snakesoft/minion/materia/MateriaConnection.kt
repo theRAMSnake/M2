@@ -1,7 +1,7 @@
 package snakesoft.minion.materia
 
-import android.util.Base64
 import org.zeromq.ZMQ
+import java.nio.charset.Charset
 import java.security.MessageDigest
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
@@ -44,7 +44,7 @@ fun decrypt(password: String, data: ByteArray): ByteArray {
 }
 
 //Encapsulates ZMQ communication with materia server
-class MateriaConnection(Ip: String, val Password: String)
+class MateriaConnection(Ip: String, val Password: String, val Port: String)
 {
     private var mSocket: ZMQ.Socket
     private var mContext: ZMQ.Context = ZMQ.context(1)
@@ -52,7 +52,7 @@ class MateriaConnection(Ip: String, val Password: String)
     init
     {
         mSocket = mContext.socket(ZMQ.REQ)
-        mSocket.connect("tcp://$Ip:5757")
+        mSocket.connect("tcp://$Ip:$Port")
         mSocket.receiveTimeOut = 30000
     }
 
@@ -75,5 +75,17 @@ class MateriaConnection(Ip: String, val Password: String)
 
         val result = common.Common.MateriaMessage.parseFrom(decrypt(Password, response))
         return result.payload
+    }
+
+    @Throws(MateriaUnreachableException::class)
+    internal fun sendMessage(payload: String): String
+    {
+        println("$payload")
+        mSocket.send(encrypt(Password, payload.toByteArray()))
+        val response = mSocket.recv() ?: throw MateriaUnreachableException()
+
+        val dc = decrypt(Password, response).toString(Charset.defaultCharset())
+        println("$dc")
+        return dc
     }
 }

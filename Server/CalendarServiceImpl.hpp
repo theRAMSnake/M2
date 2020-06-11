@@ -1,7 +1,9 @@
 #pragma once
 
 #include <messages/calendar.pb.h>
+#include "Common/Id.hpp"
 #include <Core/ICalendar.hpp>
+#include "ProtoConvertion.hpp"
 
 namespace materia
 {

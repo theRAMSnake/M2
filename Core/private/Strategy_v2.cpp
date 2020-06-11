@@ -20,11 +20,10 @@ BIND_JSON2(attr_map_node, first, second)
 namespace materia
 {
 
-Strategy_v2::Strategy_v2(Database& db, freedata::FreeData& fd, IReward& reward, IChallenge& challenge)
+Strategy_v2::Strategy_v2(Database& db, IReward& reward, IChallenge& challenge)
 : mGraphsStorage(db.getTable("graphs"))
 , mWatchStorage(db.getTable("watchItems"))
 , mGoalsStorage(db.getTable("goals"))
-, mFd(fd)
 , mReward(reward)
 , mChallenge(challenge)
 {
@@ -99,7 +98,7 @@ bool Strategy_v2::getNodeSelfCompleteness(const StrategyGraph& graph, const Node
       return true;
 
    case NodeType::Condition:
-      return mFd.evaluateExpression(attrs.get<NodeAttributeType::CONDITION_EXPRESSION>());
+      return false;
 
    case NodeType::Watch:
       {

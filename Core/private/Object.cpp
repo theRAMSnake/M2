@@ -295,6 +295,23 @@ FieldProxy::operator double() const
     return mImpl.get<double>(mName);
 }
 
+FieldProxy::operator std::vector<std::string>() const
+{
+    if(mType && *mType == Type::Array)
+    {
+        std::vector<std::string> result;
+
+        for(auto x : mImpl.get_child(mName))
+        {
+            result.push_back(x.second.get_value<std::string>());
+        }
+
+        return result;
+    }
+
+    throw std::runtime_error(fmt::format("Cannot get array from {}", mName));
+}
+
 Type FieldProxy::getType() const
 {
     return mType ? *mType : Type::String;

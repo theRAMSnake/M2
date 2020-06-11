@@ -7,7 +7,7 @@
 #include <Wt/WLineEdit.h>
 #include <Wt/WTextArea.h>
 
-GraphEditDialog::GraphEditDialog(const StrategyModel::Goal& goal, StrategyModel& model, FreeDataModel& fd, ChallengeModel& chModel, TOnOkCallback cb)
+GraphEditDialog::GraphEditDialog(const StrategyModel::Goal& goal, StrategyModel& model, ChallengeModel& chModel, TOnOkCallback cb)
 : BasicDialog("Edit graph", true)
 , mId(goal.id)
 , mModel(model)
@@ -28,7 +28,7 @@ GraphEditDialog::GraphEditDialog(const StrategyModel::Goal& goal, StrategyModel&
    linkBtn->clicked().connect(this, &GraphEditDialog::linkNodesRequest);
    tb->addButton(std::move(linkBtn));
 
-   mGraphView = contents()->addWidget(std::make_unique<GraphView>(mModel, fd, chModel));
+   mGraphView = contents()->addWidget(std::make_unique<GraphView>(mModel, chModel));
 
    refreshGraph();
 

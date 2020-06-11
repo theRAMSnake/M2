@@ -21,11 +21,12 @@ public:
     void operator= (const std::vector<Id>& v);
     void operator= (const std::vector<std::shared_ptr<Object>>& v);
 
-    operator Id() const;
-    operator std::string() const;
-    operator int() const;
-    operator double() const;
-    operator bool() const;
+    explicit operator Id() const;
+    explicit operator std::string() const;
+    explicit operator int() const;
+    explicit operator double() const;
+    explicit operator bool() const;
+    explicit operator std::vector<std::string>() const;
 
     Type getType() const;
 
@@ -53,5 +54,7 @@ private:
     TypeDef mTypeDef;
     mutable boost::property_tree::ptree mImpl;
 };
+
+using ObjectPtr = std::shared_ptr<Object>;
 
 }

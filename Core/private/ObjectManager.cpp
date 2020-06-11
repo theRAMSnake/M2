@@ -100,6 +100,18 @@ void ObjectManager::modify(const Id id, const IValueProvider& provider)
     }
 }
 
+void ObjectManager::modify(const Object& obj)
+{
+    for(auto& h : mHandlers)
+    {
+        if(h.second->contains(static_cast<Id>(obj["id"])))
+        {
+            h.second->modify(obj);
+            break;
+        }
+    }
+}
+
 std::string to_string(const Type t)
 {
     switch(t)

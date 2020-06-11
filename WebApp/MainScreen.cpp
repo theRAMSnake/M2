@@ -1,5 +1,4 @@
 #include "MainScreen.hpp"
-#include "InboxView.hpp"
 #include "FilesView.hpp"
 #include "FinanceView.hpp"
 #include "strategy/StrategyView.hpp"
@@ -27,10 +26,9 @@ MainScreen::MainScreen(MateriaClient& client)
     menu_->addItem("MainView", std::make_unique<MainView>(
         client.getCalendar(), 
         client.getFinance(),
-        client.getInbox(),
         client.getJournal()));
     menu_->addItem("Journal", std::make_unique<JournalView>(client.getJournal()));
-    menu_->addItem("Strategy", std::make_unique<StrategyView>(client.getStrategy(), client.getFreeData(), client.getChallenge()));
+    menu_->addItem("Strategy", std::make_unique<StrategyView>(client.getStrategy(), client.getChallenge()));
     menu_->addItem("Files", std::make_unique<FilesView>());
     menu_->addItem("Finance", std::make_unique<FinanceView>(client.getFinance()));
     menu_->addItem("Reward", std::make_unique<RewardView>(client.getReward()));

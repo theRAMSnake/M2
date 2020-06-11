@@ -1,14 +1,15 @@
 #pragma once
 
 #include "../IFinance.hpp"
-#include "../IInbox.hpp"
 #include "Database.hpp"
+#include "types/SimpleList.hpp"
 
 namespace materia
 {
 
 class Database;
 class IReward;
+class ObjectManager;
 class Finance : public IFinance
 {
 public:
@@ -27,7 +28,7 @@ public:
    std::vector<FinanceEvent> queryEvents(const std::time_t from, const std::time_t to) const override;
    FinanceReport getReport() const override;
 
-   void performAnalisys(IReward& reward, IInbox& inbox);
+   void performAnalisys(IReward& reward, types::SimpleList& inbox);
    
 private:
    void saveReport(const FinanceReport& r);

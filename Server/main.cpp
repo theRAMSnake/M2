@@ -8,13 +8,11 @@
 #include <messages/common.pb.h>
 #include <fmt/format.h>
 #include "ServiceWrapper.hpp"
-#include "InboxServiceImpl.hpp"
 #include "CalendarServiceImpl.hpp"
 #include "StrategyServiceImpl.hpp"
 #include "JournalServiceImpl.hpp"
 #include "AdminServiceImpl.hpp"
 #include "RewardServiceImpl.hpp"
-#include "FreeDataServiceImpl.hpp"
 #include "FinanceServiceImpl.hpp"
 #include "ChallengeServiceImpl.hpp"
 #include "Common/Codec.hpp"
@@ -134,7 +132,7 @@ common::MateriaMessage handleMessage(const common::MateriaMessage& in)
     return errorMsg;
 }
 
-void legacyFunc(std::string password, materia::ICore* core)
+void legacyFunc(std::string password, materia::ICore3* core)
 {
     Codec codec(password);
 
@@ -142,12 +140,10 @@ void legacyFunc(std::string password, materia::ICore* core)
     zmq::socket_t clientSocket (context, ZMQ_REP);
     clientSocket.bind ("tcp://*:5757");
 
-    gServices.insert({"InboxService", std::make_shared<materia::ServiceWrapper<materia::InboxServiceImpl>>((*core))});
     gServices.insert({"RewardService", std::make_shared<materia::ServiceWrapper<materia::RewardServiceImpl>>((*core))});
     gServices.insert({"CalendarService", std::make_shared<materia::ServiceWrapper<materia::CalendarServiceImpl>>((*core))});
     gServices.insert({"JournalService", std::make_shared<materia::ServiceWrapper<materia::JournalServiceImpl>>((*core))});
     gServices.insert({"StrategyService", std::make_shared<materia::ServiceWrapper<materia::StrategyServiceImpl>>((*core))});
-    gServices.insert({"FreeDataService", std::make_shared<materia::ServiceWrapper<materia::FreeDataServiceImpl>>((*core))});
     gServices.insert({"FinanceService", std::make_shared<materia::ServiceWrapper<materia::FinanceServiceImpl>>((*core))});
     gServices.insert({"ChallengeService", std::make_shared<materia::ServiceWrapper<materia::ChallengeServiceImpl>>((*core))});
     gServices.insert({"AdminService", std::make_shared<materia::ServiceWrapper<materia::AdminServiceImpl>>(*core, shutdownFlag)});

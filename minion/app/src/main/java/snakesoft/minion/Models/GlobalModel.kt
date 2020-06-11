@@ -19,7 +19,6 @@ object GlobalModel
     val InboxModel = InboxModel(Db)
     val CalendarModel = CalendarModel(Db)
     val JournalModel = JournalModel(Db)
-    val FreeDataModel = FreeDataModel(Db)
     val FinanceModel = FinanceModel(Db)
     val RewardModel = RewardModel(Db)
 
@@ -27,7 +26,7 @@ object GlobalModel
     {
         return try
         {
-            val connection = MateriaConnection(Ip, password)
+            val connection = MateriaConnection(Ip, password, "5757")
 
             //check password
             val p = JournalServiceProxy(connection)
@@ -38,12 +37,13 @@ object GlobalModel
             }
             else
             {
-                InboxModel.sync(syncObserver, connection)
                 CalendarModel.sync(syncObserver, connection)
                 JournalModel.sync(syncObserver, connection)
-                FreeDataModel.sync(syncObserver, connection)
                 FinanceModel.sync(syncObserver, connection)
                 RewardModel.sync(syncObserver, connection)
+
+                val connectionNew = MateriaConnection(Ip, password, "5756")
+                InboxModel.sync(syncObserver, connectionNew)
 
                 syncObserver.finish()
 
@@ -71,7 +71,6 @@ object GlobalModel
         InboxModel.clear()
         CalendarModel.clear()
         JournalModel.clear()
-        FreeDataModel.clear()
         FinanceModel.clear()
         RewardModel.clear()
     }

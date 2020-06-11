@@ -14,6 +14,7 @@ public:
 
     ObjectPtr create(const std::optional<Id> id, const std::string& type, const IValueProvider& provider);
     void modify(const Id id, const IValueProvider& provider);
+    void modify(const Object& obj);
     std::vector<ObjectPtr> query(const std::vector<Id>& ids);
     std::vector<ObjectPtr> query(const Filter& f);
     void destroy(const Id id);

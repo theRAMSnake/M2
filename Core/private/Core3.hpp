@@ -14,12 +14,10 @@ class Core3 : public ICore3
 public:
     Core3(const CoreConfig& config);
 
-    IInbox& getInbox() override;
     ICalendar& getCalendar() override;
     IJournal& getJournal() override;
     IBackuper& getBackuper() override;
     IStrategy_v2& getStrategy_v2() override;
-    IFreeData& getFreeData() override;
     IFinance& getFinance() override;
     IReward& getReward() override;
     IChallenge& getChallenge() override;

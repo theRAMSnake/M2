@@ -1,6 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
-import Auth from '../modules/Auth'
+import Auth from '../modules/auth'
 import m3proxy from '../modules/m3proxy'
 import SearchBar from './SearchBar.jsx'
 import ApiView from './ApiView.jsx'
