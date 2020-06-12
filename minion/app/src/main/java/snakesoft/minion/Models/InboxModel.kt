@@ -36,27 +36,23 @@ class InboxModel(private val Db: LocalDatabase)
         val proxy = InboxServiceProxy(connection)
 
         var numModified = 0
+        val lst = mutableListOf<String>()
         for (i in Items)
         {
             when(i.trackingInfo)
             {
-                StatusOfChange.Edit ->
-                {
-                    proxy.editItem(toProto(i))
-                    numModified++
-                }
-                StatusOfChange.Delete ->
-                {
-                    proxy.deleteItem(toProto(i.id))
-                    numModified++
-                }
                 StatusOfChange.Add ->
                 {
-                    proxy.addItem(toProto(i))
+                    lst.add(i.text)
                     numModified++
                 }
                 else -> {}
             }
+        }
+
+        if(lst.size > 0)
+        {
+            proxy.update(lst)
         }
 
         observer.itemsModified(numModified)
@@ -84,13 +80,6 @@ class InboxModel(private val Db: LocalDatabase)
     private fun queryAllItems(proxy: InboxServiceProxy): List<InboxItem>
     {
         val result = mutableListOf<InboxItem>()
-
-        val queryResult = proxy.loadInbox()
-
-        for(x in queryResult.itemsList)
-        {
-            result.add(InboxItem(java.util.UUID.fromString(x.id.guid), x.text))
-        }
 
         return result
     }

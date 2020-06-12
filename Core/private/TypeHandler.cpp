@@ -99,4 +99,9 @@ void TypeHandler::modify(const Id id, const IValueProvider& provider)
     mStorage->store(id, obj->toJson());
 }
 
+void TypeHandler::modify(const Object& obj)
+{
+    mStorage->store(static_cast<Id>(obj["id"]), obj.toJson());
+}
+
 }

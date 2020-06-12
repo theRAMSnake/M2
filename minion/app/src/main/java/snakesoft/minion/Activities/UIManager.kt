@@ -11,7 +11,6 @@ object UIManager
         addMenuItem<InboxActivity, T>(menu, "Inbox", c)
         addMenuItem<CalendarActivity, T>(menu, "Calendar", c)
         addMenuItem<JournalActivity, T>(menu, "Journal", c)
-        addMenuItem<ResourcesActivity, T>(menu, "FreeData", c)
         addMenuItem<FinanceActivity, T>(menu, "Finance", c)
         addMenuItem<RewardActivity, T>(menu, "Reward", c)
     }

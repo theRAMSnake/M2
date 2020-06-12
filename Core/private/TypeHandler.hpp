@@ -9,7 +9,6 @@ namespace materia
 {
 
 using Filter = Expression;
-using ObjectPtr = std::shared_ptr<Object>;
 
 class IValueProvider
 {
@@ -33,6 +32,7 @@ public:
     bool contains(const Id id);
     //Id must be present
     void modify(const Id id, const IValueProvider& provider);
+    void modify(const Object& obj);
 
 private:
     const TypeDef mType;

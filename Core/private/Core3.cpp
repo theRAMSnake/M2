@@ -1,5 +1,6 @@
 #include "Core3.hpp"
 #include "JsonSerializer.hpp"
+#include "Finance.hpp"
 
 namespace materia
 {
@@ -7,15 +8,10 @@ namespace materia
 Core3::Core3(const CoreConfig& config)
 : mDb(config.dbFileName)
 , mTypeSystem()
-, mObjManager(mDb, mTypeSystem)
 , mOldCore(mDb, config.dbFileName)
+, mObjManager(mDb, mTypeSystem, mOldCore.getReward())
 {
 
-}
-
-IInbox& Core3::getInbox()
-{
-   return mOldCore.getInbox();
 }
 
 ICalendar& Core3::getCalendar()
@@ -38,11 +34,6 @@ IJournal& Core3::getJournal()
    return mOldCore.getJournal();
 }
 
-IFreeData& Core3::getFreeData()
-{
-   return mOldCore.getFreeData();
-}
-
 IFinance& Core3::getFinance()
 {
    return mOldCore.getFinance();
@@ -60,7 +51,14 @@ IChallenge& Core3::getChallenge()
 
 void Core3::onNewDay()
 {
-   mOldCore.onNewDay();
+   types::SimpleList inbox(mObjManager, Id("inbox"));
+   if(inbox.size() == 0 && rand() % 10 == 0)
+   {
+      getReward().addPoints(1);
+      inbox.add("Extra point awarded for empty inbox.");
+   }
+
+   static_cast<Finance&>(getFinance()).performAnalisys(getReward(), inbox);
 }
 
 void Core3::onNewWeek()

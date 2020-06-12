@@ -22,14 +22,14 @@ template<class TServiceProvider>
 class ServiceWrapper : public google::protobuf::RpcController, public IService
 {
 public:
-   ServiceWrapper(ICore& core)
+   ServiceWrapper(ICore3& core)
    : mProvider(core)
    , mEmptyCb(google::protobuf::NewCallback(&google::protobuf::DoNothing))
    {
    }
 
    template<class TParam>
-   ServiceWrapper(ICore& core, TParam& p)
+   ServiceWrapper(ICore3& core, TParam& p)
    : mProvider(core, p)
    , mEmptyCb(google::protobuf::NewCallback(&google::protobuf::DoNothing))
    {

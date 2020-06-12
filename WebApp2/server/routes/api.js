@@ -3,12 +3,13 @@ const zmq = require("zeromq")
 const crypto = require('crypto');
 const pass = require("../pass");
 const router = new express.Router();
+var Mutex = require('async-mutex').Mutex;
 
 const sock = new zmq.Request
 sock.connect("tcp://localhost:5756")
 
 async function materiaGet(req)
-{
+{   
     var key = crypto.createHash('sha256').update(pass, 'utf8').digest();
 
     const IV = key.subarray(0, 16);
@@ -30,14 +31,24 @@ async function materiaGet(req)
     return (decrypted + decipher.final('utf8'));
 }
 
+const mutex = new Mutex();
 router.post('/materia', (req, res) => 
 {
-    materiaGet(JSON.stringify(req.body)).then( (results) =>
-    {
-        res.status(200).json({
-            message: results.toString()
+    mutex
+    .acquire()
+    .then(function(release) {
+        console.log(JSON.stringify(req.body));
+        materiaGet(JSON.stringify(req.body)).then( (results) =>
+        {
+            release();
+            res.status(200).json({
+                message: results.toString()
+            });
+            
+            console.log(results);
         });
-    });
+        
+    });    
 });
 
 module.exports = router;

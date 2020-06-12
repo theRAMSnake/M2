@@ -93,35 +93,6 @@ private:
    Wt::WLineEdit* mTotal;
 };
 
-class ConditionNodeSpecifics : public INodeTypeSpecifics
-{
-public:
-   ConditionNodeSpecifics(const StrategyModel::Node& node, std::function<bool(std::string)> verifier, Wt::WContainerWidget& contents)
-   : mVerifier(verifier)
-   {
-      mText = contents.addWidget(std::make_unique<Wt::WLineEdit>(node.condition));
-   }
-
-   void updateNode(StrategyModel::Node& node) const override
-   {
-      node.condition = mText->text().narrow();
-   }
-
-   void cleanUp(Wt::WContainerWidget& contents) override
-   {
-      contents.removeChild(mText);
-   }
-
-   bool verify() override
-   {
-      return mVerifier(mText->text().narrow());
-   }
-
-private:
-   std::function<bool(std::string)> mVerifier;
-   Wt::WLineEdit* mText;
-};
-
 template<class TReferencedItem>
 class ReferencedNodeSpecifics : public INodeTypeSpecifics
 {
@@ -254,7 +225,6 @@ INodeTypeSpecifics* createNodeSpecifics(
    const std::vector<StrategyModel::WatchItem>& watchItems, 
    const std::vector<StrategyModel::Goal>& goals, 
    const std::vector<ChallengeModel::Item>& chs, 
-   std::function<bool(std::string)> conditionVerifier,
    Wt::WContainerWidget& contents
    )
 {
@@ -278,9 +248,6 @@ INodeTypeSpecifics* createNodeSpecifics(
       case strategy::NodeType::CHALLENGE:
          return new ReferencedNodeSpecifics<ChallengeModel::Item>(node, &StrategyModel::Node::challengeReference, chs, contents);
 
-      case strategy::NodeType::CONDITION:
-         return new ConditionNodeSpecifics(node, conditionVerifier, contents);
-
       default:
          return new NoNodeSpecifics();
    }
@@ -291,7 +258,6 @@ NodeEditDialog::NodeEditDialog(
    const std::vector<StrategyModel::WatchItem>& watchItems, 
    const std::vector<StrategyModel::Goal>& goals, 
    const std::vector<ChallengeModel::Item>& chs, 
-   std::function<bool(std::string)> conditionVerifier,
    IOperationProvider& opProvider
    )
 : BasicDialog("Edit node", true)
@@ -336,11 +302,11 @@ NodeEditDialog::NodeEditDialog(
       }
    }
 
-   mNodeTypeSpecifics.reset(createNodeSpecifics(node.type, node, watchItems, goals, chs, conditionVerifier, *contents()));
+   mNodeTypeSpecifics.reset(createNodeSpecifics(node.type, node, watchItems, goals, chs, *contents()));
 
    types->changed().connect(std::bind([=, this](){
       mNodeTypeSpecifics->cleanUp(*contents());
-      mNodeTypeSpecifics.reset(createNodeSpecifics(NODE_TYPES[types->currentIndex()].first, node, watchItems, goals, chs, conditionVerifier, *contents()));
+      mNodeTypeSpecifics.reset(createNodeSpecifics(NODE_TYPES[types->currentIndex()].first, node, watchItems, goals, chs, *contents()));
    }));
 
    setWidth("50%");

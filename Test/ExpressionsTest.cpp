@@ -29,11 +29,11 @@ BOOST_FIXTURE_TEST_CASE( TestValueExp, ExpressionsTest )
    materia::Object p(gType, materia::Id::Invalid);
    p["some"] = 6;
 
-   BOOST_CHECK_EQUAL(5, std::get<int>(materia::parseExpression("5")->evaluate(p)));
+   BOOST_CHECK_EQUAL(5, std::get<std::int64_t>(materia::parseExpression("5")->evaluate(p)));
    BOOST_CHECK_EQUAL(5.0, std::get<double>(materia::parseExpression("5.0")->evaluate(p)));
    BOOST_CHECK_EQUAL("5", std::get<std::string>(materia::parseExpression("\"5\"")->evaluate(p)));
    BOOST_CHECK_EQUAL(true, std::get<bool>(materia::parseExpression("true")->evaluate(p)));
-   BOOST_CHECK_EQUAL(6, std::get<int>(materia::parseExpression(".some")->evaluate(p)));
+   BOOST_CHECK_EQUAL(6, std::get<std::int64_t>(materia::parseExpression(".some")->evaluate(p)));
 }
 
 BOOST_FIXTURE_TEST_CASE( TestSimpleBinaryExp, ExpressionsTest ) 

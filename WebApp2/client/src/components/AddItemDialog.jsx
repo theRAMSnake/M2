@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) =>
 function createDefault(type)
 {
     if(type === 'string') return "";
-    if(type === 'array') return "";
+    if(type === 'array') return [];
     if(type === 'bool') return false;
     if(type === 'int') return 0;
     if(type === 'double') return 0.0;
@@ -84,7 +84,7 @@ function AddItemDialog(props)
         MateriaRequest.req(JSON.stringify(req), (rsp) => {
 
             var result = JSON.parse(rsp);
-            if(result.id)
+            if(result.result_id)
             {
                 props.onClose(e);
             }

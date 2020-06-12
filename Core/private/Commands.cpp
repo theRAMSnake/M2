@@ -1,5 +1,6 @@
 #include "Commands.hpp"
 #include "JsonRestorationProvider.hpp"
+#include "Operations.hpp"
 
 namespace materia
 {
@@ -64,6 +65,18 @@ DestroyCommand::DestroyCommand(const Id& id)
 ExecutionResult DestroyCommand::execute(ObjectManager& objManager)
 {
     objManager.destroy(mId);
+    return Success{};
+}
+
+CompleteCommand::CompleteCommand(const Id& id)
+: mId(id)
+{
+
+}
+
+ExecutionResult CompleteCommand::execute(ObjectManager& objManager)
+{
+    complete(mId, objManager);
     return Success{};
 }
 

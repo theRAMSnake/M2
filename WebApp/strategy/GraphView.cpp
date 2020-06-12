@@ -671,9 +671,8 @@ void GraphView::assign(const materia::Id& id, const StrategyModel::Graph& g, con
    cgv->OnElementClicked.connect(std::bind(&GraphView::OnElementClicked, this, std::placeholders::_1, std::placeholders::_2));
 }
 
-GraphView::GraphView(StrategyModel& model, FreeDataModel& freeData, ChallengeModel& chModel)
+GraphView::GraphView(StrategyModel& model, ChallengeModel& chModel)
 : mModel(model)
-, mFreeData(freeData)
 , mChModel(chModel)
 {
    mImpl = setImplementation(std::make_unique<Wt::WContainerWidget>());
@@ -724,16 +723,11 @@ void GraphView::OnNodeClicked(const StrategyModel::Node& node, const Wt::WMouseE
       }
       else if(node.type != strategy::NodeType::GOAL)
       {
-         std::function<bool(std::string)> conditionVerifier = [=, this] (std::string expr)->bool {
-               return mFreeData.checkExpression(expr);
-            };
-
          NodeEditDialog* dlg = new NodeEditDialog(
             node, 
             mModel.getWatchItems(), 
             mModel.getGoals(), 
             mChModel.get(),
-            conditionVerifier, 
             *mOpProvider
             );
 

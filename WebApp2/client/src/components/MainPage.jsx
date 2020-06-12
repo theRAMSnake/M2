@@ -1,11 +1,12 @@
 import React from 'react';
 import clsx from 'clsx';
-import Auth from '../modules/Auth'
+import Auth from '../modules/auth'
 import m3proxy from '../modules/m3proxy'
 import SearchBar from './SearchBar.jsx'
 import ApiView from './ApiView.jsx'
 import QueryView from './QueryView.jsx'
 import AddItemDialog from './AddItemDialog.jsx'
+import InboxCtrl from './InboxCtrl.jsx'
 
 import {
     AppBar,
@@ -17,6 +18,7 @@ import {
     Divider,
     List,
     ListItem,
+    Badge,
     ListItemText
 } from "@material-ui/core";
 
@@ -142,6 +144,7 @@ function MainPage(props) {
                     </Typography>
                     <SearchBar onSubmit={searchBarSubmit}/>
                     <div className={classes.grow} />
+                    <InboxCtrl/>
                     <IconButton color="inherit" onClick={onAddClicked}>
                         <AddCircleOutlineIcon/>
                     </IconButton>

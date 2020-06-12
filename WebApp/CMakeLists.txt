@@ -10,8 +10,7 @@ add_executable(WebApp
 main.cpp
 WebApp.cpp
 MainScreen.cpp
-InboxView.cpp
-strategy/StrategyView.cpp
+strategy/StrategyView.cpp 
 WtConverters.cpp
 CalendarView.cpp
 TemplateBuilder.cpp
@@ -32,9 +31,7 @@ strategy/NodeEditDialog.cpp
 materia/ZmqPbChannel.cpp
 materia/StrategyModel.cpp
 materia/CalendarModel.cpp
-materia/InboxModel.cpp
 materia/JournalModel.cpp
-materia/FreeDataModel.cpp
 materia/FinanceModel.cpp
 materia/RewardModel.cpp
 materia/ChallengeModel.cpp

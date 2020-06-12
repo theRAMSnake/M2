@@ -22,6 +22,8 @@ Object::Object(const TypeDef& type, const Id id)
             case Type::Bool: p = false;break;
             case Type::String: p = std::string();break;
             case Type::Array: p = std::vector<std::string>();break;
+            case Type::Timestamp: p = Time{0}; break;
+            case Type::Option: p = 0; break;
         }
     }
 }
@@ -59,6 +61,7 @@ std::string Object::toJson() const
 
 FieldProxy::FieldProxy(const FieldDef& f, boost::property_tree::ptree& impl)
 : mName(f.name)
+, mDef(f)
 , mType(f.type)
 , mImpl(impl)
 {
@@ -95,13 +98,43 @@ void FieldProxy::operator= (const bool v)
     }
 }
 
+void FieldProxy::operator= (const Time v)
+{
+    if(mType)
+    {
+        if(mType == Type::Timestamp)
+        {
+            mImpl.put(mName, v.value);
+        }
+        else
+        {
+            throw std::runtime_error(fmt::format("Cannot assign timestamp to {}", mName));
+        }
+    }
+    else
+    {
+        mImpl.put(mName, v.value);
+    }
+}
+
 void FieldProxy::operator= (const int v)
 {
     if(mType)
     {
-        if(mType == Type::Double || mType == Type::Int || mType == Type::String)
+        if(mType == Type::Double || mType == Type::Int || mType == Type::String || mType == Type::Timestamp)
         {
             mImpl.put(mName, v);
+        }
+        else if(mType == Type::Option)
+        {
+            if(v < static_cast<int>(mDef->options.size()) && v >= 0)
+            {
+                mImpl.put(mName, v);
+            }
+            else
+            {
+                throw std::runtime_error(fmt::format("Cannot assign int to {}, value out of range: {}", mName, v));    
+            }
         }
         else
         {
@@ -141,9 +174,21 @@ void FieldProxy::operator= (const std::string& v)
         {
             mImpl.put(mName, v);
         }
-        else if(mType == Type::Int)
+        else if(mType == Type::Int || mType == Type::Timestamp)
         {
             mImpl.put(mName, boost::lexical_cast<int>(v));
+        }
+        else if(mType == Type::Option)
+        {
+            auto s = boost::lexical_cast<int>(v);
+            if(s < static_cast<int>(mDef->options.size()) && s >= 0)
+            {
+                mImpl.put(mName, s);
+            }
+            else
+            {
+                throw std::runtime_error(fmt::format("Cannot assign int to {}, value out of range: {}", mName, s));    
+            }
         }
         else if(mType == Type::Double)
         {
@@ -227,6 +272,16 @@ FieldProxy::operator Id() const
     return Id(mImpl.get<std::string>(mName));
 }
 
+FieldProxy::operator Time() const
+{
+    if(mType && *mType != Type::Timestamp)
+    {
+        throw std::runtime_error(fmt::format("Cannot get timestamp from {}", mName));
+    }
+
+    return Time{mImpl.get<std::time_t>(mName)};
+}
+
 FieldProxy::operator std::string() const
 {
     if(mType)
@@ -293,6 +348,23 @@ FieldProxy::operator double() const
     }
 
     return mImpl.get<double>(mName);
+}
+
+FieldProxy::operator std::vector<std::string>() const
+{
+    if(mType && *mType == Type::Array)
+    {
+        std::vector<std::string> result;
+
+        for(auto x : mImpl.get_child(mName))
+        {
+            result.push_back(x.second.get_value<std::string>());
+        }
+
+        return result;
+    }
+
+    throw std::runtime_error(fmt::format("Cannot get array from {}", mName));
 }
 
 Type FieldProxy::getType() const

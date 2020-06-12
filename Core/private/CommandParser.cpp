@@ -91,6 +91,13 @@ Command* parseDestroy(const boost::property_tree::ptree& src)
    return new DestroyCommand(id);
 }
 
+Command* parseComplete(const boost::property_tree::ptree& src)
+{
+   auto id = getOrThrow<Id>(src, "id", "Id is not specified");
+
+   return new CompleteCommand(id);
+}
+
 Command* parseModify(const boost::property_tree::ptree& src)
 {
    auto id = getOrThrow<Id>(src, "id", "Id is not specified");
@@ -123,7 +130,8 @@ std::vector<CommandDef> gCommandParsers = {
     {"destroy", parseDestroy},
     {"modify", parseModify},
     {"describe", parseDescribe},
-    {"change_type", parseChangeType}
+    {"change_type", parseChangeType},
+    {"complete", parseComplete}
 };
 
 std::unique_ptr<Command> parseCommand(const std::string& json)

@@ -17,7 +17,6 @@ private/ObjectManager.cpp
 private/Impl.cpp
 private/Database.cpp
 private/Calendar.cpp
-private/Inbox.cpp
 private/Journal.cpp
 private/Strategy_v2.cpp
 private/Logger.cpp
@@ -26,13 +25,13 @@ private/JsonRestorationProvider.cpp
 private/Backuper.cpp
 private/StrategyGraph.cpp
 private/NodeAttributes.cpp
-private/FreeData.cpp
-private/FreeDataInterpreter.cpp
 private/Finance.cpp
 private/Reward.cpp
 private/Challenge.cpp
 private/Object.cpp
 private/TypeHandler.cpp
+private/types/SimpleList.cpp
+private/Operations.cpp
 )
 
 find_package(Boost COMPONENTS system REQUIRED)

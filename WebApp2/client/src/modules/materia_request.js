@@ -1,4 +1,4 @@
-import Auth from '../modules/Auth';
+import Auth from '../modules/auth';
 
 class MateriaRequest
 {

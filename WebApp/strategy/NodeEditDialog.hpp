@@ -25,7 +25,6 @@ public:
        const std::vector<StrategyModel::WatchItem>& watchItems, 
        const std::vector<StrategyModel::Goal>& goals, 
        const std::vector<ChallengeModel::Item>& chs,
-       std::function<bool(std::string)> conditionVerifier,
        IOperationProvider& opProvider
        );
 

@@ -32,9 +32,11 @@ void JsonRestorationProvider::populate(Object& obj) const
             switch(pos->type)
             {
                 case Type::Int: obj[c.first] = c.second.get_value<int>();break;
+                case Type::Timestamp: obj[c.first] = Time{c.second.get_value<std::time_t>()};break;
                 case Type::Double: obj[c.first] = c.second.get_value<double>();break;
                 case Type::Bool: obj[c.first] = c.second.get_value<bool>();break;
                 case Type::String: obj[c.first] = c.second.get_value<std::string>();break;
+                case Type::Option: obj[c.first] = c.second.get_value<int>();break;
                 case Type::Array: obj[c.first] = extractArray(c.second);break;
                 default: throw std::runtime_error("Unknown type"); 
             }
