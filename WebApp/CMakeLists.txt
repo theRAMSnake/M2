@@ -47,7 +47,7 @@ find_package(Boost COMPONENTS system regex filesystem REQUIRED)
 find_package(Wt REQUIRED)
 
 link_directories(/usr/lib64)
-target_link_libraries(WebApp m2common ${Wt_LIBRARIES}  ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread wt wthttp fmt) #
+target_link_libraries(WebApp m2common ${Wt_LIBRARIES}  ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread wt wthttp fmt zmq) #
 
 add_custom_command(
         TARGET WebApp POST_BUILD
