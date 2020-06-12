@@ -16,6 +16,7 @@ public:
     void operator= (const bool v);
     void operator= (const int v);
     void operator= (const double v);
+    void operator= (const Time v);
     void operator= (const std::string& v);
     void operator= (const std::vector<std::string>& v);
     void operator= (const std::vector<Id>& v);
@@ -24,6 +25,7 @@ public:
     explicit operator Id() const;
     explicit operator std::string() const;
     explicit operator int() const;
+    explicit operator Time() const;
     explicit operator double() const;
     explicit operator bool() const;
     explicit operator std::vector<std::string>() const;
@@ -35,6 +37,7 @@ private:
     FieldProxy(const std::string& name, boost::property_tree::ptree& impl);
 
     std::string mName;
+    std::optional<FieldDef> mDef;
     std::optional<Type> mType;
     boost::property_tree::ptree& mImpl;
 };

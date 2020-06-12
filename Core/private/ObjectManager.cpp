@@ -8,14 +8,20 @@ namespace materia
 
 const unsigned int QUERY_LIMIT = 50;
 
-ObjectManager::ObjectManager(Database& db, TypeSystem& types)
+ObjectManager::ObjectManager(Database& db, TypeSystem& types, IReward& reward)
 : mDb(db)
 , mTypes(types)
+, mReward(reward)
 {
     for(auto& t : mTypes.get())
     {
         mHandlers[t.name] = std::make_shared<TypeHandler>(t, mDb);
     }
+}
+
+IReward& ObjectManager::LEGACY_getReward()
+{
+    return mReward;
 }
 
 ObjectPtr ObjectManager::create(const std::optional<Id> id, const std::string& type, const IValueProvider& provider)
@@ -121,6 +127,8 @@ std::string to_string(const Type t)
         case Type::Bool: return "bool";
         case Type::String: return "string";
         case Type::Array: return "array";
+        case Type::Timestamp: return "timestamp";
+        case Type::Option: return "option";
     }
 
     throw std::runtime_error("unknown type");
@@ -143,6 +151,7 @@ std::vector<ObjectPtr> ObjectManager::describe() const
             auto field = std::make_shared<Object>(*objType, Id::Invalid);
             (*field)["name"] = f.name;
             (*field)["type"] = to_string(f.type);
+            (*field)["options"] = f.options;
 
             fields.push_back(field);
         }

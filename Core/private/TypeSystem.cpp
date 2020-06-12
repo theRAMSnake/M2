@@ -9,6 +9,12 @@ TypeSystem::TypeSystem()
     mTypes.push_back({"object", "objects"});
     mTypes.push_back({"variable", "variables", {{"value", Type::String}}});
     mTypes.push_back({"simple_list", "lists", {{"objects", Type::Array}}});
+    mTypes.push_back({"calendar_item", "calendar", {
+        {"text", Type::String},
+        {"timestamp", Type::Timestamp},
+        {"reccurencyType", Type::Option, {"None", "Weekly", "Monthly", "Quarterly", "Yearly"}},
+        {"entityType", Type::Option, {"Event", "Task"}}
+        }});
 }
 
 std::optional<TypeDef> TypeSystem::get(const std::string& name) const

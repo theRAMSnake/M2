@@ -25,7 +25,8 @@ class InboxServiceProxy(private val mMateriaConnection: MateriaConnection)
     fun update(items: List<String>)
     {
         val jsonData = JSON.stringify(Query.serializer(), Query("query", listOf("inbox")))
-        val inbox = JSON.parse(ObjectList.serializer(), mMateriaConnection.sendMessage(jsonData)).object_list[0]
+        val resp = mMateriaConnection.sendMessage(jsonData)
+        val inbox = if (resp.contains("objects\":\"\"")) Object("inbox", "simple_list", listOf<String>()) else JSON.parse(ObjectList.serializer(), resp).object_list[0]
 
         var md = Modify("modify", inbox.id, ListParams(inbox.objects + items))
         val jsonDataM = JSON.stringify(Modify.serializer(), md)

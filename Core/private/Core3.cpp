@@ -8,8 +8,8 @@ namespace materia
 Core3::Core3(const CoreConfig& config)
 : mDb(config.dbFileName)
 , mTypeSystem()
-, mObjManager(mDb, mTypeSystem)
 , mOldCore(mDb, config.dbFileName)
+, mObjManager(mDb, mTypeSystem, mOldCore.getReward())
 {
 
 }

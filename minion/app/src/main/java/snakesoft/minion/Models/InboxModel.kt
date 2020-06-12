@@ -50,7 +50,11 @@ class InboxModel(private val Db: LocalDatabase)
             }
         }
 
-        proxy.update(lst)
+        if(lst.size > 0)
+        {
+            proxy.update(lst)
+        }
+
         observer.itemsModified(numModified)
 
         val queried = queryAllItems(proxy)

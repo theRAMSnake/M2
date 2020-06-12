@@ -2,6 +2,7 @@
 #include <string>
 #include <optional>
 #include <vector>
+#include <ctime>
 
 namespace materia
 {
@@ -12,13 +13,21 @@ enum class Type
     Double,
     String,
     Bool,
-    Array
+    Array,
+    Timestamp,
+    Option
+};
+
+struct Time
+{
+    std::time_t value;
 };
 
 struct FieldDef
 {
     std::string name;
     Type type;
+    std::vector<std::string> options;
 };
 
 struct TypeDef

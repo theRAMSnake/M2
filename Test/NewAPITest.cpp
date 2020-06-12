@@ -256,3 +256,73 @@ BOOST_FIXTURE_TEST_CASE( TestChType, NewAPITest )
 
     BOOST_CHECK_EQUAL(1, counter);
 }
+
+BOOST_FIXTURE_TEST_CASE( TestCompletable, NewAPITest ) 
+{
+    boost::property_tree::ptree create;
+    create.put("operation", "create");
+    create.put("typename", "calendar_item");
+    create.put("defined_id", "id");
+    create.put("params.text", "a");
+    create.put("params.timestamp", 10);
+    create.put("params.reccurencyType", 1);
+
+    auto tr = readJson<boost::property_tree::ptree>(mCore->executeCommandJson(writeJson(create)));
+
+    boost::property_tree::ptree complete;
+    complete.put("operation", "complete");
+    complete.put("id", tr.get<std::string>("result_id"));
+
+    mCore->executeCommandJson(writeJson(complete));
+
+    boost::property_tree::ptree query;
+    query.put("operation", "query");
+    query.put("filter", "IS(calendar_item)");
+    auto result = mCore->executeCommandJson(writeJson(query));
+
+    auto ol = readJson<boost::property_tree::ptree>(result);
+    
+    int counter = 0;
+    for(auto& v : ol.get_child("object_list"))
+    {
+       auto ts = v.second.get<std::time_t>("timestamp");
+       BOOST_CHECK_EQUAL(604810, ts);
+       counter++;
+    }
+
+    BOOST_CHECK_EQUAL(1, counter);
+}
+
+BOOST_FIXTURE_TEST_CASE( TestCompletable2, NewAPITest ) 
+{
+    boost::property_tree::ptree create;
+    create.put("operation", "create");
+    create.put("typename", "calendar_item");
+    create.put("defined_id", "id");
+    create.put("params.text", "a");
+    create.put("params.timestamp", 10);
+    create.put("params.reccurencyType", 0);
+
+    auto tr = readJson<boost::property_tree::ptree>(mCore->executeCommandJson(writeJson(create)));
+
+    boost::property_tree::ptree complete;
+    complete.put("operation", "complete");
+    complete.put("id", tr.get<std::string>("result_id"));
+
+    mCore->executeCommandJson(writeJson(complete));
+
+    boost::property_tree::ptree query;
+    query.put("operation", "query");
+    query.put("filter", "IS(calendar_item)");
+    auto result = mCore->executeCommandJson(writeJson(query));
+
+    auto ol = readJson<boost::property_tree::ptree>(result);
+    
+    int counter = 0;
+    for(auto& v : ol.get_child("object_list"))
+    {
+        (void)v;
+        counter++;
+    }
+    BOOST_CHECK_EQUAL(0, counter);
+}

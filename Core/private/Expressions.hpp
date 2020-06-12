@@ -6,7 +6,7 @@
 namespace materia
 {
 
-using Value = std::variant<int, double, std::string, bool>;
+using Value = std::variant<std::int64_t, double, std::string, bool>;
 class Expression
 {
 public:

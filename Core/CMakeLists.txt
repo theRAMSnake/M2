@@ -31,6 +31,7 @@ private/Challenge.cpp
 private/Object.cpp
 private/TypeHandler.cpp
 private/types/SimpleList.cpp
+private/Operations.cpp
 )
 
 find_package(Boost COMPONENTS system REQUIRED)

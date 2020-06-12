@@ -20,6 +20,7 @@ CalendarTest.cpp
 #ChallengeTest.cpp
 NewAPITest.cpp
 ExpressionsTest.cpp
+ObjectTest.cpp
 )
 
 find_package(Boost COMPONENTS system python unit_test_framework filesystem REQUIRED)

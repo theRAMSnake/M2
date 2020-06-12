@@ -32,8 +32,8 @@ private:
 
     Database mDb;
     TypeSystem mTypeSystem;
-    ObjectManager mObjManager;
     Core mOldCore;
+    ObjectManager mObjManager;
 };
 
 }
