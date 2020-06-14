@@ -1,6 +1,7 @@
 import MateriaRequest from '../modules/materia_request'
 
 var types;
+var calendar;
 var init = false;
 
 class m3Proxy
@@ -12,13 +13,25 @@ class m3Proxy
             return;
         }
 
-        const req = {
-            operation: "describe"
-        };
-    
-        MateriaRequest.req(JSON.stringify(req), (r) => {
-            types = JSON.parse(r).object_list;
-        });
+        {
+            const req = {
+                operation: "describe"
+            };
+        
+            MateriaRequest.req(JSON.stringify(req), (r) => {
+                types = JSON.parse(r).object_list;
+            });
+        }
+        {
+            const req = {
+                operation: "query",
+                filter: "IS(calendar_item)"
+            };
+        
+            MateriaRequest.req(JSON.stringify(req), (r) => {
+                calendar = JSON.parse(r).object_list;
+            });
+        }
 
         console.log("m3proxy init started");
 

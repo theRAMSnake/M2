@@ -7,6 +7,7 @@ import ApiView from './ApiView.jsx'
 import QueryView from './QueryView.jsx'
 import AddItemDialog from './AddItemDialog.jsx'
 import InboxCtrl from './InboxCtrl.jsx'
+import CalendarCtrl from './CalendarCtrl.jsx'
 
 import {
     AppBar,
@@ -24,11 +25,13 @@ import {
 
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import AddCircleOutlineIcon  from '@material-ui/icons/AddCircleOutline';
+import CalendarTodayIcon  from '@material-ui/icons/CalendarToday';
 
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 
-const drawerWidth = 240;
+const drawerWidth = 350;
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -69,7 +72,8 @@ const useStyles = makeStyles((theme) =>
 function MainPage(props) {
     
     const classes = useStyles();
-    const [open, setOpen] = React.useState(false);
+    const [ldOpen, setldOpen] = React.useState(false);
+    const [rdOpen, setrdOpen] = React.useState(false);
     const [contentType, setContentType] = React.useState("");
     const [query, setQuery] = React.useState("");
     const [showAddDlg, setShowAddDlg] = React.useState(false);
@@ -98,7 +102,7 @@ function MainPage(props) {
         if(index == 0)
         {
             setContentType("api");
-            setOpen(false);
+            setldOpen(false);
         }
     }
 
@@ -108,12 +112,20 @@ function MainPage(props) {
         setQuery(text);
     }
 
-    const handleDrawerOpen = () => {
-        setOpen(true);
+    const handleLeftDrawerOpen = () => {
+        setldOpen(true);
     };
 
-    const handleDrawerClose = () => {
-        setOpen(false);
+    const handleLeftDrawerClose = () => {
+        setldOpen(false);
+    };
+
+    const handleRightDrawerOpen = () => {
+        setrdOpen(true);
+    };
+
+    const handleRightDrawerClose = () => {
+        setrdOpen(false);
     };
 
     function onAddClicked(e)
@@ -133,9 +145,9 @@ function MainPage(props) {
                     <IconButton
                         color="inherit"
                         aria-label="open drawer"
-                        onClick={handleDrawerOpen}
+                        onClick={handleLeftDrawerOpen}
                         edge="start"
-                        className={clsx(open && classes.hide)}
+                        className={clsx(ldOpen && classes.hide)}
                     >
                         <MenuIcon />
                     </IconButton>
@@ -148,6 +160,9 @@ function MainPage(props) {
                     <IconButton color="inherit" onClick={onAddClicked}>
                         <AddCircleOutlineIcon/>
                     </IconButton>
+                    <IconButton color="inherit" onClick={handleRightDrawerOpen}>
+                        <CalendarTodayIcon/>
+                    </IconButton>
                     <Button variant="contained" color="primary" size="small" onClick={logout_clicked}>Logout</Button>
                 </Toolbar>
             </AppBar>
@@ -157,7 +172,7 @@ function MainPage(props) {
                 className={classes.drawer}
                 variant="persistent"
                 anchor="left"
-                open={open}
+                open={ldOpen}
                 classes={{ paper: classes.drawerPaper }}
             >
                 <div className={classes.drawerHeader}>
@@ -166,7 +181,7 @@ function MainPage(props) {
                         Main menu
                     </Typography>
                     <div className={classes.grow} />
-                    <IconButton onClick={handleDrawerClose}>
+                    <IconButton onClick={handleLeftDrawerClose}>
                         <ChevronLeftIcon />
                     </IconButton>
                 </div>
@@ -178,6 +193,24 @@ function MainPage(props) {
                     </ListItem>
                     ))}
                 </List>
+            </Drawer>
+            <Drawer
+                className={classes.drawer}
+                variant="persistent"
+                anchor="right"
+                open={rdOpen}
+                classes={{ paper: classes.drawerPaper }}
+            >
+                <div className={classes.drawerHeader}>
+                    <IconButton onClick={handleRightDrawerClose}>
+                        <ChevronRightIcon />
+                    </IconButton>
+                    <Typography variant="h6" className={classes.mar} color="primary">
+                        Calendar
+                    </Typography>
+                </div>
+                <Divider />
+                <CalendarCtrl />
             </Drawer>
         </div>
     );

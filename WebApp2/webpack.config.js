@@ -20,7 +20,12 @@ module.exports = {
       loader: 'babel-loader',
       query: {
         presets: ['@babel/preset-env', '@babel/preset-react']
-      }}]
+      }},
+      {
+        test: /\.css?$/,
+        include: path.join(__dirname, '/client/css'),
+        use: ['style-loader', 'css-loader']
+      }]
   },
 
   // start Webpack in a watch mode, so Webpack will rebuild the bundle on changes

@@ -35,6 +35,8 @@ function createDefault(type)
     if(type === 'bool') return false;
     if(type === 'int') return 0;
     if(type === 'double') return 0.0;
+    if(type === 'option') return 0;
+    if(type === 'timestamp') return Math.floor(Date.now() / 1000);
 }
 
 function createObjectBody(typeName)
