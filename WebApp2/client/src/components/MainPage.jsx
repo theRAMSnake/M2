@@ -2,6 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import Auth from '../modules/auth'
 import m3proxy from '../modules/m3proxy'
+import MateriaRequest from '../modules/materia_request'
 import SearchBar from './SearchBar.jsx'
 import ApiView from './ApiView.jsx'
 import QueryView from './QueryView.jsx'
@@ -69,6 +70,26 @@ const useStyles = makeStyles((theme) =>
   }),
 );
 
+function calculateNumImportantCalendarItems(calendarItems)
+{
+    var curDate = new Date();
+    curDate.setHours(23,59,59,999);
+    var ts = Math.floor(curDate / 1000);
+
+    var result = 0;
+    var i = 0;
+    for(; i < calendarItems.object_list.length; ++i)
+    {
+        var item = calendarItems.object_list[i];
+        if(Number(item.timestamp) < ts)
+        {
+            result++;
+        }
+    }
+
+    return result;
+}
+
 function MainPage(props) {
     
     const classes = useStyles();
@@ -77,8 +98,29 @@ function MainPage(props) {
     const [contentType, setContentType] = React.useState("");
     const [query, setQuery] = React.useState("");
     const [showAddDlg, setShowAddDlg] = React.useState(false);
+    const [calendarItems, setCalendarItems] = React.useState({});
+    const [numImportantCalendarItems, setNumImportantCalendarItems] = React.useState(0);
+
+    function requestCalendarItems()
+    {
+        const req = {
+            operation: "query",
+            filter: "IS(calendar_item)"
+        };
+
+        MateriaRequest.req(JSON.stringify(req), (r) => {
+            var c = JSON.parse(r);
+            setCalendarItems(c);
+            setNumImportantCalendarItems(calculateNumImportantCalendarItems(c));
+        });
+    }
 
     m3proxy.initialize();
+
+    if(!calendarItems.object_list)
+    {
+        requestCalendarItems();
+    }
 
     function getContentView(ct) 
     {
@@ -161,7 +203,9 @@ function MainPage(props) {
                         <AddCircleOutlineIcon/>
                     </IconButton>
                     <IconButton color="inherit" onClick={handleRightDrawerOpen}>
-                        <CalendarTodayIcon/>
+                        <Badge badgeContent={numImportantCalendarItems} color="secondary">
+                            <CalendarTodayIcon/>
+                        </Badge>
                     </IconButton>
                     <Button variant="contained" color="primary" size="small" onClick={logout_clicked}>Logout</Button>
                 </Toolbar>
@@ -210,7 +254,7 @@ function MainPage(props) {
                     </Typography>
                 </div>
                 <Divider />
-                <CalendarCtrl />
+                {calendarItems.object_list && <CalendarCtrl items={calendarItems.object_list}/>}
             </Drawer>
         </div>
     );
