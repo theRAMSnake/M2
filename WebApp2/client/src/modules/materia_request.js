@@ -31,6 +31,16 @@ class MateriaRequest
         MateriaRequest.req(JSON.stringify(rq), () => {});
     }
 
+    static postComplete(s)
+    {
+        var rq = {
+            operation: "complete",
+            id: s
+        };
+
+        MateriaRequest.req(JSON.stringify(rq), () => {});
+    }
+
     static postEdit(id, s)
     {
         var rq = {

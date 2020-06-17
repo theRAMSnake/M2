@@ -32,7 +32,7 @@ import CalendarTodayIcon  from '@material-ui/icons/CalendarToday';
 
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 
-const drawerWidth = 350;
+const drawerWidth = 500;
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -118,6 +118,11 @@ function MainPage(props) {
     m3proxy.initialize();
 
     if(!calendarItems.object_list)
+    {
+        requestCalendarItems();
+    }
+
+    function onCalendarChanged()
     {
         requestCalendarItems();
     }
@@ -254,7 +259,7 @@ function MainPage(props) {
                     </Typography>
                 </div>
                 <Divider />
-                {calendarItems.object_list && <CalendarCtrl items={calendarItems.object_list}/>}
+                {calendarItems.object_list && <CalendarCtrl items={calendarItems.object_list} onChanged={onCalendarChanged}/>}
             </Drawer>
         </div>
     );

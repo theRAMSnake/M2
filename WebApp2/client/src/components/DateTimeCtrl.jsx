@@ -7,6 +7,21 @@ import {
     KeyboardTimePicker,
     KeyboardDatePicker,
   } from '@material-ui/pickers';
+
+  
+function toUTC(date)
+{
+    //console.log("toUTC: " + date.getTime() + "->" + new Date(date.getTime() + new Date().getTimezoneOffset() * 60000).getTime());
+    return new Date(date.getTime() - new Date().getTimezoneOffset() * 60000).getTime();
+    //return date;
+}
+
+function fromUTC(ts)
+{
+    //console.log("fromUTC: " + ts + "->" + new Date(ts - new Date().getTimezoneOffset() * 60000).getTime());
+    return new Date(ts + new Date().getTimezoneOffset() * 60000).getTime();
+    //return ts;
+}
   
 export default function DateTimeCtrl(props) 
 {
@@ -17,8 +32,8 @@ export default function DateTimeCtrl(props)
                 id="date-picker-dialog"
                 label="Date"
                 format="dd/MM/yyyy"
-                value={props.value * 1000}
-                onChange={(d) => props.onChange(d, props.id)}
+                value={fromUTC(props.value * 1000)}
+                onChange={(d) => props.onChange(toUTC(d) / 1000, props.id)}
                 KeyboardButtonProps={{
                     'aria-label': 'change date',
                 }}
@@ -27,9 +42,9 @@ export default function DateTimeCtrl(props)
                 margin="normal"
                 id="time-picker"
                 label="Time"
-                value={props.value * 1000}
+                value={fromUTC(props.value * 1000)}
                 format="HH:mm"
-                onChange={(d) => props.onChange(d, props.id)}
+                onChange={(d) => props.onChange(toUTC(d) / 1000, props.id)}
                 KeyboardButtonProps={{
                     'aria-label': 'change time',
                 }}

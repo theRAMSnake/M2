@@ -90,7 +90,7 @@ export default function ObjectProperties(props)
     function handleDTChange(val, id)
     {
         let newObj = JSON.parse(JSON.stringify(props.object));
-        newObj[id] = val / 1000;
+        newObj[id] = val;
 
         props.onChange(newObj);
     }
