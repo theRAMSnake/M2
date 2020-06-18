@@ -11,6 +11,7 @@ import AddCircleOutlineIcon  from '@material-ui/icons/AddCircleOutline';
 
 import AddItemDialog from './AddItemDialog.jsx'
 import ConfirmationDialog from './dialogs/ConfirmationDialog.jsx'
+import GenericObjectDialog from './dialogs/GenericObjectDialog.jsx'
 
 import {
     IconButton,
@@ -41,6 +42,8 @@ function extractItems(calendarItems, date)
         return (Number(x.timestamp) >= startts) && (Number(x.timestamp) <= endts);
     });
 
+    console.log("extract");
+
     return r.sort((x, y) => { return Number(x.timestamp) - Number(y.timestamp); });
 }
 
@@ -48,15 +51,25 @@ export default function CalendarCtrl(props)
 {
     const items = props.items;
 
-    const defaultItems = extractItems(items, new Date());
-
     const [selectedDate, setSelectedDate] = React.useState(utils().getToday());
-    const [todayItems, setTodayItems] = React.useState(defaultItems);
+    const [todayItems, setTodayItems] = React.useState(null);
+    const [src, setSrc] = React.useState(null);
+
+    if(src != items)
+    {
+        setSrc(items);
+        var date = new Date();
+        date.setFullYear(selectedDate.year, selectedDate.month - 1, selectedDate.day);
+        setTodayItems(extractItems(items, date));
+    }
+
     const [showAddDlg, setShowAddDlg] = React.useState(false);
 
     const [inDeleteDialog, setInDeleteDialog] = React.useState(false);
+    const [inEditDialog, setInEditDialog] = React.useState(false);
     const [inCompleteDialog, setInCompleteDialog] = React.useState(false);
     const [focusedItemIndex, setFocusedItemIndex] = React.useState(-1);
+    const [objectInEdit, setObjectInEdit] = React.useState(null);
 
     function onDateSelected(newDate)
     {
@@ -100,6 +113,12 @@ export default function CalendarCtrl(props)
         setFocusedItemIndex(index);
     }
 
+    function prepareEdit(index)
+    {
+        setInEditDialog(true);
+        setObjectInEdit(todayItems[index]);
+    }
+
     function onDeleteDialogCancel()
     {
         setInDeleteDialog(false);
@@ -110,6 +129,17 @@ export default function CalendarCtrl(props)
     {
         setInCompleteDialog(false);
         setFocusedItemIndex(-1);
+    }
+
+    function onEditDialogClosed()
+    {
+        setInDeleteDialog(false);
+        setObjectInEdit(null);
+    }
+
+    function onObjectChanged(obj)
+    {
+
     }
 
     function onDeleteDialogOk()
@@ -132,6 +162,7 @@ export default function CalendarCtrl(props)
             {showAddDlg && <AddItemDialog onClose={onAddDialogClosed} selectedType="calendar_item" init={{timestamp: getInitTs()}}/>}
             <ConfirmationDialog open={inDeleteDialog} question="delete object" caption="confirm deletion" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
             <ConfirmationDialog open={inCompleteDialog} question="complete" caption="confirm completion" onNo={onCompleteDialogCancel} onYes={onCompleteDialogOk} />
+            {objectInEdit && <GenericObjectDialog open={inEditDialog} onClose={onEditDialogClosed} onChange={onObjectChanged} object={objectInEdit} />}
             <Grid container direction="column" justify="space-around" alignItems="center">
                 <Calendar value={selectedDate} onChange={onDateSelected}/>
                 <IconButton edge="end" aria-label="complete" onClick={onAddClicked}>
@@ -144,7 +175,7 @@ export default function CalendarCtrl(props)
                 var dt = new Date(obj.timestamp * 1000);
                 dt = new Date(dt.getTime() + dt.getTimezoneOffset() * 60000);
 
-                return (<ListItem button>
+                return (<ListItem button key={obj.id} onClick={() => prepareEdit(index)}>
                         <ListItemIcon>
                             {obj.entityType === "1" ? <AssignmentTurnedInIcon/> : <EventIcon/>} 
                         </ListItemIcon>

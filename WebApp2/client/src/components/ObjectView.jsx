@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import MateriaRequest from '../modules/materia_request'
 import m3proxy from '../modules/m3proxy'
-import ObjectProperties from './ObjectProperties.jsx'
+
 import ListObjectView from './ListObjectView.jsx'
 import ConfirmationDialog from './dialogs/ConfirmationDialog.jsx'
+import GenericObjectDialog from './dialogs/GenericObjectDialog.jsx'
 
 import DefaultThumbnail from './thumbnails/Default.jsx'
 import SimpleThumbnail from './thumbnails/Simple.jsx'
@@ -16,11 +17,7 @@ import {
     Typography,
     Divider,
     IconButton,
-    Avatar,
-    Button,
-    Dialog,
-    DialogContent,
-    DialogActions
+    Avatar
 } from "@material-ui/core";
 
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -108,19 +105,7 @@ function ObjectView(props)
             return <ListObjectView open={inEditDialog} object={object} onChange={onObjectChangedAndCommit} onClose={onEditDialogCancel}/>
         }
 
-        return (<Dialog open={inEditDialog} onClose={onEditDialogCancel} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-            <DialogContent>
-                <ObjectProperties height = '70vh' width='50vh' object={objectInEdit} onChange={onObjectChanged} type={object.type}/>
-            </DialogContent>
-            <DialogActions>
-                <Button variant="contained" onClick={onEditDialogCancel} color="primary">
-                    Cancel
-                </Button>
-                <Button variant="contained" onClick={onEditDialogOk} color="primary" autoFocus>
-                    Ok
-                </Button>
-            </DialogActions>
-        </Dialog>);
+        return (<GenericObjectDialog open={inEditDialog} onClose={onEditDialogCancel} onChange={onObjectChanged} object={objectInEdit} />);
     }
 
     return (

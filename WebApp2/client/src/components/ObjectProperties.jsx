@@ -28,6 +28,8 @@ function buildPropertiesTemplate(typename)
         }
     }
 
+    console.log(result);
+
     return result;
 }
 
