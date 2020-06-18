@@ -30,6 +30,8 @@ private:
     std::string formatResponce(const ExecutionResult& result);
     std::string formatErrorResponce(const std::string& errorText);
 
+    void generateNewTOD();
+
     Database mDb;
     TypeSystem mTypeSystem;
     Core mOldCore;

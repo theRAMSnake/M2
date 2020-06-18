@@ -21,6 +21,7 @@ CalendarTest.cpp
 NewAPITest.cpp
 ExpressionsTest.cpp
 ObjectTest.cpp
+CoreTest.cpp
 )
 
 find_package(Boost COMPONENTS system python unit_test_framework filesystem REQUIRED)

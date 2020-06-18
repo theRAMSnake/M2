@@ -21,6 +21,7 @@ public:
     void destroy(const Id id);
     std::vector<ObjectPtr> describe() const;
     ObjectPtr get(const Id id);
+    ObjectPtr getOrCreate(const Id id, const std::string& type);
 
     IReward& LEGACY_getReward();
 

@@ -10,14 +10,12 @@ class ObjectManager;
 namespace types
 {
 
-class SimpleList
+class Variable
 {
 public:
-    SimpleList(ObjectManager& om, const Id& id);
-    ~SimpleList();
-    void add(const std::string& item);
-    std::string at(const std::size_t pos);
-    std::size_t size(); 
+    Variable(ObjectManager& om, const Id& id);
+    ~Variable();
+    void operator =(const std::string& value);
 
 private:
     bool mChanged = false;

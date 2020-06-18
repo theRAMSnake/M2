@@ -22,6 +22,7 @@ private/Strategy_v2.cpp
 private/Logger.cpp
 private/JsonSerializer.cpp
 private/JsonRestorationProvider.cpp
+private/EmptyValueProvider.cpp
 private/Backuper.cpp
 private/StrategyGraph.cpp
 private/NodeAttributes.cpp
@@ -31,6 +32,7 @@ private/Challenge.cpp
 private/Object.cpp
 private/TypeHandler.cpp
 private/types/SimpleList.cpp
+private/types/Variable.cpp
 private/Operations.cpp
 )
 
