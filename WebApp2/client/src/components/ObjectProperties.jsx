@@ -18,6 +18,8 @@ function buildPropertiesTemplate(typename)
 {
     var result = [];
 
+    console.log(typename);
+
     const type = m3proxy.getType(typename);
     if(type.fields)
     {
@@ -35,7 +37,7 @@ function buildPropertiesTemplate(typename)
 
 export default function ObjectProperties(props)
 {
-    const propertiesTemplate = buildPropertiesTemplate(props.type);
+    const propertiesTemplate = buildPropertiesTemplate(props.object.typename);
 
     const [jsonView, setJsonView] = useState(false);
 

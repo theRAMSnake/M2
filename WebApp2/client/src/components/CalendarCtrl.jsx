@@ -131,7 +131,7 @@ export default function CalendarCtrl(props)
         setFocusedItemIndex(-1);
     }
 
-    function onEditDialogClosed()
+    function onEditDialogCancel()
     {
         setInDeleteDialog(false);
         setObjectInEdit(null);
@@ -139,7 +139,15 @@ export default function CalendarCtrl(props)
 
     function onObjectChanged(obj)
     {
+        setObjectInEdit(obj);
+    }
 
+    function onEditDialogOk()
+    {
+        setInDeleteDialog(false);
+        MateriaRequest.postEdit(objectInEdit.id, JSON.stringify(objectInEdit));
+        setObjectInEdit(null);
+        props.onChanged();
     }
 
     function onDeleteDialogOk()
@@ -162,7 +170,7 @@ export default function CalendarCtrl(props)
             {showAddDlg && <AddItemDialog onClose={onAddDialogClosed} selectedType="calendar_item" init={{timestamp: getInitTs()}}/>}
             <ConfirmationDialog open={inDeleteDialog} question="delete object" caption="confirm deletion" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
             <ConfirmationDialog open={inCompleteDialog} question="complete" caption="confirm completion" onNo={onCompleteDialogCancel} onYes={onCompleteDialogOk} />
-            {objectInEdit && <GenericObjectDialog open={inEditDialog} onClose={onEditDialogClosed} onChange={onObjectChanged} object={objectInEdit} />}
+            {objectInEdit && <GenericObjectDialog open={inEditDialog} onCancel={onEditDialogCancel} onOk={onEditDialogOk} onChange={onObjectChanged} object={objectInEdit} />}
             <Grid container direction="column" justify="space-around" alignItems="center">
                 <Calendar value={selectedDate} onChange={onDateSelected}/>
                 <IconButton edge="end" aria-label="complete" onClick={onAddClicked}>

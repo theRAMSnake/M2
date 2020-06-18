@@ -13,6 +13,10 @@ class MateriaRequest
         if (xhr.status === 200) {
             cb(xhr.response.message);
         }
+        else if(xhr.status === 401)
+        {
+            Auth.deauthenticateUser();
+        }
         else 
         {
             cb(xhr.statusText);

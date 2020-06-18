@@ -105,7 +105,7 @@ function ObjectView(props)
             return <ListObjectView open={inEditDialog} object={object} onChange={onObjectChangedAndCommit} onClose={onEditDialogCancel}/>
         }
 
-        return (<GenericObjectDialog open={inEditDialog} onClose={onEditDialogCancel} onChange={onObjectChanged} object={objectInEdit} />);
+        return (<GenericObjectDialog open={inEditDialog} onCancel={onEditDialogCancel} onOk={onEditDialogOk} onChange={onObjectChanged} object={objectInEdit} />);
     }
 
     return (
