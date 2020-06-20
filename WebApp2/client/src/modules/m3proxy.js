@@ -12,13 +12,18 @@ class m3Proxy
             return;
         }
 
-        const req = {
-            operation: "describe"
-        };
-    
-        MateriaRequest.req(JSON.stringify(req), (r) => {
-            types = JSON.parse(r).object_list;
-        });
+        {
+            const req = {
+                operation: "describe"
+            };
+        
+            MateriaRequest.req(JSON.stringify(req), (r) => {
+                types = JSON.parse(r).object_list;
+            });
+        }
+        {
+            
+        }
 
         console.log("m3proxy init started");
 

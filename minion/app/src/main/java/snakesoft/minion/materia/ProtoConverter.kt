@@ -4,7 +4,6 @@ import calendar.Calendar
 import common.Common
 import finance.Finance
 import inbox.Inbox
-import snakesoft.minion.Models.CalendarItem
 import snakesoft.minion.Models.InboxItem
 import snakesoft.minion.Models.FinanceEvent
 import strategy.Strategy

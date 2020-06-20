@@ -2,11 +2,13 @@ import React from 'react';
 import clsx from 'clsx';
 import Auth from '../modules/auth'
 import m3proxy from '../modules/m3proxy'
+import MateriaRequest from '../modules/materia_request'
 import SearchBar from './SearchBar.jsx'
 import ApiView from './ApiView.jsx'
 import QueryView from './QueryView.jsx'
 import AddItemDialog from './AddItemDialog.jsx'
 import InboxCtrl from './InboxCtrl.jsx'
+import CalendarCtrl from './CalendarCtrl.jsx'
 
 import {
     AppBar,
@@ -19,16 +21,19 @@ import {
     List,
     ListItem,
     Badge,
-    ListItemText
+    ListItemText,
+    Grid
 } from "@material-ui/core";
 
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import AddCircleOutlineIcon  from '@material-ui/icons/AddCircleOutline';
+import CalendarTodayIcon  from '@material-ui/icons/CalendarToday';
 
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 
-const drawerWidth = 240;
+const drawerWidth = 500;
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -66,15 +71,75 @@ const useStyles = makeStyles((theme) =>
   }),
 );
 
+function calculateNumImportantCalendarItems(calendarItems)
+{
+    var curDate = new Date();
+    curDate.setHours(23,59,59,999);
+    var ts = Math.floor(curDate / 1000);
+
+    var result = 0;
+    var i = 0;
+    for(; i < calendarItems.object_list.length; ++i)
+    {
+        var item = calendarItems.object_list[i];
+        if(Number(item.timestamp) < ts)
+        {
+            result++;
+        }
+    }
+
+    return result;
+}
+
 function MainPage(props) {
     
     const classes = useStyles();
-    const [open, setOpen] = React.useState(false);
+    const [ldOpen, setldOpen] = React.useState(false);
+    const [rdOpen, setrdOpen] = React.useState(false);
     const [contentType, setContentType] = React.useState("");
     const [query, setQuery] = React.useState("");
     const [showAddDlg, setShowAddDlg] = React.useState(false);
+    const [calendarItems, setCalendarItems] = React.useState({});
+    const [numImportantCalendarItems, setNumImportantCalendarItems] = React.useState(0);
+    const [tod, setTod] = React.useState("");
+
+    function requestCalendarItems()
+    {
+        const req = {
+            operation: "query",
+            filter: "IS(calendar_item)"
+        };
+
+        MateriaRequest.req(JSON.stringify(req), (r) => {
+            var c = JSON.parse(r);
+            setCalendarItems(c);
+            setNumImportantCalendarItems(calculateNumImportantCalendarItems(c));
+        });
+    }
 
     m3proxy.initialize();
+
+    {
+        const req = {
+            operation: "query",
+            ids: ["tip_of_the_day"]
+        };
+
+        MateriaRequest.req(JSON.stringify(req), (r) => {
+            var c = JSON.parse(r);
+            setTod(c.object_list[0].value);
+        });
+    }
+
+    if(!calendarItems.object_list)
+    {
+        requestCalendarItems();
+    }
+
+    function onCalendarChanged()
+    {
+        requestCalendarItems();
+    }
 
     function getContentView(ct) 
     {
@@ -98,7 +163,7 @@ function MainPage(props) {
         if(index == 0)
         {
             setContentType("api");
-            setOpen(false);
+            setldOpen(false);
         }
     }
 
@@ -108,12 +173,20 @@ function MainPage(props) {
         setQuery(text);
     }
 
-    const handleDrawerOpen = () => {
-        setOpen(true);
+    const handleLeftDrawerOpen = () => {
+        setldOpen(true);
     };
 
-    const handleDrawerClose = () => {
-        setOpen(false);
+    const handleLeftDrawerClose = () => {
+        setldOpen(false);
+    };
+
+    const handleRightDrawerOpen = () => {
+        setrdOpen(true);
+    };
+
+    const handleRightDrawerClose = () => {
+        setrdOpen(false);
     };
 
     function onAddClicked(e)
@@ -133,9 +206,9 @@ function MainPage(props) {
                     <IconButton
                         color="inherit"
                         aria-label="open drawer"
-                        onClick={handleDrawerOpen}
+                        onClick={handleLeftDrawerOpen}
                         edge="start"
-                        className={clsx(open && classes.hide)}
+                        className={clsx(ldOpen && classes.hide)}
                     >
                         <MenuIcon />
                     </IconButton>
@@ -148,16 +221,28 @@ function MainPage(props) {
                     <IconButton color="inherit" onClick={onAddClicked}>
                         <AddCircleOutlineIcon/>
                     </IconButton>
+                    <IconButton color="inherit" onClick={handleRightDrawerOpen}>
+                        <Badge badgeContent={numImportantCalendarItems} color="secondary">
+                            <CalendarTodayIcon/>
+                        </Badge>
+                    </IconButton>
                     <Button variant="contained" color="primary" size="small" onClick={logout_clicked}>Logout</Button>
                 </Toolbar>
             </AppBar>
             {showAddDlg && <AddItemDialog onClose={onAddDialogClosed}/>}
+            <Divider/>
+            <Grid  style={{paddingTop:'5px'}} container direction="column" justify="center" alignItems="center">
+                <Typography variant="h4" className={classes.mar} color="primary">
+                    {tod}
+                </Typography>
+            </Grid>
+            <Divider/>
             {getContentView(contentType)}
             <Drawer
                 className={classes.drawer}
                 variant="persistent"
                 anchor="left"
-                open={open}
+                open={ldOpen}
                 classes={{ paper: classes.drawerPaper }}
             >
                 <div className={classes.drawerHeader}>
@@ -166,7 +251,7 @@ function MainPage(props) {
                         Main menu
                     </Typography>
                     <div className={classes.grow} />
-                    <IconButton onClick={handleDrawerClose}>
+                    <IconButton onClick={handleLeftDrawerClose}>
                         <ChevronLeftIcon />
                     </IconButton>
                 </div>
@@ -178,6 +263,24 @@ function MainPage(props) {
                     </ListItem>
                     ))}
                 </List>
+            </Drawer>
+            <Drawer
+                className={classes.drawer}
+                variant="persistent"
+                anchor="right"
+                open={rdOpen}
+                classes={{ paper: classes.drawerPaper }}
+            >
+                <div className={classes.drawerHeader}>
+                    <IconButton onClick={handleRightDrawerClose}>
+                        <ChevronRightIcon />
+                    </IconButton>
+                    <Typography variant="h6" className={classes.mar} color="primary">
+                        Calendar
+                    </Typography>
+                </div>
+                <Divider />
+                {calendarItems.object_list && <CalendarCtrl items={calendarItems.object_list} onChanged={onCalendarChanged}/>}
             </Drawer>
         </div>
     );

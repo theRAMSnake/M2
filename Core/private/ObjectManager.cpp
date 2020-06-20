@@ -2,6 +2,7 @@
 #include "JsonSerializer.hpp"
 #include "ExceptionsUtil.hpp"
 #include "TypeName.hpp"
+#include "EmptyValueProvider.hpp"
 
 namespace materia
 {
@@ -175,6 +176,22 @@ ObjectPtr ObjectManager::get(const Id id)
     }
 
     throw std::runtime_error(fmt::format("Object with id {} not found", id.getGuid()));
+}
+
+ObjectPtr ObjectManager::getOrCreate(const Id id, const std::string& type)
+{
+    for(auto& h : mHandlers)
+    {
+        if(h.second->contains(id))
+        {
+            return *h.second->get(id);
+        }
+    }
+
+    EmptyValueProvider provider;
+    create(id, type, provider);
+
+    return get(id);
 }
 
 }

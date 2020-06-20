@@ -2,18 +2,23 @@ import React, { useState } from 'react';
 import JSONInput from 'react-json-editor-ajrm'; 
 import locale    from 'react-json-editor-ajrm/locale/en';
 import m3proxy from '../modules/m3proxy'
-
+import DateTimeCtrl from './DateTimeCtrl.jsx'
 import Switch from '@material-ui/core/Switch';
 
 import {
     FormControlLabel,
     TextField,
-    Checkbox
+    Checkbox,
+    FormControl,
+    Select,
+    InputLabel
 } from '@material-ui/core'
 
 function buildPropertiesTemplate(typename)
 {
     var result = [];
+
+    console.log(typename);
 
     const type = m3proxy.getType(typename);
     if(type.fields)
@@ -25,12 +30,14 @@ function buildPropertiesTemplate(typename)
         }
     }
 
+    console.log(result);
+
     return result;
 }
 
 export default function ObjectProperties(props)
 {
-    const propertiesTemplate = buildPropertiesTemplate(props.type);
+    const propertiesTemplate = props.object ? buildPropertiesTemplate(props.object.typename) : [];
 
     const [jsonView, setJsonView] = useState(false);
 
@@ -76,6 +83,22 @@ export default function ObjectProperties(props)
         props.onChange(newObj);
     }
 
+    function handleOptionChange(e)
+    {
+        let newObj = JSON.parse(JSON.stringify(props.object));
+        newObj[e.target.id] = e.target.value;
+
+        props.onChange(newObj);
+    }
+
+    function handleDTChange(val, id)
+    {
+        let newObj = JSON.parse(JSON.stringify(props.object));
+        newObj[id] = val;
+
+        props.onChange(newObj);
+    }
+
     function createPropCtrl(req)
     {
         if(req.type === 'string') 
@@ -86,6 +109,27 @@ export default function ObjectProperties(props)
             return <TextField inputProps={{onChange: handleIntFieldChange, type: 'number'}} value={props.object[req.name]} id={req.name} fullWidth label={req.name} />;
         if(req.type === 'double') 
             return <TextField inputProps={{onChange: handleDoubleFieldChange, type: 'number', step:'any'}} value={props.object[req.name]} id={req.name} fullWidth label={req.name} />;
+        if(req.type === 'option')
+        {
+            return <FormControl fullWidth style={{marginTop: '10px'}}>
+                        <InputLabel htmlFor={req.name}>{req.name}</InputLabel>
+                            <Select
+                                native
+                                value={props.object[req.name]}
+                                onChange={handleOptionChange}
+                                inputProps={{
+                                    name: req.name,
+                                    id: req.name,
+                                }}
+                                >
+                                {req.options.map((obj, index) => <option aria-label="None" value={index} key={index} >{obj}</option>)}
+                            </Select>
+                    </FormControl>
+        }
+        if(req.type === 'timestamp')
+        {
+            return <DateTimeCtrl onChange={handleDTChange} value={props.object[req.name]} id={req.name}/>
+        }
     }
 
     return (
@@ -104,12 +148,12 @@ export default function ObjectProperties(props)
                     inputProps={{ 'aria-label': 'primary checkbox' }}
                 />
             </div>
-            {(jsonView || propertiesTemplate == 0) && <JSONInput locale = { locale } 
+            {(jsonView || propertiesTemplate.length == 0) && <JSONInput locale = { locale } 
                 height = {props.height} 
                 width = {props.width} 
                 onChange = {handleJsonChange}
                 placeholder = {props.object}/>}
-            {!jsonView && propertiesTemplate != 0 && propertiesTemplate.map((obj, index) => createPropCtrl(obj))}
+            {!jsonView && propertiesTemplate.length != 0 && propertiesTemplate.map((obj, index) => createPropCtrl(obj))}
         </div>
     );
 }

@@ -8,8 +8,6 @@ include_directories("../build/Common")
 include_directories("..")
 
 add_executable(Test 
-#InboxTest.cpp
-CalendarTest.cpp
 #JournalTest.cpp
 #StrategyGraphTest.cpp
 #Strategy2Test.cpp
@@ -21,6 +19,7 @@ CalendarTest.cpp
 NewAPITest.cpp
 ExpressionsTest.cpp
 ObjectTest.cpp
+CoreTest.cpp
 )
 
 find_package(Boost COMPONENTS system python unit_test_framework filesystem REQUIRED)

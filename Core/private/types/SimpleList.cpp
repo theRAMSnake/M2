@@ -1,4 +1,5 @@
 #include "SimpleList.hpp"
+#include "../EmptyValueProvider.hpp"
 #include "../ObjectManager.hpp"
 
 namespace materia
@@ -7,10 +8,10 @@ namespace types
 {
 
 SimpleList::SimpleList(ObjectManager& om, const Id& id)
-: mObject(om.get(id))
+: mObject(om.getOrCreate(id, "simple_list"))
 , mOm(om)
 {
-
+    
 }
 
 void SimpleList::add(const std::string& item)
@@ -33,6 +34,12 @@ SimpleList::~SimpleList()
     {
         mOm.modify(*mObject);
     }
+}
+
+std::string SimpleList::at(const std::size_t pos)
+{
+    auto v = static_cast<std::vector<std::string>>((*mObject)["objects"]);
+    return v[pos];
 }
 
 }

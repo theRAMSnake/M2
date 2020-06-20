@@ -13,6 +13,10 @@ class MateriaRequest
         if (xhr.status === 200) {
             cb(xhr.response.message);
         }
+        else if(xhr.status === 401)
+        {
+            Auth.deauthenticateUser();
+        }
         else 
         {
             cb(xhr.statusText);
@@ -25,6 +29,16 @@ class MateriaRequest
     {
         var rq = {
             operation: "destroy",
+            id: s
+        };
+
+        MateriaRequest.req(JSON.stringify(rq), () => {});
+    }
+
+    static postComplete(s)
+    {
+        var rq = {
+            operation: "complete",
             id: s
         };
 

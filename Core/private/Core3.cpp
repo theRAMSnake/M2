@@ -1,6 +1,7 @@
 #include "Core3.hpp"
 #include "JsonSerializer.hpp"
 #include "Finance.hpp"
+#include "types/Variable.hpp"
 
 namespace materia
 {
@@ -12,11 +13,6 @@ Core3::Core3(const CoreConfig& config)
 , mObjManager(mDb, mTypeSystem, mOldCore.getReward())
 {
 
-}
-
-ICalendar& Core3::getCalendar()
-{
-   return mOldCore.getCalendar();
 }
 
 IStrategy_v2& Core3::getStrategy_v2()
@@ -51,6 +47,7 @@ IChallenge& Core3::getChallenge()
 
 void Core3::onNewDay()
 {
+   //Inbox award
    types::SimpleList inbox(mObjManager, Id("inbox"));
    if(inbox.size() == 0 && rand() % 10 == 0)
    {
@@ -58,7 +55,22 @@ void Core3::onNewDay()
       inbox.add("Extra point awarded for empty inbox.");
    }
 
+   //Finance analisys
    static_cast<Finance&>(getFinance()).performAnalisys(getReward(), inbox);
+
+   //TOD reselection
+   generateNewTOD();
+}
+
+void Core3::generateNewTOD()
+{
+   types::SimpleList wisdom(mObjManager, Id("wisdom"));
+   types::Variable tod(mObjManager, Id("tip_of_the_day"));
+   if(wisdom.size() > 0)
+   {
+      auto pos = rand() % wisdom.size();
+      tod = wisdom.at(pos);
+   }
 }
 
 void Core3::onNewWeek()

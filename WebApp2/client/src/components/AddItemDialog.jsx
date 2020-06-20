@@ -28,6 +28,16 @@ const useStyles = makeStyles((theme) =>
   }),
 );
 
+function toUTC(date)
+{
+    return new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+}
+
+function fromUTC(date)
+{
+
+}
+
 function createDefault(type)
 {
     if(type === 'string') return "";
@@ -35,6 +45,8 @@ function createDefault(type)
     if(type === 'bool') return false;
     if(type === 'int') return 0;
     if(type === 'double') return 0.0;
+    if(type === 'option') return 0;
+    if(type === 'timestamp') return Math.floor(toUTC(new Date()) / 1000);
 }
 
 function createObjectBody(typeName)
@@ -50,15 +62,35 @@ function createObjectBody(typeName)
         }
     }
 
+    result.typename = typeName;
+    console.log(result);
+    return result;
+}
+
+function initObjectBody(typeName, init)
+{
+    var result = {};
+    const type = m3proxy.getType(typeName);
+    if(type.fields)
+    {
+        var j = 0;
+        for (j = 0; j < type.fields.length; j++)
+        {
+            result[type.fields[j].name] = init[type.fields[j].name] ? init[type.fields[j].name] : createDefault(type.fields[j].type);
+        }
+    }
+
+    result.typename = typeName;
+
     console.log(result);
     return result;
 }
 
 function AddItemDialog(props)
 {
-    const [selectedType, setSelectedType] = useState('')
+    const [selectedType, setSelectedType] = useState(props.selectedType ? props.selectedType : '')
     const [selectedId, setSelectedId] = useState("")
-    const [objectBody, setObjectBody] = useState()
+    const [objectBody, setObjectBody] = useState(props.init ? initObjectBody(props.selectedType, props.init) : null)
     const [requesting, setRequesting] = useState(false)
     const classes = useStyles();
 

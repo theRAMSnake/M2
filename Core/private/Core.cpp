@@ -6,7 +6,6 @@ namespace materia
 Core::Core(Database& db, const std::string& dbFileName)
 : mDb(db)
 , mReward(mDb)
-, mCalendar(mDb, mReward)
 , mJournal(mDb)
 , mChallenge(mDb, mReward)
 , mStrategy_v2(mDb, mReward, mChallenge)
@@ -14,11 +13,6 @@ Core::Core(Database& db, const std::string& dbFileName)
 , mFinance(mDb)
 {
 
-}
-
-ICalendar& Core::getCalendar()
-{
-   return mCalendar;
 }
 
 IStrategy_v2& Core::getStrategy_v2()

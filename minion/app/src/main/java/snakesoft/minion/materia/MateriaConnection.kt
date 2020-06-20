@@ -80,12 +80,12 @@ class MateriaConnection(Ip: String, val Password: String, val Port: String)
     @Throws(MateriaUnreachableException::class)
     internal fun sendMessage(payload: String): String
     {
-        println("$payload")
+        println("payload: $payload")
         mSocket.send(encrypt(Password, payload.toByteArray()))
         val response = mSocket.recv() ?: throw MateriaUnreachableException()
 
         val dc = decrypt(Password, response).toString(Charset.defaultCharset())
-        println("$dc")
+        println("resp: $dc")
         return dc
     }
 }

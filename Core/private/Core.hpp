@@ -4,7 +4,6 @@
 #include "Database.hpp"
 #include "Strategy_v2.hpp"
 #include "Journal.hpp"
-#include "Calendar.hpp"
 #include "Backuper.hpp"
 #include "Finance.hpp"
 #include "Reward.hpp"
@@ -18,7 +17,6 @@ class Core : public ICore
 public:
     Core(Database& db, const std::string& dbFileName);
 
-    ICalendar& getCalendar() override;
     IJournal& getJournal() override;
     IBackuper& getBackuper() override;
     IStrategy_v2& getStrategy_v2() override;
@@ -31,7 +29,6 @@ public:
 private:
     Database& mDb;
     Reward mReward;
-    Calendar mCalendar;
     Journal mJournal;
     Challenge mChallenge;
     Strategy_v2 mStrategy_v2;

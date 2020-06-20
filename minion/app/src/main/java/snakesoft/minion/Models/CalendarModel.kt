@@ -2,21 +2,9 @@ package snakesoft.minion.Models
 
 import calendar.Calendar
 import common.Common
-import snakesoft.minion.materia.CalendarServiceProxy
-import snakesoft.minion.materia.MateriaConnection
-import snakesoft.minion.materia.MateriaUnreachableException
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
-import snakesoft.minion.materia.toProto
-
-@Serializable
-data class CalendarItem(
-        @Serializable(with = UUIDSerializer::class)
-        override var id: java.util.UUID,
-        var text: String,
-        var timestamp: Long,
-        override var trackingInfo: StatusOfChange = StatusOfChange.None
-    ) : ITrackable
+import snakesoft.minion.materia.*
 
 class CalendarModel(private val Db: LocalDatabase)
 {
@@ -43,17 +31,17 @@ class CalendarModel(private val Db: LocalDatabase)
             {
                 StatusOfChange.Edit ->
                 {
-                    proxy.editItem(toProto(i))
+                    proxy.editItem(i)
                     numModifications++
                 }
                 StatusOfChange.Delete ->
                 {
-                    proxy.completeItem(toProto(i.id))
+                    proxy.completeItem(i.id)
                     numModifications++
                 }
                 StatusOfChange.Add ->
                 {
-                    proxy.addItem(toProto(i))
+                    proxy.addItem(i)
                     numModifications++
                 }
                 else -> {}
@@ -84,19 +72,7 @@ class CalendarModel(private val Db: LocalDatabase)
     @Throws(MateriaUnreachableException::class)
     private fun queryAllItems(proxy: CalendarServiceProxy): List<CalendarItem>
     {
-        val threeYears: Long = 94670778
-
-        val result = mutableListOf<CalendarItem>()
-
-        val queryResult = proxy.query(Common.TimeRange.newBuilder().setTimestampFrom(System.currentTimeMillis() / 1000 - threeYears).
-                setTimestampTo(System.currentTimeMillis() / 1000 + threeYears).build())
-
-        for(x in queryResult.itemsList)
-        {
-            result.add(CalendarItem(java.util.UUID.fromString(x.id.guid), x.text, x.timestamp))
-        }
-
-        return result
+        return proxy.query()
     }
 
     @Throws(Exception::class)
