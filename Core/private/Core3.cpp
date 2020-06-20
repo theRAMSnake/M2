@@ -81,7 +81,7 @@ void Core3::onNewWeek()
    for(auto o : objList)
    {
       auto& obj = *o;
-      if(static_cast<int>(obj["resetWeekly"]))
+      if(static_cast<bool>(obj["resetWeekly"]))
       {
          obj["points"] = 0;
          mObjManager.modify(obj);

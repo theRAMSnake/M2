@@ -17,8 +17,13 @@ void ObjectManager::handleChItemChange(Object& obj)
         obj["level"] = static_cast<int>(obj["level"]) + 1;
         obj["pointsNeeded"] = static_cast<int>(obj["pointsNeeded"]) + static_cast<int>(obj["advance"]);
 
-        mReward.addPoints(static_cast<int>(obj["reward"]));
+        mReward.addPoints(static_cast<int>(obj["rewardPerLevel"]));
     }
+}
+
+void doNothing(Object& obj)
+{
+
 }
 
 std::function<void(Object&)> ObjectManager::createOnChangeHandler(const std::string& typeName)
@@ -29,7 +34,7 @@ std::function<void(Object&)> ObjectManager::createOnChangeHandler(const std::str
     }
     else
     {
-        return std::function<void(Object&)>();
+        return std::function<void(Object&)>(doNothing);
     }
 }
 

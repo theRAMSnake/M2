@@ -7,6 +7,7 @@ namespace materia
 TypeHandler::TypeHandler(const TypeDef& type, Database& db, std::function<void(Object&)> onChangeHandler)
 : mType(type)
 , mStorage(db.getTable(type.tableName))
+, mOnChangeHandler(onChangeHandler)
 {
     mStorage->foreach([&](std::string id, std::string json) 
     {
