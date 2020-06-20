@@ -4,7 +4,7 @@
 namespace materia
 {
 
-TypeHandler::TypeHandler(const TypeDef& type, Database& db)
+TypeHandler::TypeHandler(const TypeDef& type, Database& db, std::function<void(Object&)> onChangeHandler)
 : mType(type)
 , mStorage(db.getTable(type.tableName))
 {
@@ -96,12 +96,30 @@ void TypeHandler::modify(const Id id, const IValueProvider& provider)
     auto obj = *get(id);
     provider.populate(*obj);
 
+    mOnChangeHandler(*obj);
+
     mStorage->store(id, obj->toJson());
 }
 
 void TypeHandler::modify(const Object& obj)
 {
     mStorage->store(static_cast<Id>(obj["id"]), obj.toJson());
+}
+
+std::vector<ObjectPtr> TypeHandler::getAll()
+{
+    std::vector<ObjectPtr> result;
+
+    mStorage->foreach([&](std::string id, std::string json) 
+    {   
+        JsonRestorationProvider p(json);
+        auto newObj = std::make_shared<Object>(mType, id);
+        p.populate(*newObj);
+
+        result.push_back(newObj);
+    });
+
+    return result;
 }
 
 }

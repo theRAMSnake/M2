@@ -22,11 +22,15 @@ public:
     std::vector<ObjectPtr> describe() const;
     ObjectPtr get(const Id id);
     ObjectPtr getOrCreate(const Id id, const std::string& type);
+    std::vector<ObjectPtr> getAll(const std::string& type);
 
     IReward& LEGACY_getReward();
 
 private:
     TypeHandler& getHandler(const std::string& typeName);
+
+    std::function<void(Object&)> createOnChangeHandler(const std::string& typeName);
+    void handleChItemChange(Object& obj);
 
     std::map<std::string, std::shared_ptr<TypeHandler>> mHandlers;
     Database& mDb;

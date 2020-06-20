@@ -2,6 +2,7 @@
 #include "JsonSerializer.hpp"
 #include "Finance.hpp"
 #include "types/Variable.hpp"
+#include <chrono>
 
 namespace materia
 {
@@ -75,7 +76,17 @@ void Core3::generateNewTOD()
 
 void Core3::onNewWeek()
 {
-   mOldCore.onNewWeek();
+   //reset challenge items
+   auto objList = mObjManager.getAll("challenge_item");
+   for(auto o : objList)
+   {
+      auto& obj = *o;
+      if(static_cast<int>(obj["resetWeekly"]))
+      {
+         obj["points"] = 0;
+         mObjManager.modify(obj);
+      }
+   }
 }
 
 std::shared_ptr<ICore3> createCore(const CoreConfig& config)
@@ -122,20 +133,38 @@ std::string Core3::formatErrorResponce(const std::string& errorText)
 
 std::string Core3::executeCommandJson(const std::string& json)
 {
+   std::chrono::time_point<std::chrono::high_resolution_clock> started = std::chrono::high_resolution_clock::now();
+   std::string result;
+
    try
    {
       auto cmd = parseCommand(json);
 
-      return formatResponce(cmd->execute(mObjManager));
+      result = formatResponce(cmd->execute(mObjManager));
    }
    catch(std::exception& ex)
    {
-      return formatErrorResponce(ex.what());
+      result = formatErrorResponce(ex.what());
    }
    catch(...)
    {
-      return formatErrorResponce("Uknown error");
+      result = formatErrorResponce("Uknown error");
    }
+
+   auto time_D_msec = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - started);
+
+   if(time_D_msec > std::chrono::milliseconds(250))
+   {
+      notifyLongCommand(json);
+   }
+
+   return result;
+}
+
+void Core3::notifyLongCommand(const std::string& cmd)
+{
+   types::SimpleList inbox(mObjManager, Id("inbox"));
+   inbox.add("Command execution exceeds time limit: " + cmd);
 }
 
 }

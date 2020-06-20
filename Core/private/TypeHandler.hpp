@@ -20,13 +20,14 @@ public:
 class TypeHandler
 {
 public:
-    TypeHandler(const TypeDef& type, Database& db);
+    TypeHandler(const TypeDef& type, Database& db, std::function<void(Object&)> onChangeHandler);
 
     //Id must be unique
     ObjectPtr create(const std::optional<Id> id, const IValueProvider& provider);
     std::vector<ObjectPtr> query(const std::vector<Id>& ids);
     std::vector<ObjectPtr> query(const Filter& f);
     std::optional<ObjectPtr> get(const Id& id);
+    std::vector<ObjectPtr> getAll();
     //Id must be present
     void destroy(const Id id);
     bool contains(const Id id);
@@ -37,6 +38,7 @@ public:
 private:
     const TypeDef mType;
     std::unique_ptr<DatabaseTable> mStorage;
+    std::function<void(Object&)> mOnChangeHandler;
 
     std::set<Id> mIds;
 };

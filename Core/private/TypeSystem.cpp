@@ -15,6 +15,15 @@ TypeSystem::TypeSystem()
         {"reccurencyType", Type::Option, {"None", "Weekly", "Monthly", "Quarterly", "Yearly"}},
         {"entityType", Type::Option, {"Event", "Task"}}
         }});
+    mTypes.push_back({"challenge_item", "challenge_new", {
+        {"brief", Type::String},
+        {"points", Type::Int},
+        {"pointsNeeded", Type::Int},
+        {"level", Type::Int},
+        {"advance", Type::Int},
+        {"rewardPerLevel", Type::Int},
+        {"resetWeekly", Type::Bool},
+        }});
 }
 
 std::optional<TypeDef> TypeSystem::get(const std::string& name) const
