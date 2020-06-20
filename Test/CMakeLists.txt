@@ -15,7 +15,7 @@ add_executable(Test
 #EncDecTest.cpp
 #FinanceTest.cpp
 #RewardTest.cpp
-#ChallengeTest.cpp
+ChallengeTest.cpp
 NewAPITest.cpp
 ExpressionsTest.cpp
 ObjectTest.cpp

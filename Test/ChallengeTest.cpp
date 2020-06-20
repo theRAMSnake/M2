@@ -1,8 +1,7 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
+#include "../Core/private/JsonSerializer.hpp"
 #include <Core/ICore3.hpp>
-#include <Core/IChallenge.hpp>
-#include <Core/IReward.hpp>
 
 class ChallengeTest
 {
@@ -11,193 +10,133 @@ public:
    {
       system("rm Test.db");
       mCore = materia::createCore({"Test.db"});
-      mCh = &mCore->getChallenge();
-      mReward = &mCore->getReward();
    }
 
 protected:
 
-   std::shared_ptr<materia::ICore> mCore;
-   materia::IChallenge* mCh;
-   materia::IReward* mReward;
+   std::shared_ptr<materia::ICore3> mCore;
 };
-
-BOOST_FIXTURE_TEST_CASE( AddDeleteCh, ChallengeTest ) 
-{
-   BOOST_CHECK(mCh->addChallenge("ch", 5) != materia::Id::Invalid);
-
-   auto items = mCh->get();
-   BOOST_CHECK_EQUAL(1, items.size());
-   BOOST_CHECK_EQUAL("ch", items[0].name);
-   BOOST_CHECK_EQUAL(1, items[0].level);
-   BOOST_CHECK_EQUAL(5, items[0].maxLevels);
-
-   mCh->removeChallenge(items[0].id);
-
-   items = mCh->get();
-   BOOST_CHECK_EQUAL(0, items.size());
-}
-
-BOOST_FIXTURE_TEST_CASE( AddRemoveLayer, ChallengeTest ) 
-{
-    auto id = mCh->addChallenge("ch", 5);
-
-    auto idStages = mCh->addLayer(id, {materia::Id::Invalid, materia::StagesLayer{std::vector<bool>(5)}});
-    auto idPoints = mCh->addLayer(id, {materia::Id::Invalid, materia::PointsLayer{0, 10, 5, materia::PointsLayerType::Total}});
-
-    auto items = mCh->get();
-    BOOST_CHECK_EQUAL(1, items.size());
-
-    auto layers = items[0].layers;
-    BOOST_CHECK_EQUAL(2, layers.size());
-
-    BOOST_CHECK_EQUAL(idStages, layers[0].id);
-    BOOST_CHECK(std::holds_alternative<materia::StagesLayer>(layers[0].parameters));
-
-    BOOST_CHECK_EQUAL(5, std::get<materia::StagesLayer>(layers[0].parameters).stages.size());
-
-    BOOST_CHECK_EQUAL(idPoints, layers[1].id);
-    BOOST_CHECK(std::holds_alternative<materia::PointsLayer>(layers[1].parameters));
-
-    auto& pointsLayer = std::get<materia::PointsLayer>(layers[1].parameters);
-    BOOST_CHECK_EQUAL(0, pointsLayer.numPoints);
-    BOOST_CHECK_EQUAL(10, pointsLayer.pointsToNextLevel);
-    BOOST_CHECK_EQUAL(5, pointsLayer.advancementValue);
-    BOOST_CHECK_EQUAL(static_cast<int>(materia::PointsLayerType::Total), static_cast<int>(pointsLayer.type));
-
-    mCh->removeLayer(id, idStages);
-    mCh->removeLayer(id, idPoints);
-
-    items = mCh->get();
-    BOOST_CHECK_EQUAL(1, items.size());
-
-    layers = items[0].layers;
-    BOOST_CHECK_EQUAL(0, layers.size());
-}
-
-BOOST_FIXTURE_TEST_CASE( ToggleStage, ChallengeTest ) 
-{
-    auto id = mCh->addChallenge("ch", 5);
-    auto idStages = mCh->addLayer(id, {materia::Id::Invalid, materia::StagesLayer{std::vector<bool>(5)}});
-
-    mCh->toggleStage(id, idStages, 6); //Check no crash
-    mCh->toggleStage(id, idStages, 1);
-    mCh->toggleStage(id, idStages, 2);
-    mCh->toggleStage(id, idStages, 3);
-
-    auto items = mCh->get();
-    BOOST_CHECK_EQUAL(1, items.size());
-
-    auto layers = items[0].layers;
-    BOOST_CHECK_EQUAL(1, layers.size());
-
-    auto stages = std::get<materia::StagesLayer>(layers[0].parameters).stages;
-    BOOST_CHECK(!stages[0]);
-    BOOST_CHECK(stages[1]);
-    BOOST_CHECK(stages[2]);
-    BOOST_CHECK(stages[3]);
-    BOOST_CHECK(!stages[4]);
-
-    BOOST_CHECK_EQUAL(1, items[0].level);
-
-    mCh->toggleStage(id, idStages, 0);
-    mCh->toggleStage(id, idStages, 3);
-    mCh->toggleStage(id, idStages, 4);
-
-    items = mCh->get();
-    BOOST_CHECK_EQUAL(1, items.size());
-
-    layers = items[0].layers;
-    BOOST_CHECK_EQUAL(1, layers.size());
-
-    stages = std::get<materia::StagesLayer>(layers[0].parameters).stages;
-    BOOST_CHECK(stages[0]);
-    BOOST_CHECK(stages[1]);
-    BOOST_CHECK(stages[2]);
-    BOOST_CHECK(!stages[3]);
-    BOOST_CHECK(stages[4]);
-
-    BOOST_CHECK_EQUAL(1, items[0].level);
-
-    mCh->toggleStage(id, idStages, 3);
-
-    items = mCh->get();
-    BOOST_CHECK_EQUAL(1, items.size());
-
-    layers = items[0].layers;
-    BOOST_CHECK_EQUAL(1, layers.size());
-
-    stages = std::get<materia::StagesLayer>(layers[0].parameters).stages;
-    BOOST_CHECK(!stages[0]);
-    BOOST_CHECK(!stages[1]);
-    BOOST_CHECK(!stages[2]);
-    BOOST_CHECK(!stages[3]);
-    BOOST_CHECK(!stages[4]);
-
-    BOOST_CHECK_EQUAL(2, items[0].level);
-}
 
 BOOST_FIXTURE_TEST_CASE( AddPoints_ch, ChallengeTest ) 
 {
-    auto id = mCh->addChallenge("ch", 5);
-    auto idPoints = mCh->addLayer(id, {materia::Id::Invalid, materia::PointsLayer{0, 10, 5, materia::PointsLayerType::Total}});
+    boost::property_tree::ptree create;
+    create.put("operation", "create");
+    create.put("typename", "challenge_item");
+    create.put("params.points", 0);
+    create.put("params.pointsNeeded", 10);
+    create.put("params.advance", 5);
 
-    mCh->addPoints(id, idPoints, 7);
+    auto r = readJson<boost::property_tree::ptree>(mCore->executeCommandJson(writeJson(create)));
 
-    auto items = mCh->get();
-    BOOST_CHECK_EQUAL(1, items.size());
+    {
+      boost::property_tree::ptree modify;
+      modify.put("operation", "modify");
+      modify.put("params.points", 7);
+      modify.put("params.pointsNeeded", 10);
+      modify.put("params.advance", 5);
+      modify.put("id", r.get<std::string>("result_id"));
 
-    auto layers = items[0].layers;
-    BOOST_CHECK_EQUAL(1, layers.size());
+      mCore->executeCommandJson(writeJson(modify));
 
-    auto pts = std::get<materia::PointsLayer>(layers[0].parameters);
-    BOOST_CHECK_EQUAL(7, pts.numPoints);
-    BOOST_CHECK_EQUAL(1, items[0].level);
+      boost::property_tree::ptree query;
+      query.put("operation", "query");
+      query.put("filter", "IS(challenge_item)");
 
-    mCh->addPoints(id, idPoints, 4);
+      auto result = mCore->executeCommandJson(writeJson(query));
 
-    items = mCh->get();
-    BOOST_CHECK_EQUAL(1, items.size());
+      auto ol = readJson<boost::property_tree::ptree>(result);
 
-    layers = items[0].layers;
-    BOOST_CHECK_EQUAL(1, layers.size());
+      for(auto& v : ol.get_child("object_list"))
+      {
+         BOOST_CHECK_EQUAL(7, v.second.get<int>("points"));
+         BOOST_CHECK_EQUAL(10, v.second.get<int>("pointsNeeded"));
+         BOOST_CHECK_EQUAL(0, v.second.get<int>("level"));
+      }
+    }
 
-    pts = std::get<materia::PointsLayer>(layers[0].parameters);
-    BOOST_CHECK_EQUAL(1, pts.numPoints);
-    BOOST_CHECK_EQUAL(15, pts.pointsToNextLevel);
-    BOOST_CHECK_EQUAL(2, items[0].level);
+    {
+      boost::property_tree::ptree modify;
+      modify.put("operation", "modify");
+      modify.put("params.points", 11);
+      modify.put("params.pointsNeeded", 10);
+      modify.put("params.advance", 5);
+      modify.put("id", r.get<std::string>("result_id"));
+
+      mCore->executeCommandJson(writeJson(modify));
+
+      boost::property_tree::ptree query;
+      query.put("operation", "query");
+      query.put("filter", "IS(challenge_item)");
+
+      auto result = mCore->executeCommandJson(writeJson(query));
+
+      auto ol = readJson<boost::property_tree::ptree>(result);
+
+      for(auto& v : ol.get_child("object_list"))
+      {
+         BOOST_CHECK_EQUAL(1, v.second.get<int>("points"));
+         BOOST_CHECK_EQUAL(15, v.second.get<int>("pointsNeeded"));
+         BOOST_CHECK_EQUAL(1, v.second.get<int>("level"));
+      }
+    }
 }
 
-BOOST_FIXTURE_TEST_CASE( WeeklyTest, ChallengeTest ) 
+BOOST_FIXTURE_TEST_CASE( WeeklyTest1, ChallengeTest ) 
 {
-    auto id = mCh->addChallenge("ch", 5);
-    auto idPoints = mCh->addLayer(id, {materia::Id::Invalid, materia::PointsLayer{0, 10, 5, materia::PointsLayerType::Weekly}});
-    mCh->addPoints(id, idPoints, 7);
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "challenge_item");
+      create.put("params.points", 3);
+      create.put("params.pointsNeeded", 10);
+      create.put("params.advance", 5);
+      create.put("params.resetWeekly", false);
 
-    mCore->onNewWeek();
+      auto r = readJson<boost::property_tree::ptree>(mCore->executeCommandJson(writeJson(create)));
 
-    auto items = mCh->get();
-    BOOST_CHECK_EQUAL(1, items.size());
+      mCore->onNewWeek();
 
-    auto layers = items[0].layers;
-    BOOST_CHECK_EQUAL(1, layers.size());
+      boost::property_tree::ptree query;
+      query.put("operation", "query");
+      query.put("filter", "IS(challenge_item)");
 
-    auto pts = std::get<materia::PointsLayer>(layers[0].parameters);
-    BOOST_CHECK_EQUAL(0, pts.numPoints);
-    BOOST_CHECK_EQUAL(1, items[0].level);
+      auto result = mCore->executeCommandJson(writeJson(query));
+
+      auto ol = readJson<boost::property_tree::ptree>(result);
+
+      for(auto& v : ol.get_child("object_list"))
+      {
+         BOOST_CHECK_EQUAL(3, v.second.get<int>("points"));
+      }
+   } 
 }
 
-BOOST_FIXTURE_TEST_CASE( ChallengeRewarded, ChallengeTest ) 
+BOOST_FIXTURE_TEST_CASE( WeeklyTest2, ChallengeTest ) 
 {
-   auto chId = mCh->addChallenge("test", 3);
-   auto lId = mCh->addLayer(chId, {materia::Id::Invalid, materia::PointsLayer{0, 10, 0, materia::PointsLayerType::Total}});
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "challenge_item");
+      create.put("params.points", 3);
+      create.put("params.pointsNeeded", 10);
+      create.put("params.advance", 5);
+      create.put("params.resetWeekly", true);
 
-   BOOST_CHECK(mReward->addPool({materia::Id::Invalid, "text", 0, 100}) != materia::Id::Invalid);
+      auto r = readJson<boost::property_tree::ptree>(mCore->executeCommandJson(writeJson(create)));
 
-   mCh->addPoints(chId, lId, 1000);
+      mCore->onNewWeek();
 
-   auto items = mReward->getPools();
-   BOOST_CHECK_EQUAL(1, items.size());
-   BOOST_CHECK_EQUAL("text", items[0].name);
-   BOOST_CHECK_EQUAL(10, items[0].amount);
+      boost::property_tree::ptree query;
+      query.put("operation", "query");
+      query.put("filter", "IS(challenge_item)");
+
+      auto result = mCore->executeCommandJson(writeJson(query));
+
+      auto ol = readJson<boost::property_tree::ptree>(result);
+
+      for(auto& v : ol.get_child("object_list"))
+      {
+         BOOST_CHECK_EQUAL(0, v.second.get<int>("points"));
+      }
+   } 
 }

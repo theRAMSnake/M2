@@ -115,21 +115,21 @@ function MainPage(props) {
             setCalendarItems(c);
             setNumImportantCalendarItems(calculateNumImportantCalendarItems(c));
         });
+
+        {
+            const req = {
+                operation: "query",
+                ids: ["tip_of_the_day"]
+            };
+    
+            MateriaRequest.req(JSON.stringify(req), (r) => {
+                var c = JSON.parse(r);
+                setTod(c.object_list[0].value);
+            });
+        }
     }
 
     m3proxy.initialize();
-
-    {
-        const req = {
-            operation: "query",
-            ids: ["tip_of_the_day"]
-        };
-
-        MateriaRequest.req(JSON.stringify(req), (r) => {
-            var c = JSON.parse(r);
-            setTod(c.object_list[0].value);
-        });
-    }
 
     if(!calendarItems.object_list)
     {

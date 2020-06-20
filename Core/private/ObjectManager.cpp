@@ -9,6 +9,35 @@ namespace materia
 
 const unsigned int QUERY_LIMIT = 50;
 
+void ObjectManager::handleChItemChange(Object& obj)
+{
+    while(static_cast<int>(obj["points"]) > static_cast<int>(obj["pointsNeeded"]))
+    {
+        obj["points"] = static_cast<int>(obj["points"]) - static_cast<int>(obj["pointsNeeded"]);
+        obj["level"] = static_cast<int>(obj["level"]) + 1;
+        obj["pointsNeeded"] = static_cast<int>(obj["pointsNeeded"]) + static_cast<int>(obj["advance"]);
+
+        mReward.addPoints(static_cast<int>(obj["rewardPerLevel"]));
+    }
+}
+
+void doNothing(Object& obj)
+{
+
+}
+
+std::function<void(Object&)> ObjectManager::createOnChangeHandler(const std::string& typeName)
+{
+    if(typeName == "challenge_item")
+    {
+        return std::bind(&ObjectManager::handleChItemChange, this, std::placeholders::_1);
+    }
+    else
+    {
+        return std::function<void(Object&)>(doNothing);
+    }
+}
+
 ObjectManager::ObjectManager(Database& db, TypeSystem& types, IReward& reward)
 : mDb(db)
 , mTypes(types)
@@ -16,7 +45,7 @@ ObjectManager::ObjectManager(Database& db, TypeSystem& types, IReward& reward)
 {
     for(auto& t : mTypes.get())
     {
-        mHandlers[t.name] = std::make_shared<TypeHandler>(t, mDb);
+        mHandlers[t.name] = std::make_shared<TypeHandler>(t, mDb, createOnChangeHandler(t.name));
     }
 }
 
@@ -192,6 +221,16 @@ ObjectPtr ObjectManager::getOrCreate(const Id id, const std::string& type)
     create(id, type, provider);
 
     return get(id);
+}
+
+std::vector<ObjectPtr> ObjectManager::getAll(const std::string& type)
+{
+    if(mHandlers.contains(type))
+    {
+        return mHandlers[type]->getAll();
+    }
+
+    return {};
 }
 
 }
