@@ -16,7 +16,6 @@ private/Commands.cpp
 private/ObjectManager.cpp
 private/Impl.cpp
 private/Database.cpp
-private/Calendar.cpp
 private/Journal.cpp
 private/Strategy_v2.cpp
 private/Logger.cpp

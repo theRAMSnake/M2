@@ -21,7 +21,8 @@ import {
     List,
     ListItem,
     Badge,
-    ListItemText
+    ListItemText,
+    Grid
 } from "@material-ui/core";
 
 import MenuIcon from '@material-ui/icons/Menu';
@@ -100,6 +101,7 @@ function MainPage(props) {
     const [showAddDlg, setShowAddDlg] = React.useState(false);
     const [calendarItems, setCalendarItems] = React.useState({});
     const [numImportantCalendarItems, setNumImportantCalendarItems] = React.useState(0);
+    const [tod, setTod] = React.useState("");
 
     function requestCalendarItems()
     {
@@ -116,6 +118,18 @@ function MainPage(props) {
     }
 
     m3proxy.initialize();
+
+    {
+        const req = {
+            operation: "query",
+            ids: ["tip_of_the_day"]
+        };
+
+        MateriaRequest.req(JSON.stringify(req), (r) => {
+            var c = JSON.parse(r);
+            setTod(c.object_list[0].value);
+        });
+    }
 
     if(!calendarItems.object_list)
     {
@@ -216,6 +230,13 @@ function MainPage(props) {
                 </Toolbar>
             </AppBar>
             {showAddDlg && <AddItemDialog onClose={onAddDialogClosed}/>}
+            <Divider/>
+            <Grid  style={{paddingTop:'5px'}} container direction="column" justify="center" alignItems="center">
+                <Typography variant="h4" className={classes.mar} color="primary">
+                    {tod}
+                </Typography>
+            </Grid>
+            <Divider/>
             {getContentView(contentType)}
             <Drawer
                 className={classes.drawer}

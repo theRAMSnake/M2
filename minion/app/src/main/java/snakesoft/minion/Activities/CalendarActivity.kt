@@ -13,8 +13,8 @@ import android.widget.TextView
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.support.v4._DrawerLayout
-import snakesoft.minion.Models.CalendarItem
 import snakesoft.minion.Models.GlobalModel
+import snakesoft.minion.materia.CalendarItem
 import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.util.*

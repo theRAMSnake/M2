@@ -37,7 +37,7 @@ function buildPropertiesTemplate(typename)
 
 export default function ObjectProperties(props)
 {
-    const propertiesTemplate = buildPropertiesTemplate(props.object.typename);
+    const propertiesTemplate = props.object ? buildPropertiesTemplate(props.object.typename) : [];
 
     const [jsonView, setJsonView] = useState(false);
 
@@ -148,12 +148,12 @@ export default function ObjectProperties(props)
                     inputProps={{ 'aria-label': 'primary checkbox' }}
                 />
             </div>
-            {(jsonView || propertiesTemplate == 0) && <JSONInput locale = { locale } 
+            {(jsonView || propertiesTemplate.length == 0) && <JSONInput locale = { locale } 
                 height = {props.height} 
                 width = {props.width} 
                 onChange = {handleJsonChange}
                 placeholder = {props.object}/>}
-            {!jsonView && propertiesTemplate != 0 && propertiesTemplate.map((obj, index) => createPropCtrl(obj))}
+            {!jsonView && propertiesTemplate.length != 0 && propertiesTemplate.map((obj, index) => createPropCtrl(obj))}
         </div>
     );
 }

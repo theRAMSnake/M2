@@ -62,6 +62,7 @@ function createObjectBody(typeName)
         }
     }
 
+    result.typename = typeName;
     console.log(result);
     return result;
 }
@@ -78,6 +79,8 @@ function initObjectBody(typeName, init)
             result[type.fields[j].name] = init[type.fields[j].name] ? init[type.fields[j].name] : createDefault(type.fields[j].type);
         }
     }
+
+    result.typename = typeName;
 
     console.log(result);
     return result;

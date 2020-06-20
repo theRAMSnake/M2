@@ -5,7 +5,6 @@
 namespace materia
 {
 
-class ICalendar;
 class IStrategy;
 class IStrategy_v2;
 class IJournal;
@@ -22,7 +21,6 @@ struct CoreConfig
 class ICore
 {
 public:
-    virtual ICalendar& getCalendar() = 0;
     virtual IStrategy_v2& getStrategy_v2() = 0;
     virtual IJournal& getJournal() = 0;
     virtual IBackuper& getBackuper() = 0;

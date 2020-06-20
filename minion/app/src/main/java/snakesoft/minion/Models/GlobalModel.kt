@@ -37,13 +37,13 @@ object GlobalModel
             }
             else
             {
-                CalendarModel.sync(syncObserver, connection)
                 JournalModel.sync(syncObserver, connection)
                 FinanceModel.sync(syncObserver, connection)
                 RewardModel.sync(syncObserver, connection)
 
                 val connectionNew = MateriaConnection(Ip, password, "5756")
                 InboxModel.sync(syncObserver, connectionNew)
+                CalendarModel.sync(syncObserver, connectionNew)
 
                 syncObserver.finish()
 

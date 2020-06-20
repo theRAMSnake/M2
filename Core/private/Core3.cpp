@@ -15,11 +15,6 @@ Core3::Core3(const CoreConfig& config)
 
 }
 
-ICalendar& Core3::getCalendar()
-{
-   return mOldCore.getCalendar();
-}
-
 IStrategy_v2& Core3::getStrategy_v2()
 {
    return mOldCore.getStrategy_v2();

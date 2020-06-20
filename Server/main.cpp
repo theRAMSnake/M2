@@ -8,7 +8,6 @@
 #include <messages/common.pb.h>
 #include <fmt/format.h>
 #include "ServiceWrapper.hpp"
-#include "CalendarServiceImpl.hpp"
 #include "StrategyServiceImpl.hpp"
 #include "JournalServiceImpl.hpp"
 #include "AdminServiceImpl.hpp"
@@ -141,7 +140,6 @@ void legacyFunc(std::string password, materia::ICore3* core)
     clientSocket.bind ("tcp://*:5757");
 
     gServices.insert({"RewardService", std::make_shared<materia::ServiceWrapper<materia::RewardServiceImpl>>((*core))});
-    gServices.insert({"CalendarService", std::make_shared<materia::ServiceWrapper<materia::CalendarServiceImpl>>((*core))});
     gServices.insert({"JournalService", std::make_shared<materia::ServiceWrapper<materia::JournalServiceImpl>>((*core))});
     gServices.insert({"StrategyService", std::make_shared<materia::ServiceWrapper<materia::StrategyServiceImpl>>((*core))});
     gServices.insert({"FinanceService", std::make_shared<materia::ServiceWrapper<materia::FinanceServiceImpl>>((*core))});
