@@ -13,7 +13,6 @@
 #include "AdminServiceImpl.hpp"
 #include "RewardServiceImpl.hpp"
 #include "FinanceServiceImpl.hpp"
-#include "ChallengeServiceImpl.hpp"
 #include "Common/Codec.hpp"
 #include "Common/Password.hpp"
 
@@ -143,7 +142,6 @@ void legacyFunc(std::string password, materia::ICore3* core)
     gServices.insert({"JournalService", std::make_shared<materia::ServiceWrapper<materia::JournalServiceImpl>>((*core))});
     gServices.insert({"StrategyService", std::make_shared<materia::ServiceWrapper<materia::StrategyServiceImpl>>((*core))});
     gServices.insert({"FinanceService", std::make_shared<materia::ServiceWrapper<materia::FinanceServiceImpl>>((*core))});
-    gServices.insert({"ChallengeService", std::make_shared<materia::ServiceWrapper<materia::ChallengeServiceImpl>>((*core))});
     gServices.insert({"AdminService", std::make_shared<materia::ServiceWrapper<materia::AdminServiceImpl>>(*core, shutdownFlag)});
     
     while(true)

@@ -19,7 +19,6 @@ public:
     IStrategy_v2& getStrategy_v2() override;
     IFinance& getFinance() override;
     IReward& getReward() override;
-    IChallenge& getChallenge() override;
     void onNewDay() override;
     void onNewWeek() override;
 

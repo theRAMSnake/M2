@@ -26,7 +26,6 @@ public:
     virtual IBackuper& getBackuper() = 0;
     virtual IFinance& getFinance() = 0;
     virtual IReward& getReward() = 0;
-    virtual IChallenge& getChallenge() = 0;
 
     virtual void onNewDay() = 0;
     virtual void onNewWeek() = 0;

@@ -41,11 +41,6 @@ IReward& Core3::getReward()
    return mOldCore.getReward();
 }
 
-IChallenge& Core3::getChallenge()
-{
-   return mOldCore.getChallenge();
-}
-
 void Core3::onNewDay()
 {
    //Inbox award

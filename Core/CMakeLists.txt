@@ -27,7 +27,6 @@ private/StrategyGraph.cpp
 private/NodeAttributes.cpp
 private/Finance.cpp
 private/Reward.cpp
-private/Challenge.cpp
 private/Object.cpp
 private/TypeHandler.cpp
 private/types/SimpleList.cpp

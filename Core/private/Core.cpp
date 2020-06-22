@@ -7,8 +7,7 @@ Core::Core(Database& db, const std::string& dbFileName)
 : mDb(db)
 , mReward(mDb)
 , mJournal(mDb)
-, mChallenge(mDb, mReward)
-, mStrategy_v2(mDb, mReward, mChallenge)
+, mStrategy_v2(mDb, mReward)
 , mBackuper(dbFileName)
 , mFinance(mDb)
 {
@@ -40,11 +39,6 @@ IReward& Core::getReward()
    return mReward;
 }
 
-IChallenge& Core::getChallenge()
-{
-   return mChallenge;
-}
-
 void Core::onNewDay()
 {
    
@@ -52,7 +46,7 @@ void Core::onNewDay()
 
 void Core::onNewWeek()
 {
-   mChallenge.resetWeekly();
+   
 }
 
 }
