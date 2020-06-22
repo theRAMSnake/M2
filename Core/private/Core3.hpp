@@ -27,7 +27,7 @@ public:
 private:
     std::string formatResponce(const ExecutionResult& result);
     std::string formatErrorResponce(const std::string& errorText);
-    void notifyLongCommand(const std::string& cmd);
+    void notifyLongCommand(const std::string& cmd, unsigned int value);
 
     void generateNewTOD();
 

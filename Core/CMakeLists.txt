@@ -36,4 +36,4 @@ private/Operations.cpp
 
 find_package(Boost COMPONENTS system REQUIRED)
 
-target_link_libraries(m2core sqlite3 ${Boost_LIBRARIES} pthread fmt)
+target_link_libraries(m2core m2common sqlite3 ${Boost_LIBRARIES} pthread fmt)

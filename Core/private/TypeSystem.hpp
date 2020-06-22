@@ -28,6 +28,7 @@ struct FieldDef
     std::string name;
     Type type;
     std::vector<std::string> options;
+    std::string refType;
 };
 
 struct TypeDef
