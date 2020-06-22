@@ -25,6 +25,11 @@ module.exports = {
         test: /\.css?$/,
         include: path.join(__dirname, '/client/css'),
         use: ['style-loader', 'css-loader']
+      },
+      {
+        test: /\.css?$/,
+        include: path.join(__dirname, './node_modules/react-meter-bar/dist/'),
+        use: ['style-loader', 'css-loader']
       }]
   },
 

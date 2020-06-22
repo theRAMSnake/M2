@@ -8,12 +8,6 @@ import {
 export default function DefaultThumbnail(props)
 {
     return (
-        <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-        }}>
-            <SettingsIcon style={{ fontSize: 64 }} />
-        </div>
+        <SettingsIcon style={{ fontSize: 64 }} />
     );
 }
