@@ -9,6 +9,7 @@ import GenericObjectDialog from './dialogs/GenericObjectDialog.jsx'
 import DefaultThumbnail from './thumbnails/Default.jsx'
 import SimpleThumbnail from './thumbnails/Simple.jsx'
 import ListThumbnail from './thumbnails/List.jsx'
+import ChItemThumbnail from './thumbnails/ChItem.jsx'
 
 import {
     Card,
@@ -17,7 +18,8 @@ import {
     Typography,
     Divider,
     IconButton,
-    Avatar
+    Avatar,
+    Grid
 } from "@material-ui/core";
 
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -30,6 +32,11 @@ function getObjectThumbnail(obj)
     if(type.name === 'simple_list')
     {
         return (<ListThumbnail value={obj}/>);
+    }
+
+    if(type.name === 'challenge_item')
+    {
+        return (<ChItemThumbnail object={obj}/>);
     }
 
     if(type.fields && type.fields.length == 1)
@@ -110,7 +117,7 @@ function ObjectView(props)
 
     return (
         visible && <div>
-        <Card style={{ width: '25vw', height: '33vh', margin: '5px'}}>
+        <Card style={{ width: '25vw', height: '24vh', margin: '5px'}}>
             <CardHeader 
                 avatar={<Avatar><SettingsIcon /></Avatar>}
                 title={<Typography variant="body1" color='secondary'>{obj.name ? obj.name : obj.id}</Typography>}
@@ -127,7 +134,14 @@ function ObjectView(props)
                 }/>
             <Divider/>
             <CardContent>
-                {getObjectThumbnail(object)}
+                <Grid
+                    container
+                    align="center"
+                    justify="center"
+                    direction="row"
+                >
+                    {getObjectThumbnail(object)}
+                </Grid>
             </CardContent>
         </Card>
         <ConfirmationDialog open={inDeleteDialog} question="delete object" caption="confirm deletion" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />

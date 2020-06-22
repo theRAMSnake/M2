@@ -19,7 +19,6 @@ public:
     IStrategy_v2& getStrategy_v2() override;
     IFinance& getFinance() override;
     IReward& getReward() override;
-    IChallenge& getChallenge() override;
     void onNewDay() override;
     void onNewWeek() override;
 
@@ -28,7 +27,7 @@ public:
 private:
     std::string formatResponce(const ExecutionResult& result);
     std::string formatErrorResponce(const std::string& errorText);
-    void notifyLongCommand(const std::string& cmd);
+    void notifyLongCommand(const std::string& cmd, unsigned int value);
 
     void generateNewTOD();
 

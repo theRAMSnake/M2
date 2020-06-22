@@ -41,11 +41,6 @@ IReward& Core3::getReward()
    return mOldCore.getReward();
 }
 
-IChallenge& Core3::getChallenge()
-{
-   return mOldCore.getChallenge();
-}
-
 void Core3::onNewDay()
 {
    //Inbox award
@@ -155,16 +150,16 @@ std::string Core3::executeCommandJson(const std::string& json)
 
    if(time_D_msec > std::chrono::milliseconds(250))
    {
-      notifyLongCommand(json);
+      notifyLongCommand(json, time_D_msec.count());
    }
 
    return result;
 }
 
-void Core3::notifyLongCommand(const std::string& cmd)
+void Core3::notifyLongCommand(const std::string& cmd, unsigned int value)
 {
    types::SimpleList inbox(mObjManager, Id("inbox"));
-   inbox.add("Command execution exceeds time limit: " + cmd);
+   inbox.add("Command execution exceeds time limit: (" + std::to_string(value) + "ms) " + cmd);
 }
 
 }

@@ -27,7 +27,6 @@ private/StrategyGraph.cpp
 private/NodeAttributes.cpp
 private/Finance.cpp
 private/Reward.cpp
-private/Challenge.cpp
 private/Object.cpp
 private/TypeHandler.cpp
 private/types/SimpleList.cpp
@@ -37,4 +36,4 @@ private/Operations.cpp
 
 find_package(Boost COMPONENTS system REQUIRED)
 
-target_link_libraries(m2core sqlite3 ${Boost_LIBRARIES} pthread fmt)
+target_link_libraries(m2core m2common sqlite3 ${Boost_LIBRARIES} pthread fmt)
