@@ -15,7 +15,9 @@ enum class Type
     Bool,
     Array,
     Timestamp,
-    Option
+    Option,
+    Money,
+    Reference
 };
 
 struct Time

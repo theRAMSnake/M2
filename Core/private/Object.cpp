@@ -18,9 +18,11 @@ Object::Object(const TypeDef& type, const Id id)
         switch(f.type)
         {   
             case Type::Int: p = 0;break;
+            case Type::Money: p = 0;break;
             case Type::Double: p = 0.0;break;
             case Type::Bool: p = false;break;
             case Type::String: p = std::string();break;
+            case Type::Reference: p = std::string();break;
             case Type::Array: p = std::vector<std::string>();break;
             case Type::Timestamp: p = Time{0}; break;
             case Type::Option: p = 0; break;
@@ -121,7 +123,7 @@ void FieldProxy::operator= (const int v)
 {
     if(mType)
     {
-        if(mType == Type::Double || mType == Type::Int || mType == Type::String || mType == Type::Timestamp)
+        if(mType == Type::Double || mType == Type::Int || mType == Type::Money || mType == Type::String || mType == Type::Timestamp)
         {
             mImpl.put(mName, v);
         }
@@ -170,11 +172,11 @@ void FieldProxy::operator= (const std::string& v)
 {
     if(mType)
     {
-        if(mType == Type::String)
+        if(mType == Type::String || mType == Type::Reference)
         {
             mImpl.put(mName, v);
         }
-        else if(mType == Type::Int || mType == Type::Timestamp)
+        else if(mType == Type::Int || mType == Type::Timestamp || mType == Type::Int)
         {
             mImpl.put(mName, boost::lexical_cast<int>(v));
         }
@@ -264,7 +266,7 @@ void FieldProxy::operator= (const std::vector<std::shared_ptr<Object>>& v)
 
 FieldProxy::operator Id() const
 {
-    if(mType && *mType != Type::String)
+    if(mType && *mType != Type::String && *mType != Type::Reference)
     {
         throw std::runtime_error(fmt::format("Cannot get id from {}", mName));
     }
