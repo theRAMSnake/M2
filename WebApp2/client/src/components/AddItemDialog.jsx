@@ -46,6 +46,8 @@ function createDefault(type)
     if(type === 'int') return 0;
     if(type === 'double') return 0.0;
     if(type === 'option') return 0;
+    if(type === 'money') return 0;
+    if(type === 'reference') return "";
     if(type === 'timestamp') return Math.floor(toUTC(new Date()) / 1000);
 }
 
