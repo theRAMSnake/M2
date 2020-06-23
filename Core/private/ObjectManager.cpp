@@ -184,6 +184,7 @@ std::vector<ObjectPtr> ObjectManager::describe() const
             (*field)["name"] = f.name;
             (*field)["type"] = to_string(f.type);
             (*field)["options"] = f.options;
+            (*field)["refType"] = f.refType;
 
             fields.push_back(field);
         }
