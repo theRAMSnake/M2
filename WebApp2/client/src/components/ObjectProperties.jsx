@@ -16,14 +16,9 @@ import {
     InputAdornment
 } from '@material-ui/core'
 
-function getRefValue(id, refType)
+function getRefOptions(refType)
 {
-    return "test";
-}
-
-function getRefOptions()
-{
-    return [];
+    return m3proxy.getType(refType).objects;
 }
 
 function buildPropertiesTemplate(typename)
@@ -119,9 +114,12 @@ export default function ObjectProperties(props)
         props.onChange(newObj);
     }
 
-    function handleReferenceChange()
+    function handleReferenceChange(e)
     {
+        let newObj = JSON.parse(JSON.stringify(props.object));
+        newObj[e.target.id] = e.target.value;
 
+        props.onChange(newObj);
     }
 
     function createPropCtrl(req)
@@ -175,14 +173,14 @@ export default function ObjectProperties(props)
                         <InputLabel htmlFor={req.name}>{req.name}</InputLabel>
                             <Select
                                 native
-                                value={getRefValue(props.object[req.name], req.refType)}
+                                value={props.object[req.name]}
                                 onChange={handleReferenceChange}
                                 inputProps={{
                                     name: req.name,
                                     id: req.name,
                                 }}
                                 >
-                                {getRefOptions(req.refType).map((obj, index) => <option aria-label="None" value={getRefValue(obj.id, req.refType)} key={index} >{obj}</option>)}
+                                {getRefOptions(req.refType).map((obj, index) => <option aria-label="None" value={obj.id} key={index} >{obj.name}</option>)}
                             </Select>
                     </FormControl>
         }
