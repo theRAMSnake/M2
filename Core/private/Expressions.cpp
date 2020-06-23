@@ -152,11 +152,13 @@ public:
         switch(t)
         {
             case Type::Int: return static_cast<std::int64_t>(static_cast<int>(object[mIdentifier]));
+            case Type::Money: return static_cast<std::int64_t>(static_cast<int>(object[mIdentifier]));
             case Type::Timestamp: return static_cast<Time>(object[mIdentifier]).value;
             case Type::Option: return static_cast<std::int64_t>(static_cast<int>(object[mIdentifier]));
             case Type::Double: return static_cast<double>(object[mIdentifier]);
             case Type::Bool: return static_cast<bool>(object[mIdentifier]);
             case Type::String: return static_cast<std::string>(object[mIdentifier]);
+            case Type::Reference: return static_cast<std::string>(object[mIdentifier]);
             case Type::Array: return Value("");
         }
 
