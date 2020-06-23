@@ -24,15 +24,14 @@ TypeSystem::TypeSystem()
         {"rewardPerLevel", Type::Int},
         {"resetWeekly", Type::Bool},
         }});
-    mTypes.push_back({"finance.category", "finance_categories", {{"name", Type::String}}});
-    /*mTypes.push_back({"finance.event", "finance_events", {
-        {"categoryId", Type::Reference}, {}, "finance.category"},
+    mTypes.push_back({"finance_category", "finance_categories", {{"name", Type::String}}});
+    mTypes.push_back({"finance_event", "finance_events", {
+        {"categoryId", Type::Reference, {}, "finance_category"},
         {"type", Type::Option, {"Spending", "Earning"}},
         {"details", Type::String},
         {"amountEuroCents", Type::Money},
         {"timestamp", Type::Timestamp}
         }});
-    */
 }
 
 std::optional<TypeDef> TypeSystem::get(const std::string& name) const
