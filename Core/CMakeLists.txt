@@ -32,6 +32,7 @@ private/TypeHandler.cpp
 private/types/SimpleList.cpp
 private/types/Variable.cpp
 private/Operations.cpp
+private/operations/FinancialAnalisys.cpp
 )
 
 find_package(Boost COMPONENTS system REQUIRED)

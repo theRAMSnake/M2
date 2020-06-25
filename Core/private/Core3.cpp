@@ -2,6 +2,7 @@
 #include "JsonSerializer.hpp"
 #include "Finance.hpp"
 #include "types/Variable.hpp"
+#include "operations/FinancialAnalisys.hpp"
 #include <chrono>
 
 namespace materia
@@ -52,7 +53,7 @@ void Core3::onNewDay()
    }
 
    //Finance analisys
-   static_cast<Finance&>(getFinance()).performAnalisys(getReward(), inbox);
+   performFinancialAnalisys(mObjManager, getReward(), inbox);
 
    //TOD reselection
    generateNewTOD();
