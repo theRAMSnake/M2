@@ -11,8 +11,15 @@ import {
     Checkbox,
     FormControl,
     Select,
-    InputLabel
+    InputLabel,
+    Input,
+    InputAdornment
 } from '@material-ui/core'
+
+function getRefOptions(refType)
+{
+    return m3proxy.getType(refType).objects;
+}
 
 function buildPropertiesTemplate(typename)
 {
@@ -99,6 +106,22 @@ export default function ObjectProperties(props)
         props.onChange(newObj);
     }
 
+    function handleMoneyChange(e)
+    {
+        let newObj = JSON.parse(JSON.stringify(props.object));
+        newObj[e.target.id] = Math.floor(parseFloat(e.target.value) * 100);
+
+        props.onChange(newObj);
+    }
+
+    function handleReferenceChange(e)
+    {
+        let newObj = JSON.parse(JSON.stringify(props.object));
+        newObj[e.target.id] = e.target.value;
+
+        props.onChange(newObj);
+    }
+
     function createPropCtrl(req)
     {
         if(req.type === 'string') 
@@ -129,6 +152,37 @@ export default function ObjectProperties(props)
         if(req.type === 'timestamp')
         {
             return <DateTimeCtrl onChange={handleDTChange} value={props.object[req.name]} id={req.name}/>
+        }
+        if(req.type === 'money')
+        {
+            return <FormControl fullWidth>
+                <InputLabel htmlFor="amount">Amount</InputLabel>
+                <Input
+                    id={req.name}
+                    value={props.object[req.name] / 100.0}
+                    onChange={handleMoneyChange}
+                    type='number'
+                    step='any'
+                    startAdornment={<InputAdornment position="start">€</InputAdornment>}
+                />
+            </FormControl>
+        }
+        if(req.type === 'reference')
+        {
+            return <FormControl fullWidth style={{marginTop: '10px'}}>
+                        <InputLabel htmlFor={req.name}>{req.name}</InputLabel>
+                            <Select
+                                native
+                                value={props.object[req.name]}
+                                onChange={handleReferenceChange}
+                                inputProps={{
+                                    name: req.name,
+                                    id: req.name,
+                                }}
+                                >
+                                {getRefOptions(req.refType).map((obj, index) => <option aria-label="None" value={obj.id} key={index} >{obj.name}</option>)}
+                            </Select>
+                    </FormControl>
         }
     }
 

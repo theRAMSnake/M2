@@ -5,8 +5,7 @@
 
 static std::shared_ptr<materia::ICore> createTestCore()
 {
-   system("rm Test.db");
-   return materia::createCore({"Test.db"});
+   return materia::createCore({"/home/snake/materia.db"});
 }
 
 class CoreTest
@@ -25,4 +24,9 @@ protected:
 BOOST_FIXTURE_TEST_CASE( NewDayTest, CoreTest ) 
 {  
    mCore->onNewDay();
+}
+
+BOOST_FIXTURE_TEST_CASE( NewWeekTest, CoreTest ) 
+{  
+   mCore->onNewWeek();
 }
