@@ -21,6 +21,7 @@ public:
     void operator= (const std::vector<std::string>& v);
     void operator= (const std::vector<Id>& v);
     void operator= (const std::vector<std::shared_ptr<Object>>& v);
+    void operator= (const Object& o);
 
     explicit operator Id() const;
     explicit operator std::string() const;
@@ -59,5 +60,8 @@ private:
 };
 
 using ObjectPtr = std::shared_ptr<Object>;
+
+template<>
+std::vector<ObjectPtr>::iterator find_by_id(std::vector<ObjectPtr>::iterator beg, std::vector<ObjectPtr>::iterator end, const Id id);
 
 }

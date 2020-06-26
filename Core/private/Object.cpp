@@ -264,6 +264,21 @@ void FieldProxy::operator= (const std::vector<std::shared_ptr<Object>>& v)
     mImpl.put_child(mName, subTree);
 }
 
+void FieldProxy::operator= (const Object& o)
+{
+    if(mType)
+    {
+        throw std::runtime_error(fmt::format("Cannot assign object to {}", mName));
+    }
+
+    boost::property_tree::ptree subTree;
+
+    boost::property_tree::ptree p = readJson<boost::property_tree::ptree>(o.toJson());
+    subTree.push_back({"", p});
+
+    mImpl.put_child(mName, subTree);
+}
+
 FieldProxy::operator Id() const
 {
     if(mType && *mType != Type::String && *mType != Type::Reference)
@@ -382,6 +397,12 @@ std::string Object::getTypeName() const
 TypeDef Object::getType() const
 {
     return mTypeDef;
+}
+
+template<>
+std::vector<ObjectPtr>::iterator find_by_id(std::vector<ObjectPtr>::iterator beg, std::vector<ObjectPtr>::iterator end, const Id id)
+{
+    return std::find_if(beg, end, [&](auto x)->bool {return static_cast<Id>((*x)["id"]) == id;});
 }
 
 }

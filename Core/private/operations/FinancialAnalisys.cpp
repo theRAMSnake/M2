@@ -25,6 +25,17 @@ boost::gregorian::date getMonthAlignment(Object& event)
    return alignToStartOfMonth(boost::posix_time::from_time_t(static_cast<Time>(event["timestamp"]).value).date());
 }
 
+std::string getDateStr(const boost::gregorian::date src)
+{
+   const std::locale fmt(std::locale::classic(), new boost::gregorian::date_facet("%m/%Y"));
+
+   std::ostringstream os;
+   os.imbue(fmt);
+   os << src;
+
+   return os.str();
+}
+
 void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::SimpleList& inbox)
 {
    int grandTotal = 0;
@@ -118,9 +129,9 @@ void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::Sim
 
    for(auto d : amountByCategory)
    {
-      Object curCatBreakdown;
+      Object curCatBreakdown({"object"}, Id::generate());
       auto catPos = find_by_id(categories, d.first);
-      auto catName = catPos == categories.end() ? d.first.getGuid() : (*catPos)["name"];
+      auto catName = catPos == categories.end() ? d.first.getGuid() : static_cast<std::string>((**catPos)["name"]);
 
       curCatBreakdown["name"] = catName;
       
@@ -128,19 +139,19 @@ void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::Sim
       for(auto m : d.second)
       {
          total += m.second;
-         curCatBreakdown[getDateStr(months[m.first])] = m.second;
+         curCatBreakdown[getDateStr(m.first)] = m.second;
       }
 
-      curCatBreakdown["total"] = total;
+      curCatBreakdown["total"] = static_cast<int>(total);
 
       (*obj)[catName] = curCatBreakdown;
    }
 
-   Object totalPerMonth;
+   Object totalPerMonth({"object"}, Id::generate());
 
    for(auto m : total_per_month)
    {
-      totalPerMonth[getDateStr(months[m.first])] = m.second;
+      totalPerMonth[getDateStr(m.first)] = m.second;
    }
 
    (*obj)["totalPerMonth"] = totalPerMonth;
