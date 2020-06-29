@@ -45,7 +45,18 @@ void JsonRestorationProvider::populate(Object& obj) const
         }
         else
         {
-            obj[c.first] = c.second.get_value<std::string>();
+            if(c.second.size() > 1)
+            {
+                Object obj({"object"}, Id(c.second.get<std::string>("id")));
+                JsonRestorationProvider sub(c.second);
+                sub.populate(obj);
+
+                obj[c.first] = obj;
+            }
+            else
+            {
+                obj[c.first] = c.second.get_value<std::string>();
+            }
         }
     }
 }
