@@ -271,12 +271,8 @@ void FieldProxy::operator= (const Object& o)
         throw std::runtime_error(fmt::format("Cannot assign object to {}", mName));
     }
 
-    boost::property_tree::ptree subTree;
-
     boost::property_tree::ptree p = readJson<boost::property_tree::ptree>(o.toJson());
-    subTree.push_back({"", p});
-
-    mImpl.put_child(mName, subTree);
+    mImpl.put_child(mName, p);
 }
 
 FieldProxy::operator Id() const
