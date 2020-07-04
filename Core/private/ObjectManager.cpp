@@ -230,7 +230,6 @@ std::vector<ObjectPtr> ObjectManager::getAll(const std::string& type)
 {
     if(mHandlers.contains(type))
     {
-        std::cout << ".";
         return mHandlers[type]->getAll();
     }
 

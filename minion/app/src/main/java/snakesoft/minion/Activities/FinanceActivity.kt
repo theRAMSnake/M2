@@ -5,14 +5,12 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.support.v4._DrawerLayout
-import org.w3c.dom.Text
 import snakesoft.minion.Models.FinanceEvent
 import snakesoft.minion.Models.GlobalModel
 import java.util.*
@@ -109,7 +107,7 @@ class FinanceItemViewHandler: CollectionUIViewHandler()
     {
         Id = id
         val item = GlobalModel.FinanceModel.Events.first {it.eventId == id}
-        val amount = item.amountCents / 100.0
+        val amount = item.amountEuroCents / 100.0
         val text = item.details + ": " + String.format("%.2f", amount)
         TextView?.text = text
         TextView?.textColor = if (item.categoryId == getInvalidId()) Color.RED else Color.BLUE
@@ -195,11 +193,11 @@ class FinanceCollectionUIProvider(private val ctx: Context): ICollectionUIProvid
                                     item.details = details.text.toString()
                                     alert {
                                         customView {
-                                            val amount = editText(String.format("%.2f", item.amountCents / 100.0))
+                                            val amount = editText(String.format("%.2f", item.amountEuroCents / 100.0))
 
                                             okButton()
                                             {
-                                                item.amountCents = (amount.text.toString().toDouble() * 100).toLong()
+                                                item.amountEuroCents = (amount.text.toString().toDouble() * 100).toLong()
                                                 item.timestamp = System.currentTimeMillis() / 1000
                                                 GlobalModel.FinanceModel.addEvent(item)
                                                 OnChanged()

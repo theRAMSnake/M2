@@ -29,11 +29,6 @@ IJournal& Core::getJournal()
    return mJournal;
 }
 
-IFinance& Core::getFinance()
-{
-   return mFinance;
-}
-
 IReward& Core::getReward()
 {
    return mReward;

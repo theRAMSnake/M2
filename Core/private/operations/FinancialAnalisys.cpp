@@ -1,6 +1,7 @@
 #include "FinancialAnalisys.hpp"
 #include <map>
 #include <chrono>
+#include <iostream>
 #include <boost/date_time/gregorian/greg_date.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include "../ObjectManager.hpp"
@@ -17,7 +18,9 @@ boost::gregorian::date alignToStartOfMonth(const boost::gregorian::date& date)
 
 bool isWithinLastYear(Object& event)
 {
-   return static_cast<Time>(event["timestamp"]).value > std::chrono::system_clock::to_time_t(std::chrono::system_clock::now() - std::chrono::hours(8760));
+   auto val = static_cast<Time>(event["timestamp"]).value ;
+   return val > std::chrono::system_clock::to_time_t(std::chrono::system_clock::now() - std::chrono::hours(8760)) &&
+      val < std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 }
 
 boost::gregorian::date getMonthAlignment(Object& event)
@@ -157,6 +160,8 @@ void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::Sim
    (*obj)["totalPerMonth"] = totalPerMonth;
 
    objMan.modify(*obj);
+
+   std::cout << obj->toJson();
 }
 
 }

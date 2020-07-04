@@ -220,7 +220,7 @@ BOOST_FIXTURE_TEST_CASE( TestDescribe, NewAPITest )
 {
     boost::property_tree::ptree d;
     d.put("operation", "describe");
-    std::cout << mCore->executeCommandJson(writeJson(d));
+    mCore->executeCommandJson(writeJson(d));
 }
 
 BOOST_FIXTURE_TEST_CASE( TestChType, NewAPITest ) 

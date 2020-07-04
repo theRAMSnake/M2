@@ -58,7 +58,6 @@ BOOST_FIXTURE_TEST_CASE( TestContainsExp, ExpressionsTest )
    p["some1"] = std::string("aa");
    p["some2"] = std::string("bb");
 
-   std::cout << p.toJson();
    BOOST_CHECK_EQUAL(true, std::get<bool>(materia::parseExpression(".som contains .some1")->evaluate(p)));
    BOOST_CHECK_EQUAL(false, std::get<bool>(materia::parseExpression(".som contains .some2")->evaluate(p)));
 }

@@ -24,7 +24,6 @@ public:
     virtual IStrategy_v2& getStrategy_v2() = 0;
     virtual IJournal& getJournal() = 0;
     virtual IBackuper& getBackuper() = 0;
-    virtual IFinance& getFinance() = 0;
     virtual IReward& getReward() = 0;
 
     virtual void onNewDay() = 0;
