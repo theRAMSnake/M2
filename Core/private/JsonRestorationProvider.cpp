@@ -9,6 +9,12 @@ JsonRestorationProvider::JsonRestorationProvider(const std::string& json)
     mImpl = readJson<boost::property_tree::ptree>(json);
 }
 
+JsonRestorationProvider::JsonRestorationProvider(const boost::property_tree::ptree& ptree)
+: mImpl(ptree)
+{
+
+}
+
 std::vector<std::string> extractArray(const boost::property_tree::ptree& ptree)
 {
     std::vector<std::string> result;

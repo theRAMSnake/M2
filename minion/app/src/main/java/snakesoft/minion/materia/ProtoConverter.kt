@@ -6,7 +6,6 @@ import finance.Finance
 import inbox.Inbox
 import snakesoft.minion.Models.InboxItem
 import snakesoft.minion.Models.FinanceEvent
-import strategy.Strategy
 
 fun toProto(x: java.util.UUID) : Common.UniqueId
 {
@@ -40,7 +39,7 @@ fun toProto(x: FinanceEvent) : Finance.EventInfo
 
     b.eventId = toProto(x.eventId)
     b.categoryId = toProto(x.categoryId)
-    b.amountEuroCents = x.amountCents.toInt()
+    b.amountEuroCents = x.amountEuroCents.toInt()
     b.timestamp = x.timestamp.toInt()
     b.details = x.details
 

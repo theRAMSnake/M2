@@ -12,7 +12,8 @@ import java.util.*
 data class FinanceCategory(
         @Serializable(with = UUIDSerializer::class)
         var id: java.util.UUID,
-        var name: String
+        var name: String,
+        var typename: String
 )
 
 @Serializable
@@ -23,7 +24,7 @@ data class FinanceEvent(
         var categoryId: java.util.UUID,
         var details: String,
         var timestamp: Long,
-        var amountCents: Long
+        var amountEuroCents: Long
 )
 
 @Serializable
@@ -59,7 +60,7 @@ class FinanceModel(private val Db: LocalDatabase)
         {
             if(i.categoryId != getInvalidId())
             {
-                proxy.addEvent(toProto(i))
+                proxy.addEvent(i)
             }
             else
             {
@@ -101,9 +102,9 @@ class FinanceModel(private val Db: LocalDatabase)
 
         val queryResult = proxy.loadCategories()
 
-        for(x in queryResult.itemsList)
+        for(x in queryResult)
         {
-            result.add(FinanceCategory(UUID.fromString(x.id.guid), x.name))
+            result.add(x)
         }
 
         return result

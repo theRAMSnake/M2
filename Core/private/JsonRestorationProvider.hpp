@@ -12,6 +12,7 @@ public:
     void populate(Object& obj) const override;
 
 private:
+    JsonRestorationProvider(const boost::property_tree::ptree& ptree);
     boost::property_tree::ptree mImpl;
 };
 
