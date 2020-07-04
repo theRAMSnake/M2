@@ -1,6 +1,7 @@
 #include "Core3.hpp"
 #include "JsonSerializer.hpp"
 #include "types/Variable.hpp"
+#include "types/SimpleList.hpp"
 #include "operations/FinancialAnalisys.hpp"
 #include <chrono>
 
