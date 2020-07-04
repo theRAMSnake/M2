@@ -1,6 +1,5 @@
 #include "Core3.hpp"
 #include "JsonSerializer.hpp"
-#include "Finance.hpp"
 #include "types/Variable.hpp"
 #include "operations/FinancialAnalisys.hpp"
 #include <chrono>

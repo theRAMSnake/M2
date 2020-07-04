@@ -5,7 +5,6 @@
 #include "Strategy_v2.hpp"
 #include "Journal.hpp"
 #include "Backuper.hpp"
-#include "Finance.hpp"
 #include "Reward.hpp"
 
 namespace materia
@@ -29,7 +28,6 @@ private:
     Journal mJournal;
     Strategy_v2 mStrategy_v2;
     Backuper mBackuper;
-    Finance mFinance;
 };
 
 }
