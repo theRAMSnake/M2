@@ -9,7 +9,6 @@ Core::Core(Database& db, const std::string& dbFileName)
 , mJournal(mDb)
 , mStrategy_v2(mDb, mReward)
 , mBackuper(dbFileName)
-, mFinance(mDb)
 {
 
 }
