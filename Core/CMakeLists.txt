@@ -25,7 +25,6 @@ private/EmptyValueProvider.cpp
 private/Backuper.cpp
 private/StrategyGraph.cpp
 private/NodeAttributes.cpp
-private/Finance.cpp
 private/Reward.cpp
 private/Object.cpp
 private/TypeHandler.cpp

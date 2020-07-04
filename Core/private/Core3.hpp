@@ -17,7 +17,6 @@ public:
     IJournal& getJournal() override;
     IBackuper& getBackuper() override;
     IStrategy_v2& getStrategy_v2() override;
-    IFinance& getFinance() override;
     IReward& getReward() override;
     void onNewDay() override;
     void onNewWeek() override;

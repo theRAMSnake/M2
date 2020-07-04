@@ -32,11 +32,6 @@ IJournal& Core3::getJournal()
    return mOldCore.getJournal();
 }
 
-IFinance& Core3::getFinance()
-{
-   return mOldCore.getFinance();
-}
-
 IReward& Core3::getReward()
 {
    return mOldCore.getReward();
