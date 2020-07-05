@@ -53,11 +53,11 @@ void JsonRestorationProvider::populate(Object& obj) const
         {
             if(c.second.size() > 1)
             {
-                Object obj({"object"}, Id(c.second.get<std::string>("id")));
+                Object subobj({"object"}, Id(c.second.get<std::string>("id")));
                 JsonRestorationProvider sub(c.second);
-                sub.populate(obj);
+                sub.populate(subobj);
 
-                obj[c.first] = obj;
+                obj[c.first] = subobj;
             }
             else
             {

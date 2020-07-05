@@ -40,7 +40,7 @@ private:
     std::unique_ptr<DatabaseTable> mStorage;
     std::function<void(Object&)> mOnChangeHandler;
 
-    std::set<Id> mIds;
+    std::map<Id, ObjectPtr> mPool;
 };
 
 }

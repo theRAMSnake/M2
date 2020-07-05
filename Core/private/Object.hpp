@@ -47,6 +47,7 @@ class Object
 {
 public:
     Object(const TypeDef& type, const Id id);
+    Object(const Object& other);
     FieldProxy operator [] (const std::string& name);
     const FieldProxy operator [] (const std::string& name) const;
 
