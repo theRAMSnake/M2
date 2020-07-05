@@ -1,5 +1,6 @@
 #include "TypeHandler.hpp"
 #include "JsonRestorationProvider.hpp"
+#include <future>
 
 namespace materia
 {
@@ -11,7 +12,11 @@ TypeHandler::TypeHandler(const TypeDef& type, Database& db, std::function<void(O
 {
     mStorage->foreach([&](std::string id, std::string json) 
     {
-        mIds.insert(id);
+        JsonRestorationProvider p(json);
+        auto newObj = std::make_shared<Object>(mType, id);
+        p.populate(*newObj);
+
+        mPool[Id(id)] = newObj;
     });
 }
 
@@ -22,8 +27,10 @@ ObjectPtr TypeHandler::create(const std::optional<Id> id, const IValueProvider& 
 
     provider.populate(*newObj);
 
-    mStorage->store(newId, newObj->toJson());
-    mIds.insert(newId);
+    auto json = newObj->toJson();
+
+    std::async(std::launch::async, [newId, json, this]{ mStorage->store(newId, json); });
+    mPool[newId] = newObj;
 
     return newObj;
 }
@@ -48,32 +55,24 @@ std::vector<ObjectPtr> TypeHandler::query(const Filter& f)
 {
     std::vector<ObjectPtr> result;
 
-    mStorage->foreach([&](std::string id, std::string json) 
+    for(auto kv : mPool) 
     {   
-        JsonRestorationProvider p(json);
-        auto newObj = std::make_shared<Object>(mType, id);
-        p.populate(*newObj);
-
-        if(std::get<bool>(f.evaluate(*newObj)))
+        if(std::get<bool>(f.evaluate(*kv.second)))
         {
-            result.push_back(newObj);
+            result.push_back(kv.second);
         }
-    });
+    }
 
     return result;
 }
 
 std::optional<ObjectPtr> TypeHandler::get(const Id& id)
 {
-    auto obj = mStorage->load(id);
+    auto pos = mPool.find(id);
 
-    if(obj)
+    if(pos != mPool.end())
     {
-        JsonRestorationProvider p(*obj);
-        auto newObj = std::make_shared<Object>(mType, id);
-        p.populate(*newObj);
-
-        return newObj;
+        return pos->second;
     }
     else
     {
@@ -83,13 +82,14 @@ std::optional<ObjectPtr> TypeHandler::get(const Id& id)
 
 void TypeHandler::destroy(const Id id)
 {
-    mIds.erase(id);
-    mStorage->erase(id);
+    mPool.erase(id);
+
+    std::async(std::launch::async, [id, this]{ mStorage->erase(id); });   
 }
 
 bool TypeHandler::contains(const Id id)
 {
-    return mIds.find(id) != mIds.end();
+    return mPool.contains(id);
 }
 
 void TypeHandler::modify(const Id id, const IValueProvider& provider)
@@ -99,26 +99,31 @@ void TypeHandler::modify(const Id id, const IValueProvider& provider)
 
     mOnChangeHandler(*obj);
 
-    mStorage->store(id, obj->toJson());
+    auto json = obj->toJson();
+
+    std::async(std::launch::async, [id, json, this]{ mStorage->store(id, json); });
+
+    mPool[id] = obj;
 }
 
 void TypeHandler::modify(const Object& obj)
 {
-    mStorage->store(static_cast<Id>(obj["id"]), obj.toJson());
+    auto json = obj.toJson();
+    auto id = static_cast<Id>(obj["id"]);
+
+    std::async(std::launch::async, [id, json, this]{ mStorage->store(id, json); });
+    
+    mPool[id] = std::make_shared<Object>(obj);
 }
 
 std::vector<ObjectPtr> TypeHandler::getAll()
 {
     std::vector<ObjectPtr> result;
 
-    mStorage->foreach([&](std::string id, std::string json) 
+    for(auto kv : mPool) 
     {   
-        JsonRestorationProvider p(json);
-        auto newObj = std::make_shared<Object>(mType, id);
-        p.populate(*newObj);
-
-        result.push_back(newObj);
-    });
+        result.push_back(kv.second);
+    }
 
     return result;
 }

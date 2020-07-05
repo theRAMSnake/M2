@@ -30,6 +30,13 @@ Object::Object(const TypeDef& type, const Id id)
     }
 }
 
+Object::Object(const Object& other)
+: mTypeDef(other.mTypeDef)
+, mImpl(other.mImpl)
+{
+
+}
+
 FieldProxy Object::operator [] (const std::string& name)
 {
     auto pos = std::find_if(mTypeDef.fields.begin(), mTypeDef.fields.end(), [name](auto x){return x.name == name;});
