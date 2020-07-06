@@ -127,6 +127,7 @@ void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::Sim
 
    //Compile report
    auto obj = objMan.getOrCreate(Id("financial_report"), "object");
+   obj->clear();
    (*obj)["balance"] = balance;
    (*obj)["status"] = status;
 
