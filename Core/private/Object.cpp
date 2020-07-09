@@ -2,6 +2,7 @@
 #include "JsonSerializer.hpp"
 #include "fmt/format.h"
 #include <iostream>
+#include <chrono>
 
 namespace materia
 {
@@ -24,7 +25,7 @@ Object::Object(const TypeDef& type, const Id id)
             case Type::String: p = std::string();break;
             case Type::Reference: p = std::string();break;
             case Type::Array: p = std::vector<std::string>();break;
-            case Type::Timestamp: p = Time{0}; break;
+            case Type::Timestamp: p = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())}; break;
             case Type::Option: p = 0; break;
         }
     }
@@ -406,6 +407,33 @@ template<>
 std::vector<ObjectPtr>::iterator find_by_id(std::vector<ObjectPtr>::iterator beg, std::vector<ObjectPtr>::iterator end, const Id id)
 {
     return std::find_if(beg, end, [&](auto x)->bool {return static_cast<Id>((*x)["id"]) == id;});
+}
+
+void Object::clear()
+{
+    auto id = static_cast<Id>((*this)["id"]);
+
+    mImpl.clear();
+
+    (*this)["id"] = id;
+    (*this)["typename"] = mTypeDef.name;
+
+    for(auto f : mTypeDef.fields)
+    {
+        auto p = (*this)[f.name];
+        switch(f.type)
+        {   
+            case Type::Int: p = 0;break;
+            case Type::Money: p = 0;break;
+            case Type::Double: p = 0.0;break;
+            case Type::Bool: p = false;break;
+            case Type::String: p = std::string();break;
+            case Type::Reference: p = std::string();break;
+            case Type::Array: p = std::vector<std::string>();break;
+            case Type::Timestamp: p = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())}; break;
+            case Type::Option: p = 0; break;
+        }
+    }
 }
 
 }

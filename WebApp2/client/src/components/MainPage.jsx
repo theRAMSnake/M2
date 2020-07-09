@@ -5,6 +5,7 @@ import m3proxy from '../modules/m3proxy'
 import MateriaRequest from '../modules/materia_request'
 import SearchBar from './SearchBar.jsx'
 import ApiView from './ApiView.jsx'
+import FinanceView from './FinanceView.jsx'
 import QueryView from './QueryView.jsx'
 import AddItemDialog from './AddItemDialog.jsx'
 import InboxCtrl from './InboxCtrl.jsx'
@@ -151,6 +152,9 @@ function MainPage(props) {
 
         else if(ct == "query")
             return (<QueryView query={query}/>);
+
+        else if(ct == "finance")
+            return (<FinanceView/>);
     }
 
     function logout_clicked(e) {
@@ -160,10 +164,14 @@ function MainPage(props) {
 
     function menuItemClicked(index)
     {
+        setldOpen(false);
         if(index == 0)
         {
             setContentType("api");
-            setldOpen(false);
+        }
+        else if(index == 1)
+        {
+            setContentType("finance");
         }
     }
 
@@ -257,7 +265,7 @@ function MainPage(props) {
                 </div>
                 <Divider />
                 <List>
-                    {['API'].map((text, index) => (
+                    {['API', 'Finance'].map((text, index) => (
                     <ListItem button key={text} onClick={() => {menuItemClicked(index)}}>
                         <ListItemText primary={text} />
                     </ListItem>

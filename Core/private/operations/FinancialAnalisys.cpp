@@ -56,8 +56,6 @@ void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::Sim
       date -= boost::gregorian::months(1);
    }
 
-   std::vector<Id> toDelete;
-
    auto categories = objMan.getAll("finance_category");
    auto events = objMan.getAll("finance_event");
 
@@ -86,7 +84,7 @@ void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::Sim
       }
       else
       {
-         //toDelete.push_back(e["id"]);
+         objMan.destroy(static_cast<Id>(ev["id"]));
       }
    }
 
@@ -127,6 +125,7 @@ void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::Sim
 
    //Compile report
    auto obj = objMan.getOrCreate(Id("financial_report"), "object");
+   obj->clear();
    (*obj)["balance"] = balance;
    (*obj)["status"] = status;
 
@@ -160,8 +159,6 @@ void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::Sim
    (*obj)["totalPerMonth"] = totalPerMonth;
 
    objMan.modify(*obj);
-
-   std::cout << obj->toJson();
 }
 
 }

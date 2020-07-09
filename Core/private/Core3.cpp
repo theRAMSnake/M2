@@ -14,7 +14,37 @@ Core3::Core3(const CoreConfig& config)
 , mOldCore(mDb, config.dbFileName)
 , mObjManager(mDb, mTypeSystem, mOldCore.getReward())
 {
+   /* Migration */
+   class MigrationValueProvider : public IValueProvider
+   {
+   public:
+      MigrationValueProvider(const JournalPage& p)
+      : mP(p)
+      {
 
+      }
+
+      void populate(Object& obj) const override
+      {
+         obj["content"] = mP.content;
+         obj["header_id"] = mP.id;
+      }
+
+   private:
+      const JournalPage mP;
+   };
+
+   if(mObjManager.getAll("journal_content").size() == 0)
+   {
+      for(auto h : mObjManager.getAll("journal_header"))
+      {
+         if(static_cast<bool>((*h)["isPage"]))
+         {
+            MigrationValueProvider p(*mOldCore.getJournal().getPage(static_cast<Id>((*h)["id"])));
+            mObjManager.create(std::optional<Id>(), "journal_content", p);
+         }
+      }
+   }
 }
 
 IStrategy_v2& Core3::getStrategy_v2()

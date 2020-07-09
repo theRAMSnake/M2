@@ -21,6 +21,52 @@ void ObjectManager::handleChItemChange(Object& obj)
     }
 }
 
+void ObjectManager::handleJournalContentItemChange(Object& obj)
+{
+    auto headerId = static_cast<Id>(obj["headerId"]);
+    auto header = get(headerId);
+
+    (*header)["modified"] = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())};
+
+    modify(*header);
+}
+
+void ObjectManager::handleJournalContentDeleted(Object& obj)
+{
+    auto headerId = static_cast<Id>(obj["headerId"]);
+    auto header = get(headerId);
+
+    (*header)["modified"] = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())};
+    (*header)["isPage"] = false;
+
+    modify(*header);
+}
+
+void ObjectManager::handleJournalHeaderDeleted(Object& obj)
+{
+    auto headerId = static_cast<Id>(obj["id"]);
+
+    for(auto o : getAll("journal_content"))
+    {
+        if(static_cast<Id>((*o)["headerId"]) == headerId)
+        {
+            destroy(static_cast<Id>((*o)["id"]));
+            break;
+        }
+    }
+}
+
+void ObjectManager::handleJournalContentCreated(Object& obj)
+{
+    auto headerId = static_cast<Id>(obj["headerId"]);
+    auto header = get(headerId);
+
+    (*header)["modified"] = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())};
+    (*header)["isPage"] = true;
+
+    modify(*header);
+}
+
 void doNothing(Object& obj)
 {
 
@@ -31,6 +77,38 @@ std::function<void(Object&)> ObjectManager::createOnChangeHandler(const std::str
     if(typeName == "challenge_item")
     {
         return std::bind(&ObjectManager::handleChItemChange, this, std::placeholders::_1);
+    }
+    else if(typeName == "journal_content")
+    {
+        return std::bind(&ObjectManager::handleJournalContentItemChange, this, std::placeholders::_1);
+    }
+    else
+    {
+        return std::function<void(Object&)>(doNothing);
+    }
+}
+
+std::function<void(Object&)> ObjectManager::createOnDeleteHandler(const std::string& typeName)
+{
+    if(typeName == "journal_content")
+    {
+        return std::bind(&ObjectManager::handleJournalContentDeleted, this, std::placeholders::_1);
+    }
+    else if(typeName == "journal_header")
+    {
+        return std::bind(&ObjectManager::handleJournalHeaderDeleted, this, std::placeholders::_1);
+    }
+    else
+    {
+        return std::function<void(Object&)>(doNothing);
+    }
+}
+
+std::function<void(Object&)> ObjectManager::createOnCreateHandler(const std::string& typeName)
+{
+    if(typeName == "journal_content")
+    {
+        return std::bind(&ObjectManager::handleJournalContentCreated, this, std::placeholders::_1);
     }
     else
     {
@@ -45,7 +123,7 @@ ObjectManager::ObjectManager(Database& db, TypeSystem& types, IReward& reward)
 {
     for(auto& t : mTypes.get())
     {
-        mHandlers[t.name] = std::make_shared<TypeHandler>(t, mDb, createOnChangeHandler(t.name));
+        mHandlers[t.name] = std::make_shared<TypeHandler>(t, mDb, createOnChangeHandler(t.name), createOnDeleteHandler(t.name), createOnCreateHandler(t.name));
     }
 }
 

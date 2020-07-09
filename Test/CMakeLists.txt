@@ -8,12 +8,10 @@ include_directories("../build/Common")
 include_directories("..")
 
 add_executable(Test 
-#JournalTest.cpp
 #StrategyGraphTest.cpp
 #Strategy2Test.cpp
 #FreeDataTest.cpp
 #EncDecTest.cpp
-#FinanceTest.cpp
 #RewardTest.cpp
 ChallengeTest.cpp
 NewAPITest.cpp

@@ -1,6 +1,7 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE a
 #include <boost/test/unit_test.hpp>
+#include <thread>
 #include "../Core/private/JsonSerializer.hpp"
 #include <Core/ICore3.hpp>
 
@@ -315,6 +316,123 @@ BOOST_FIXTURE_TEST_CASE( TestCompletable2, NewAPITest )
     boost::property_tree::ptree query;
     query.put("operation", "query");
     query.put("filter", "IS(calendar_item)");
+    auto result = mCore->executeCommandJson(writeJson(query));
+
+    auto ol = readJson<boost::property_tree::ptree>(result);
+    
+    int counter = 0;
+    for(auto& v : ol.get_child("object_list"))
+    {
+        (void)v;
+        counter++;
+    }
+    BOOST_CHECK_EQUAL(0, counter);
+}
+
+BOOST_FIXTURE_TEST_CASE( TestJournalIndexUpdate, NewAPITest ) 
+{
+    boost::property_tree::ptree create;
+    create.put("operation", "create");
+    create.put("typename", "journal_header");
+    create.put("defined_id", "id");
+    create.put("params.isPage", false);
+    create.put("params.modified", 555);
+
+    mCore->executeCommandJson(writeJson(create));
+
+    boost::property_tree::ptree query;
+    query.put("operation", "query");
+    query.put("filter", "IS(journal_header)");
+    auto tr = readJson<boost::property_tree::ptree>(mCore->executeCommandJson(writeJson(query)));
+
+    for(auto& v : tr.get_child("object_list"))
+    {
+        BOOST_CHECK_EQUAL(555, v.second.get<int>("modified"));
+    }
+
+    boost::property_tree::ptree createPage;
+    createPage.put("operation", "create");
+    createPage.put("typename", "journal_content");
+    createPage.put("defined_id", "page_id");
+    createPage.put("params.headerId", "id");
+    mCore->executeCommandJson(writeJson(createPage));
+
+    tr = readJson<boost::property_tree::ptree>(mCore->executeCommandJson(writeJson(query)));
+
+    auto r = mCore->executeCommandJson(writeJson(query));
+    //std::cout << r;
+    tr = readJson<boost::property_tree::ptree>(r);
+
+    int oldTs = 0;
+    for(auto& v : tr.get_child("object_list"))
+    {
+        BOOST_CHECK(555 != v.second.get<int>("modified"));
+        BOOST_CHECK(true == v.second.get<bool>("isPage"));
+        oldTs = v.second.get<int>("modified");
+    }
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    boost::property_tree::ptree modifyPage;
+    modifyPage.put("operation", "modify");
+    modifyPage.put("id", "page_id");
+    modifyPage.put("params.content", "sdghdfkhgsdfkg");
+    modifyPage.put("params.headerId", "id");
+    std::cout << mCore->executeCommandJson(writeJson(modifyPage));
+
+    r = mCore->executeCommandJson(writeJson(query));
+    //std::cout << r;
+    tr = readJson<boost::property_tree::ptree>(r);
+
+    tr = readJson<boost::property_tree::ptree>(r);
+    for(auto& v : tr.get_child("object_list"))
+    {
+        BOOST_CHECK(oldTs != v.second.get<int>("modified"));
+        BOOST_CHECK(true == v.second.get<bool>("isPage"));
+        oldTs = v.second.get<int>("modified");
+    }
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    boost::property_tree::ptree deletePage;
+    deletePage.put("operation", "destroy");
+    deletePage.put("id", "page_id");
+    mCore->executeCommandJson(writeJson(deletePage));
+
+    tr = readJson<boost::property_tree::ptree>(mCore->executeCommandJson(writeJson(query)));
+    for(auto& v : tr.get_child("object_list"))
+    {
+        BOOST_CHECK(oldTs != v.second.get<int>("modified"));
+        BOOST_CHECK(false == v.second.get<bool>("isPage"));
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE( TestJournalIndexDelete, NewAPITest ) 
+{
+    boost::property_tree::ptree create;
+    create.put("operation", "create");
+    create.put("typename", "journal_header");
+    create.put("defined_id", "id");
+    create.put("params.isPage", false);
+    create.put("params.modified", 555);
+
+    mCore->executeCommandJson(writeJson(create));
+
+    boost::property_tree::ptree createPage;
+    createPage.put("operation", "create");
+    createPage.put("typename", "journal_content");
+    createPage.put("defined_id", "page_id");
+    createPage.put("params.headerId", "id");
+    mCore->executeCommandJson(writeJson(createPage));
+
+    boost::property_tree::ptree deleteHeader;
+    deleteHeader.put("operation", "destroy");
+    deleteHeader.put("id", "id");
+    mCore->executeCommandJson(writeJson(deleteHeader));
+
+    boost::property_tree::ptree query;
+    query.put("operation", "query");
+    query.put("filter", "true");
     auto result = mCore->executeCommandJson(writeJson(query));
 
     auto ol = readJson<boost::property_tree::ptree>(result);

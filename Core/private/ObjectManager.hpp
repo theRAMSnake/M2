@@ -30,7 +30,13 @@ private:
     TypeHandler& getHandler(const std::string& typeName);
 
     std::function<void(Object&)> createOnChangeHandler(const std::string& typeName);
+    std::function<void(Object&)> createOnDeleteHandler(const std::string& typeName);
+    std::function<void(Object&)> createOnCreateHandler(const std::string& typeName);
     void handleChItemChange(Object& obj);
+    void handleJournalContentItemChange(Object& obj);
+    void handleJournalContentDeleted(Object& obj);
+    void handleJournalHeaderDeleted(Object& obj);
+    void handleJournalContentCreated(Object& obj);
 
     std::map<std::string, std::shared_ptr<TypeHandler>> mHandlers;
     Database& mDb;

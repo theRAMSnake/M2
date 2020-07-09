@@ -55,6 +55,8 @@ public:
     std::string getTypeName() const;
     TypeDef getType() const;
 
+    void clear();
+
 private:
     TypeDef mTypeDef;
     mutable boost::property_tree::ptree mImpl;
