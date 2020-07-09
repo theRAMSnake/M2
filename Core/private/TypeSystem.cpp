@@ -32,6 +32,16 @@ TypeSystem::TypeSystem()
         {"amountEuroCents", Type::Money},
         {"timestamp", Type::Timestamp}
         }});
+    mTypes.push_back({"journal_header", "journal_index", {
+        {"parentFolderId", Type::String},
+        {"title", Type::String},
+        {"modified", Type::Timestamp},
+        {"isPage", Type::Bool}
+        }});
+    mTypes.push_back({"journal_content", "journal_content_new", {
+        {"headerId", Type::String},
+        {"content", Type::String}
+        }});
 }
 
 std::optional<TypeDef> TypeSystem::get(const std::string& name) const

@@ -4,6 +4,7 @@
 #include "Database.hpp"
 #include "Expressions.hpp"
 #include <set>
+#include <future>
 
 namespace materia
 {
@@ -20,7 +21,13 @@ public:
 class TypeHandler
 {
 public:
-    TypeHandler(const TypeDef& type, Database& db, std::function<void(Object&)> onChangeHandler);
+    TypeHandler(
+        const TypeDef& type, 
+        Database& db, 
+        std::function<void(Object&)> onChangeHandler, 
+        std::function<void(Object&)> onBeforeDeleteHandler, 
+        std::function<void(Object&)> onCreatedHandler
+        );
 
     //Id must be unique
     ObjectPtr create(const std::optional<Id> id, const IValueProvider& provider);
@@ -39,6 +46,11 @@ private:
     const TypeDef mType;
     std::unique_ptr<DatabaseTable> mStorage;
     std::function<void(Object&)> mOnChangeHandler;
+    std::function<void(Object&)> mOnBeforeDeleteHandler;
+    std::function<void(Object&)> mOnCreatedHandler;
+
+    std::vector<std::future<void>> mOpPool;
+    void postpone(std::future<void>&& future);
 
     std::map<Id, ObjectPtr> mPool;
 };

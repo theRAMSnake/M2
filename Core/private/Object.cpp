@@ -2,6 +2,7 @@
 #include "JsonSerializer.hpp"
 #include "fmt/format.h"
 #include <iostream>
+#include <chrono>
 
 namespace materia
 {
@@ -24,7 +25,7 @@ Object::Object(const TypeDef& type, const Id id)
             case Type::String: p = std::string();break;
             case Type::Reference: p = std::string();break;
             case Type::Array: p = std::vector<std::string>();break;
-            case Type::Timestamp: p = Time{0}; break;
+            case Type::Timestamp: p = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())}; break;
             case Type::Option: p = 0; break;
         }
     }
@@ -429,7 +430,7 @@ void Object::clear()
             case Type::String: p = std::string();break;
             case Type::Reference: p = std::string();break;
             case Type::Array: p = std::vector<std::string>();break;
-            case Type::Timestamp: p = Time{0}; break;
+            case Type::Timestamp: p = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())}; break;
             case Type::Option: p = 0; break;
         }
     }

@@ -5,10 +5,18 @@
 namespace materia
 {
 
-TypeHandler::TypeHandler(const TypeDef& type, Database& db, std::function<void(Object&)> onChangeHandler)
+TypeHandler::TypeHandler(
+    const TypeDef& type, 
+    Database& db, 
+    std::function<void(Object&)> onChangeHandler, 
+    std::function<void(Object&)> onBeforeDeleteHandler, 
+    std::function<void(Object&)> onCreatedHandler
+    )
 : mType(type)
 , mStorage(db.getTable(type.tableName))
 , mOnChangeHandler(onChangeHandler)
+, mOnBeforeDeleteHandler(onBeforeDeleteHandler)
+, mOnCreatedHandler(onCreatedHandler)
 {
     mStorage->foreach([&](std::string id, std::string json) 
     {
@@ -29,8 +37,10 @@ ObjectPtr TypeHandler::create(const std::optional<Id> id, const IValueProvider& 
 
     auto json = newObj->toJson();
 
-    std::async(std::launch::async, [newId, json, this]{ mStorage->store(newId, json); });
+    postpone(std::async(std::launch::async, [newId, json, this]{ mStorage->store(newId, json); }));
     mPool[newId] = newObj;
+
+    mOnCreatedHandler(*newObj);
 
     return newObj;
 }
@@ -82,9 +92,11 @@ std::optional<ObjectPtr> TypeHandler::get(const Id& id)
 
 void TypeHandler::destroy(const Id id)
 {
-    mPool.erase(id);
+    auto obj = *get(id);
+    mOnBeforeDeleteHandler(*obj);
 
-    std::async(std::launch::async, [id, this]{ mStorage->erase(id); });   
+    mPool.erase(id);
+    postpone(std::async(std::launch::async, [id, this]{ mStorage->erase(id); }));      
 }
 
 bool TypeHandler::contains(const Id id)
@@ -101,7 +113,7 @@ void TypeHandler::modify(const Id id, const IValueProvider& provider)
 
     auto json = obj->toJson();
 
-    std::async(std::launch::async, [id, json, this]{ mStorage->store(id, json); });
+    postpone(std::async(std::launch::async, [id, json, this]{ mStorage->store(id, json); }));
 
     mPool[id] = obj;
 }
@@ -111,7 +123,7 @@ void TypeHandler::modify(const Object& obj)
     auto json = obj.toJson();
     auto id = static_cast<Id>(obj["id"]);
 
-    std::async(std::launch::async, [id, json, this]{ mStorage->store(id, json); });
+    postpone(std::async(std::launch::async, [id, json, this]{ mStorage->store(id, json); }));
     
     mPool[id] = std::make_shared<Object>(obj);
 }
@@ -126,6 +138,15 @@ std::vector<ObjectPtr> TypeHandler::getAll()
     }
 
     return result;
+}
+
+void TypeHandler::postpone(std::future<void>&& future)
+{
+    mOpPool.push_back(std::move(future));
+    if(mOpPool.size() > 25)
+    {
+        mOpPool.erase(mOpPool.begin());
+    }
 }
 
 }
