@@ -27,7 +27,7 @@ Core3::Core3(const CoreConfig& config)
       void populate(Object& obj) const override
       {
          obj["content"] = mP.content;
-         obj["header_id"] = mP.id;
+         obj["headerId"] = mP.id;
       }
 
    private:
