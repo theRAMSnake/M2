@@ -8,8 +8,31 @@ import {
     TableCell,
     TableHead,
     TableBody,
-    Grid
+    Grid,
+    TableContainer,
+    Paper
 } from "@material-ui/core";
+
+function getHeaderCell(key)
+{
+    if(key === 'id' || key === 'typename')
+    {
+        return (<div/>);
+    }
+
+    return <TableCell>
+        {key}
+    </TableCell>
+}
+
+function getHeaderRow(report)
+{
+    return <TableRow hover>
+        <TableCell>Category</TableCell>
+        {Object.keys(report).map((key) => getHeaderCell(key))}
+        <TableCell>Total</TableCell>
+    </TableRow>
+}
 
 function getCell(field, obj)
 {
@@ -30,24 +53,26 @@ function getCategoryRow(field, value, keys)
         return (<div/>);
     }
 
-    return <TableRow>
+    return <TableRow hover>
         <TableCell>{field}</TableCell>
         {keys.map((obj) => getCell(obj, value))}
-        <TableCell>{value.total}</TableCell>
+        {!(field === "Total") && <TableCell>{value.total / 100}</TableCell>}
     </TableRow>
 }
 
 function getReportTable(report)
 {
-    return (<Table size="small">
-        <TableHead>
-        {getHeaderRow(report.totalPerMonth)}
-        </TableHead>
-        <TableBody>
-            {Object.keys(report).map((obj) => getCategoryRow(obj, report[obj], Object.keys(report.totalPerMonth)))}
-            {getCategoryRow("Total", report.totalPerMonth, Object.keys(report.totalPerMonth))}
-        </TableBody>
-    </Table>);
+    return (<TableContainer component={Paper}>
+        <Table size="small">
+            <TableHead>
+                {getHeaderRow(report.totalPerMonth)}
+            </TableHead>
+            <TableBody>
+                {Object.keys(report).map((obj) => getCategoryRow(obj, report[obj], Object.keys(report.totalPerMonth)))}
+                {getCategoryRow("Total", report.totalPerMonth, Object.keys(report.totalPerMonth))}
+            </TableBody>
+        </Table>
+    </TableContainer>);
 }
 
 function FinanceView(props) 
