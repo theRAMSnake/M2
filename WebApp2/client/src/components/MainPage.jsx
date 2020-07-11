@@ -6,6 +6,7 @@ import MateriaRequest from '../modules/materia_request'
 import SearchBar from './SearchBar.jsx'
 import ApiView from './ApiView.jsx'
 import FinanceView from './FinanceView.jsx'
+import JournalView from './JournalView.jsx'
 import QueryView from './QueryView.jsx'
 import AddItemDialog from './AddItemDialog.jsx'
 import InboxCtrl from './InboxCtrl.jsx'
@@ -155,6 +156,9 @@ function MainPage(props) {
 
         else if(ct == "finance")
             return (<FinanceView/>);
+
+        else if(ct == "journal")
+            return (<JournalView/>);
     }
 
     function logout_clicked(e) {
@@ -172,6 +176,10 @@ function MainPage(props) {
         else if(index == 1)
         {
             setContentType("finance");
+        }
+        else if(index == 2)
+        {
+            setContentType("journal");
         }
     }
 
@@ -265,7 +273,7 @@ function MainPage(props) {
                 </div>
                 <Divider />
                 <List>
-                    {['API', 'Finance'].map((text, index) => (
+                    {['API', 'Finance', 'Journal'].map((text, index) => (
                     <ListItem button key={text} onClick={() => {menuItemClicked(index)}}>
                         <ListItemText primary={text} />
                     </ListItem>

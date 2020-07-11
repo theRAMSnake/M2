@@ -1,12 +1,4 @@
 const express = require('express');
-var fs = require('fs');
-
-var https = require('https');
-var privateKey  = fs.readFileSync('/etc/letsencrypt/live/ramsnake.net-0001/privkey.pem', 'utf8');
-var certificate = fs.readFileSync('/etc/letsencrypt/live/ramsnake.net-0001/fullchain.pem', 'utf8');
-
-var credentials = {key: privateKey, cert: certificate};
-
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const config = require('./config');
@@ -29,7 +21,33 @@ const apiRoutes = require('./server/routes/api');
 app.use('/auth', authRoutes);
 app.use('/api', apiRoutes);
 
-var httpsServer = https.createServer(credentials, app);
-httpsServer.listen(5758, () => {
+/*
+import tinymce from 'tinymce/tinymce';
+import 'tinymce/icons/default';
+import 'tinymce/themes/silver';
+import 'tinymce/plugins/colorpicker';
+import 'tinymce/plugins/searchreplace';
+import 'tinymce/plugins/table';
+import 'tinymce/plugins/lists';
+import 'tinymce/plugins/textcolor';
+*/
+
+/*var tinymce = require('tinymce');
+require('tinymce/icons/default');
+require('tinymce/themes/silver');
+require('tinymce/plugins/colorpicker');
+require('tinymce/plugins/searchreplace');
+require('tinymce/plugins/table');
+require('tinymce/plugins/lists');
+require('tinymce/plugins/textcolor');
+
+// Initialize the app
+tinymce.init({
+  selector: '#tiny',
+  plugins: ['colorpicker', 'searchreplace', 'table', 'lists', 'textcolor']
+});*/
+
+
+app.listen(5758, () => {
     console.log('Server is running on http://localhost:5758 or http://127.0.0.1:5758');
   });
