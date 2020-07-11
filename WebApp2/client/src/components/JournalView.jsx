@@ -1,3 +1,17 @@
+import tinymce from 'tinymce/tinymce';
+import 'tinymce/icons/default';
+import 'tinymce/themes/silver';
+import 'tinymce/plugins/searchreplace';
+import 'tinymce/plugins/table';
+import 'tinymce/plugins/lists';
+
+tinymce.init({
+    mode : "textareas",
+    skin: "oxide-dark",
+    selector: 'textarea',
+    content_style: 'body { background-color: #242424; color: #dfe0e4; }'
+  });
+
 import React, { useState } from 'react';
 import MateriaRequest from '../modules/materia_request'
 import TreeView from '@material-ui/lab/TreeView';
@@ -40,6 +54,7 @@ function sortIndex(src)
 function JournalView(props) 
 {
     const [index, setIndex] = useState(null);
+    const [content, setContent] = useState("");
 
     if(index == null)
     {
@@ -72,27 +87,45 @@ function JournalView(props)
         </TreeItem>);
     }
 
+    function onNodeSelect(e, v)
+    {
+        var items = index.filter(x => {return x.id === v;});
+        if(items[0].isPage === 'true')
+        {
+            const req = {
+                operation: "query",
+                filter: 'IS(journal_content) AND .headerId = "' + v + '"'
+            };
+    
+            MateriaRequest.req(JSON.stringify(req), (r) => {
+                setContent(JSON.parse(r).object_list[0].content);
+            });
+        }
+    }
+
     return (
         <div> {index &&
         <Grid container direction="row" justify="space-around" alignItems="flex-start">
-            <TreeView style={{width: '20vw'}}>
+            <TreeView style={{width: '20vw'}} onNodeSelect={onNodeSelect}>
                 {fetchChildren("")}
             </TreeView>
             <div style={{width: '75vw'}}>
             <Editor
-                initialValue="<p>This is the initial content of the editor</p>"
+                value={content}
                 init={{
+                    selector: 'textarea',
                     height: '80vh',
                     menubar: "edit format table",
+                    content_style: 'body { background-color: #242424; color: #dfe0e4; }',
                     statusbar: false,
+                    skin: "oxide-dark",
                     plugins: [
-                        'colorpicker, textcolor, searchreplace, table, lists'
+                        'searchreplace, table, lists'
                     ],
                     toolbar:
                         'bold italic | link | forecolor backcolor | fontsizeselect | numlist bullist'
                     }}
                 //onEditorChange={this.handleEditorChange}
-                //"menubar", "edit format table"
             />
             </div>
         </Grid>
