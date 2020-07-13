@@ -5,12 +5,12 @@ import 'tinymce/plugins/searchreplace';
 import 'tinymce/plugins/table';
 import 'tinymce/plugins/lists';
 
-tinymce.init({
+/*tinymce.init({
     mode : "textareas",
     skin: "oxide-dark",
     selector: 'textarea',
     content_style: 'body { background-color: #242424; color: #dfe0e4; }'
-  });
+  });*/
 
 import React, { useState } from 'react';
 import MateriaRequest from '../modules/materia_request'
@@ -103,30 +103,29 @@ function JournalView(props)
         }
     }
 
-    return (
-        <div> {index &&
+    return (<div> {index &&
         <Grid container direction="row" justify="space-around" alignItems="flex-start">
             <TreeView style={{width: '20vw'}} onNodeSelect={onNodeSelect}>
                 {fetchChildren("")}
             </TreeView>
             <div style={{width: '75vw'}}>
-            <Editor
-                value={content}
-                init={{
-                    selector: 'textarea',
-                    height: '80vh',
-                    menubar: "edit format table",
-                    content_style: 'body { background-color: #242424; color: #dfe0e4; }',
-                    statusbar: false,
-                    skin: "oxide-dark",
-                    plugins: [
-                        'searchreplace, table, lists'
-                    ],
-                    toolbar:
-                        'bold italic | link | forecolor backcolor | fontsizeselect | numlist bullist'
-                    }}
-                //onEditorChange={this.handleEditorChange}
-            />
+                <Editor
+                    value={content}
+                    init={{
+                        selector: 'textarea',
+                        height: '80vh',
+                        menubar: "edit format table",
+                        content_style: 'body { background-color: #242424; color: #dfe0e4; }',
+                        statusbar: false,
+                        skin: "oxide-dark",
+                        plugins: [
+                            'searchreplace, table, lists'
+                        ],
+                        toolbar:
+                            'bold italic | link | forecolor backcolor | fontsizeselect | numlist bullist'
+                        }}
+                    //onEditorChange={this.handleEditorChange}
+                />
             </div>
         </Grid>
         }</div>

@@ -37,7 +37,7 @@ ObjectPtr TypeHandler::create(const std::optional<Id> id, const IValueProvider& 
 
     auto json = newObj->toJson();
 
-    postpone(std::async(std::launch::async, [newId, json, this]{ mStorage->store(newId, json); }));
+    mStorage->store(newId, json);
     mPool[newId] = newObj;
 
     mOnCreatedHandler(*newObj);
@@ -96,7 +96,7 @@ void TypeHandler::destroy(const Id id)
     mOnBeforeDeleteHandler(*obj);
 
     mPool.erase(id);
-    postpone(std::async(std::launch::async, [id, this]{ mStorage->erase(id); }));      
+    mStorage->erase(id);      
 }
 
 bool TypeHandler::contains(const Id id)
@@ -113,7 +113,7 @@ void TypeHandler::modify(const Id id, const IValueProvider& provider)
 
     auto json = obj->toJson();
 
-    postpone(std::async(std::launch::async, [id, json, this]{ mStorage->store(id, json); }));
+    mStorage->store(id, json);
 
     mPool[id] = obj;
 }
@@ -123,7 +123,7 @@ void TypeHandler::modify(const Object& obj)
     auto json = obj.toJson();
     auto id = static_cast<Id>(obj["id"]);
 
-    postpone(std::async(std::launch::async, [id, json, this]{ mStorage->store(id, json); }));
+    mStorage->store(id, json);
     
     mPool[id] = std::make_shared<Object>(obj);
 }
@@ -138,15 +138,6 @@ std::vector<ObjectPtr> TypeHandler::getAll()
     }
 
     return result;
-}
-
-void TypeHandler::postpone(std::future<void>&& future)
-{
-    mOpPool.push_back(std::move(future));
-    if(mOpPool.size() > 25)
-    {
-        mOpPool.erase(mOpPool.begin());
-    }
 }
 
 }
