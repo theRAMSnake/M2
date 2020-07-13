@@ -49,8 +49,7 @@ private:
     std::function<void(Object&)> mOnBeforeDeleteHandler;
     std::function<void(Object&)> mOnCreatedHandler;
 
-    std::vector<std::future<void>> mOpPool;
-    void postpone(std::future<void>&& future);
+    std::future<void> mCurOp;
 
     std::map<Id, ObjectPtr> mPool;
 };
