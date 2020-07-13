@@ -23,7 +23,6 @@ MainScreen::MainScreen(MateriaClient& client)
     auto menu = std::make_unique<Wt::WMenu>(contentsStack);
     auto menu_ = navigation->addMenu(std::move(menu));
 
-    menu_->addItem("Journal", std::make_unique<JournalView>(client.getJournal()));
     menu_->addItem("Strategy", std::make_unique<StrategyView>(client.getStrategy(), client.getChallenge()));
     menu_->addItem("Files", std::make_unique<FilesView>());
     menu_->addItem("Reward", std::make_unique<RewardView>(client.getReward()));
