@@ -14,7 +14,7 @@ int main(int argc,  char** argv)
 
    auto core = materia::createCore({path});
 
-   auto cmd = "{\"operation\":\"query\",\"filter\":\"IS(calendar_item)\"}";
+   /*auto cmd = "{\"operation\":\"query\",\"filter\":\"IS(calendar_item)\"}";
 
    std::chrono::time_point<std::chrono::high_resolution_clock> started = std::chrono::high_resolution_clock::now();
 
@@ -30,7 +30,7 @@ int main(int argc,  char** argv)
 
    auto time_D_msec = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - started);
 
-   std::cout << "Done " + std::to_string(time_D_msec.count()) + "ms";
+   std::cout << "Done " + std::to_string(time_D_msec.count()) + "ms";*/
 
    //741
 } 

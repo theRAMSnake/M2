@@ -34,7 +34,54 @@ Core3::Core3(const CoreConfig& config)
       const JournalPage mP;
    };
 
-   if(mObjManager.getAll("journal_content").size() == 0)
+   auto newContent = mObjManager.getAll("journal_content");
+
+   int numOld = 0;
+   int numNew = 0;
+
+   for(auto h : mObjManager.getAll("journal_header"))
+   {
+      auto id = static_cast<Id>((*h)["id"]);
+      if(static_cast<bool>((*h)["isPage"]))
+      {
+         std::cout << "Header: " << id.getGuid();
+
+         auto p = mOldCore.getJournal().getPage(id);
+
+         if(p)
+         {
+            std::cout << " old page yes ";
+            numOld++;
+         }
+         else
+         {
+            std::cout << " old page no ";
+         }
+         
+         auto pos = std::find_if(newContent.begin(), newContent.end(), [&](auto x){return static_cast<Id>((*x)["headerId"]) == id;});
+
+         if(pos == newContent.end())
+         {
+            std::cout << " new page no ";
+
+            MigrationValueProvider pr(*p);
+            mObjManager.create(std::optional<Id>(), "journal_content", pr);
+
+            std::cout << " -> restored";
+         }
+         else
+         {
+            std::cout << " new page yes ";
+            numNew++;
+         }
+
+         std::cout << std::endl;
+      }
+   }
+
+   std::cout << "Total " << numNew << "/" << numOld;
+
+   /*if(mObjManager.getAll("journal_content").size() == 0)
    {
       for(auto h : mObjManager.getAll("journal_header"))
       {
@@ -44,7 +91,7 @@ Core3::Core3(const CoreConfig& config)
             mObjManager.create(std::optional<Id>(), "journal_content", p);
          }
       }
-   }
+   }*/
 }
 
 IStrategy_v2& Core3::getStrategy_v2()
