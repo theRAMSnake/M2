@@ -20,11 +20,18 @@ TypeHandler::TypeHandler(
 {
     mStorage->foreach([&](std::string id, std::string json) 
     {
-        JsonRestorationProvider p(json);
-        auto newObj = std::make_shared<Object>(mType, id);
-        p.populate(*newObj);
+        try
+        {
+            JsonRestorationProvider p(json);
+            auto newObj = std::make_shared<Object>(mType, id);
+            p.populate(*newObj);
 
-        mPool[Id(id)] = newObj;
+            mPool[Id(id)] = newObj;
+        }
+        catch(...)
+        {
+            std::cout << "here";
+        }
     });
 }
 

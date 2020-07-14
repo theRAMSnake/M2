@@ -5,12 +5,12 @@ import 'tinymce/plugins/searchreplace';
 import 'tinymce/plugins/table';
 import 'tinymce/plugins/lists';
 
-/*tinymce.init({
+tinymce.init({
     mode : "textareas",
     skin: "oxide-dark",
     selector: 'textarea',
     content_style: 'body { background-color: #242424; color: #dfe0e4; }'
-  });*/
+  });
 
 import React, { useState } from 'react';
 import MateriaRequest from '../modules/materia_request'
@@ -24,8 +24,20 @@ import FolderOpenIcon from '@material-ui/icons/FolderOpen';
 import { Editor } from '@tinymce/tinymce-react';
 
 import {
-    Grid
+    Grid,
+    CircularProgress,
+    Backdrop,
+    IconButton
 } from "@material-ui/core";
+
+import SaveIcon from '@material-ui/icons/Save';
+import ConfirmationDialog from './dialogs/ConfirmationDialog.jsx'
+import AddCircleOutlineIcon  from '@material-ui/icons/AddCircleOutline';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import EditIcon from '@material-ui/icons/Edit';
+import ClearAllIcon from '@material-ui/icons/ClearAll';
+import AddJournalItemDialog from './AddJournalItemDialog.jsx'
+import TextQueryDialog from './dialogs/TextQueryDialog.jsx'
 
 function sortIndex(src)
 {
@@ -53,10 +65,20 @@ function sortIndex(src)
 
 function JournalView(props) 
 {
+    const [updating, setUpdating] = useState(true);
     const [index, setIndex] = useState(null);
+    const [curPage, setCurPage] = useState(null);
     const [content, setContent] = useState("");
+    const [changed, setChanged] = useState(false);
+    const [inSaveDialog, setInSaveDialog] = useState(false);
+    const [inDeleteDialog, setInDeleteDialog] = useState(false);
+    const [inClearDialog, setInClearDialog] = useState(false);
+    const [inEditDialog, setInEditDialog] = useState(false);
+    const [inAddDialog, setInAddDialog] = useState(false);
+    const [selectedId, setSelectedId] = useState("");
+    const [selectedItemIsPage, setSelectedItemIsPage] = useState(true);
 
-    if(index == null)
+    function updateIndex()
     {
         const req = {
             operation: "query",
@@ -65,7 +87,13 @@ function JournalView(props)
 
         MateriaRequest.req(JSON.stringify(req), (r) => {
             setIndex(sortIndex(JSON.parse(r).object_list));
+            setUpdating(false);
         });
+    }
+
+    if(index == null)
+    {
+        updateIndex();
     }
 
     function fetchChildren(id)
@@ -87,28 +115,223 @@ function JournalView(props)
         </TreeItem>);
     }
 
-    function onNodeSelect(e, v)
+    function afterSelect(id)
     {
-        var items = index.filter(x => {return x.id === v;});
+        setSelectedId(id);
+        var items = index.filter(x => {return x.id === id;});
         if(items[0].isPage === 'true')
         {
+            setSelectedItemIsPage(true);
+            setUpdating(true);
+
             const req = {
                 operation: "query",
-                filter: 'IS(journal_content) AND .headerId = "' + v + '"'
+                filter: 'IS(journal_content) AND .headerId = "' + id + '"'
             };
     
             MateriaRequest.req(JSON.stringify(req), (r) => {
-                setContent(JSON.parse(r).object_list[0].content);
+                var o = JSON.parse(r).object_list[0];
+                setCurPage(o);
+                setContent(o.content);
+                setChanged(false);
+                setUpdating(false);
+            });
+        }
+        else
+        {
+            setSelectedItemIsPage(false);
+        }
+    }
+
+    function onNodeSelect(e, v)
+    {
+        if(changed)
+        {
+            setInSaveDialog(true);
+            setSelectedId(v);
+            return;
+        }
+
+        afterSelect(v);
+    }
+
+    function handleEditorChange(content, editor)
+    {
+        curPage.content = content;
+        setChanged(true);
+    }
+
+    function onSaveClicked()
+    {
+        MateriaRequest.postEdit(curPage.id, JSON.stringify(curPage));
+        setChanged(false);
+    }
+
+    function onSaveDialogCancel()
+    {
+        setInSaveDialog(false);
+        setChanged(false);
+        afterSelect(selectedId);
+    }
+
+    function onSaveDialogOk()
+    {
+        setInSaveDialog(false);
+        onSaveClicked();
+        afterSelect(selectedId);
+    }
+
+    function onAddClicked()
+    {
+        setInAddDialog(true);
+    }
+
+    function onClearClicked()
+    {
+        setInClearDialog(true);
+    }
+
+    function onDeleteClicked()
+    {
+        setInDeleteDialog(true);
+    }
+
+    function onEditClicked()
+    {
+        setInEditDialog(true);
+    }
+
+    function onClearDialogCancel()
+    {
+        setInClearDialog(false);
+    }
+
+    function onClearDialogOk()
+    {
+        setInClearDialog(false);
+        setUpdating(true);
+
+        var items = index.filter(x => {return x.parentFolderId === selectedId;});
+        items.forEach(element => {
+            MateriaRequest.postDelete(element.id);
+        });
+
+        updateIndex();
+    }
+
+    function onDeleteDialogCancel()
+    {
+        setInDeleteDialog(false);
+    }
+
+    function onDeleteDialogOk()
+    {
+        setInDeleteDialog(false);
+        setUpdating(true);
+
+        MateriaRequest.postDelete(selectedId);
+
+        updateIndex();
+    }
+
+    function onAddDialogCancel()
+    {
+        setInAddDialog(false);
+    }
+
+    function onAddDialogOk(newtitle, isPage)
+    {
+        setInAddDialog(false);
+        setUpdating(true);
+
+        {
+            var obj = {
+                title: newtitle,
+                isPage: false,
+                parentFolderId: selectedItemIsPage ? "" : selectedId
+            }
+    
+            var req = {
+                operation: "create",
+                typename: "journal_header",
+                params: obj
+            }
+    
+            MateriaRequest.req(JSON.stringify(req), (x) => {
+                if(isPage)
+                {
+                    var sobj = {
+                        headerId: JSON.parse(x).result_id
+                    }
+            
+                    var sreq = {
+                        operation: "create",
+                        typename: "journal_content",
+                        params: sobj
+                    }
+            
+                    MateriaRequest.post(sreq);
+                }
+
+                updateIndex();
             });
         }
     }
 
-    return (<div> {index &&
+    function getCurTitle()
+    {
+        var items = index.filter(x => {return x.id === selectedId;});
+        return items[0].title;
+    }
+
+    function handleRenameFinished(text)
+    {
+        setInEditDialog(false);
+        setUpdating(true);
+
+        var items = index.filter(x => {return x.id === selectedId;});
+        var obj = items[0];
+        obj.title = text;
+
+        MateriaRequest.postEdit(obj.id, JSON.stringify(obj));
+        updateIndex();
+    }
+
+    function handleRenameCanceled()
+    {
+        setInEditDialog(false);
+    }
+
+    return (<div>
+        <Backdrop open={updating}><CircularProgress color="inherit"/></Backdrop>
+        <AddJournalItemDialog open={inAddDialog} onCancel={onAddDialogCancel} onOk={onAddDialogOk}/>
+        <ConfirmationDialog open={inSaveDialog} question="save unsaved changes" caption="confirm save unsaved changes" onNo={onSaveDialogCancel} onYes={onSaveDialogOk} />
+        <ConfirmationDialog open={inClearDialog} question="clear" caption="confirm clear" onNo={onClearDialogCancel} onYes={onClearDialogOk} />
+        <ConfirmationDialog open={inDeleteDialog} question="delete" caption="confirm delete" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
+        {inEditDialog && <TextQueryDialog text={getCurTitle()} onFinished={handleRenameFinished} onCanceled={handleRenameCanceled}/>}
+        {index &&
         <Grid container direction="row" justify="space-around" alignItems="flex-start">
+            <div>
+            <IconButton edge="start" onClick={onAddClicked}>
+                <AddCircleOutlineIcon/>
+            </IconButton>
+            <IconButton edge="start" onClick={onDeleteClicked}>
+                <DeleteForeverIcon/>
+            </IconButton>
+            <IconButton edge="start" onClick={onEditClicked}>
+                <EditIcon/>
+            </IconButton>
+            <IconButton edge="start" onClick={onClearClicked} disabled={selectedItemIsPage}>
+                <ClearAllIcon/>
+            </IconButton>
             <TreeView style={{width: '20vw'}} onNodeSelect={onNodeSelect}>
                 {fetchChildren("")}
             </TreeView>
+            </div>
             <div style={{width: '75vw'}}>
+                <IconButton edge="start" onClick={onSaveClicked} disabled={!changed}>
+                    <SaveIcon/>
+                </IconButton>
                 <Editor
                     value={content}
                     init={{
@@ -124,7 +347,7 @@ function JournalView(props)
                         toolbar:
                             'bold italic | link | forecolor backcolor | fontsizeselect | numlist bullist'
                         }}
-                    //onEditorChange={this.handleEditorChange}
+                    onEditorChange={handleEditorChange}
                 />
             </div>
         </Grid>

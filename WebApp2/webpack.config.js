@@ -46,7 +46,7 @@ module.exports = {
         test: /\.css?$/,
         include: path.join(__dirname, './node_modules/react-meter-bar/dist/'),
         use: ['style-loader', 'css-loader']
-      },
+      }/*,
       {
         test: require.resolve('tinymce/tinymce'),
         loaders: [
@@ -59,7 +59,7 @@ module.exports = {
           loaders: [
               'imports-loader?this=>window'
           ]
-      }]
+      }*/]
   },
 
   // start Webpack in a watch mode, so Webpack will rebuild the bundle on changes

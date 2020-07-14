@@ -10,88 +10,10 @@ namespace materia
 
 Core3::Core3(const CoreConfig& config)
 : mDb(config.dbFileName)
-, mTypeSystem()
 , mOldCore(mDb, config.dbFileName)
 , mObjManager(mDb, mTypeSystem, mOldCore.getReward())
 {
-   /* Migration */
-   class MigrationValueProvider : public IValueProvider
-   {
-   public:
-      MigrationValueProvider(const JournalPage& p)
-      : mP(p)
-      {
-
-      }
-
-      void populate(Object& obj) const override
-      {
-         obj["content"] = mP.content;
-         obj["headerId"] = mP.id;
-      }
-
-   private:
-      const JournalPage mP;
-   };
-
-   auto newContent = mObjManager.getAll("journal_content");
-
-   int numOld = 0;
-   int numNew = 0;
-
-   for(auto h : mObjManager.getAll("journal_header"))
-   {
-      auto id = static_cast<Id>((*h)["id"]);
-      if(static_cast<bool>((*h)["isPage"]))
-      {
-         std::cout << "Header: " << id.getGuid();
-
-         auto p = mOldCore.getJournal().getPage(id);
-
-         if(p)
-         {
-            std::cout << " old page yes ";
-            numOld++;
-         }
-         else
-         {
-            std::cout << " old page no ";
-         }
-         
-         auto pos = std::find_if(newContent.begin(), newContent.end(), [&](auto x){return static_cast<Id>((*x)["headerId"]) == id;});
-
-         if(pos == newContent.end())
-         {
-            std::cout << " new page no ";
-
-            MigrationValueProvider pr(*p);
-            mObjManager.create(std::optional<Id>(), "journal_content", pr);
-
-            std::cout << " -> restored";
-         }
-         else
-         {
-            std::cout << " new page yes ";
-            numNew++;
-         }
-
-         std::cout << std::endl;
-      }
-   }
-
-   std::cout << "Total " << numNew << "/" << numOld;
-
-   /*if(mObjManager.getAll("journal_content").size() == 0)
-   {
-      for(auto h : mObjManager.getAll("journal_header"))
-      {
-         if(static_cast<bool>((*h)["isPage"]))
-         {
-            MigrationValueProvider p(*mOldCore.getJournal().getPage(static_cast<Id>((*h)["id"])));
-            mObjManager.create(std::optional<Id>(), "journal_content", p);
-         }
-      }
-   }*/
+   
 }
 
 IStrategy_v2& Core3::getStrategy_v2()
@@ -102,11 +24,6 @@ IStrategy_v2& Core3::getStrategy_v2()
 IBackuper& Core3::getBackuper()
 {
    return mOldCore.getBackuper();
-}
-
-IJournal& Core3::getJournal()
-{
-   return mOldCore.getJournal();
 }
 
 IReward& Core3::getReward()

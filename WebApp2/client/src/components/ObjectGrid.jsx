@@ -8,7 +8,7 @@ function ObjectGrid(props)
 {
     return (
         <Grid container alignItems='center' justify="center" direction='row'>
-            {props.content.map((obj, index) => <ObjectView value={obj}/>)}
+            {props.content.map((obj, index) => <ObjectView value={obj} key={obj.id}/>)}
         </Grid> 
     );
 }

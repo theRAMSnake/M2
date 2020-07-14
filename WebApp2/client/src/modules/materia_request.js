@@ -45,6 +45,11 @@ class MateriaRequest
         MateriaRequest.req(JSON.stringify(rq), () => {});
     }
 
+    static post(rq)
+    {
+        MateriaRequest.req(JSON.stringify(rq), () => {});
+    }
+
     static postEdit(id, s)
     {
         var rq = {
