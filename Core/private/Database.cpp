@@ -73,7 +73,7 @@ Database::~Database()
 
 void Database::threadFunc()
 {
-    while(!mStop)
+    while(true)
     {
         std::vector<QueueEntry> newEntries;
 
@@ -82,6 +82,10 @@ void Database::threadFunc()
 
             if(mQueue.empty())
             {
+                if(mStop)
+                {
+                    return;
+                }
                 mCondVar.wait(lock);
             }
 
