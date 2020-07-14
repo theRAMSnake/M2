@@ -121,9 +121,16 @@ ObjectManager::ObjectManager(Database& db, TypeSystem& types, IReward& reward)
 , mTypes(types)
 , mReward(reward)
 {
-    for(auto& t : mTypes.get())
+    try
     {
-        mHandlers[t.name] = std::make_shared<TypeHandler>(t, mDb, createOnChangeHandler(t.name), createOnDeleteHandler(t.name), createOnCreateHandler(t.name));
+        for(auto& t : mTypes.get())
+        {
+            mHandlers[t.name] = std::make_shared<TypeHandler>(t, mDb, createOnChangeHandler(t.name), createOnDeleteHandler(t.name), createOnCreateHandler(t.name));
+        }
+    }
+    catch(...)
+    {
+        std::cout << "here";
     }
 }
 
