@@ -118,7 +118,7 @@ bool WebApp::checkMateriaAvailabilityAndPassword(const std::string& str)
 
    //materia available, lets check password
    MateriaClient client(str);
-   return !client.getJournal().getChildren(materia::Id::Invalid).empty();
+   return !client.getStrategy().getGoals().empty();
 }
 
 void WebApp::showMainScreen()
