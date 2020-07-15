@@ -54,6 +54,14 @@ void ObjectManager::handleJournalHeaderDeleted(Object& obj)
             break;
         }
     }
+
+    for(auto o : getAll("journal_header"))
+    {
+        if(static_cast<Id>((*o)["parentFolderId"]) == headerId)
+        {
+            destroy(static_cast<Id>((*o)["id"]));
+        }
+    }
 }
 
 void ObjectManager::handleJournalContentCreated(Object& obj)
