@@ -10,7 +10,6 @@ namespace materia
 
 Core3::Core3(const CoreConfig& config)
 : mDb(config.dbFileName)
-, mTypeSystem()
 , mOldCore(mDb, config.dbFileName)
 , mObjManager(mDb, mTypeSystem, mOldCore.getReward())
 {
@@ -25,11 +24,6 @@ IStrategy_v2& Core3::getStrategy_v2()
 IBackuper& Core3::getBackuper()
 {
    return mOldCore.getBackuper();
-}
-
-IJournal& Core3::getJournal()
-{
-   return mOldCore.getJournal();
 }
 
 IReward& Core3::getReward()
