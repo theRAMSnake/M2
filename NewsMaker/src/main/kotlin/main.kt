@@ -5,21 +5,30 @@ import java.io.File
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
-fun publishFile(filename: String, password: String)
+fun publishFile(filename: String)
 {
-    val p = Runtime.getRuntime().exec("./m2tools createPage News $filename")
-    p.waitFor()
+    val lines = File("$filename").readText().replace("\"", "\\\"");
+    run{
+        val op = "{\"operation\":\"destroy\", \"id\":\"newsfeed\"}"
+        val p = Runtime.getRuntime().exec(arrayOf("./m2tools", op))
+        p.waitFor()
+    }
+    run{
+        val op = "{\"operation\":\"create\", \"typename\":\"object\", \"defined_id\":\"newsfeed\", \"params\":{\"content\":\"$lines\"}}"
+        val p = Runtime.getRuntime().exec(arrayOf("./m2tools", op))
+        p.waitFor()
+    }
     Runtime.getRuntime().exec("rm $filename")
 }
 
-fun genNewsFile(password: String): String
+fun genNewsFile(): String
 {
     val cal = java.util.Calendar.getInstance()
     val filename = "${cal.get(Calendar.DAY_OF_MONTH)}_${cal.get(Calendar.MONTH)}_${cal.get(Calendar.YEAR)}"
 
     var filecontent = "<head><style>a { text-decoration: none;} </style> </head><body>"
 
-    filecontent += genRedditContent(password)
+    filecontent += genRedditContent()
     try
     {
         filecontent += genHackernewsContent()
@@ -63,9 +72,8 @@ fun readPass(): String
 
 fun main(args: Array<String>)
 {
-    val pass = readPass()
-    val filename = genNewsFile(pass)
-    publishFile(filename, pass)
+    val filename = genNewsFile()
+    publishFile(filename)
 
     println("Done")
 }

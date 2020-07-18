@@ -35,4 +35,9 @@ class SyncObserver
     {
         OnUpdated("Updated: $id")
     }
+
+    fun itemDetailsUpdated(id: String)
+    {
+        OnUpdated("Updated: $id")
+    }
 }

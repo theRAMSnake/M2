@@ -6,6 +6,8 @@ import net.dean.jraw.models.*
 import net.dean.jraw.RedditClient
 import java.util.Date
 import java.io.*
+import kotlinx.serialization.*
+import kotlinx.serialization.json.Json
 
 fun genContentForSubreddit(name: String, reddit: RedditClient): String
 {
@@ -43,47 +45,45 @@ fun genContentForSubreddit(name: String, reddit: RedditClient): String
    return composeHtmlList(name, items.take(25).map{"<a href=\"${it.url}\">${it.title}</a>"})
 }
 
-fun loadSubreddits(password: String): List<String>
+@kotlinx.serialization.Serializable
+data class NewsConfig(val id: String, val typename: String, val reddit: String)
+
+@kotlinx.serialization.Serializable
+data class ObjectList(val id: String, val typename: String, val object_list: List<NewsConfig>)
+
+fun loadSubreddits(): List<String>
 {
-    val p = Runtime.getRuntime().exec("./m2tools loadPage reddit tmp.page")
+    val op = "{\"operation\":\"query\", \"ids\":[\"config.news\"]}"
+    val p = Runtime.getRuntime().exec(arrayOf("./m2tools", op))
+    val input = BufferedReader(InputStreamReader(p.getInputStream()));
     p.waitFor()
+    
+    val lines = input.readText()
+    input.close()
+    print(lines)
+    val obj = Json.parse(ObjectList.serializer(), lines)
 
-    val lines = File("tmp.page").readLines()
-    val result = mutableListOf<String>()
-    for(l in lines)
-    {
-       if(l.startsWith("<li"))
-       {
-          var o = l.replace("<li>", "")
-          o = o.replace("</li>", "")
-
-          result.add(o)
-       }
-    }
-
-    return result
+    return obj.object_list[0].reddit.split(";")
 }
 
-fun genRedditContent(password: String): String
+fun genRedditContent(): String
 {
    val userAgent = UserAgent("linux", "snake.materia.newsreader", "v1", "theramsnake");
    val credentials = Credentials.script("theramsnake", "rtff6#yo", "DVOqwIAoJxN5NA", "1pfVk4fZ1mwSct2fL-72GbMpF-E");
    val adapter = OkHttpNetworkAdapter(userAgent);
    val reddit = OAuthHelper.automatic(adapter, credentials);
 
-   val subreddits = loadSubreddits(password)
+   val subreddits = loadSubreddits()
+   print(subreddits)
 
    var result = ""
    for(x in subreddits)
    {
       try {
          result += genContentForSubreddit(x, reddit)   
-         //Thread.sleep(60000)
       }
       catch(e: Exception) {
-         
       }
-      
    }
 
    return result

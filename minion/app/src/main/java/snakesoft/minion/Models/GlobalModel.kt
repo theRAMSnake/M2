@@ -21,29 +21,32 @@ object GlobalModel
     val JournalModel = JournalModel(Db)
     val FinanceModel = FinanceModel(Db)
     val RewardModel = RewardModel(Db)
+    var NewsModel = NewsModel(Db)
 
     internal fun doSync(syncObserver: SyncObserver, password: String): Boolean
     {
         return try
         {
             val connection = MateriaConnection(Ip, password, "5757")
+            val connectionNew = MateriaConnection(Ip, password, "5756")
 
             //check password
-            val p = JournalServiceProxy(connection)
-            if(p.loadIndex().itemsCount == 0)
+            val p = JournalServiceProxy(connectionNew)
+            if(p.loadIndex().count() == 0)
             {
                 syncObserver.OnUpdated("Incorrect password")
                 false
             }
             else
             {
-                JournalModel.sync(syncObserver, connection)
                 RewardModel.sync(syncObserver, connection)
 
-                val connectionNew = MateriaConnection(Ip, password, "5756")
+
                 InboxModel.sync(syncObserver, connectionNew)
                 CalendarModel.sync(syncObserver, connectionNew)
                 FinanceModel.sync(syncObserver, connectionNew)
+                JournalModel.sync(syncObserver, connectionNew)
+                NewsModel.sync(syncObserver, connectionNew)
 
                 syncObserver.finish()
 
@@ -73,5 +76,6 @@ object GlobalModel
         JournalModel.clear()
         FinanceModel.clear()
         RewardModel.clear()
+        NewsModel.clear()
     }
 }

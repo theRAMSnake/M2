@@ -29,7 +29,7 @@
         <activity android:name=".Activities.SyncActivity" />
         <activity android:name=".Activities.JournalActivity" />
         <activity android:name=".Activities.JournalItemActivity" />
-        <activity android:name=".Activities.ResourcesActivity" />
+        <activity android:name=".Activities.NewsActivity" />
         <activity android:name=".Activities.SyncPrepareActivity" />
         <activity android:name=".Activities.CalendarActivity" />
         <activity android:name=".Activities.FinanceActivity" />
