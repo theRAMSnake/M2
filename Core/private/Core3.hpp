@@ -5,6 +5,7 @@
 #include "TypeSystem.hpp"
 #include "ObjectManager.hpp"
 #include "CommandParser.hpp"
+#include "ISubsystem.hpp"
 
 namespace materia
 {
@@ -33,6 +34,7 @@ private:
     TypeSystem mTypeSystem;
     Core mOldCore;
     ObjectManager mObjManager;
+    std::vector<std::shared_ptr<ISubsystem>> mSubsystems;
 };
 
 }

@@ -1,10 +1,10 @@
-#include "FinancialAnalisys.hpp"
+#include "Finance.hpp"
+#include "../ObjectManager.hpp"
 #include <map>
 #include <chrono>
 #include <iostream>
 #include <boost/date_time/gregorian/greg_date.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include "../ObjectManager.hpp"
 #include "../types/SimpleList.hpp"
 #include "../../IReward.hpp"
 
@@ -39,7 +39,7 @@ std::string getDateStr(const boost::gregorian::date src)
    return os.str();
 }
 
-void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::SimpleList& inbox)
+void FinanceSS::performFinancialAnalisys()
 {
    int grandTotal = 0;
    unsigned int totalEarnings = 0;
@@ -56,8 +56,8 @@ void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::Sim
       date -= boost::gregorian::months(1);
    }
 
-   auto categories = objMan.getAll("finance_category");
-   auto events = objMan.getAll("finance_event");
+   auto categories = mOm.getAll("finance_category");
+   auto events = mOm.getAll("finance_event");
 
    for(auto e : events)
    {
@@ -84,28 +84,29 @@ void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::Sim
       }
       else
       {
-         objMan.destroy(static_cast<Id>(ev["id"]));
+         mOm.destroy(static_cast<Id>(ev["id"]));
       }
    }
 
+   types::SimpleList inbox(mOm, Id("inbox"));
    auto balance = static_cast<int>(totalEarnings) - static_cast<int>(totalSpendings);
    auto ratio = static_cast<double>(totalEarnings) / totalSpendings;
    std::string status;
 
    if(ratio > 1.5)
    {
-      reward.addPoints(3);
+      mOm.LEGACY_getReward().addPoints(3);
       status = "Excellent";
    }
    else if(ratio > 1.2)
    {
-      reward.addPoints(2);
+      mOm.LEGACY_getReward().addPoints(2);
       status = "Great";
    }
    else if(ratio > 1.1)
    {
       status = "Good";
-      reward.addPoints(1);
+      mOm.LEGACY_getReward().addPoints(1);
    }
    else if(ratio > 1)
    {
@@ -115,7 +116,7 @@ void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::Sim
    {
       status = "Critical";
       auto p = (balance * -1) / 100000 * 10;
-      reward.removePoints(3);
+      mOm.LEGACY_getReward().removePoints(3);
 
       if(p > rand() % 100)
       {
@@ -124,7 +125,7 @@ void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::Sim
    }
 
    //Compile report
-   auto obj = objMan.getOrCreate(Id("financial_report"), "object");
+   auto obj = mOm.getOrCreate(Id("financial_report"), "object");
    obj->clear();
    (*obj)["balance"] = balance;
    (*obj)["status"] = status;
@@ -158,7 +159,40 @@ void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::Sim
 
    (*obj)["totalPerMonth"] = totalPerMonth;
 
-   objMan.modify(*obj);
+   mOm.modify(*obj);
+}
+
+FinanceSS::FinanceSS(ObjectManager& mOm)
+: mOm(mOm)
+{
+
+}
+
+void FinanceSS::onNewDay()
+{
+    performFinancialAnalisys();
+}
+
+void FinanceSS::onNewWeek()
+{
+    
+}
+
+std::vector<TypeDef> FinanceSS::getTypes()
+{
+    std::vector<TypeDef> result;
+
+    result.push_back({"finance_category", "finance_categories", {{"name", Type::String}}});
+    result.push_back({"finance_event", "finance_events", {
+        {"categoryId", Type::Reference, {}, "finance_category"},
+        {"type", Type::Option, {"Spending", "Earning"}},
+        {"details", Type::String},
+        {"amountEuroCents", Type::Money},
+        {"timestamp", Type::Timestamp}
+        }});
+
+    return result;
 }
 
 }
+

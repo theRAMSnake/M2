@@ -23,10 +23,7 @@ class TypeHandler
 public:
     TypeHandler(
         const TypeDef& type, 
-        Database& db, 
-        std::function<void(Object&)> onChangeHandler, 
-        std::function<void(Object&)> onBeforeDeleteHandler, 
-        std::function<void(Object&)> onCreatedHandler
+        Database& db
         );
 
     //Id must be unique
@@ -45,12 +42,7 @@ public:
 private:
     const TypeDef mType;
     std::unique_ptr<DatabaseTable> mStorage;
-    std::function<void(Object&)> mOnChangeHandler;
-    std::function<void(Object&)> mOnBeforeDeleteHandler;
-    std::function<void(Object&)> mOnCreatedHandler;
-
-    std::future<void> mCurOp;
-
+    
     std::map<Id, ObjectPtr> mPool;
 };
 

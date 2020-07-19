@@ -7,7 +7,6 @@ namespace materia
 
 class IStrategy;
 class IStrategy_v2;
-class IJournal;
 class IBackuper;
 class IFinance;
 class IReward;
