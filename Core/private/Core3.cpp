@@ -1,5 +1,6 @@
 #include "Core3.hpp"
 #include "JsonSerializer.hpp"
+#include "JsonRestorationProvider.hpp"
 #include "types/Variable.hpp"
 #include "types/SimpleList.hpp"
 #include <chrono>
@@ -75,7 +76,7 @@ std::shared_ptr<ICore3> createCore(const CoreConfig& config)
 
 std::string Core3::formatResponce(const ExecutionResult& result)
 {
-   Object responce(*mTypeSystem.get("object"), Id::Invalid);
+   Object responce(*mTypeSystem.get("object"), Id::generate());
 
    if(std::holds_alternative<Success>(result))
    {
@@ -83,7 +84,11 @@ std::string Core3::formatResponce(const ExecutionResult& result)
    }
    else if(std::holds_alternative<ObjectList>(result))
    {
-      responce["object_list"] = std::get<ObjectList>(result);
+      auto& objList = std::get<ObjectList>(result);
+      for(auto o : objList)
+      {
+         responce.appendChild("object_list", *o);
+      }
    }
    else if(std::holds_alternative<std::string>(result))
    {
@@ -98,7 +103,7 @@ std::string Core3::formatResponce(const ExecutionResult& result)
       throw std::runtime_error("Cannot format responce");
    }
 
-   return responce.toJson();
+   return toJson(responce);
 }
 
 std::string Core3::formatErrorResponce(const std::string& errorText)
@@ -107,7 +112,7 @@ std::string Core3::formatErrorResponce(const std::string& errorText)
 
    responce["error"] = errorText;
 
-   return responce.toJson();
+   return toJson(responce);
 }
 
 std::string Core3::executeCommandJson(const std::string& json)

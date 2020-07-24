@@ -18,14 +18,14 @@ boost::gregorian::date alignToStartOfMonth(const boost::gregorian::date& date)
 
 bool isWithinLastYear(Object& event)
 {
-   auto val = static_cast<Time>(event["timestamp"]).value ;
+   auto val = event["timestamp"].get<Type::Timestamp>().value;
    return val > std::chrono::system_clock::to_time_t(std::chrono::system_clock::now() - std::chrono::hours(8760)) &&
       val < std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 }
 
 boost::gregorian::date getMonthAlignment(Object& event)
 {
-   return alignToStartOfMonth(boost::posix_time::from_time_t(static_cast<Time>(event["timestamp"]).value).date());
+   return alignToStartOfMonth(boost::posix_time::from_time_t(event["timestamp"].get<Type::Timestamp>().value).date());
 }
 
 std::string getDateStr(const boost::gregorian::date src)
@@ -65,9 +65,9 @@ void FinanceSS::performFinancialAnalisys()
       if(isWithinLastYear(ev))
       {
          auto month = getMonthAlignment(ev);
-         auto amount = static_cast<int>(ev["amountEuroCents"]);
-         auto catId = static_cast<Id>(ev["categoryId"]);
-         if(static_cast<int>(ev["type"]) == 0/*spending*/)
+         auto amount = ev["amountEuroCents"].get<Type::Money>();
+         auto catId = ev["categoryId"].toId();
+         if(ev["type"].get<Type::Option>() == 0/*spending*/)
          {
             amountByCategory[catId][month] -= amount;
             grandTotal -= amount;
@@ -84,7 +84,7 @@ void FinanceSS::performFinancialAnalisys()
       }
       else
       {
-         mOm.destroy(static_cast<Id>(ev["id"]));
+         mOm.destroy(ev.getId());
       }
    }
 
@@ -134,7 +134,7 @@ void FinanceSS::performFinancialAnalisys()
    {
       Object curCatBreakdown({"object"}, Id::generate());
       auto catPos = find_by_id(categories, d.first);
-      auto catName = catPos == categories.end() ? d.first.getGuid() : static_cast<std::string>((**catPos)["name"]);
+      auto catName = catPos == categories.end() ? d.first.getGuid() : (**catPos)["name"].get<Type::String>();
 
       curCatBreakdown["name"] = catName;
       
@@ -147,7 +147,7 @@ void FinanceSS::performFinancialAnalisys()
 
       curCatBreakdown["total"] = static_cast<int>(total);
 
-      (*obj)[catName] = curCatBreakdown;
+      obj->appendChild(catName, curCatBreakdown);
    }
 
    Object totalPerMonth({"object"}, Id::generate());
@@ -157,7 +157,7 @@ void FinanceSS::performFinancialAnalisys()
       totalPerMonth[getDateStr(m.first)] = m.second;
    }
 
-   (*obj)["totalPerMonth"] = totalPerMonth;
+   obj->appendChild("totalPerMonth", totalPerMonth);
 
    mOm.modify(*obj);
 }

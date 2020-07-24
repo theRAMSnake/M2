@@ -28,7 +28,7 @@ BOOST_FIXTURE_TEST_CASE( TestTimestamp, ObjectTest )
     (*mObject)["f1"] = 55;
     BOOST_CHECK_EQUAL(55, static_cast<int>((*mObject)["f1"]));
 
-    materia::JsonRestorationProvider p(mObject->toJson());
+    materia::JsonRestorationProvider p(toJson(*mObject));
     p.populate(*mObject);   
 
     BOOST_CHECK_EQUAL(55, static_cast<int>((*mObject)["f1"]));
@@ -39,7 +39,7 @@ BOOST_FIXTURE_TEST_CASE( TestOption, ObjectTest )
     (*mObject)["f2"] = 1;
     BOOST_CHECK_EQUAL(1, static_cast<int>((*mObject)["f2"]));
 
-    materia::JsonRestorationProvider p(mObject->toJson());
+    materia::JsonRestorationProvider p(toJson(*mObject));
     p.populate(*mObject);   
 
     BOOST_CHECK_EQUAL(1, static_cast<int>((*mObject)["f2"]));
@@ -50,7 +50,7 @@ BOOST_FIXTURE_TEST_CASE( TestMoney, ObjectTest )
     (*mObject)["f3"] = 1;
     BOOST_CHECK_EQUAL(1, static_cast<int>((*mObject)["f3"]));
 
-    materia::JsonRestorationProvider p(mObject->toJson());
+    materia::JsonRestorationProvider p(toJson(*mObject));
     p.populate(*mObject);   
 
     BOOST_CHECK_EQUAL(1, static_cast<int>((*mObject)["f3"]));
@@ -61,10 +61,10 @@ BOOST_FIXTURE_TEST_CASE( TestReference, ObjectTest )
     auto id = materia::Id::generate();
 
     (*mObject)["f4"] = id;
-    BOOST_CHECK_EQUAL(id, static_cast<materia::Id>((*mObject)["f4"]));
+    BOOST_CHECK_EQUAL(id, (*mObject)["f4"].toId());
 
-    materia::JsonRestorationProvider p(mObject->toJson());
+    materia::JsonRestorationProvider p(toJson(*mObject));
     p.populate(*mObject);   
 
-    BOOST_CHECK_EQUAL(id, static_cast<materia::Id>((*mObject)["f4"]));
+    BOOST_CHECK_EQUAL(id, (*mObject)["f4"].toId());
 }

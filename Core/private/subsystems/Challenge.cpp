@@ -22,7 +22,7 @@ void ChallengeSS::onNewWeek()
    for(auto o : objList)
    {
       auto& obj = *o;
-      if(static_cast<bool>(obj["resetWeekly"]))
+      if(obj["resetWeekly"])
       {
          obj["points"] = 0;
          mOm.modify(obj);
@@ -50,7 +50,7 @@ std::vector<TypeDef> ChallengeSS::getTypes()
 
 void ChallengeSS::handleChItemChange(Object& obj)
 {
-    while(static_cast<int>(obj["points"]) > static_cast<int>(obj["pointsNeeded"]))
+    while(obj["points"] > obj["pointsNeeded"])
     {
         obj["points"] = static_cast<int>(obj["points"]) - static_cast<int>(obj["pointsNeeded"]);
         obj["level"] = static_cast<int>(obj["level"]) + 1;

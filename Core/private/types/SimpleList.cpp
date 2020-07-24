@@ -16,7 +16,7 @@ SimpleList::SimpleList(ObjectManager& om, const Id& id)
 
 void SimpleList::add(const std::string& item)
 {
-    auto v = static_cast<std::vector<std::string>>((*mObject)["objects"]);
+    auto v = (*mObject)["objects"].get<Type::StringArray>();
     v.push_back(item);
     (*mObject)["objects"] = v;
     mChanged = true;
@@ -24,7 +24,7 @@ void SimpleList::add(const std::string& item)
 
 std::size_t SimpleList::size()
 {
-    auto v = static_cast<std::vector<std::string>>((*mObject)["objects"]);
+    auto v = (*mObject)["objects"].get<Type::StringArray>();
     return v.size();
 } 
 
@@ -38,7 +38,7 @@ SimpleList::~SimpleList()
 
 std::string SimpleList::at(const std::size_t pos)
 {
-    auto v = static_cast<std::vector<std::string>>((*mObject)["objects"]);
+    auto v = (*mObject)["objects"].get<Type::StringArray>();
     return v[pos];
 }
 

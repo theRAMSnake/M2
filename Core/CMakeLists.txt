@@ -30,6 +30,7 @@ private/TypeHandler.cpp
 private/types/SimpleList.cpp
 private/types/Variable.cpp
 private/Operations.cpp
+private/Type.cpp
 private/subsystems/Challenge.cpp
 private/subsystems/Finance.cpp
 private/subsystems/User.cpp

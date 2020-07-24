@@ -66,4 +66,9 @@ std::istream& operator >> (std::istream& str, materia::Id& id)
    return str;
 }
 
+std::string to_string(const materia::Id id)
+{
+   return id.getGuid();
+}
+
 }

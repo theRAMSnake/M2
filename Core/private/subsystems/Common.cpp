@@ -26,7 +26,7 @@ std::vector<TypeDef> CommonSS::getTypes()
 
     result.push_back({"object", "objects"});
     result.push_back({"variable", "variables", {{"value", Type::String}}});
-    result.push_back({"simple_list", "lists", {{"objects", Type::Array}}});
+    result.push_back({"simple_list", "lists", {{"objects", Type::StringArray}}});
 
     return result;
 }

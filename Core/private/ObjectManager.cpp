@@ -116,30 +116,12 @@ void ObjectManager::modify(const Object& obj)
 {
     for(auto& h : mHandlers)
     {
-        if(h.second->contains(static_cast<Id>(obj["id"])))
+        if(h.second->contains(obj.getId()))
         {
             h.second->modify(obj);
             break;
         }
     }
-}
-
-std::string to_string(const Type t)
-{
-    switch(t)
-    {   
-        case Type::Int: return "int";
-        case Type::Money: return "money";
-        case Type::Double: return "double";
-        case Type::Bool: return "bool";
-        case Type::String: return "string";
-        case Type::Reference: return "reference";
-        case Type::Array: return "array";
-        case Type::Timestamp: return "timestamp";
-        case Type::Option: return "option";
-    }
-
-    throw std::runtime_error("unknown type");
 }
 
 std::vector<ObjectPtr> ObjectManager::describe() const
@@ -152,20 +134,20 @@ std::vector<ObjectPtr> ObjectManager::describe() const
         auto obj = std::make_shared<Object>(*objType, Id::Invalid);
         (*obj)["name"] = t.name;
 
-        std::vector<ObjectPtr> fields;
+        std::vector<Object> fields;
 
         for(auto f : t.fields)
         {
-            auto field = std::make_shared<Object>(*objType, Id::Invalid);
-            (*field)["name"] = f.name;
-            (*field)["type"] = to_string(f.type);
-            (*field)["options"] = f.options;
-            (*field)["refType"] = f.refType;
+            auto field = Object(*objType, Id::Invalid);
+            field["name"] = f.name;
+            field["type"] = to_string(f.type);
+            field["options"] = f.options;
+            field["refType"] = f.refType;
 
             fields.push_back(field);
         }
 
-        (*obj)["fields"] = fields;
+        obj->appendChildren("fields", fields);
 
         result.push_back(obj);
     }

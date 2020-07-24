@@ -45,7 +45,7 @@ std::vector<TypeDef> JournalSS::getTypes()
 
 void JournalSS::handleJournalContentItemChange(Object& obj)
 {
-    auto headerId = static_cast<Id>(obj["headerId"]);
+    auto headerId = obj["headerId"].toId();
     auto header = mOm.get(headerId);
 
     (*header)["modified"] = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())};
@@ -55,7 +55,7 @@ void JournalSS::handleJournalContentItemChange(Object& obj)
 
 void JournalSS::handleJournalContentDeleted(Object& obj)
 {
-    auto headerId = static_cast<Id>(obj["headerId"]);
+    auto headerId = obj["headerId"].toId();
     auto header = mOm.get(headerId);
 
     (*header)["modified"] = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())};
@@ -66,29 +66,29 @@ void JournalSS::handleJournalContentDeleted(Object& obj)
 
 void JournalSS::handleJournalHeaderDeleted(Object& obj)
 {
-    auto headerId = static_cast<Id>(obj["id"]);
+    auto headerId = obj.getId();
 
     for(auto o : mOm.getAll("journal_content"))
     {
-        if(static_cast<Id>((*o)["headerId"]) == headerId)
+        if((*o)["headerId"].toId() == headerId)
         {
-            mOm.destroy(static_cast<Id>((*o)["id"]));
+            mOm.destroy(o->getId());
             break;
         }
     }
 
     for(auto o : mOm.getAll("journal_header"))
     {
-        if(static_cast<Id>((*o)["parentFolderId"]) == headerId)
+        if((*o)["parentFolderId"].toId() == headerId)
         {
-            mOm.destroy(static_cast<Id>((*o)["id"]));
+            mOm.destroy(o->getId());
         }
     }
 }
 
 void JournalSS::handleJournalContentCreated(Object& obj)
 {
-    auto headerId = static_cast<Id>(obj["headerId"]);
+    auto headerId = obj["headerId"].toId();
     auto header = mOm.get(headerId);
 
     (*header)["modified"] = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())};

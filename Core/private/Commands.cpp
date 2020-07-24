@@ -16,7 +16,7 @@ CreateCommand::CreateCommand(const std::optional<Id> id, const std::string& type
 ExecutionResult CreateCommand::execute(ObjectManager& objManager)
 {
     JsonRestorationProvider provider(mParams);
-    return static_cast<Id>((*objManager.create(mId, mTypeName, provider))["id"]);
+    return objManager.create(mId, mTypeName, provider)->getId();
 }
 
 ModifyCommand::ModifyCommand(const Id& id, const std::string& params)
@@ -83,23 +83,6 @@ ExecutionResult CompleteCommand::execute(ObjectManager& objManager)
 ExecutionResult DescribeCommand::execute(ObjectManager& objManager)
 {
     return objManager.describe();
-}
-
-ChangeTypeCommand::ChangeTypeCommand(const Id& id, const std::string& typeName)
-: mId(id)
-, mTypeName(typeName)
-{
-
-}
-
-ExecutionResult ChangeTypeCommand::execute(ObjectManager& objManager)
-{
-    auto obj = objManager.get(mId);
-    objManager.destroy(mId);
-
-    JsonRestorationProvider provider(obj->toJson());
-    objManager.create(mId, mTypeName, provider);
-    return Success{};
 }
 
 }

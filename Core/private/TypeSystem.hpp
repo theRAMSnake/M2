@@ -2,29 +2,11 @@
 #include <string>
 #include <optional>
 #include <vector>
-#include <ctime>
 #include <functional>
+#include "Type.hpp"
 
 namespace materia
 {
-
-enum class Type
-{
-    Int,
-    Double,
-    String,
-    Bool,
-    Array,
-    Timestamp,
-    Option,
-    Money,
-    Reference
-};
-
-struct Time
-{
-    std::time_t value;
-};
 
 struct FieldDef
 {

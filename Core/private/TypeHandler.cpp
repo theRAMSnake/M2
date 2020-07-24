@@ -37,9 +37,7 @@ ObjectPtr TypeHandler::create(const std::optional<Id> id, const IValueProvider& 
 
     provider.populate(*newObj);
 
-    auto json = newObj->toJson();
-
-    mStorage->store(newId, json);
+    mStorage->store(newId, toJson(*newObj));
     mPool[newId] = newObj;
 
     mType.handlers.onCreated(*newObj);
@@ -113,21 +111,14 @@ void TypeHandler::modify(const Id id, const IValueProvider& provider)
 
     mType.handlers.onChanged(*obj);
 
-    auto json = obj->toJson();
-
-    mStorage->store(id, json);
-
+    mStorage->store(id, toJson(*obj));
     mPool[id] = obj;
 }
 
 void TypeHandler::modify(const Object& obj)
 {
-    auto json = obj.toJson();
-    auto id = static_cast<Id>(obj["id"]);
-
-    mStorage->store(id, json);
-    
-    mPool[id] = std::make_shared<Object>(obj);
+    mStorage->store(obj.getId(), toJson(obj));    
+    mPool[obj.getId()] = std::make_shared<Object>(obj);
 }
 
 std::vector<ObjectPtr> TypeHandler::getAll()
