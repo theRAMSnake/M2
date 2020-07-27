@@ -85,10 +85,7 @@ std::string Core3::formatResponce(const ExecutionResult& result)
    else if(std::holds_alternative<ObjectList>(result))
    {
       auto& objList = std::get<ObjectList>(result);
-      for(auto o : objList)
-      {
-         responce.appendChild("object_list", *o);
-      }
+      responce.setChildren("object_list", objList);
    }
    else if(std::holds_alternative<std::string>(result))
    {

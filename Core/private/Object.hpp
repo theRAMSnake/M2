@@ -2,6 +2,7 @@
 #include "TypeSystem.hpp"
 #include "Common/Id.hpp"
 #include <memory>
+#include <map>
 #include <variant>
 #include <exception>
 #include <fmt/format.h>
@@ -158,8 +159,9 @@ public:
     std::vector<std::pair<std::string, Object>>::const_iterator children_begin() const;
     std::vector<std::pair<std::string, Object>>::const_iterator children_end() const;
 
-    void appendChildren(const std::string& tag, const std::vector<Object>& children);
-    void appendChild(const std::string& tag, const Object& child);
+    void setChildren(const std::string& tag, const std::vector<std::shared_ptr<Object>>& children);
+    void setChildren(const std::string& tag, const std::vector<Object>& children);
+    void setChild(const std::string& tag, const Object& child);
 
     TypeDef getType() const;
     Id getId() const;
@@ -172,7 +174,8 @@ private:
     TypeDef mTypeDef;
     Id mId;
     std::vector<Field> mFields;
-    std::vector<std::pair<std::string, Object>> mChildren;
+    using ChildrenHolder = std::variant<Object, std::vector<Object>>;
+    std::map<std::string, ChildrenHolder> mChildren;
 };
 
 using ObjectPtr = std::shared_ptr<Object>;

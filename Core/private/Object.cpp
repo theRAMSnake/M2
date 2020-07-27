@@ -179,17 +179,25 @@ std::vector<std::pair<std::string, Object>>::const_iterator Object::children_end
     return mChildren.end();
 }
 
-void Object::appendChild(const std::string& tag, const Object& child)
+void Object::setChild(const std::string& tag, const Object& child)
 {
-    mChildren.push_back({tag, child});
+    mChildren[tag] = child;
 }
 
-void Object::appendChildren(const std::string& tag, const std::vector<Object>& children)
+void Object::setChildren(const std::string& tag, const std::vector<ObjectPtr>& children)
 {
+    std::vector<Object> copies;
     for(auto& o : children)
     {
-        appendChild(tag, o);
+        copies.push_back(*o);
     }
+
+    mChildren[tag] = copies;
+}
+
+void Object::setChildren(const std::string& tag, const std::vector<Object>& children)
+{
+    mChildren[tag] = children;
 }
 
 Object::Object(Object&& other) noexcept
