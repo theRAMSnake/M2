@@ -6,6 +6,8 @@
 #include <variant>
 #include <exception>
 #include <fmt/format.h>
+#include <boost/property_tree/ptree.hpp>
+#include <iostream>
 
 namespace std
 {
@@ -60,9 +62,8 @@ public:
     }
 
     //Simplifiers
-    operator bool() const;
     Id toId() const;
-
+    
     bool isReadonly() const;
     Type getType() const;
     std::string getName() const;
@@ -130,6 +131,7 @@ private:
     template<Type TDest, class Y>
     static typename TypeTraits<TDest>::Class typecast(const Y& val)
     {
+        //std::cout << "typecast " << "to " << to_string(TDest) << " of " << std::to_string(val);
         if constexpr (std::is_same<typename TypeTraits<TDest>::Class, Y>::value)
         {
             return val;
@@ -150,17 +152,14 @@ public:
     Object(const TypeDef& type, const Id id);
     Object(const Object& other);
     Object(Object&& other) noexcept;
-
+    
     Field& operator [] (const std::string& name);
     const Field& operator [] (const std::string& name) const;
 
     std::vector<Field>::const_iterator begin() const;
     std::vector<Field>::const_iterator end() const;
-    std::vector<std::pair<std::string, Object>>::const_iterator children_begin() const;
-    std::vector<std::pair<std::string, Object>>::const_iterator children_end() const;
-
+    
     void setChildren(const std::string& tag, const std::vector<std::shared_ptr<Object>>& children);
-    void setChildren(const std::string& tag, const std::vector<Object>& children);
     void setChild(const std::string& tag, const Object& child);
 
     TypeDef getType() const;
@@ -168,13 +167,16 @@ public:
 
     void clear();
 
+    std::string toJson() const;
+
 private:
     void init();
+    static void fillObject(boost::property_tree::ptree& p, const Object& o);
 
     TypeDef mTypeDef;
     Id mId;
     std::vector<Field> mFields;
-    using ChildrenHolder = std::variant<Object, std::vector<Object>>;
+    using ChildrenHolder = std::variant<std::shared_ptr<Object>, std::vector<std::shared_ptr<Object>>>;
     std::map<std::string, ChildrenHolder> mChildren;
 };
 

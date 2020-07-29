@@ -37,7 +37,7 @@ ObjectPtr TypeHandler::create(const std::optional<Id> id, const IValueProvider& 
 
     provider.populate(*newObj);
 
-    mStorage->store(newId, toJson(*newObj));
+    mStorage->store(newId, newObj->toJson());
     mPool[newId] = newObj;
 
     mType.handlers.onCreated(*newObj);
@@ -111,13 +111,13 @@ void TypeHandler::modify(const Id id, const IValueProvider& provider)
 
     mType.handlers.onChanged(*obj);
 
-    mStorage->store(id, toJson(*obj));
+    mStorage->store(id, obj->toJson());
     mPool[id] = obj;
 }
 
 void TypeHandler::modify(const Object& obj)
 {
-    mStorage->store(obj.getId(), toJson(obj));    
+    mStorage->store(obj.getId(), obj.toJson());    
     mPool[obj.getId()] = std::make_shared<Object>(obj);
 }
 

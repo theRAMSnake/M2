@@ -44,8 +44,6 @@ BOOST_FIXTURE_TEST_CASE( AddPoints_ch, ChallengeTest )
 
       auto result = mCore->executeCommandJson(writeJson(query));
 
-      std::cout << "!" << result;
-
       auto ol = readJson<boost::property_tree::ptree>(result);
 
       for(auto& v : ol.get_child("object_list"))
@@ -64,7 +62,7 @@ BOOST_FIXTURE_TEST_CASE( AddPoints_ch, ChallengeTest )
       modify.put("params.advance", 5);
       modify.put("id", r.get<std::string>("result_id"));
 
-      mCore->executeCommandJson(writeJson(modify));
+      std::cout << mCore->executeCommandJson(writeJson(modify)) << std::endl;
 
       boost::property_tree::ptree query;
       query.put("operation", "query");

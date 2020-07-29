@@ -147,7 +147,7 @@ void FinanceSS::performFinancialAnalisys()
 
       curCatBreakdown["total"] = static_cast<int>(total);
 
-      obj->appendChild(catName, curCatBreakdown);
+      obj->setChild(catName, curCatBreakdown);
    }
 
    Object totalPerMonth({"object"}, Id::generate());
@@ -157,7 +157,7 @@ void FinanceSS::performFinancialAnalisys()
       totalPerMonth[getDateStr(m.first)] = m.second;
    }
 
-   obj->appendChild("totalPerMonth", totalPerMonth);
+   obj->setChild("totalPerMonth", totalPerMonth);
 
    mOm.modify(*obj);
 }

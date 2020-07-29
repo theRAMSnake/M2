@@ -100,7 +100,7 @@ std::string Core3::formatResponce(const ExecutionResult& result)
       throw std::runtime_error("Cannot format responce");
    }
 
-   return toJson(responce);
+   return responce.toJson();
 }
 
 std::string Core3::formatErrorResponce(const std::string& errorText)
@@ -109,7 +109,7 @@ std::string Core3::formatErrorResponce(const std::string& errorText)
 
    responce["error"] = errorText;
 
-   return toJson(responce);
+   return responce.toJson();
 }
 
 std::string Core3::executeCommandJson(const std::string& json)

@@ -1,4 +1,5 @@
 #define BOOST_TEST_DYN_LINK
+#define BOOST_TEST_MODULE a
 #include <boost/test/unit_test.hpp>
 #include <memory>
 #include "../Core/private/Object.hpp"
@@ -25,35 +26,35 @@ protected:
 
 BOOST_FIXTURE_TEST_CASE( TestTimestamp, ObjectTest ) 
 {
-    (*mObject)["f1"] = 55;
-    BOOST_CHECK_EQUAL(55, static_cast<int>((*mObject)["f1"]));
+    (*mObject)["f1"] = materia::Time {55};
+    BOOST_CHECK_EQUAL(55, (*mObject)["f1"].get<materia::Type::Timestamp>().value);
 
-    materia::JsonRestorationProvider p(toJson(*mObject));
+    materia::JsonRestorationProvider p(mObject->toJson());
     p.populate(*mObject);   
 
-    BOOST_CHECK_EQUAL(55, static_cast<int>((*mObject)["f1"]));
+    BOOST_CHECK_EQUAL(55, (*mObject)["f1"].get<materia::Type::Timestamp>().value);
 }
 
 BOOST_FIXTURE_TEST_CASE( TestOption, ObjectTest ) 
 {
     (*mObject)["f2"] = 1;
-    BOOST_CHECK_EQUAL(1, static_cast<int>((*mObject)["f2"]));
+    BOOST_CHECK_EQUAL(1, (*mObject)["f2"].get<materia::Type::Option>());
 
-    materia::JsonRestorationProvider p(toJson(*mObject));
+    materia::JsonRestorationProvider p(mObject->toJson());
     p.populate(*mObject);   
 
-    BOOST_CHECK_EQUAL(1, static_cast<int>((*mObject)["f2"]));
+    BOOST_CHECK_EQUAL(1, (*mObject)["f2"].get<materia::Type::Option>());
 }
 
 BOOST_FIXTURE_TEST_CASE( TestMoney, ObjectTest ) 
 {
     (*mObject)["f3"] = 1;
-    BOOST_CHECK_EQUAL(1, static_cast<int>((*mObject)["f3"]));
+    BOOST_CHECK_EQUAL(1, (*mObject)["f3"].get<materia::Type::Money>());
 
-    materia::JsonRestorationProvider p(toJson(*mObject));
+    materia::JsonRestorationProvider p(mObject->toJson());
     p.populate(*mObject);   
 
-    BOOST_CHECK_EQUAL(1, static_cast<int>((*mObject)["f3"]));
+    BOOST_CHECK_EQUAL(1, (*mObject)["f3"].get<materia::Type::Money>());
 }
 
 BOOST_FIXTURE_TEST_CASE( TestReference, ObjectTest ) 
@@ -63,7 +64,7 @@ BOOST_FIXTURE_TEST_CASE( TestReference, ObjectTest )
     (*mObject)["f4"] = id;
     BOOST_CHECK_EQUAL(id, (*mObject)["f4"].toId());
 
-    materia::JsonRestorationProvider p(toJson(*mObject));
+    materia::JsonRestorationProvider p(mObject->toJson());
     p.populate(*mObject);   
 
     BOOST_CHECK_EQUAL(id, (*mObject)["f4"].toId());

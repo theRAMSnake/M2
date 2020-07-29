@@ -16,6 +16,4 @@ private:
     boost::property_tree::ptree mImpl;
 };
 
-std::string toJson(const Object& o);
-
 }

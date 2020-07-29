@@ -134,20 +134,20 @@ std::vector<ObjectPtr> ObjectManager::describe() const
         auto obj = std::make_shared<Object>(*objType, Id::Invalid);
         (*obj)["name"] = t.name;
 
-        std::vector<Object> fields;
+        std::vector<ObjectPtr> fields;
 
         for(auto f : t.fields)
         {
-            auto field = Object(*objType, Id::Invalid);
-            field["name"] = f.name;
-            field["type"] = to_string(f.type);
-            field["options"] = f.options;
-            field["refType"] = f.refType;
+            auto field = std::make_shared<Object>(*objType, Id::Invalid);
+            (*field)["name"] = f.name;
+            (*field)["type"] = to_string(f.type);
+            (*field)["options"] = f.options;
+            (*field)["refType"] = f.refType;
 
             fields.push_back(field);
         }
 
-        obj->appendChildren("fields", fields);
+        obj->setChildren("fields", fields);
 
         result.push_back(obj);
     }
