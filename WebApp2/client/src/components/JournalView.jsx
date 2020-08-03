@@ -13,7 +13,7 @@ tinymce.init({
   });
 
 import React, { useState } from 'react';
-import MateriaRequest from '../modules/materia_request'
+import Materia from '../modules/materia_request'
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
 
@@ -85,8 +85,8 @@ function JournalView(props)
             filter: 'IS(journal_header)'
         };
 
-        MateriaRequest.req(JSON.stringify(req), (r) => {
-            setIndex(sortIndex(JSON.parse(r).object_list));
+        Materia.exec(req, (r) => {
+            setIndex(sortIndex(r.object_list));
             setUpdating(false);
         });
     }
@@ -129,8 +129,8 @@ function JournalView(props)
                 filter: 'IS(journal_content) AND .headerId = "' + id + '"'
             };
     
-            MateriaRequest.req(JSON.stringify(req), (r) => {
-                var o = JSON.parse(r).object_list[0];
+            Materia.exec(req, (r) => {
+                var o = r.object_list[0];
                 setCurPage(o);
                 setContent(o.content);
                 setChanged(false);
@@ -163,7 +163,7 @@ function JournalView(props)
 
     function onSaveClicked()
     {
-        MateriaRequest.postEdit(curPage.id, JSON.stringify(curPage));
+        Materia.postEdit(curPage.id, JSON.stringify(curPage));
         setChanged(false);
     }
 
@@ -213,7 +213,7 @@ function JournalView(props)
 
         var items = index.filter(x => {return x.parentFolderId === selectedId;});
         items.forEach(element => {
-            MateriaRequest.postDelete(element.id);
+            Materia.postDelete(element.id);
         });
 
         updateIndex();
@@ -229,7 +229,7 @@ function JournalView(props)
         setInDeleteDialog(false);
         setUpdating(true);
 
-        MateriaRequest.postDelete(selectedId);
+        Materia.postDelete(selectedId);
 
         updateIndex();
     }
@@ -257,11 +257,11 @@ function JournalView(props)
                 params: obj
             }
     
-            MateriaRequest.req(JSON.stringify(req), (x) => {
+            Materia.exec(req, (x) => {
                 if(isPage)
                 {
                     var sobj = {
-                        headerId: JSON.parse(x).result_id
+                        headerId: x.result_id
                     }
             
                     var sreq = {
@@ -270,7 +270,7 @@ function JournalView(props)
                         params: sobj
                     }
             
-                    MateriaRequest.post(sreq);
+                    Materia.post(sreq);
                 }
 
                 updateIndex();
@@ -293,7 +293,7 @@ function JournalView(props)
         var obj = items[0];
         obj.title = text;
 
-        MateriaRequest.postEdit(obj.id, JSON.stringify(obj));
+        Materia.postEdit(obj.id, JSON.stringify(obj));
         updateIndex();
     }
 

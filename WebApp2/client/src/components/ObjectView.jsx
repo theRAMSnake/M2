@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MateriaRequest from '../modules/materia_request'
+import Materia from '../modules/materia_request'
 import m3proxy from '../modules/m3proxy'
 
 import ListObjectView from './ListObjectView.jsx'
@@ -52,7 +52,7 @@ function ObjectView(props)
     const obj = props.value;
 
     const [inDeleteDialog, setinDeleteDialog] = useState(false);
-    const [inEditDialog, setinEditDialog] = useState(false);
+    const [inEditDialog, setinEditDialog] = useState(props.expanded);
     const [visible, setVisible] = useState(true);
     const [object, setObject] = useState(obj);
     const [objectInEdit, setObjectInEdit] = useState(obj);
@@ -79,7 +79,7 @@ function ObjectView(props)
     function onDeleteDialogOk(e){
         setinDeleteDialog(false);
         setVisible(false);
-        MateriaRequest.postDelete(obj.id);
+        Materia.postDelete(obj.id);
     }
 
     function onObjectChanged(obj)
@@ -90,7 +90,7 @@ function ObjectView(props)
 
     function onObjectChangedAndCommit(obj)
     {
-        MateriaRequest.postEdit(obj.id, JSON.stringify(obj));
+        Materia.postEdit(obj.id, JSON.stringify(obj));
         setObject(JSON.parse(JSON.stringify(obj)));
     }
     
@@ -101,7 +101,7 @@ function ObjectView(props)
         if(changed)
         {
             setObject(objectInEdit);
-            MateriaRequest.postEdit(obj.id, JSON.stringify(objectInEdit));
+            Materia.postEdit(obj.id, JSON.stringify(objectInEdit));
         }
     }
 

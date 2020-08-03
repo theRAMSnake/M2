@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MateriaRequest from '../modules/materia_request'
+import Materia from '../modules/materia_request'
 import ObjectGrid from './ObjectGrid.jsx'
 
 import {
@@ -17,7 +17,7 @@ function createRequest(query)
             filter: query.substr(1)
         };
     
-        return JSON.stringify(req);
+        return req;
     }
     else
     {
@@ -26,7 +26,7 @@ function createRequest(query)
             ids: [query]
         };
     
-        return JSON.stringify(req);
+        return req;
     }
 }
 
@@ -35,13 +35,13 @@ function QueryView(props)
     const query = props.query;
     const [responce, setResponce] = useState("");
 
-    MateriaRequest.req(createRequest(query), (r) => {
+    Materia.exec(createRequest(query), (r) => {
         setResponce(r);
     });
 
     function getContentFromResponce()
     {
-        var obj = JSON.parse(responce);
+        var obj = responce;
         if(!obj || !obj.object_list || obj.object_list.length == 0)
         {
             return (

@@ -1,4 +1,4 @@
-import MateriaRequest from '../modules/materia_request'
+import Materia from '../modules/materia_request'
 
 var types;
 var init = false;
@@ -25,8 +25,8 @@ class m3Proxy
                 operation: "describe"
             };
         
-            MateriaRequest.req(JSON.stringify(req), (r) => {
-                types = JSON.parse(r).object_list;
+            Materia.exec(req, (r) => {
+                types = r.object_list;
 
                 //analyze types and load referencable of them
                 var i = 0;
@@ -42,8 +42,8 @@ class m3Proxy
                                 filter: "IS(" + types[i].fields[j].refType + ")"
                             };
 
-                            MateriaRequest.req(JSON.stringify(query), (r) => {
-                                acceptObjects(JSON.parse(r).object_list);
+                            Materia.exec(query, (r) => {
+                                acceptObjects(r.object_list);
                             });
                         }
                     }

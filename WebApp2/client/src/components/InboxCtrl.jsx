@@ -1,4 +1,4 @@
-import MateriaRequest from '../modules/materia_request'
+import Materia from '../modules/materia_request'
 import React from 'react';
 import ListObjectView from './ListObjectView.jsx'
 
@@ -22,8 +22,8 @@ export default function InboxCtrl(props)
             ids: ['inbox']
         };
         
-        MateriaRequest.req(JSON.stringify(inboxReq), (r) => {
-            setInbox(JSON.parse(r).object_list[0]);
+        Materia.exec(inboxReq, (r) => {
+            setInbox(r.object_list[0]);
         });
 
         setInit(true);
@@ -36,7 +36,7 @@ export default function InboxCtrl(props)
 
     function onObjectChanged(newObj)
     {
-        MateriaRequest.postEdit(newObj.id, JSON.stringify(newObj));
+        Materia.postEdit(newObj.id, JSON.stringify(newObj));
         setObject(JSON.parse(JSON.stringify(newObj)));
     }
 

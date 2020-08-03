@@ -2,7 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import Auth from '../modules/auth'
 import m3proxy from '../modules/m3proxy'
-import MateriaRequest from '../modules/materia_request'
+import Materia from '../modules/materia_request'
 import SearchBar from './SearchBar.jsx'
 import ApiView from './ApiView.jsx'
 import FinanceView from './FinanceView.jsx'
@@ -24,7 +24,9 @@ import {
     ListItem,
     Badge,
     ListItemText,
-    Grid
+    Grid,
+    Snackbar,
+    Alert
 } from "@material-ui/core";
 
 import MenuIcon from '@material-ui/icons/Menu';
@@ -105,6 +107,9 @@ function MainPage(props) {
     const [numImportantCalendarItems, setNumImportantCalendarItems] = React.useState(0);
     const [tod, setTod] = React.useState("");
 
+    const [snackOpen, setSnackOpen] = React.useState(0);
+    const [lastError, setLastError] = React.useState('');
+
     function requestCalendarItems()
     {
         const req = {
@@ -112,8 +117,8 @@ function MainPage(props) {
             filter: "IS(calendar_item)"
         };
 
-        MateriaRequest.req(JSON.stringify(req), (r) => {
-            var c = JSON.parse(r);
+        Materia.exec(req, (r) => {
+            var c = r;
             setCalendarItems(c);
             setNumImportantCalendarItems(calculateNumImportantCalendarItems(c));
         });
@@ -124,14 +129,15 @@ function MainPage(props) {
                 ids: ["tip_of_the_day"]
             };
     
-            MateriaRequest.req(JSON.stringify(req), (r) => {
-                var c = JSON.parse(r);
+            Materia.exec(req, (r) => {
+                var c = r;
                 setTod(c.object_list[0].value);
             });
         }
     }
 
     m3proxy.initialize();
+    Materia.setGlobalErrorHandler((err) => {setLastError(err); setSnackOpen(true);});
 
     if(!calendarItems.object_list)
     {
@@ -215,6 +221,11 @@ function MainPage(props) {
         setShowAddDlg(false);
     } 
 
+    function handleSnackClose(e, r)
+    {
+        setSnackOpen(false);
+    }
+
     return (
         <div>
             <AppBar position="static" color="inherit">
@@ -245,6 +256,11 @@ function MainPage(props) {
                     <Button variant="contained" color="primary" size="small" onClick={logout_clicked}>Logout</Button>
                 </Toolbar>
             </AppBar>
+            <Snackbar open={snackOpen} autoHideDuration={6000} onClose={handleSnackClose}>
+                <Alert onClose={handleSnackClose} severity="error">
+                    {lastError}
+                </Alert>
+            </Snackbar>
             {showAddDlg && <AddItemDialog onClose={onAddDialogClosed}/>}
             <Divider/>
             <Grid  style={{paddingTop:'5px'}} container direction="column" justify="center" alignItems="center">

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MateriaRequest from '../modules/materia_request'
+import Materia from '../modules/materia_request'
 import JSONInput from 'react-json-editor-ajrm';
 import locale    from 'react-json-editor-ajrm/locale/en';
 import {
@@ -16,8 +16,10 @@ function ApiView(props) {
     function send_clicked(e) {
         e.preventDefault();
 
-        MateriaRequest.req(lastRequest, (r) => {
+        Materia.req(lastRequest, (r) => {
             setLastResponce(JSON.parse(r));
+        }, (err) => {
+            setLastResponce(JSON.parse(err));
         });
     }
 

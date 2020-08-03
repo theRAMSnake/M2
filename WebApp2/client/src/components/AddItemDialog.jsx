@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import m3proxy from '../modules/m3proxy'
-import MateriaRequest from '../modules/materia_request'
+import Materia from '../modules/materia_request'
 import ObjectProperties from './ObjectProperties.jsx'
 
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
@@ -115,9 +115,9 @@ function AddItemDialog(props)
         };
 
         setRequesting(true);
-        MateriaRequest.req(JSON.stringify(req), (rsp) => {
+        Materia.exec(req, (rsp) => {
 
-            var result = JSON.parse(rsp);
+            var result = rsp;
             if(result.result_id)
             {
                 props.onClose(e);
