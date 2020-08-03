@@ -4,398 +4,131 @@
 #include <iostream>
 #include <chrono>
 
+namespace std
+{
+
+const std::string& to_string(const std::string& src)
+{
+    return src;
+}
+
+std::string to_string(const materia::Time& src)
+{
+    return to_string(src.value);
+}
+
+std::string to_string(const std::vector<std::string>& src)
+{
+    return "[...]";
+}
+
+}
+
 namespace materia
 {
 
 Object::Object(const TypeDef& type, const Id id)
 : mTypeDef(type)
+, mId(id)
 {
-    (*this)["id"] = id;
-    (*this)["typename"] = mTypeDef.name;
+    init();   
+}
+
+void Object::init()
+{
+    mFields.push_back({"id", true, {mId.getGuid()}});
+    mFields.push_back({"typename", true, {mTypeDef.name}});
 
     for(auto f : mTypeDef.fields)
     {
-        auto p = (*this)[f.name];
         switch(f.type)
         {   
-            case Type::Int: p = 0;break;
-            case Type::Money: p = 0;break;
-            case Type::Double: p = 0.0;break;
-            case Type::Bool: p = false;break;
-            case Type::String: p = std::string();break;
-            case Type::Reference: p = std::string();break;
-            case Type::Array: p = std::vector<std::string>();break;
-            case Type::Timestamp: p = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())}; break;
-            case Type::Option: p = 0; break;
+            case Type::Int: 
+            case Type::Money: 
+            case Type::Option:
+                mFields.push_back({f, false, std::int64_t(0)}); 
+                break;
+
+            case Type::Double: 
+                mFields.push_back({f, false, 0.0}); 
+                break;
+
+            case Type::Bool: 
+                mFields.push_back({f, false, false}); 
+                break;
+
+            case Type::String: 
+            case Type::Reference:
+                mFields.push_back({f, false, ""}); 
+                break;
+
+            case Type::StringArray: 
+                mFields.push_back({f, false, std::vector<std::string>{}}); 
+                break;
+
+            case Type::Timestamp: 
+                mFields.push_back({f, false, Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())}}); 
+                break;
         }
     }
 }
 
 Object::Object(const Object& other)
 : mTypeDef(other.mTypeDef)
-, mImpl(other.mImpl)
+, mId(other.mId)
+, mFields(other.mFields)
+, mChildren(other.mChildren)
 {
 
 }
 
-FieldProxy Object::operator [] (const std::string& name)
+Field& Object::operator [] (const std::string& name)
 {
-    auto pos = std::find_if(mTypeDef.fields.begin(), mTypeDef.fields.end(), [name](auto x){return x.name == name;});
-    if(pos != mTypeDef.fields.end())
+    auto pos = std::find_if(mFields.begin(), mFields.end(), [name](auto x){return x.mName == name;});
+    if(pos != mFields.end())
     {
-        return FieldProxy(*pos, mImpl);
+        return *pos;
     }
     else
     {
-        return FieldProxy(name, mImpl);
+        mFields.push_back({name, false, ""}); 
+        return mFields.back();
     }
 }
 
-const FieldProxy Object::operator [] (const std::string& name) const
+const Field& Object::operator [] (const std::string& name) const
 {
-    auto pos = std::find_if(mTypeDef.fields.begin(), mTypeDef.fields.end(), [name](auto x){return x.name == name;});
-    if(pos != mTypeDef.fields.end())
+    auto pos = std::find_if(mFields.begin(), mFields.end(), [name](auto x){return x.mName == name;});
+    if(pos != mFields.end())
     {
-        return FieldProxy(*pos, mImpl);
+        return *pos;
     }
     else
     {
-        return FieldProxy(name, mImpl);
+        throw std::runtime_error("Field with a name " + name + " not found");
     }
 }
 
-std::string Object::toJson() const
-{
-    return writeJson(mImpl);
-}
-
-FieldProxy::FieldProxy(const FieldDef& f, boost::property_tree::ptree& impl)
+Field::Field(const FieldDef& f, const bool readonly, const ValueHolder& value)
 : mName(f.name)
+, mReadonly(readonly)
 , mDef(f)
-, mType(f.type)
-, mImpl(impl)
+, mValue(value)
 {
 
 }
 
-FieldProxy::FieldProxy(const std::string& name, boost::property_tree::ptree& impl)
+Field::Field(const std::string& name, const bool readonly, const ValueHolder& value)
 : mName(name)
-, mImpl(impl)
+, mReadonly(readonly)
+, mValue(value)
 {
 
 }
 
-void FieldProxy::operator= (const bool v)
+Type Field::getType() const
 {
-    if(mType)
-    {
-        if(mType == Type::Bool)
-        {
-            mImpl.put(mName, v);
-        }
-        else if(mType == Type::String)
-        {
-            mImpl.put(mName, v ? "true" : "false");
-        }
-        else
-        {
-            throw std::runtime_error(fmt::format("Cannot assign bool to {}", mName));
-        }
-    }
-    else
-    {
-        mImpl.put(mName, v);
-    }
-}
-
-void FieldProxy::operator= (const Time v)
-{
-    if(mType)
-    {
-        if(mType == Type::Timestamp)
-        {
-            mImpl.put(mName, v.value);
-        }
-        else
-        {
-            throw std::runtime_error(fmt::format("Cannot assign timestamp to {}", mName));
-        }
-    }
-    else
-    {
-        mImpl.put(mName, v.value);
-    }
-}
-
-void FieldProxy::operator= (const int v)
-{
-    if(mType)
-    {
-        if(mType == Type::Double || mType == Type::Int || mType == Type::Money || mType == Type::String || mType == Type::Timestamp)
-        {
-            mImpl.put(mName, v);
-        }
-        else if(mType == Type::Option)
-        {
-            if(v < static_cast<int>(mDef->options.size()) && v >= 0)
-            {
-                mImpl.put(mName, v);
-            }
-            else
-            {
-                throw std::runtime_error(fmt::format("Cannot assign int to {}, value out of range: {}", mName, v));    
-            }
-        }
-        else
-        {
-            throw std::runtime_error(fmt::format("Cannot assign int to {}", mName));
-        }
-    }
-    else
-    {
-        mImpl.put(mName, v);
-    }
-}
-
-void FieldProxy::operator= (const double v)
-{
-    if(mType)
-    {
-        if(mType == Type::Double || mType == Type::String)
-        {
-            mImpl.put(mName, v);
-        }
-        else
-        {
-            throw std::runtime_error(fmt::format("Cannot assign double to {}", mName));
-        }
-    }
-    else
-    {
-        mImpl.put(mName, v);
-    }
-}
-
-void FieldProxy::operator= (const std::string& v)
-{
-    if(mType)
-    {
-        if(mType == Type::String || mType == Type::Reference)
-        {
-            mImpl.put(mName, v);
-        }
-        else if(mType == Type::Int || mType == Type::Timestamp || mType == Type::Int)
-        {
-            mImpl.put(mName, boost::lexical_cast<int>(v));
-        }
-        else if(mType == Type::Option)
-        {
-            auto s = boost::lexical_cast<int>(v);
-            if(s < static_cast<int>(mDef->options.size()) && s >= 0)
-            {
-                mImpl.put(mName, s);
-            }
-            else
-            {
-                throw std::runtime_error(fmt::format("Cannot assign int to {}, value out of range: {}", mName, s));    
-            }
-        }
-        else if(mType == Type::Double)
-        {
-            mImpl.put(mName, boost::lexical_cast<double>(v));
-        }
-        else if(mType == Type::Bool)
-        {
-            mImpl.put(mName, boost::lexical_cast<bool>(v));
-        }
-        else
-        {
-            throw std::runtime_error(fmt::format("Cannot assign string to {}", mName));
-        }
-    }
-    else
-    {
-        mImpl.put(mName, v);
-    }
-}
-
-void FieldProxy::operator= (const std::vector<std::string>& v)
-{
-    if(mType && *mType != Type::Array)
-    {
-        throw std::runtime_error(fmt::format("Cannot assign array to {}", mName));
-    }
-
-    boost::property_tree::ptree subTree;
-    for(auto& t: v)
-    {
-        boost::property_tree::ptree p;
-        p.put("", t);
-        subTree.push_back({"", p});
-    }
-
-    mImpl.put_child(mName, subTree);
-}
-
-void FieldProxy::operator= (const std::vector<Id>& v)
-{
-    if(mType && *mType != Type::Array)
-    {
-        throw std::runtime_error(fmt::format("Cannot assign array to {}", mName));
-    }
-
-    boost::property_tree::ptree subTree;
-    for(auto& t: v)
-    {
-        boost::property_tree::ptree p;
-        p.put("", t.getGuid());
-        subTree.push_back({"", p});
-    }
-
-    mImpl.put_child(mName, subTree);
-}
-
-void FieldProxy::operator= (const std::vector<std::shared_ptr<Object>>& v)
-{
-    if(mType)
-    {
-        throw std::runtime_error(fmt::format("Cannot assign object array to {}", mName));
-    }
-
-    boost::property_tree::ptree subTree;
-    for(auto& t: v)
-    {
-        boost::property_tree::ptree p = readJson<boost::property_tree::ptree>(t->toJson());
-        subTree.push_back({"", p});
-    }
-
-    mImpl.put_child(mName, subTree);
-}
-
-void FieldProxy::operator= (const Object& o)
-{
-    if(mType)
-    {
-        throw std::runtime_error(fmt::format("Cannot assign object to {}", mName));
-    }
-
-    boost::property_tree::ptree p = readJson<boost::property_tree::ptree>(o.toJson());
-    mImpl.put_child(mName, p);
-}
-
-FieldProxy::operator Id() const
-{
-    if(mType && *mType != Type::String && *mType != Type::Reference)
-    {
-        throw std::runtime_error(fmt::format("Cannot get id from {}", mName));
-    }
-
-    return Id(mImpl.get<std::string>(mName));
-}
-
-FieldProxy::operator Time() const
-{
-    if(mType && *mType != Type::Timestamp)
-    {
-        throw std::runtime_error(fmt::format("Cannot get timestamp from {}", mName));
-    }
-
-    return Time{mImpl.get<std::time_t>(mName)};
-}
-
-FieldProxy::operator std::string() const
-{
-    if(mType)
-    {
-        try
-        {
-            return mImpl.get<std::string>(mName);
-        }
-        catch(...)
-        {
-            throw std::runtime_error(fmt::format("Cannot get string from {}", mName));        
-        }
-    }
-
-    return mImpl.get<std::string>(mName);
-}
-
-FieldProxy::operator int() const
-{
-    if(mType)
-    {
-        try
-        {
-            return mImpl.get<int>(mName);
-        }
-        catch(...)
-        {
-            throw std::runtime_error(fmt::format("Cannot get int from {}", mName));        
-        }
-    }
-
-    return mImpl.get<int>(mName);
-}
-
-FieldProxy::operator bool() const
-{
-    if(mType)
-    {
-        try
-        {
-            return mImpl.get<bool>(mName);
-        }
-        catch(...)
-        {
-            throw std::runtime_error(fmt::format("Cannot get bool from {}", mName));        
-        }
-    }
-
-    return mImpl.get<bool>(mName);
-}
-
-FieldProxy::operator double() const
-{
-    if(mType)
-    {
-        try
-        {
-            return mImpl.get<double>(mName);
-        }
-        catch(...)
-        {
-            throw std::runtime_error(fmt::format("Cannot get double from {}", mName));        
-        }
-    }
-
-    return mImpl.get<double>(mName);
-}
-
-FieldProxy::operator std::vector<std::string>() const
-{
-    if(mType && *mType == Type::Array)
-    {
-        std::vector<std::string> result;
-
-        for(auto x : mImpl.get_child(mName))
-        {
-            result.push_back(x.second.get_value<std::string>());
-        }
-
-        return result;
-    }
-
-    throw std::runtime_error(fmt::format("Cannot get array from {}", mName));
-}
-
-Type FieldProxy::getType() const
-{
-    return mType ? *mType : Type::String;
-}
-
-std::string Object::getTypeName() const
-{
-    return mTypeDef.name;
+    return mDef ? mDef->type : Type::String;
 }
 
 TypeDef Object::getType() const
@@ -406,34 +139,138 @@ TypeDef Object::getType() const
 template<>
 std::vector<ObjectPtr>::iterator find_by_id(std::vector<ObjectPtr>::iterator beg, std::vector<ObjectPtr>::iterator end, const Id id)
 {
-    return std::find_if(beg, end, [&](auto x)->bool {return static_cast<Id>((*x)["id"]) == id;});
+    return std::find_if(beg, end, [&](auto x)->bool {return x->getId() == id;});
 }
 
 void Object::clear()
 {
-    auto id = static_cast<Id>((*this)["id"]);
+    mFields.clear();
+    mChildren.clear();
+    init();
+}
 
-    mImpl.clear();
+Id Object::getId() const
+{
+    return mId;
+}
 
-    (*this)["id"] = id;
-    (*this)["typename"] = mTypeDef.name;
+std::vector<Field>::const_iterator Object::begin() const
+{
+    return mFields.begin();
+}
 
-    for(auto f : mTypeDef.fields)
+std::vector<Field>::const_iterator Object::end() const
+{
+    return mFields.end();
+}
+
+std::string Field::getName() const
+{
+    return mName;
+}
+
+void Object::setChild(const std::string& tag, const Object& child)
+{
+    mChildren[tag] = std::make_shared<Object>(child);
+}
+
+void Object::setChildren(const std::string& tag, const std::vector<ObjectPtr>& children)
+{
+    std::vector<ObjectPtr> copies;
+    for(auto& o : children)
     {
-        auto p = (*this)[f.name];
-        switch(f.type)
-        {   
-            case Type::Int: p = 0;break;
-            case Type::Money: p = 0;break;
-            case Type::Double: p = 0.0;break;
-            case Type::Bool: p = false;break;
-            case Type::String: p = std::string();break;
-            case Type::Reference: p = std::string();break;
-            case Type::Array: p = std::vector<std::string>();break;
-            case Type::Timestamp: p = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())}; break;
-            case Type::Option: p = 0; break;
+        copies.push_back(std::make_shared<Object>(*o));
+    }
+
+    mChildren[tag] = copies;
+}
+
+Object::Object(Object&& other) noexcept
+: mTypeDef(std::move(other.mTypeDef))
+, mId(std::move(other.mId))
+, mFields(std::move(other.mFields))
+, mChildren(std::move(other.mChildren))
+{
+}
+
+Id Field::toId() const
+{
+    return Id(get<Type::String>());
+}
+
+bool Field::isReadonly() const
+{
+    return mReadonly;
+}
+
+void putArray(boost::property_tree::ptree& ptree, const std::string& fname, const std::vector<std::string>& values)
+{
+    boost::property_tree::ptree subTree;
+
+    for(auto x : values)
+    {
+        boost::property_tree::ptree curCh;
+        curCh.put("", x);
+
+        subTree.push_back(std::make_pair("", curCh));
+    }
+
+    ptree.add_child(fname, subTree);
+}
+
+void Object::fillObject(boost::property_tree::ptree& p, const Object& o)
+{
+    for(auto f : o)
+    {
+        switch(f.getType())
+        {
+            case Type::Int: p.put(f.getName(), f.get<Type::Int>());break;
+            case Type::Money: p.put(f.getName(), f.get<Type::Money>());break;
+            case Type::Timestamp: p.put(f.getName(), f.get<Type::Timestamp>().value);break;
+            case Type::Double: p.put(f.getName(), f.get<Type::Double>());break;
+            case Type::Bool: p.put(f.getName(), f.get<Type::Bool>());break;
+            case Type::String: p.put(f.getName(), f.get<Type::String>());break;
+            case Type::Reference: p.put(f.getName(), f.get<Type::Reference>());break;
+            case Type::Option: p.put(f.getName(), f.get<Type::Option>());break;
+            case Type::StringArray: putArray(p, f.getName(), f.get<Type::StringArray>());break;
+            default: throw std::runtime_error("Unknown type"); 
         }
     }
+
+    //Put children
+    for(auto iter = o.mChildren.begin(); iter != o.mChildren.end(); ++iter)
+    {
+        if(std::holds_alternative<ObjectPtr>(iter->second))
+        {
+            boost::property_tree::ptree sub;
+            fillObject(sub, *std::get<ObjectPtr>(iter->second));
+
+            p.put_child(iter->first, sub);
+        }
+        else
+        {
+            boost::property_tree::ptree subTree;
+
+            for(auto& x : std::get<1>(iter->second))
+            {
+                boost::property_tree::ptree curCh;
+                fillObject(curCh, *x);
+
+                subTree.push_back(std::make_pair("", curCh));
+            }
+
+            p.add_child(iter->first, subTree);
+        }
+    }
+}
+
+std::string Object::toJson() const
+{
+    boost::property_tree::ptree p;
+
+    fillObject(p, *this);
+    
+    return writeJson(p);
 }
 
 }

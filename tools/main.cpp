@@ -1,14 +1,43 @@
 #include <iostream>
 #include <fstream>
-#include "WebApp/materia/ZmqPbChannel.hpp"
-#include "WebApp/materia/JournalModel.hpp"
 #include "Common/Password.hpp"
+#include "Common/Codec.hpp"
+#include <zmq.hpp>
+
+class Channel
+{
+public:
+   Channel(zmq::socket_t& zmqSocket, const std::string& password)
+   : mZmqSocket(zmqSocket)
+   , mCodec(password)
+   {
+
+   }
+
+   std::string send(const std::string& cmd)
+   {
+      std::string encrypted = mCodec.encrypt(cmd);
+      zmq::message_t req (encrypted.data(), encrypted.size());
+      mZmqSocket.send (req, zmq::send_flags::none);
+
+      zmq::message_t resp;
+      mZmqSocket.recv (resp, zmq::recv_flags::none);
+
+      std::string received(static_cast<const char *>(resp.data()), resp.size());
+      
+      return mCodec.decrypt(received);      
+   }
+
+private:
+   zmq::socket_t& mZmqSocket;
+   Codec mCodec;
+};
 
 int main(int argc,  char** argv)
 {
-   if(argc < 3)
+   if(argc < 2)
    {
-      std::cout << "Usage m2tools <op> <params>";
+      std::cout << "Usage m2tools <op>";
       return -1;
    }
 
@@ -17,47 +46,10 @@ int main(int argc,  char** argv)
 
    zmq::context_t context(1);
    zmq::socket_t socket(context, ZMQ_REQ);
-   ZmqPbChannel channel(socket, "tools", password);
+   socket.connect("tcp://ramsnake.net:5756");
+   Channel channel(socket, password);
 
-   const std::string ip = "localhost";
-   socket.connect("tcp://62.171.175.23:5757");
+   std::cout << channel.send(op);
 
-   JournalModel m(channel);
-   if(op == "createPage")
-   {
-      auto parentId = m.searchIndex(argv[2]);
-
-      if(parentId == materia::Id::Invalid)
-      {
-         std::cout << "Parent not found";
-         return -1;
-      }
-
-      std::ifstream f(argv[3], std::ifstream::in);
-      if(!f)
-      {
-         std::cout << "File not found";
-         return -1;
-      }
-
-      std::string str((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-
-      auto indexItem = m.addIndexItem(true, argv[3], parentId);
-      m.saveContent(indexItem.id, str);
-   }
-   else if(op == "loadPage")
-   {
-      auto id = m.searchIndex(argv[2]);
-
-      if(id == materia::Id::Invalid)
-      {
-         std::cout << "Page not found";
-         return -1;
-      }
-
-      std::ofstream f(argv[3], std::ifstream::out | std::ifstream::trunc);
-      f << m.loadContent(id);
-   }
-
-   std::cout << "Done";
+   return 0;
 } 

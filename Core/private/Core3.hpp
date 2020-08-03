@@ -5,6 +5,7 @@
 #include "TypeSystem.hpp"
 #include "ObjectManager.hpp"
 #include "CommandParser.hpp"
+#include "ISubsystem.hpp"
 
 namespace materia
 {
@@ -14,7 +15,6 @@ class Core3 : public ICore3
 public:
     Core3(const CoreConfig& config);
 
-    IJournal& getJournal() override;
     IBackuper& getBackuper() override;
     IStrategy_v2& getStrategy_v2() override;
     IReward& getReward() override;
@@ -34,6 +34,7 @@ private:
     TypeSystem mTypeSystem;
     Core mOldCore;
     ObjectManager mObjManager;
+    std::vector<std::shared_ptr<ISubsystem>> mSubsystems;
 };
 
 }

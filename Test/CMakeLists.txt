@@ -10,7 +10,6 @@ include_directories("..")
 add_executable(Test 
 #StrategyGraphTest.cpp
 #Strategy2Test.cpp
-#FreeDataTest.cpp
 #EncDecTest.cpp
 #RewardTest.cpp
 ChallengeTest.cpp
@@ -18,6 +17,7 @@ NewAPITest.cpp
 ExpressionsTest.cpp
 ObjectTest.cpp
 CoreTest.cpp
+DatabaseTest.cpp
 )
 
 find_package(Boost COMPONENTS system python unit_test_framework filesystem REQUIRED)

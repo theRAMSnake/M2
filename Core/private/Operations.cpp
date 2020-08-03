@@ -40,13 +40,13 @@ void complete(const Id id, ObjectManager& om)
     auto objectPtr = om.get(id);
     auto object = *objectPtr;
 
-    if(object.getTypeName() != "calendar_item")
+    if(object.getType().name != "calendar_item")
     {
-        throw std::runtime_error(fmt::format("Type {} is not completable", object.getTypeName()));
+        throw std::runtime_error(fmt::format("Type {} is not completable", object.getType().name));
     }
 
-    auto eType = static_cast<int>(object["entityType"]);
-    auto recType = static_cast<int>(object["reccurencyType"]);
+    auto eType = object["entityType"].get<Type::Option>();
+    auto recType = object["reccurencyType"].get<Type::Option>();
     if(eType == 1/*task*/)
     {
         om.LEGACY_getReward().addPoints(1);
@@ -54,7 +54,7 @@ void complete(const Id id, ObjectManager& om)
 
     if(recType != 0/*none*/)
     {
-        object["timestamp"] = advance(static_cast<Time>(object["timestamp"]), recType);
+        object["timestamp"] = advance(object["timestamp"].get<Type::Timestamp>(), recType);
         om.modify(object);
     }
     else

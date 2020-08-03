@@ -7,7 +7,6 @@ namespace materia
 
 class IStrategy;
 class IStrategy_v2;
-class IJournal;
 class IBackuper;
 class IFinance;
 class IReward;
@@ -22,7 +21,6 @@ class ICore
 {
 public:
     virtual IStrategy_v2& getStrategy_v2() = 0;
-    virtual IJournal& getJournal() = 0;
     virtual IBackuper& getBackuper() = 0;
     virtual IReward& getReward() = 0;
 

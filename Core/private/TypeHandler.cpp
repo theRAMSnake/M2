@@ -1,30 +1,32 @@
 #include "TypeHandler.hpp"
 #include "JsonRestorationProvider.hpp"
 #include <future>
+#include "Logger.hpp"
 
 namespace materia
 {
 
 TypeHandler::TypeHandler(
     const TypeDef& type, 
-    Database& db, 
-    std::function<void(Object&)> onChangeHandler, 
-    std::function<void(Object&)> onBeforeDeleteHandler, 
-    std::function<void(Object&)> onCreatedHandler
+    Database& db
     )
 : mType(type)
 , mStorage(db.getTable(type.tableName))
-, mOnChangeHandler(onChangeHandler)
-, mOnBeforeDeleteHandler(onBeforeDeleteHandler)
-, mOnCreatedHandler(onCreatedHandler)
 {
     mStorage->foreach([&](std::string id, std::string json) 
     {
-        JsonRestorationProvider p(json);
-        auto newObj = std::make_shared<Object>(mType, id);
-        p.populate(*newObj);
+        try
+        {
+            JsonRestorationProvider p(json);
+            auto newObj = std::make_shared<Object>(mType, id);
+            p.populate(*newObj);
 
-        mPool[Id(id)] = newObj;
+            mPool[Id(id)] = newObj;
+        }
+        catch(...)
+        {
+            LOG("Failed to restore object");
+        }
     });
 }
 
@@ -35,12 +37,10 @@ ObjectPtr TypeHandler::create(const std::optional<Id> id, const IValueProvider& 
 
     provider.populate(*newObj);
 
-    auto json = newObj->toJson();
-
-    mStorage->store(newId, json);
+    mStorage->store(newId, newObj->toJson());
     mPool[newId] = newObj;
 
-    mOnCreatedHandler(*newObj);
+    mType.handlers.onCreated(*newObj);
 
     return newObj;
 }
@@ -93,7 +93,7 @@ std::optional<ObjectPtr> TypeHandler::get(const Id& id)
 void TypeHandler::destroy(const Id id)
 {
     auto obj = *get(id);
-    mOnBeforeDeleteHandler(*obj);
+    mType.handlers.onBeforeDelete(*obj);
 
     mPool.erase(id);
     mStorage->erase(id);      
@@ -109,23 +109,16 @@ void TypeHandler::modify(const Id id, const IValueProvider& provider)
     auto obj = *get(id);
     provider.populate(*obj);
 
-    mOnChangeHandler(*obj);
+    mType.handlers.onChanged(*obj);
 
-    auto json = obj->toJson();
-
-    mStorage->store(id, json);
-
+    mStorage->store(id, obj->toJson());
     mPool[id] = obj;
 }
 
 void TypeHandler::modify(const Object& obj)
 {
-    auto json = obj.toJson();
-    auto id = static_cast<Id>(obj["id"]);
-
-    mStorage->store(id, json);
-    
-    mPool[id] = std::make_shared<Object>(obj);
+    mStorage->store(obj.getId(), obj.toJson());    
+    mPool[obj.getId()] = std::make_shared<Object>(obj);
 }
 
 std::vector<ObjectPtr> TypeHandler::getAll()
