@@ -22,7 +22,7 @@ void ChallengeSS::onNewWeek()
    for(auto o : objList)
    {
       auto& obj = *o;
-      if(obj["resetWeekly"])
+      if(obj["resetWeekly"].get<Type::Bool>())
       {
          obj["points"] = 0;
          mOm.modify(obj);
@@ -50,13 +50,13 @@ std::vector<TypeDef> ChallengeSS::getTypes()
 
 void ChallengeSS::handleChItemChange(Object& obj)
 {
-    while(obj["points"] > obj["pointsNeeded"])
+    while(obj["points"].get<Type::Int>() > obj["pointsNeeded"].get<Type::Int>())
     {
-        obj["points"] = static_cast<int>(obj["points"]) - static_cast<int>(obj["pointsNeeded"]);
-        obj["level"] = static_cast<int>(obj["level"]) + 1;
-        obj["pointsNeeded"] = static_cast<int>(obj["pointsNeeded"]) + static_cast<int>(obj["advance"]);
+        obj["points"] = obj["points"].get<Type::Int>() - obj["pointsNeeded"].get<Type::Int>();
+        obj["level"] = obj["level"].get<Type::Int>() + 1;
+        obj["pointsNeeded"] = obj["pointsNeeded"].get<Type::Int>() + obj["advance"].get<Type::Int>();
 
-        mOm.LEGACY_getReward().addPoints(static_cast<int>(obj["rewardPerLevel"]));
+        mOm.LEGACY_getReward().addPoints(obj["rewardPerLevel"].get<Type::Int>());
     }
 }
 

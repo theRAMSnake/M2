@@ -62,7 +62,7 @@ BOOST_FIXTURE_TEST_CASE( AddPoints_ch, ChallengeTest )
       modify.put("params.advance", 5);
       modify.put("id", r.get<std::string>("result_id"));
 
-      std::cout << mCore->executeCommandJson(writeJson(modify)) << std::endl;
+      mCore->executeCommandJson(writeJson(modify));
 
       boost::property_tree::ptree query;
       query.put("operation", "query");

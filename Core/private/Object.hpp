@@ -131,7 +131,6 @@ private:
     template<Type TDest, class Y>
     static typename TypeTraits<TDest>::Class typecast(const Y& val)
     {
-        //std::cout << "typecast " << "to " << to_string(TDest) << " of " << std::to_string(val);
         if constexpr (std::is_same<typename TypeTraits<TDest>::Class, Y>::value)
         {
             return val;

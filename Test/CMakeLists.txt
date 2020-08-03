@@ -13,7 +13,7 @@ add_executable(Test
 #EncDecTest.cpp
 #RewardTest.cpp
 ChallengeTest.cpp
-#NewAPITest.cpp
+NewAPITest.cpp
 ExpressionsTest.cpp
 ObjectTest.cpp
 CoreTest.cpp

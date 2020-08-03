@@ -238,13 +238,11 @@ void Object::fillObject(boost::property_tree::ptree& p, const Object& o)
     }
 
     //Put children
-    //std::cout << o.mChildren.size() << std::endl;
     for(auto iter = o.mChildren.begin(); iter != o.mChildren.end(); ++iter)
     {
         if(std::holds_alternative<ObjectPtr>(iter->second))
         {
             boost::property_tree::ptree sub;
-            //std::cout << getId() << " " << std::get<ObjectPtr>(iter->second)->getId()<< std::endl;
             fillObject(sub, *std::get<ObjectPtr>(iter->second));
 
             p.put_child(iter->first, sub);
