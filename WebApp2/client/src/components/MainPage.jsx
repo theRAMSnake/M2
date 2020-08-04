@@ -9,7 +9,6 @@ import FinanceView from './FinanceView.jsx'
 import JournalView from './JournalView.jsx'
 import QueryView from './QueryView.jsx'
 import AddItemDialog from './AddItemDialog.jsx'
-import InboxCtrl from './InboxCtrl.jsx'
 import CalendarCtrl from './CalendarCtrl.jsx'
 
 import {
@@ -25,8 +24,7 @@ import {
     Badge,
     ListItemText,
     Grid,
-    Snackbar,
-    Alert
+    Snackbar
 } from "@material-ui/core";
 
 import MenuIcon from '@material-ui/icons/Menu';
@@ -34,8 +32,12 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import AddCircleOutlineIcon  from '@material-ui/icons/AddCircleOutline';
 import CalendarTodayIcon  from '@material-ui/icons/CalendarToday';
+import MailIcon  from '@material-ui/icons/Mail';
+import WatchLaterIcon  from '@material-ui/icons/WatchLater';
 
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import MuiAlert from '@material-ui/lab/Alert';
+import BadgetList from './BadgetList.jsx';
 
 const drawerWidth = 500;
 
@@ -244,7 +246,8 @@ function MainPage(props) {
                     </Typography>
                     <SearchBar onSubmit={searchBarSubmit}/>
                     <div className={classes.grow} />
-                    <InboxCtrl/>
+                    <BadgetList id='watch_list' icon={WatchLaterIcon}/>
+                    <BadgetList id='inbox' icon={MailIcon}/>
                     <IconButton color="inherit" onClick={onAddClicked}>
                         <AddCircleOutlineIcon/>
                     </IconButton>
@@ -256,11 +259,11 @@ function MainPage(props) {
                     <Button variant="contained" color="primary" size="small" onClick={logout_clicked}>Logout</Button>
                 </Toolbar>
             </AppBar>
-            {/*<Snackbar open={snackOpen} autoHideDuration={6000} onClose={handleSnackClose}>
-                <Alert onClose={handleSnackClose} severity="error">
+            <Snackbar open={snackOpen} autoHideDuration={6000} onClose={handleSnackClose}>
+                <MuiAlert elevation={6} variant="filled" onClose={handleSnackClose} severity="error">
                     {lastError}
-                </Alert>
-            </Snackbar>*/}
+                </MuiAlert>
+            </Snackbar>
             {showAddDlg && <AddItemDialog onClose={onAddDialogClosed}/>}
             <Divider/>
             <Grid  style={{paddingTop:'5px'}} container direction="column" justify="center" alignItems="center">

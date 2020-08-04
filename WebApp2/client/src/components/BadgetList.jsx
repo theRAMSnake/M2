@@ -2,28 +2,26 @@ import Materia from '../modules/materia_request'
 import React from 'react';
 import ListObjectView from './ListObjectView.jsx'
 
-import MailIcon  from '@material-ui/icons/Mail';
-
 import {
     IconButton,
     Badge
 } from "@material-ui/core";
 
-export default function InboxCtrl(props) 
+export default function BadgetList(props) 
 {
-    const [inbox, setInbox] = React.useState({objects: []});
+    const [list, setList] = React.useState({objects: []});
     const [init, setInit] = React.useState(false);
     const [inDialog, setInDialog] = React.useState(false);
 
     if(!init)
     {
-        const inboxReq = {
+        const req = {
             operation: "query",
-            ids: ['inbox']
+            ids: [props.id]
         };
         
-        Materia.exec(inboxReq, (r) => {
-            setInbox(r.object_list[0]);
+        Materia.exec(req, (r) => {
+            setList(r.object_list[0]);
         });
 
         setInit(true);
@@ -46,11 +44,11 @@ export default function InboxCtrl(props)
     }   
 
     return <div>
-                <IconButton aria-label="inbox" color="inherit"onClick={prepareDialog}>
-                    <Badge badgeContent={inbox.objects.length} color="secondary">
-                        <MailIcon />
+                <IconButton aria-label="icon" color="inherit"onClick={prepareDialog}>
+                    <Badge badgeContent={list.objects.length} color="secondary">
+                        <props.icon/>
                     </Badge>
                 </IconButton>
-                <ListObjectView open={inDialog} object={inbox} onChange={onObjectChanged} onClose={onDialogClose}/>
+                <ListObjectView open={inDialog} object={list} onChange={onObjectChanged} onClose={onDialogClose}/>
             </div>;
 }

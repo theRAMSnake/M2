@@ -33,12 +33,14 @@ function createRequest(query)
 function QueryView(props) 
 {
     const query = props.query;
+    const [lastQuery, setLastQuery] = useState("");
     const [responce, setResponce] = useState(null);
 
-    if(responce == null)
+    if(lastQuery != query)
     {
         Materia.exec(createRequest(query), (r) => {
             setResponce(r);
+            setLastQuery(query);
         });
     }
 
