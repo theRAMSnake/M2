@@ -33,11 +33,14 @@ function createRequest(query)
 function QueryView(props) 
 {
     const query = props.query;
-    const [responce, setResponce] = useState("");
+    const [responce, setResponce] = useState(null);
 
-    Materia.exec(createRequest(query), (r) => {
-        setResponce(r);
-    });
+    if(responce == null)
+    {
+        Materia.exec(createRequest(query), (r) => {
+            setResponce(r);
+        });
+    }
 
     function getContentFromResponce()
     {
@@ -54,7 +57,7 @@ function QueryView(props)
         return (<ObjectGrid content={obj.object_list} />);
     }
 
-    return (responce === '' ? 
+    return (responce == null ? 
         <Box style={{position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)'}}>
             <CircularProgress />
         </Box> 
