@@ -88,15 +88,4 @@ public:
     ExecutionResult execute(ObjectManager& objManager) override;
 };
 
-class ChangeTypeCommand : public Command
-{
-public:
-    ChangeTypeCommand(const Id& id, const std::string& typeName);
-    ExecutionResult execute(ObjectManager& objManager) override;
-
-private:
-    const Id mId;
-    const std::string mTypeName;
-};
-
 }

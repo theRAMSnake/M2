@@ -1,9 +1,17 @@
 #include "Core3.hpp"
 #include "JsonSerializer.hpp"
+#include "JsonRestorationProvider.hpp"
 #include "types/Variable.hpp"
 #include "types/SimpleList.hpp"
-#include "operations/FinancialAnalisys.hpp"
 #include <chrono>
+
+#include "subsystems/User.hpp"
+#include "subsystems/Finance.hpp"
+#include "subsystems/Challenge.hpp"
+#include "subsystems/Calendar.hpp"
+#include "subsystems/Common.hpp"
+#include "subsystems/Journal.hpp"
+#include "subsystems/Reward.hpp"
 
 namespace materia
 {
@@ -13,7 +21,23 @@ Core3::Core3(const CoreConfig& config)
 , mOldCore(mDb, config.dbFileName)
 , mObjManager(mDb, mTypeSystem, mOldCore.getReward())
 {
-   
+   mSubsystems.push_back(std::make_shared<ChallengeSS>(mObjManager));
+   mSubsystems.push_back(std::make_shared<FinanceSS>(mObjManager));
+   mSubsystems.push_back(std::make_shared<UserSS>(mObjManager));
+   mSubsystems.push_back(std::make_shared<CommonSS>(mObjManager));
+   mSubsystems.push_back(std::make_shared<JournalSS>(mObjManager));
+   mSubsystems.push_back(std::make_shared<CalendarSS>(mObjManager));
+   mSubsystems.push_back(std::make_shared<RewardSS>(mObjManager));
+
+   for(auto s : mSubsystems)
+   {
+      for(auto t : s->getTypes())
+      {
+         mTypeSystem.add(t);
+      }
+   }
+
+   mObjManager.initialize();
 }
 
 IStrategy_v2& Core3::getStrategy_v2()
@@ -33,44 +57,17 @@ IReward& Core3::getReward()
 
 void Core3::onNewDay()
 {
-   //Inbox award
-   types::SimpleList inbox(mObjManager, Id("inbox"));
-   if(inbox.size() == 0 && rand() % 10 == 0)
+   for(auto s : mSubsystems)
    {
-      getReward().addPoints(1);
-      inbox.add("Extra point awarded for empty inbox.");
-   }
-
-   //Finance analisys
-   performFinancialAnalisys(mObjManager, getReward(), inbox);
-
-   //TOD reselection
-   generateNewTOD();
-}
-
-void Core3::generateNewTOD()
-{
-   types::SimpleList wisdom(mObjManager, Id("wisdom"));
-   types::Variable tod(mObjManager, Id("tip_of_the_day"));
-   if(wisdom.size() > 0)
-   {
-      auto pos = rand() % wisdom.size();
-      tod = wisdom.at(pos);
+      s->onNewDay();
    }
 }
 
 void Core3::onNewWeek()
 {
-   //reset challenge items
-   auto objList = mObjManager.getAll("challenge_item");
-   for(auto o : objList)
+   for(auto s : mSubsystems)
    {
-      auto& obj = *o;
-      if(static_cast<bool>(obj["resetWeekly"]))
-      {
-         obj["points"] = 0;
-         mObjManager.modify(obj);
-      }
+      s->onNewWeek();
    }
 }
 
@@ -81,7 +78,7 @@ std::shared_ptr<ICore3> createCore(const CoreConfig& config)
 
 std::string Core3::formatResponce(const ExecutionResult& result)
 {
-   Object responce(*mTypeSystem.get("object"), Id::Invalid);
+   Object responce(*mTypeSystem.get("object"), Id::generate());
 
    if(std::holds_alternative<Success>(result))
    {
@@ -89,7 +86,8 @@ std::string Core3::formatResponce(const ExecutionResult& result)
    }
    else if(std::holds_alternative<ObjectList>(result))
    {
-      responce["object_list"] = std::get<ObjectList>(result);
+      auto& objList = std::get<ObjectList>(result);
+      responce.setChildren("object_list", objList);
    }
    else if(std::holds_alternative<std::string>(result))
    {

@@ -9,128 +9,19 @@ namespace materia
 
 const unsigned int QUERY_LIMIT = 50;
 
-void ObjectManager::handleChItemChange(Object& obj)
-{
-    while(static_cast<int>(obj["points"]) > static_cast<int>(obj["pointsNeeded"]))
-    {
-        obj["points"] = static_cast<int>(obj["points"]) - static_cast<int>(obj["pointsNeeded"]);
-        obj["level"] = static_cast<int>(obj["level"]) + 1;
-        obj["pointsNeeded"] = static_cast<int>(obj["pointsNeeded"]) + static_cast<int>(obj["advance"]);
-
-        mReward.addPoints(static_cast<int>(obj["rewardPerLevel"]));
-    }
-}
-
-void ObjectManager::handleJournalContentItemChange(Object& obj)
-{
-    auto headerId = static_cast<Id>(obj["headerId"]);
-    auto header = get(headerId);
-
-    (*header)["modified"] = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())};
-
-    modify(*header);
-}
-
-void ObjectManager::handleJournalContentDeleted(Object& obj)
-{
-    auto headerId = static_cast<Id>(obj["headerId"]);
-    auto header = get(headerId);
-
-    (*header)["modified"] = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())};
-    (*header)["isPage"] = false;
-
-    modify(*header);
-}
-
-void ObjectManager::handleJournalHeaderDeleted(Object& obj)
-{
-    auto headerId = static_cast<Id>(obj["id"]);
-
-    for(auto o : getAll("journal_content"))
-    {
-        if(static_cast<Id>((*o)["headerId"]) == headerId)
-        {
-            destroy(static_cast<Id>((*o)["id"]));
-            break;
-        }
-    }
-}
-
-void ObjectManager::handleJournalContentCreated(Object& obj)
-{
-    auto headerId = static_cast<Id>(obj["headerId"]);
-    auto header = get(headerId);
-
-    (*header)["modified"] = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())};
-    (*header)["isPage"] = true;
-
-    modify(*header);
-}
-
-void doNothing(Object& obj)
-{
-
-}
-
-std::function<void(Object&)> ObjectManager::createOnChangeHandler(const std::string& typeName)
-{
-    if(typeName == "challenge_item")
-    {
-        return std::bind(&ObjectManager::handleChItemChange, this, std::placeholders::_1);
-    }
-    else if(typeName == "journal_content")
-    {
-        return std::bind(&ObjectManager::handleJournalContentItemChange, this, std::placeholders::_1);
-    }
-    else
-    {
-        return std::function<void(Object&)>(doNothing);
-    }
-}
-
-std::function<void(Object&)> ObjectManager::createOnDeleteHandler(const std::string& typeName)
-{
-    if(typeName == "journal_content")
-    {
-        return std::bind(&ObjectManager::handleJournalContentDeleted, this, std::placeholders::_1);
-    }
-    else if(typeName == "journal_header")
-    {
-        return std::bind(&ObjectManager::handleJournalHeaderDeleted, this, std::placeholders::_1);
-    }
-    else
-    {
-        return std::function<void(Object&)>(doNothing);
-    }
-}
-
-std::function<void(Object&)> ObjectManager::createOnCreateHandler(const std::string& typeName)
-{
-    if(typeName == "journal_content")
-    {
-        return std::bind(&ObjectManager::handleJournalContentCreated, this, std::placeholders::_1);
-    }
-    else
-    {
-        return std::function<void(Object&)>(doNothing);
-    }
-}
-
 ObjectManager::ObjectManager(Database& db, TypeSystem& types, IReward& reward)
 : mDb(db)
 , mTypes(types)
 , mReward(reward)
 {
-    try
+    
+}
+
+void ObjectManager::initialize()
+{
+    for(auto& t : mTypes.get())
     {
-        for(auto& t : mTypes.get())
-        {
-            mHandlers[t.name] = std::make_shared<TypeHandler>(t, mDb, createOnChangeHandler(t.name), createOnDeleteHandler(t.name), createOnCreateHandler(t.name));
-        }
-    }
-    catch(...)
-    {
-        std::cout << "here";
+        mHandlers[t.name] = std::make_shared<TypeHandler>(t, mDb);
     }
 }
 
@@ -225,30 +116,12 @@ void ObjectManager::modify(const Object& obj)
 {
     for(auto& h : mHandlers)
     {
-        if(h.second->contains(static_cast<Id>(obj["id"])))
+        if(h.second->contains(obj.getId()))
         {
             h.second->modify(obj);
             break;
         }
     }
-}
-
-std::string to_string(const Type t)
-{
-    switch(t)
-    {   
-        case Type::Int: return "int";
-        case Type::Money: return "money";
-        case Type::Double: return "double";
-        case Type::Bool: return "bool";
-        case Type::String: return "string";
-        case Type::Reference: return "reference";
-        case Type::Array: return "array";
-        case Type::Timestamp: return "timestamp";
-        case Type::Option: return "option";
-    }
-
-    throw std::runtime_error("unknown type");
 }
 
 std::vector<ObjectPtr> ObjectManager::describe() const
@@ -274,7 +147,7 @@ std::vector<ObjectPtr> ObjectManager::describe() const
             fields.push_back(field);
         }
 
-        (*obj)["fields"] = fields;
+        obj->setChildren("fields", fields);
 
         result.push_back(obj);
     }

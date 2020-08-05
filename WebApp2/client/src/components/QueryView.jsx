@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MateriaRequest from '../modules/materia_request'
+import Materia from '../modules/materia_request'
 import ObjectGrid from './ObjectGrid.jsx'
 
 import {
@@ -17,7 +17,7 @@ function createRequest(query)
             filter: query.substr(1)
         };
     
-        return JSON.stringify(req);
+        return req;
     }
     else
     {
@@ -26,22 +26,27 @@ function createRequest(query)
             ids: [query]
         };
     
-        return JSON.stringify(req);
+        return req;
     }
 }
 
 function QueryView(props) 
 {
     const query = props.query;
-    const [responce, setResponce] = useState("");
+    const [lastQuery, setLastQuery] = useState("");
+    const [responce, setResponce] = useState(null);
 
-    MateriaRequest.req(createRequest(query), (r) => {
-        setResponce(r);
-    });
+    if(lastQuery != query)
+    {
+        Materia.exec(createRequest(query), (r) => {
+            setResponce(r);
+            setLastQuery(query);
+        });
+    }
 
     function getContentFromResponce()
     {
-        var obj = JSON.parse(responce);
+        var obj = responce;
         if(!obj || !obj.object_list || obj.object_list.length == 0)
         {
             return (
@@ -54,7 +59,7 @@ function QueryView(props)
         return (<ObjectGrid content={obj.object_list} />);
     }
 
-    return (responce === '' ? 
+    return (responce == null ? 
         <Box style={{position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)'}}>
             <CircularProgress />
         </Box> 

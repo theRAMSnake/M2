@@ -32,36 +32,44 @@ void JsonRestorationProvider::populate(Object& obj) const
     auto type = obj.getType();
     for(auto c : mImpl)
     {
+        auto& f = obj[c.first];
+        if(f.isReadonly())
+        {
+            continue;
+        }
+
         auto pos = std::find_if(type.fields.begin(), type.fields.end(), [=](auto x){return x.name == c.first;});
         if(pos != type.fields.end())
         {
             switch(pos->type)
             {
-                case Type::Int: obj[c.first] = c.second.get_value<int>();break;
-                case Type::Money: obj[c.first] = c.second.get_value<int>();break;
-                case Type::Timestamp: obj[c.first] = Time{c.second.get_value<std::time_t>()};break;
-                case Type::Double: obj[c.first] = c.second.get_value<double>();break;
-                case Type::Bool: obj[c.first] = c.second.get_value<bool>();break;
-                case Type::String: obj[c.first] = c.second.get_value<std::string>();break;
-                case Type::Reference: obj[c.first] = c.second.get_value<std::string>();break;
-                case Type::Option: obj[c.first] = c.second.get_value<int>();break;
-                case Type::Array: obj[c.first] = extractArray(c.second);break;
+                case Type::Int: f = c.second.get_value<int>();break;
+                case Type::Money: f = c.second.get_value<int>();break;
+                case Type::Timestamp: f = Time{c.second.get_value<std::time_t>()};break;
+                case Type::Double: f = c.second.get_value<double>();break;
+                case Type::Bool: f = c.second.get_value<bool>();break;
+                case Type::String: f = c.second.get_value<std::string>();break;
+                case Type::Reference: f = c.second.get_value<std::string>();break;
+                case Type::Option: f = c.second.get_value<int>();break;
+                case Type::StringArray: f = extractArray(c.second);break;
                 default: throw std::runtime_error("Unknown type"); 
             }
         }
         else
         {
-            if(c.second.size() > 1)
+            //Array of object deserialization is not supported
+            if(c.second.data().empty() && c.second.size() != 0)
             {
-                Object subobj({"object"}, Id(c.second.get<std::string>("id")));
-                JsonRestorationProvider sub(c.second);
+                auto& cc = (*c.second.begin());
+                Object subobj({"object"}, Id(cc.second.get<std::string>("id")));
+                JsonRestorationProvider sub(cc.second);
                 sub.populate(subobj);
 
-                obj[c.first] = subobj;
+                obj.setChild(c.first, subobj);
             }
             else
             {
-                obj[c.first] = c.second.get_value<std::string>();
+                f = c.second.get_value<std::string>();
             }
         }
     }

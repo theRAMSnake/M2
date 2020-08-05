@@ -153,15 +153,15 @@ public:
 
             switch(t)
             {
-                case Type::Int: return static_cast<std::int64_t>(static_cast<int>(object[mIdentifier]));
-                case Type::Money: return static_cast<std::int64_t>(static_cast<int>(object[mIdentifier]));
-                case Type::Timestamp: return static_cast<Time>(object[mIdentifier]).value;
-                case Type::Option: return static_cast<std::int64_t>(static_cast<int>(object[mIdentifier]));
-                case Type::Double: return static_cast<double>(object[mIdentifier]);
-                case Type::Bool: return static_cast<bool>(object[mIdentifier]);
-                case Type::String: return static_cast<std::string>(object[mIdentifier]);
-                case Type::Reference: return static_cast<std::string>(object[mIdentifier]);
-                case Type::Array: return Value("");
+                case Type::Int: return object[mIdentifier].get<Type::Int>();
+                case Type::Money: return object[mIdentifier].get<Type::Money>();
+                case Type::Timestamp: return object[mIdentifier].get<Type::Timestamp>().value;
+                case Type::Option: return object[mIdentifier].get<Type::Option>();
+                case Type::Double: return object[mIdentifier].get<Type::Double>();
+                case Type::Bool: return object[mIdentifier].get<Type::Bool>();
+                case Type::String: return object[mIdentifier].get<Type::String>();
+                case Type::Reference: return object[mIdentifier].get<Type::Reference>();
+                case Type::StringArray: return Value("");
             }
 
             throw std::runtime_error("Unknown type");
@@ -187,7 +187,7 @@ public:
 
     Value evaluate(const Object& object) const
     {
-        return object.getTypeName() == mTypeName;
+        return object.getType().name == mTypeName;
     }
 
 private:

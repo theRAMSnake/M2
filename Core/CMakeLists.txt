@@ -16,7 +16,6 @@ private/Commands.cpp
 private/ObjectManager.cpp
 private/Impl.cpp
 private/Database.cpp
-private/Journal.cpp
 private/Strategy_v2.cpp
 private/Logger.cpp
 private/JsonSerializer.cpp
@@ -31,7 +30,14 @@ private/TypeHandler.cpp
 private/types/SimpleList.cpp
 private/types/Variable.cpp
 private/Operations.cpp
-private/operations/FinancialAnalisys.cpp
+private/Type.cpp
+private/subsystems/Challenge.cpp
+private/subsystems/Finance.cpp
+private/subsystems/User.cpp
+private/subsystems/Common.cpp
+private/subsystems/Journal.cpp
+private/subsystems/Calendar.cpp
+private/subsystems/Reward.cpp
 )
 
 find_package(Boost COMPONENTS system REQUIRED)

@@ -10,7 +10,7 @@ import snakesoft.minion.Models.FinanceCategory
 import snakesoft.minion.Models.FinanceEvent
 
 @Serializable
-    data class FinanceCatResult(val id: String, val typename: String, val object_list: List<FinanceCategory>)
+data class FinanceCatResult(val id: String, val typename: String, val object_list: List<FinanceCategory>)
 
 @Serializable
 data class FinanceAdd(val operation: String = "create", val typename: String = "finance_event", var params: FinanceEvent)

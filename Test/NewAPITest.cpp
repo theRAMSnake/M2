@@ -1,5 +1,4 @@
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE a
 #include <boost/test/unit_test.hpp>
 #include <thread>
 #include "../Core/private/JsonSerializer.hpp"
@@ -224,41 +223,6 @@ BOOST_FIXTURE_TEST_CASE( TestDescribe, NewAPITest )
     mCore->executeCommandJson(writeJson(d));
 }
 
-BOOST_FIXTURE_TEST_CASE( TestChType, NewAPITest ) 
-{
-    boost::property_tree::ptree create;
-    create.put("operation", "create");
-    create.put("typename", "object");
-    create.put("defined_id", "id");
-    create.put("params.value", "a");
-
-    mCore->executeCommandJson(writeJson(create));
-
-    boost::property_tree::ptree chType;
-    chType.put("operation", "change_type");
-    chType.put("typename", "variable");
-    chType.put("id", "id");
-
-    mCore->executeCommandJson(writeJson(chType));
-
-    boost::property_tree::ptree query;
-    query.put("operation", "query");
-    query.put("filter", "IS(variable)");
-
-    auto result = mCore->executeCommandJson(writeJson(query));
-
-    auto ol = readJson<boost::property_tree::ptree>(result);
-    
-    unsigned int counter = 0;
-    for(auto& v : ol.get_child("object_list"))
-    {
-       (void)v;
-       counter++;
-    }
-
-    BOOST_CHECK_EQUAL(1, counter);
-}
-
 BOOST_FIXTURE_TEST_CASE( TestCompletable, NewAPITest ) 
 {
     boost::property_tree::ptree create;
@@ -360,7 +324,6 @@ BOOST_FIXTURE_TEST_CASE( TestJournalIndexUpdate, NewAPITest )
     tr = readJson<boost::property_tree::ptree>(mCore->executeCommandJson(writeJson(query)));
 
     auto r = mCore->executeCommandJson(writeJson(query));
-    //std::cout << r;
     tr = readJson<boost::property_tree::ptree>(r);
 
     int oldTs = 0;
@@ -378,10 +341,9 @@ BOOST_FIXTURE_TEST_CASE( TestJournalIndexUpdate, NewAPITest )
     modifyPage.put("id", "page_id");
     modifyPage.put("params.content", "sdghdfkhgsdfkg");
     modifyPage.put("params.headerId", "id");
-    std::cout << mCore->executeCommandJson(writeJson(modifyPage));
+    mCore->executeCommandJson(writeJson(modifyPage));
 
     r = mCore->executeCommandJson(writeJson(query));
-    //std::cout << r;
     tr = readJson<boost::property_tree::ptree>(r);
 
     tr = readJson<boost::property_tree::ptree>(r);
@@ -444,4 +406,63 @@ BOOST_FIXTURE_TEST_CASE( TestJournalIndexDelete, NewAPITest )
         counter++;
     }
     BOOST_CHECK_EQUAL(0, counter);
+}
+
+BOOST_FIXTURE_TEST_CASE( TestJournalIndexDeleteChildren, NewAPITest ) 
+{
+    boost::property_tree::ptree create;
+    create.put("operation", "create");
+    create.put("typename", "journal_header");
+    create.put("defined_id", "parent");
+    create.put("params.isPage", false);
+    create.put("params.modified", 555);
+
+    mCore->executeCommandJson(writeJson(create));
+
+    create.erase("defined_id");
+    create.put("params.parentFolderId", "parent");
+
+    for(int i = 0; i < 3; ++i)
+    {
+        mCore->executeCommandJson(writeJson(create));
+    }
+
+    {
+        boost::property_tree::ptree query;
+        query.put("operation", "query");
+        query.put("filter", "IS(journal_header)");
+        auto result = mCore->executeCommandJson(writeJson(query));
+
+        auto ol = readJson<boost::property_tree::ptree>(result);
+        
+        int counter = 0;
+        for(auto& v : ol.get_child("object_list"))
+        {
+            (void)v;
+            counter++;
+        }
+        BOOST_CHECK_EQUAL(4, counter);
+    }
+
+    boost::property_tree::ptree deleteHeader;
+    deleteHeader.put("operation", "destroy");
+    deleteHeader.put("id", "parent");
+    mCore->executeCommandJson(writeJson(deleteHeader));
+
+    {
+        boost::property_tree::ptree query;
+        query.put("operation", "query");
+        query.put("filter", "IS(journal_header)");
+        auto result = mCore->executeCommandJson(writeJson(query));
+
+        auto ol = readJson<boost::property_tree::ptree>(result);
+        
+        int counter = 0;
+        for(auto& v : ol.get_child("object_list"))
+        {
+            (void)v;
+            counter++;
+        }
+        BOOST_CHECK_EQUAL(0, counter);
+    }
 }

@@ -1,8 +1,10 @@
 import Auth from '../modules/auth';
 
-class MateriaRequest
+var globalErrorHandler;
+
+class Materia
 {
-    static req(op, cb)
+    static req(op, cb, errCb)
     {
         const xhr = new XMLHttpRequest();
         xhr.open('post', '/api/materia');
@@ -19,10 +21,20 @@ class MateriaRequest
         }
         else 
         {
-            cb(xhr.statusText);
+            errCb(xhr.statusText);
         }
         });
         xhr.send(op);
+    }
+
+    static exec(cmd, cb)
+    {
+        Materia.req(JSON.stringify(cmd), (resp) => {cb(JSON.parse(resp))}, (errText) => {globalErrorHandler && globalErrorHandler(errText)});
+    }
+
+    static setGlobalErrorHandler(hndl)
+    {
+        globalErrorHandler = hndl;
     }
 
     static postDelete(s)
@@ -32,7 +44,7 @@ class MateriaRequest
             id: s
         };
 
-        MateriaRequest.req(JSON.stringify(rq), () => {});
+        Materia.exec(rq, () => {});
     }
 
     static postComplete(s)
@@ -42,12 +54,12 @@ class MateriaRequest
             id: s
         };
 
-        MateriaRequest.req(JSON.stringify(rq), () => {});
+        Materia.exec(rq, () => {});
     }
 
     static post(rq)
     {
-        MateriaRequest.req(JSON.stringify(rq), () => {});
+        Materia.exec(rq, () => {});
     }
 
     static postEdit(id, s)
@@ -58,8 +70,8 @@ class MateriaRequest
             params: JSON.parse(s)
         };
 
-        MateriaRequest.req(JSON.stringify(rq), () => {});
+        Materia.exec(rq, () => {});
     }
 }
 
-export default MateriaRequest;
+export default Materia;

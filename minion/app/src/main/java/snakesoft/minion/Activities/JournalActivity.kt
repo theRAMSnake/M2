@@ -81,7 +81,7 @@ class JournalActivityUI : MateriaActivityUI<JournalActivity>()
             {
                 val root = TreeNode.root()
 
-                for (x in GlobalModel.JournalModel.Items.filter { it.folderId == getInvalidId() })
+                for (x in GlobalModel.JournalModel.Items.filter { it.parentFolderId == "" })
                 {
                     fillNode(x, root, ctx, 0)
                 }
@@ -98,7 +98,7 @@ class JournalActivityUI : MateriaActivityUI<JournalActivity>()
         newNode.viewHolder = MyHolder(ctx, depth)
         parent.addChild(newNode)
 
-        for (y in GlobalModel.JournalModel.Items.filter { it.folderId == x.id })
+        for (y in GlobalModel.JournalModel.Items.filter { it.parentFolderId == x.id })
         {
             fillNode(y, newNode, ctx, depth + 1)
         }

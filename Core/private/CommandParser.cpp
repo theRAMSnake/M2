@@ -111,13 +111,6 @@ Command* parseDescribe(const boost::property_tree::ptree& src)
    return new DescribeCommand();
 }
 
-Command* parseChangeType(const boost::property_tree::ptree& src)
-{
-   auto id = getOrThrow<Id>(src, "id", "Id is not specified");
-   auto typeName = getOrThrow<std::string>(src, "typename", "Typename is not specified");
-   return new ChangeTypeCommand(id, typeName);
-}
-
 struct CommandDef
 {
     std::string name;
@@ -130,7 +123,6 @@ std::vector<CommandDef> gCommandParsers = {
     {"destroy", parseDestroy},
     {"modify", parseModify},
     {"describe", parseDescribe},
-    {"change_type", parseChangeType},
     {"complete", parseComplete}
 };
 

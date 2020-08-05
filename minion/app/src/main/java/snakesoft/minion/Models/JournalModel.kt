@@ -12,13 +12,12 @@ import java.util.*
 
 @Serializable
 data class JournalIndexItem(
-        @Serializable(with = UUIDSerializer::class)
-        var id: java.util.UUID,
-        @Serializable(with = UUIDSerializer::class)
-        var folderId: java.util.UUID,
+        var id: String,
+        var parentFolderId: String,
         var title: String,
         val isPage: Boolean,
-        var modifiedTimestamp: Long
+        var modified: Long,
+        var typename: String
 )
 
 class JournalModel(private val Db: LocalDatabase)
@@ -40,14 +39,16 @@ class JournalModel(private val Db: LocalDatabase)
 
         observer.itemLoaded(newItems.size)
 
+        var count = 0
         for(x in newItems)
         {
             if(x.isPage)
             {
                 val oldItem = Items.find{it.id == x.id}
                 if(oldItem == null || !Db.contains(x.id.toString()) ||
-                        oldItem.modifiedTimestamp < x.modifiedTimestamp)
+                        oldItem.modified < x.modified)
                 {
+                    count++
                     syncPage(x.id, proxy)
                     observer.itemDetailsUpdated(x.id)
                 }
@@ -60,10 +61,10 @@ class JournalModel(private val Db: LocalDatabase)
         observer.endSync()
     }
 
-    private fun syncPage(id: UUID, proxy: JournalServiceProxy)
+    private fun syncPage(id: String, proxy: JournalServiceProxy)
     {
-        val p = proxy.loadPage(Common.UniqueId.newBuilder().setGuid(id.toString()).build())
-        Db.put(id.toString(), p.content)
+        val p = proxy.loadPage(id)
+        Db.put(id, p)
     }
 
     private fun saveState()
@@ -71,6 +72,8 @@ class JournalModel(private val Db: LocalDatabase)
         val json = Json.stringify(JournalIndexItem.serializer().list, Items)
 
         Db.put("JournalIndex", json)
+
+        print("done");
     }
 
     private fun selector(i: JournalIndexItem): Double = if(i.isPage) 1.0 else 0.0
@@ -82,15 +85,9 @@ class JournalModel(private val Db: LocalDatabase)
 
         val queryResult = proxy.loadIndex()
 
-        for(x in queryResult.itemsList)
+        for(x in queryResult)
         {
-            result.add(JournalIndexItem(
-                    java.util.UUID.fromString(x.journalItem.id.guid),
-                    if(x.journalItem.folderId.guid.count() != 0) UUID.fromString(x.journalItem.folderId.guid) else getInvalidId(),
-                    x.journalItem.title,
-                    x.isPage,
-                    x.modifiedTimestamp
-                    ))
+            result.add(x)
         }
 
         result.sortBy { selector(it) }
@@ -107,7 +104,7 @@ class JournalModel(private val Db: LocalDatabase)
         }
         catch(ex: Exception)
         {
-
+            print(ex.message)
         }
     }
 

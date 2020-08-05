@@ -3,7 +3,6 @@
 #include "../ICore.hpp"
 #include "Database.hpp"
 #include "Strategy_v2.hpp"
-#include "Journal.hpp"
 #include "Backuper.hpp"
 #include "Reward.hpp"
 

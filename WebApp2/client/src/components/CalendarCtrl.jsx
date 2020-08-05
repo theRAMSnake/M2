@@ -1,4 +1,4 @@
-import MateriaRequest from '../modules/materia_request'
+import Materia from '../modules/materia_request'
 import React from 'react';
 import '../../css/Calendar.css';
 import { Calendar, utils } from "react-modern-calendar-datepicker";
@@ -145,7 +145,7 @@ export default function CalendarCtrl(props)
     function onEditDialogOk()
     {
         setInDeleteDialog(false);
-        MateriaRequest.postEdit(objectInEdit.id, JSON.stringify(objectInEdit));
+        Materia.postEdit(objectInEdit.id, JSON.stringify(objectInEdit));
         setObjectInEdit(null);
         props.onChanged();
     }
@@ -153,7 +153,7 @@ export default function CalendarCtrl(props)
     function onDeleteDialogOk()
     {
         setInDeleteDialog(false);
-        MateriaRequest.postDelete(todayItems[focusedItemIndex].id);
+        Materia.postDelete(todayItems[focusedItemIndex].id);
         setFocusedItemIndex(-1);
         props.onChanged();
     }
@@ -161,7 +161,7 @@ export default function CalendarCtrl(props)
     function onCompleteDialogOk()
     {
         setInCompleteDialog(false);
-        MateriaRequest.postComplete(todayItems[focusedItemIndex].id);
+        Materia.postComplete(todayItems[focusedItemIndex].id);
         setFocusedItemIndex(-1);
         props.onChanged();
     }

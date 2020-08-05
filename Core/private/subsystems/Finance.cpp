@@ -1,10 +1,10 @@
-#include "FinancialAnalisys.hpp"
+#include "Finance.hpp"
+#include "../ObjectManager.hpp"
 #include <map>
 #include <chrono>
 #include <iostream>
 #include <boost/date_time/gregorian/greg_date.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include "../ObjectManager.hpp"
 #include "../types/SimpleList.hpp"
 #include "../../IReward.hpp"
 
@@ -18,14 +18,14 @@ boost::gregorian::date alignToStartOfMonth(const boost::gregorian::date& date)
 
 bool isWithinLastYear(Object& event)
 {
-   auto val = static_cast<Time>(event["timestamp"]).value ;
+   auto val = event["timestamp"].get<Type::Timestamp>().value;
    return val > std::chrono::system_clock::to_time_t(std::chrono::system_clock::now() - std::chrono::hours(8760)) &&
       val < std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 }
 
 boost::gregorian::date getMonthAlignment(Object& event)
 {
-   return alignToStartOfMonth(boost::posix_time::from_time_t(static_cast<Time>(event["timestamp"]).value).date());
+   return alignToStartOfMonth(boost::posix_time::from_time_t(event["timestamp"].get<Type::Timestamp>().value).date());
 }
 
 std::string getDateStr(const boost::gregorian::date src)
@@ -39,7 +39,7 @@ std::string getDateStr(const boost::gregorian::date src)
    return os.str();
 }
 
-void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::SimpleList& inbox)
+void FinanceSS::performFinancialAnalisys()
 {
    int grandTotal = 0;
    unsigned int totalEarnings = 0;
@@ -56,8 +56,8 @@ void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::Sim
       date -= boost::gregorian::months(1);
    }
 
-   auto categories = objMan.getAll("finance_category");
-   auto events = objMan.getAll("finance_event");
+   auto categories = mOm.getAll("finance_category");
+   auto events = mOm.getAll("finance_event");
 
    for(auto e : events)
    {
@@ -65,9 +65,9 @@ void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::Sim
       if(isWithinLastYear(ev))
       {
          auto month = getMonthAlignment(ev);
-         auto amount = static_cast<int>(ev["amountEuroCents"]);
-         auto catId = static_cast<Id>(ev["categoryId"]);
-         if(static_cast<int>(ev["type"]) == 0/*spending*/)
+         auto amount = ev["amountEuroCents"].get<Type::Money>();
+         auto catId = ev["categoryId"].toId();
+         if(ev["type"].get<Type::Option>() == 0/*spending*/)
          {
             amountByCategory[catId][month] -= amount;
             grandTotal -= amount;
@@ -84,28 +84,29 @@ void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::Sim
       }
       else
       {
-         objMan.destroy(static_cast<Id>(ev["id"]));
+         mOm.destroy(ev.getId());
       }
    }
 
+   types::SimpleList inbox(mOm, Id("inbox"));
    auto balance = static_cast<int>(totalEarnings) - static_cast<int>(totalSpendings);
    auto ratio = static_cast<double>(totalEarnings) / totalSpendings;
    std::string status;
 
    if(ratio > 1.5)
    {
-      reward.addPoints(3);
+      mOm.LEGACY_getReward().addPoints(3);
       status = "Excellent";
    }
    else if(ratio > 1.2)
    {
-      reward.addPoints(2);
+      mOm.LEGACY_getReward().addPoints(2);
       status = "Great";
    }
    else if(ratio > 1.1)
    {
       status = "Good";
-      reward.addPoints(1);
+      mOm.LEGACY_getReward().addPoints(1);
    }
    else if(ratio > 1)
    {
@@ -115,7 +116,7 @@ void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::Sim
    {
       status = "Critical";
       auto p = (balance * -1) / 100000 * 10;
-      reward.removePoints(3);
+      mOm.LEGACY_getReward().removePoints(3);
 
       if(p > rand() % 100)
       {
@@ -124,7 +125,7 @@ void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::Sim
    }
 
    //Compile report
-   auto obj = objMan.getOrCreate(Id("financial_report"), "object");
+   auto obj = mOm.getOrCreate(Id("financial_report"), "object");
    obj->clear();
    (*obj)["balance"] = balance;
    (*obj)["status"] = status;
@@ -133,7 +134,7 @@ void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::Sim
    {
       Object curCatBreakdown({"object"}, Id::generate());
       auto catPos = find_by_id(categories, d.first);
-      auto catName = catPos == categories.end() ? d.first.getGuid() : static_cast<std::string>((**catPos)["name"]);
+      auto catName = catPos == categories.end() ? d.first.getGuid() : (**catPos)["name"].get<Type::String>();
 
       curCatBreakdown["name"] = catName;
       
@@ -146,7 +147,7 @@ void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::Sim
 
       curCatBreakdown["total"] = static_cast<int>(total);
 
-      (*obj)[catName] = curCatBreakdown;
+      obj->setChild(catName, curCatBreakdown);
    }
 
    Object totalPerMonth({"object"}, Id::generate());
@@ -156,9 +157,42 @@ void performFinancialAnalisys(ObjectManager& objMan, IReward& reward, types::Sim
       totalPerMonth[getDateStr(m.first)] = m.second;
    }
 
-   (*obj)["totalPerMonth"] = totalPerMonth;
+   obj->setChild("totalPerMonth", totalPerMonth);
 
-   objMan.modify(*obj);
+   mOm.modify(*obj);
+}
+
+FinanceSS::FinanceSS(ObjectManager& mOm)
+: mOm(mOm)
+{
+
+}
+
+void FinanceSS::onNewDay()
+{
+    performFinancialAnalisys();
+}
+
+void FinanceSS::onNewWeek()
+{
+    
+}
+
+std::vector<TypeDef> FinanceSS::getTypes()
+{
+    std::vector<TypeDef> result;
+
+    result.push_back({"finance_category", "finance_categories", {{"name", Type::String}}});
+    result.push_back({"finance_event", "finance_events", {
+        {"categoryId", Type::Reference, {}, "finance_category"},
+        {"type", Type::Option, {"Spending", "Earning"}},
+        {"details", Type::String},
+        {"amountEuroCents", Type::Money},
+        {"timestamp", Type::Timestamp}
+        }});
+
+    return result;
 }
 
 }
+

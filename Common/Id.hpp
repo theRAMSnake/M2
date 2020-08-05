@@ -51,5 +51,6 @@ namespace std
 
 std::ostream& operator << (std::ostream& str, const materia::Id& id);
 std::istream& operator >> (std::istream& str, materia::Id& id);
+std::string to_string(const materia::Id id);
 
 }

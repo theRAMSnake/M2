@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MateriaRequest from '../modules/materia_request'
+import Materia from '../modules/materia_request'
 
 import {
     Typography,
@@ -86,8 +86,8 @@ function FinanceView(props)
             ids: ["financial_report"]
         };
 
-        MateriaRequest.req(JSON.stringify(req), (r) => {
-            setReport(JSON.parse(r).object_list[0]);
+        Materia.exec(req, (r) => {
+            setReport(r.object_list[0]);
         });
     }
 
