@@ -128,7 +128,7 @@ Field::Field(const std::string& name, const bool readonly, const ValueHolder& va
 
 Type Field::getType() const
 {
-    return mDef ? mDef->type : Type::String;
+    return mDef ? mDef->type : (std::holds_alternative<std::vector<std::string>>(mValue) ? Type::StringArray : Type::String);
 }
 
 TypeDef Object::getType() const
