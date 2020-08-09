@@ -25,7 +25,7 @@ TypeHandler::TypeHandler(
         }
         catch(...)
         {
-            LOG("Failed to restore object");
+            throw std::runtime_error("Type handler initialization failed: Failed to restore object: " + json);
         }
     });
 }
