@@ -10,7 +10,6 @@
 #include "ServiceWrapper.hpp"
 #include "StrategyServiceImpl.hpp"
 #include "AdminServiceImpl.hpp"
-#include "RewardServiceImpl.hpp"
 #include "Common/Codec.hpp"
 #include "Common/Password.hpp"
 
@@ -136,7 +135,6 @@ void legacyFunc(std::string password, materia::ICore3* core)
     zmq::socket_t clientSocket (context, ZMQ_REP);
     clientSocket.bind ("tcp://*:5757");
 
-    gServices.insert({"RewardService", std::make_shared<materia::ServiceWrapper<materia::RewardServiceImpl>>((*core))});
     gServices.insert({"StrategyService", std::make_shared<materia::ServiceWrapper<materia::StrategyServiceImpl>>((*core))});
     gServices.insert({"AdminService", std::make_shared<materia::ServiceWrapper<materia::AdminServiceImpl>>(*core, shutdownFlag)});
     

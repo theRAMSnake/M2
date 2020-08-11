@@ -3,7 +3,6 @@
 #include "Database.hpp"
 #include "Expressions.hpp"
 #include "TypeHandler.hpp"
-#include "../IReward.hpp"
 
 namespace materia
 {
@@ -11,7 +10,7 @@ namespace materia
 class ObjectManager
 {
 public:
-    ObjectManager(Database& db, TypeSystem& types, IReward& reward);
+    ObjectManager(Database& db, TypeSystem& types);
 
     ObjectPtr create(const std::optional<Id> id, const std::string& type, const IValueProvider& provider);
     void modify(const Id id, const IValueProvider& provider);
@@ -24,8 +23,6 @@ public:
     ObjectPtr getOrCreate(const Id id, const std::string& type);
     std::vector<ObjectPtr> getAll(const std::string& type);
 
-    IReward& LEGACY_getReward();
-
     void initialize();
 
 private:
@@ -34,7 +31,6 @@ private:
     std::map<std::string, std::shared_ptr<TypeHandler>> mHandlers;
     Database& mDb;
     TypeSystem& mTypes;
-    IReward& mReward;
 };
 
 }

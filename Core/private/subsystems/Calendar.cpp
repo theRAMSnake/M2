@@ -34,4 +34,9 @@ std::vector<TypeDef> CalendarSS::getTypes()
     return result;
 }
 
+std::vector<CommandDef> CalendarSS::getCommandDefs()
+{
+    return {};
+}
+
 }

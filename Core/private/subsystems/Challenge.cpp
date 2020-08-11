@@ -4,8 +4,9 @@
 namespace materia
 {
 
-ChallengeSS::ChallengeSS(ObjectManager& objMan)
+ChallengeSS::ChallengeSS(ObjectManager& objMan, RewardSS& reward)
 : mOm(objMan)
+, mReward(reward)
 {
 
 }
@@ -56,8 +57,13 @@ void ChallengeSS::handleChItemChange(Object& obj)
         obj["level"] = obj["level"].get<Type::Int>() + 1;
         obj["pointsNeeded"] = obj["pointsNeeded"].get<Type::Int>() + obj["advance"].get<Type::Int>();
 
-        mOm.LEGACY_getReward().addPoints(obj["rewardPerLevel"].get<Type::Int>());
+        mReward.addPoints(obj["rewardPerLevel"].get<Type::Int>());
     }
+}
+
+std::vector<CommandDef> ChallengeSS::getCommandDefs()
+{
+    return {};
 }
 
 }

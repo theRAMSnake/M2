@@ -1,6 +1,7 @@
 #include "Core3.hpp"
 #include "JsonSerializer.hpp"
 #include "JsonRestorationProvider.hpp"
+#include "ExceptionsUtil.hpp"
 #include "types/Variable.hpp"
 #include "types/SimpleList.hpp"
 #include <chrono>
@@ -16,18 +17,62 @@
 namespace materia
 {
 
+Command* parseCreate(const boost::property_tree::ptree& src)
+{
+   auto typeName = getOrThrow<std::string>(src, "typename", "Typename is not specified");
+   std::optional<Id> stdid;
+   auto id = src.get_optional<std::string>("defined_id");
+   if(id)
+   {
+       stdid = *id;
+   }
+   auto params = parseParams(src);
+
+   return new CreateCommand(stdid, typeName, writeJson(params));
+}
+
+Command* parseQuery(const boost::property_tree::ptree& src)
+{
+   auto ids = parseIds(src);
+   auto filter = parseFilter(src);
+
+   return new QueryCommand(filter, ids);
+}
+
+Command* parseDestroy(const boost::property_tree::ptree& src)
+{
+   auto id = getOrThrow<Id>(src, "id", "Id is not specified");
+
+   return new DestroyCommand(id);
+}
+
+Command* parseModify(const boost::property_tree::ptree& src)
+{
+   auto id = getOrThrow<Id>(src, "id", "Id is not specified");
+   auto params = parseParams(src);
+
+   return new ModifyCommand(id, writeJson(params));
+}
+
+Command* parseDescribe(const boost::property_tree::ptree& src)
+{
+   return new DescribeCommand();
+}
+
 Core3::Core3(const CoreConfig& config)
 : mDb(config.dbFileName)
 , mOldCore(mDb, config.dbFileName)
-, mObjManager(mDb, mTypeSystem, mOldCore.getReward())
+, mObjManager(mDb, mTypeSystem)
 {
-   mSubsystems.push_back(std::make_shared<ChallengeSS>(mObjManager));
-   mSubsystems.push_back(std::make_shared<FinanceSS>(mObjManager));
-   mSubsystems.push_back(std::make_shared<UserSS>(mObjManager));
+   auto rewardSS = std::make_shared<RewardSS>(mObjManager);
+   mSubsystems.push_back(rewardSS);
+
+   mSubsystems.push_back(std::make_shared<ChallengeSS>(mObjManager, *rewardSS));
+   mSubsystems.push_back(std::make_shared<FinanceSS>(mObjManager, *rewardSS));
+   mSubsystems.push_back(std::make_shared<UserSS>(mObjManager, *rewardSS));
    mSubsystems.push_back(std::make_shared<CommonSS>(mObjManager));
    mSubsystems.push_back(std::make_shared<JournalSS>(mObjManager));
    mSubsystems.push_back(std::make_shared<CalendarSS>(mObjManager));
-   mSubsystems.push_back(std::make_shared<RewardSS>(mObjManager));
 
    for(auto s : mSubsystems)
    {
@@ -35,7 +80,18 @@ Core3::Core3(const CoreConfig& config)
       {
          mTypeSystem.add(t);
       }
+
+      for(auto d : s->getCommandDefs())
+      {
+         mCommandDefs.push_back(d);
+      }
    }
+
+   mCommandDefs.push_back({"create", parseCreate});
+   mCommandDefs.push_back({"query", parseQuery});
+   mCommandDefs.push_back({"modify", parseModify});
+   mCommandDefs.push_back({"destroy", parseDestroy});
+   mCommandDefs.push_back({"describe", parseDescribe});
 
    mObjManager.initialize();
 }
@@ -48,11 +104,6 @@ IStrategy_v2& Core3::getStrategy_v2()
 IBackuper& Core3::getBackuper()
 {
    return mOldCore.getBackuper();
-}
-
-IReward& Core3::getReward()
-{
-   return mOldCore.getReward();
 }
 
 void Core3::onNewDay()
@@ -121,7 +172,7 @@ std::string Core3::executeCommandJson(const std::string& json)
 
    try
    {
-      auto cmd = parseCommand(json);
+      auto cmd = parseCommand(json, mCommandDefs);
 
       result = formatResponce(cmd->execute(mObjManager));
    }

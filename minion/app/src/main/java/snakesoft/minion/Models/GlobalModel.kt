@@ -27,7 +27,6 @@ object GlobalModel
     {
         return try
         {
-            val connection = MateriaConnection(Ip, password, "5757")
             val connectionNew = MateriaConnection(Ip, password, "5756")
 
             //check password
@@ -39,9 +38,7 @@ object GlobalModel
             }
             else
             {
-                RewardModel.sync(syncObserver, connection)
-
-
+                RewardModel.sync(syncObserver, connectionNew)
                 InboxModel.sync(syncObserver, connectionNew)
                 CalendarModel.sync(syncObserver, connectionNew)
                 FinanceModel.sync(syncObserver, connectionNew)

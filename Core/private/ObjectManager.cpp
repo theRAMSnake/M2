@@ -9,10 +9,9 @@ namespace materia
 
 const unsigned int QUERY_LIMIT = 50;
 
-ObjectManager::ObjectManager(Database& db, TypeSystem& types, IReward& reward)
+ObjectManager::ObjectManager(Database& db, TypeSystem& types)
 : mDb(db)
 , mTypes(types)
-, mReward(reward)
 {
     
 }
@@ -23,11 +22,6 @@ void ObjectManager::initialize()
     {
         mHandlers[t.name] = std::make_shared<TypeHandler>(t, mDb);
     }
-}
-
-IReward& ObjectManager::LEGACY_getReward()
-{
-    return mReward;
 }
 
 ObjectPtr ObjectManager::create(const std::optional<Id> id, const std::string& type, const IValueProvider& provider)

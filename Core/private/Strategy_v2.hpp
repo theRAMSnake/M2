@@ -10,7 +10,7 @@ namespace materia
 class Strategy_v2 : public IStrategy_v2
 {
 public:
-   Strategy_v2(Database& db, IReward& reward);
+   Strategy_v2(Database& db);
 
    Id addGoal(const Goal& goal) override;
    void modifyGoal(const Goal& goal) override;
@@ -53,7 +53,6 @@ private:
    std::unique_ptr<DatabaseTable> mGraphsStorage;
    std::unique_ptr<DatabaseTable> mWatchStorage;
    std::unique_ptr<DatabaseTable> mGoalsStorage;
-   IReward& mReward;
 };
 
 }

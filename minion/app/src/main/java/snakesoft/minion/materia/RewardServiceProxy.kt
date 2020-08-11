@@ -9,12 +9,7 @@ class RewardServiceProxy(private val mMateriaConnection: MateriaConnection)
     @Throws(InvalidProtocolBufferException::class, MateriaUnreachableException::class)
     fun addPoints(pts: UInt)
     {
-        val msg = Common.IntMessage.newBuilder().setContent(pts.toInt()).build()
-
-        mMateriaConnection.sendMessage(
-            msg.toByteString(),
-            "RewardService",
-            "AddPoints"
-        )
+        val jsonData = "{\"operation\": \"reward\", \"points\": $pts}"
+        mMateriaConnection.sendMessage(jsonData)
     }
 }
