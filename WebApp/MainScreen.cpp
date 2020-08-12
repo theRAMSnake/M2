@@ -25,5 +25,4 @@ MainScreen::MainScreen(MateriaClient& client)
 
     menu_->addItem("Strategy", std::make_unique<StrategyView>(client.getStrategy(), client.getChallenge()));
     menu_->addItem("Files", std::make_unique<FilesView>());
-    menu_->addItem("Reward", std::make_unique<RewardView>(client.getReward()));
 }

@@ -161,6 +161,9 @@ public:
     void setChildren(const std::string& tag, const std::vector<std::shared_ptr<Object>>& children);
     void setChild(const std::string& tag, const Object& child);
 
+    const Object& getChild(const std::string& tag) const;
+    std::vector<std::shared_ptr<Object>> getChildren() const;
+
     TypeDef getType() const;
     Id getId() const;
 

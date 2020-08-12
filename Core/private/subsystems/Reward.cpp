@@ -1,7 +1,10 @@
 
 #include "../ObjectManager.hpp"
 #include "../ExceptionsUtil.hpp"
+#include "../Logger.hpp"
 #include "Reward.hpp"
+
+#include <boost/algorithm/string/replace.hpp>
 
 namespace materia
 {
@@ -23,12 +26,122 @@ std::vector<TypeDef> RewardSS::getTypes()
         {"amountMax", Type::Int}
         }});
 
+    result.push_back({"reward_contract", "contracts", {
+        {"caption", Type::String},
+        {"config_id", Type::String},
+        {"reward", Type::Int},
+        {"daysLeft", Type::Int},
+        {"score", Type::Int},
+        {"goal", Type::Int}
+        }});
+
     return result;
+}
+
+void RewardSS::levelUpContract(const Id id)
+{
+    auto cb = mOm.getOrCreate(Id("reward.cb"), "object");
+    (*cb)[id.getGuid()] = (*cb)[id.getGuid()].get<Type::Int>() + 1;
+
+    mOm.modify(*cb);
 }
 
 void RewardSS::onNewDay()
 {
+    const std::size_t MAX_CONTRACTS = 3;
+    auto ctrs = mOm.getAll("reward_contract");
 
+    int totalBonus = 0;
+    for(auto c : ctrs)
+    {
+        auto& obj = *c;
+        if(obj["score"].get<Type::Int>() >= obj["goal"].get<Type::Int>())
+        {
+            totalBonus += obj["reward"].get<Type::Int>();
+            levelUpContract(obj["config_id"].get<Type::String>());
+            mOm.destroy(obj.getId());
+        }
+        else
+        {
+            auto daysLeft = obj["daysLeft"].get<Type::Int>() - 1;
+            if(daysLeft == 0)
+            {
+                mOm.destroy(obj.getId());
+            }
+            else
+            {
+                obj["daysLeft"] = daysLeft;
+            }
+        }
+    }
+
+    ctrs = mOm.getAll("reward_contract");
+    if(ctrs.size() != MAX_CONTRACTS)
+    {
+        genContract();
+    }
+
+    if(totalBonus != 0)
+    {
+        addPoints(totalBonus);
+    }
+}
+
+template<class F>
+class FunctionToValueProviderAdapter : public IValueProvider
+{
+public:
+    FunctionToValueProviderAdapter(F f)
+    : mF(f)
+    {
+
+    }
+
+    void populate(Object& obj) const override
+    {
+        mF(obj);
+    }
+
+private:
+    F mF;
+};
+
+void RewardSS::genContract()
+{
+    auto cfg = mOm.getOrCreate(Id("config.reward"), "object");
+    auto cb = mOm.getOrCreate(Id("reward.cb"), "object");
+
+    try
+    {
+        auto options = cfg->getChild(Id("contracts")).getChildren();
+
+        auto& randomItem = *options[rand() % options.size()];
+        auto configId = randomItem.getId().getGuid();
+        auto level = (*cb)[configId].get<Type::Int>();
+
+        auto valueProvider = FunctionToValueProviderAdapter([&randomItem, level, configId](auto& obj)
+        {
+            auto goal = randomItem["goal"].get<Type::Int>() + randomItem["goalGrowth"].get<Type::Int>() * level;
+            auto time = randomItem["time"].get<Type::Int>() + randomItem["timeGrowth"].get<Type::Double>() * level;
+            auto reward = randomItem["rewardBase"].get<Type::Int>() + randomItem["rewardPerLevel"].get<Type::Double>() * level;
+            auto caption = randomItem["caption"].get<Type::String>();
+
+            boost::replace_all(caption, "%", std::to_string(goal));
+
+            obj["caption"] = caption;
+            obj["config_id"] = configId;
+            obj["reward"] = reward;
+            obj["daysLeft"] = time;
+            obj["score"] = 0;
+            obj["goal"] = goal;
+        });
+
+        mOm.create(Id::generate(), "reward_contract", valueProvider);
+    }
+    catch(...)
+    {
+        LOG("Reward config is corrupted");
+    }
 }
 
 void RewardSS::onNewWeek()

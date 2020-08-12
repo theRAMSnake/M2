@@ -20,6 +20,8 @@ public:
 
 private:
     Command* parseRewardCommand(const boost::property_tree::ptree& src);
+    void genContract();
+    void levelUpContract(const Id id);
 
     ObjectManager& mOm;
 };

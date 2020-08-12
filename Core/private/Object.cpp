@@ -273,4 +273,27 @@ std::string Object::toJson() const
     return writeJson(p);
 }
 
+const Object& Object::getChild(const std::string& tag) const
+{
+    auto pos = mChildren.find(tag);
+    if(pos == mChildren.end())
+    {
+        throw std::runtime_error("No such children: " + tag);
+    }
+
+    return *std::get<0>(pos->second);
+}
+
+std::vector<ObjectPtr> Object::getChildren() const
+{
+    std::vector<ObjectPtr> result;
+
+    for(auto x : mChildren)
+    {
+        result.push_back(std::get<0>(x.second));
+    }
+
+    return result;
+}
+
 }
