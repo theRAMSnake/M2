@@ -59,7 +59,7 @@ void Reward::removePoints(const unsigned int number)
    {
       auto& randomItem = pools[rand() % pools.size()];
 
-      if(randomItem.amount < randomItem.amountMax)
+      if(randomItem.amount > 0)
       {
          randomItem.amount--;
          pointsLeft--;
