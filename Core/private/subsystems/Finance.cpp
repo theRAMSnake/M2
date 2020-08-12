@@ -1,12 +1,13 @@
 #include "Finance.hpp"
 #include "../ObjectManager.hpp"
+#include "../Commands.hpp"
+#include "../ExceptionsUtil.hpp"
 #include <map>
 #include <chrono>
 #include <iostream>
 #include <boost/date_time/gregorian/greg_date.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include "../types/SimpleList.hpp"
-#include "../../IReward.hpp"
 
 namespace materia
 {
@@ -95,18 +96,18 @@ void FinanceSS::performFinancialAnalisys()
 
    if(ratio > 1.5)
    {
-      mOm.LEGACY_getReward().addPoints(3);
+      mReward.addPoints(3);
       status = "Excellent";
    }
    else if(ratio > 1.2)
    {
-      mOm.LEGACY_getReward().addPoints(2);
+      mReward.addPoints(2);
       status = "Great";
    }
    else if(ratio > 1.1)
    {
       status = "Good";
-      mOm.LEGACY_getReward().addPoints(1);
+      mReward.addPoints(1);
    }
    else if(ratio > 1)
    {
@@ -116,7 +117,7 @@ void FinanceSS::performFinancialAnalisys()
    {
       status = "Critical";
       auto p = (balance * -1) / 100000 * 10;
-      mOm.LEGACY_getReward().removePoints(3);
+      mReward.addPoints(-3);
 
       if(p > rand() % 100)
       {
@@ -162,8 +163,9 @@ void FinanceSS::performFinancialAnalisys()
    mOm.modify(*obj);
 }
 
-FinanceSS::FinanceSS(ObjectManager& mOm)
-: mOm(mOm)
+FinanceSS::FinanceSS(ObjectManager& om, RewardSS& reward)
+: mOm(om)
+, mReward(reward)
 {
 
 }
@@ -192,6 +194,11 @@ std::vector<TypeDef> FinanceSS::getTypes()
         }});
 
     return result;
+}
+
+std::vector<CommandDef> FinanceSS::getCommandDefs()
+{
+    return {};
 }
 
 }

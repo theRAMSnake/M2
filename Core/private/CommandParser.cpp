@@ -20,8 +20,6 @@ T findOrThrow(const std::vector<T>& vec, const std::string& name, const std::str
     } 
 }
 
-using ParseFunc = Command*(*)(const boost::property_tree::ptree&);
-
 boost::property_tree::ptree parseParams(const boost::property_tree::ptree& src)
 {
     try
@@ -47,20 +45,6 @@ std::shared_ptr<Filter> parseFilter(const boost::property_tree::ptree& src)
     }
 }
 
-Command* parseCreate(const boost::property_tree::ptree& src)
-{
-   auto typeName = getOrThrow<std::string>(src, "typename", "Typename is not specified");
-   std::optional<Id> stdid;
-   auto id = src.get_optional<std::string>("defined_id");
-   if(id)
-   {
-       stdid = *id;
-   }
-   auto params = parseParams(src);
-
-   return new CreateCommand(stdid, typeName, writeJson(params));
-}
-
 std::vector<Id> parseIds(const boost::property_tree::ptree& src)
 {
     std::vector<Id> result;
@@ -76,62 +60,12 @@ std::vector<Id> parseIds(const boost::property_tree::ptree& src)
     return result;
 }
 
-Command* parseQuery(const boost::property_tree::ptree& src)
-{
-   auto ids = parseIds(src);
-   auto filter = parseFilter(src);
-
-   return new QueryCommand(filter, ids);
-}
-
-Command* parseDestroy(const boost::property_tree::ptree& src)
-{
-   auto id = getOrThrow<Id>(src, "id", "Id is not specified");
-
-   return new DestroyCommand(id);
-}
-
-Command* parseComplete(const boost::property_tree::ptree& src)
-{
-   auto id = getOrThrow<Id>(src, "id", "Id is not specified");
-
-   return new CompleteCommand(id);
-}
-
-Command* parseModify(const boost::property_tree::ptree& src)
-{
-   auto id = getOrThrow<Id>(src, "id", "Id is not specified");
-   auto params = parseParams(src);
-
-   return new ModifyCommand(id, writeJson(params));
-}
-
-Command* parseDescribe(const boost::property_tree::ptree& src)
-{
-   return new DescribeCommand();
-}
-
-struct CommandDef
-{
-    std::string name;
-    ParseFunc parseFunc;
-};
-
-std::vector<CommandDef> gCommandParsers = {
-    {"create", parseCreate},
-    {"query", parseQuery},
-    {"destroy", parseDestroy},
-    {"modify", parseModify},
-    {"describe", parseDescribe},
-    {"complete", parseComplete}
-};
-
-std::unique_ptr<Command> parseCommand(const std::string& json)
+std::unique_ptr<Command> parseCommand(const std::string& json, const std::vector<CommandDef>& commandDefs)
 {
     boost::property_tree::ptree props = readJson<boost::property_tree::ptree>(json);
 
     auto opName = getOrThrow<std::string>(props, "operation", "Operation type is not specified");
-    auto opParser = findOrThrow(gCommandParsers, opName, fmt::format("Operation {} unsupported", opName)).parseFunc;
+    auto opParser = findOrThrow(commandDefs, opName, fmt::format("Operation {} unsupported", opName)).parseFunc;
 
     return std::unique_ptr<Command>(opParser(props));
 }

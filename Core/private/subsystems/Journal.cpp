@@ -97,4 +97,9 @@ void JournalSS::handleJournalContentCreated(Object& obj)
     mOm.modify(*header);
 }
 
+std::vector<CommandDef> JournalSS::getCommandDefs()
+{
+    return {};
+}
+
 }

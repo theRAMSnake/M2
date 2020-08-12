@@ -13,9 +13,10 @@ int main(int argc,  char** argv)
    std::string path = argv[1];
 
    auto core = materia::createCore({path});
-   core->onNewDay();
+   auto cmd = "{\"operation\":\"query\",\"ids\":[\"financial_report\"]}";
+   std::cout << core->executeCommandJson(cmd);
 
-   /*auto cmd = "{\"operation\":\"query\",\"filter\":\"IS(calendar_item)\"}";
+   /*
 
    std::chrono::time_point<std::chrono::high_resolution_clock> started = std::chrono::high_resolution_clock::now();
 

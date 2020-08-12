@@ -31,4 +31,9 @@ std::vector<TypeDef> CommonSS::getTypes()
     return result;
 }
 
+std::vector<CommandDef> CommonSS::getCommandDefs()
+{
+    return {};
+}
+
 }

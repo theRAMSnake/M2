@@ -20,11 +20,10 @@ BIND_JSON2(attr_map_node, first, second)
 namespace materia
 {
 
-Strategy_v2::Strategy_v2(Database& db, IReward& reward)
+Strategy_v2::Strategy_v2(Database& db)
 : mGraphsStorage(db.getTable("graphs"))
 , mWatchStorage(db.getTable("watchItems"))
 , mGoalsStorage(db.getTable("goals"))
-, mReward(reward)
 {
    
 }
@@ -35,7 +34,7 @@ std::shared_ptr<StrategyGraph> Strategy_v2::loadGraph(const Id& graphId)
 
    if(loadedJson)
    {
-      auto result = std::make_shared<StrategyGraph>(readJson<RawStrategyGraph>(*loadedJson), mReward);
+      auto result = std::make_shared<StrategyGraph>(readJson<RawStrategyGraph>(*loadedJson));
       updateCompleteness(*result);
 
       return result;
@@ -200,7 +199,7 @@ Id Strategy_v2::addGoal(const Goal& goal)
    std::string json = writeJson(g);
    mGoalsStorage->store(g.id, json);
 
-   saveGraph(*std::make_shared<StrategyGraph>(g.id, mReward));
+   saveGraph(*std::make_shared<StrategyGraph>(g.id));
 
    return g.id;
 }

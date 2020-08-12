@@ -17,7 +17,6 @@ public:
 
     IBackuper& getBackuper() override;
     IStrategy_v2& getStrategy_v2() override;
-    IReward& getReward() override;
     void onNewDay() override;
     void onNewWeek() override;
 
@@ -34,6 +33,7 @@ private:
     TypeSystem mTypeSystem;
     Core mOldCore;
     ObjectManager mObjManager;
+    std::vector<CommandDef> mCommandDefs;
     std::vector<std::shared_ptr<ISubsystem>> mSubsystems;
 };
 
