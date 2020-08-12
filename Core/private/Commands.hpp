@@ -50,16 +50,6 @@ private:
     const Id mId;
 };
 
-class CompleteCommand : public Command
-{
-public:
-    CompleteCommand(const Id& id);
-    ExecutionResult execute(ObjectManager& objManager) override;
-
-private:
-    const Id mId;
-};
-
 class QueryCommand : public Command
 {
 public:

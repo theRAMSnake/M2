@@ -11,7 +11,7 @@ add_executable(Test
 #StrategyGraphTest.cpp
 #Strategy2Test.cpp
 #EncDecTest.cpp
-#RewardTest.cpp
+RewardTest.cpp
 ChallengeTest.cpp
 NewAPITest.cpp
 ExpressionsTest.cpp

@@ -109,7 +109,7 @@ function MainPage(props) {
     const [numImportantCalendarItems, setNumImportantCalendarItems] = React.useState(0);
     const [tod, setTod] = React.useState("");
 
-    const [snackOpen, setSnackOpen] = React.useState(0);
+    const [snackOpen, setSnackOpen] = React.useState(false);
     const [lastError, setLastError] = React.useState('');
 
     function requestCalendarItems()

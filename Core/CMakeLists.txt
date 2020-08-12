@@ -24,12 +24,10 @@ private/EmptyValueProvider.cpp
 private/Backuper.cpp
 private/StrategyGraph.cpp
 private/NodeAttributes.cpp
-private/Reward.cpp
 private/Object.cpp
 private/TypeHandler.cpp
 private/types/SimpleList.cpp
 private/types/Variable.cpp
-private/Operations.cpp
 private/Type.cpp
 private/subsystems/Challenge.cpp
 private/subsystems/Finance.cpp

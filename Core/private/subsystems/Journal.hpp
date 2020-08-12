@@ -12,6 +12,7 @@ public:
     void onNewDay() override;
     void onNewWeek() override;
     std::vector<TypeDef> getTypes() override;
+    std::vector<CommandDef> getCommandDefs() override;
 
 private:
     void handleJournalContentItemChange(Object& obj);
