@@ -124,6 +124,7 @@ export default function ObjectProperties(props)
 
     function createPropCtrl(req)
     {
+        console.log(req);
         if(req.type === 'string') 
             return <TextField inputProps={{onChange: handleFieldChange}} value={props.object[req.name]} fullWidth id={req.name} label={req.name} />;
         if(req.type === 'bool') 

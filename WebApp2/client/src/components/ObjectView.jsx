@@ -10,6 +10,7 @@ import DefaultThumbnail from './thumbnails/Default.jsx'
 import SimpleThumbnail from './thumbnails/Simple.jsx'
 import ListThumbnail from './thumbnails/List.jsx'
 import ChItemThumbnail from './thumbnails/ChItem.jsx'
+import RewardPoolThumbnail from './thumbnails/RewardPool.jsx'
 
 import {
     Card,
@@ -37,6 +38,11 @@ function getObjectThumbnail(obj)
     if(type.name === 'challenge_item')
     {
         return (<ChItemThumbnail object={obj}/>);
+    }
+
+    if(type.name === 'reward_pool')
+    {
+        return (<RewardPoolThumbnail object={obj}/>);
     }
 
     if(type.fields && type.fields.length == 1)
