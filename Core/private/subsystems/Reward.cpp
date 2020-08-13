@@ -121,7 +121,7 @@ void RewardSS::genContract()
 
         auto valueProvider = FunctionToValueProviderAdapter([&randomItem, level, configId](auto& obj)
         {
-            auto goal = randomItem["goal"].get<Type::Int>() + randomItem["goalGrowth"].get<Type::Int>() * level;
+            auto goal = randomItem["goal"].get<Type::Int>() + randomItem["goalGrowth"].get<Type::Double>() * level;
             auto time = randomItem["time"].get<Type::Int>() + randomItem["timeGrowth"].get<Type::Double>() * level;
             auto reward = randomItem["rewardBase"].get<Type::Int>() + randomItem["rewardPerLevel"].get<Type::Double>() * level;
             auto caption = randomItem["caption"].get<Type::String>();
@@ -130,17 +130,17 @@ void RewardSS::genContract()
 
             obj["caption"] = caption;
             obj["config_id"] = configId;
-            obj["reward"] = reward;
-            obj["daysLeft"] = time;
+            obj["reward"] = static_cast<std::int64_t>(reward);
+            obj["daysLeft"] = static_cast<std::int64_t>(time);
             obj["score"] = 0;
-            obj["goal"] = goal;
+            obj["goal"] = static_cast<std::int64_t>(goal);
         });
 
         mOm.create(Id::generate(), "reward_contract", valueProvider);
     }
-    catch(...)
+    catch(std::exception& ex)
     {
-        LOG("Reward config is corrupted");
+        LOG("Reward config is corrupted: " + std::string(ex.what()));
     }
 }
 
