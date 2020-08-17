@@ -63,3 +63,20 @@ boost::property_tree::ptree queryFirst(const std::string& type, materia::ICore3&
 
    throw std::runtime_error("Empty list loaded");
 }
+
+std::optional<boost::property_tree::ptree> query(const std::string& id, materia::ICore3& core)
+{
+   std::string query = "{\"operation\": \"query\", \"ids\":[\"" + id + "\"]}";
+
+   auto result = core.executeCommandJson(query);
+   //std::cout << result;
+
+   auto ol = readJson<boost::property_tree::ptree>(result);
+    
+   for(auto& v : ol.get_child("object_list"))
+   {
+      return v.second;
+   }
+
+   return std::optional<boost::property_tree::ptree>();
+}

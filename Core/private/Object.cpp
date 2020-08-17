@@ -91,7 +91,7 @@ Field& Object::operator [] (const std::string& name)
     }
     else
     {
-        mFields.push_back({name, false, ""}); 
+        mFields.push_back({name, false, std::int64_t(0)}); 
         return mFields.back();
     }
 }

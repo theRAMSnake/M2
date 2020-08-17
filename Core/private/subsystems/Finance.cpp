@@ -89,6 +89,11 @@ void FinanceSS::performFinancialAnalisys()
       }
    }
 
+   if(events.empty())
+   {
+      return;
+   }
+
    types::SimpleList inbox(mOm, Id("inbox"));
    auto balance = static_cast<int>(totalEarnings) - static_cast<int>(totalSpendings);
    auto ratio = static_cast<double>(totalEarnings) / totalSpendings;

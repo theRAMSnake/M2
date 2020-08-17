@@ -126,14 +126,14 @@ void RewardSS::genContract()
             auto reward = randomItem["rewardBase"].get<Type::Int>() + randomItem["rewardPerLevel"].get<Type::Double>() * level;
             auto caption = randomItem["caption"].get<Type::String>();
 
-            boost::replace_all(caption, "%", std::to_string(goal));
+            boost::replace_all(caption, "%", std::to_string(std::round(goal)));
 
             obj["caption"] = caption;
             obj["config_id"] = configId;
-            obj["reward"] = static_cast<std::int64_t>(reward);
-            obj["daysLeft"] = static_cast<std::int64_t>(time);
+            obj["reward"] = static_cast<std::int64_t>(std::round(reward));
+            obj["daysLeft"] = static_cast<std::int64_t>(std::round(time));
             obj["score"] = 0;
-            obj["goal"] = static_cast<std::int64_t>(goal);
+            obj["goal"] = static_cast<std::int64_t>(std::round(goal));
         });
 
         mOm.create(Id::generate(), "reward_contract", valueProvider);
@@ -196,6 +196,7 @@ void RewardSS::addPoints(const int points)
         if(isPlus && amount < randomItem["amountMax"].get<Type::Int>())
         {
             randomItem["amount"] = amount + 1;
+            
             pointsLeft--;
         }
         else if(!isPlus && amount > 0)
