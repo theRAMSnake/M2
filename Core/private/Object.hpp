@@ -7,6 +7,7 @@
 #include <exception>
 #include <fmt/format.h>
 #include <boost/property_tree/ptree.hpp>
+#include <boost/lexical_cast.hpp>
 #include <iostream>
 
 namespace std
@@ -99,12 +100,18 @@ private:
             //Any integral type
             if constexpr (std::is_integral<T>::value)
                 return static_cast<std::int64_t>(val);
+            if constexpr (std::is_same<T, std::string>::value)
+            {
+                return static_cast<std::int64_t>(boost::lexical_cast<int>(val));
+            }
             break;
 
         case Type::Double:
             //Any integral type, float and double
             if constexpr (std::is_integral<T>::value || std::is_same<T, double>::value || std::is_same<T, float>::value)
                 return static_cast<double>(val);
+            if constexpr (std::is_same<T, std::string>::value)
+                return boost::lexical_cast<double>(val);
             break;
 
         case Type::String:
@@ -160,6 +167,9 @@ public:
     
     void setChildren(const std::string& tag, const std::vector<std::shared_ptr<Object>>& children);
     void setChild(const std::string& tag, const Object& child);
+
+    const Object& getChild(const std::string& tag) const;
+    std::vector<std::shared_ptr<Object>> getChildren() const;
 
     TypeDef getType() const;
     Id getId() const;

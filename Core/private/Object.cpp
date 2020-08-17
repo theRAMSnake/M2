@@ -91,7 +91,7 @@ Field& Object::operator [] (const std::string& name)
     }
     else
     {
-        mFields.push_back({name, false, ""}); 
+        mFields.push_back({name, false, std::int64_t(0)}); 
         return mFields.back();
     }
 }
@@ -271,6 +271,29 @@ std::string Object::toJson() const
     fillObject(p, *this);
     
     return writeJson(p);
+}
+
+const Object& Object::getChild(const std::string& tag) const
+{
+    auto pos = mChildren.find(tag);
+    if(pos == mChildren.end())
+    {
+        throw std::runtime_error("No such children: " + tag);
+    }
+
+    return *std::get<0>(pos->second);
+}
+
+std::vector<ObjectPtr> Object::getChildren() const
+{
+    std::vector<ObjectPtr> result;
+
+    for(auto x : mChildren)
+    {
+        result.push_back(std::get<0>(x.second));
+    }
+
+    return result;
 }
 
 }

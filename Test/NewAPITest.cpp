@@ -3,6 +3,7 @@
 #include <thread>
 #include "../Core/private/JsonSerializer.hpp"
 #include <Core/ICore3.hpp>
+#include "Utils.hpp"
 
 class NewAPITest
 {
@@ -17,28 +18,6 @@ protected:
 
    std::shared_ptr<materia::ICore3> mCore;
 };
-
-bool expectError(const std::string& responce)
-{
-    auto t = readJson<boost::property_tree::ptree>(responce);
-    return t.get_optional<std::string>("error").has_value();
-}
-
-bool expectId(const std::string& responce)
-{
-    auto t = readJson<boost::property_tree::ptree>(responce);
-    auto r = t.get_optional<std::string>("result_id").has_value();
-
-    if(r)
-    {
-        return true;
-    }
-    else
-    {
-        std::cout << "Expected id but was " << responce << std::endl;
-        return false;
-    }
-}
 
 BOOST_FIXTURE_TEST_CASE( TestInvalid, NewAPITest ) 
 {  
