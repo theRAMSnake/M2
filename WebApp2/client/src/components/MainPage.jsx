@@ -10,6 +10,7 @@ import JournalView from './JournalView.jsx'
 import QueryView from './QueryView.jsx'
 import AddItemDialog from './AddItemDialog.jsx'
 import CalendarCtrl from './CalendarCtrl.jsx'
+import ContractsCtrl from './ContractsCtrl.jsx'
 
 import {
     AppBar,
@@ -244,6 +245,7 @@ function MainPage(props) {
                     <Typography variant="h6" className={classes.title}>
                         Materia
                     </Typography>
+                    <ContractsCtrl/>
                     <SearchBar onSubmit={searchBarSubmit}/>
                     <div className={classes.grow} />
                     <BadgetList id='watch_list' icon={WatchLaterIcon}/>

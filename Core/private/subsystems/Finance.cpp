@@ -94,7 +94,6 @@ void FinanceSS::performFinancialAnalisys()
       return;
    }
 
-   types::SimpleList inbox(mOm, Id("inbox"));
    auto balance = static_cast<int>(totalEarnings) - static_cast<int>(totalSpendings);
    auto ratio = static_cast<double>(totalEarnings) / totalSpendings;
    std::string status;
@@ -121,12 +120,12 @@ void FinanceSS::performFinancialAnalisys()
    else
    {
       status = "Critical";
-      auto p = (balance * -1) / 100000 * 10;
+      auto p = (balance * -1) / 10000;
       mReward.addPoints(-3);
 
       if(p > rand() % 100)
       {
-         inbox.add("Work hard curse with p = " + std::to_string(p));
+         mCommon.push(Id("inbox"), "Work hard curse with p = " + std::to_string(p));
       }
    }
 
@@ -168,9 +167,10 @@ void FinanceSS::performFinancialAnalisys()
    mOm.modify(*obj);
 }
 
-FinanceSS::FinanceSS(ObjectManager& om, RewardSS& reward)
+FinanceSS::FinanceSS(ObjectManager& om, RewardSS& reward, CommonSS& common)
 : mOm(om)
 , mReward(reward)
+, mCommon(common)
 {
 
 }
