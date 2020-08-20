@@ -10,6 +10,7 @@
 namespace materia
 {
 
+class CommonSS;
 class Core3 : public ICore3
 {
 public:
@@ -33,6 +34,7 @@ private:
     TypeSystem mTypeSystem;
     Core mOldCore;
     ObjectManager mObjManager;
+    CommonSS* mCommonSS;
     std::vector<CommandDef> mCommandDefs;
     std::vector<std::shared_ptr<ISubsystem>> mSubsystems;
 };

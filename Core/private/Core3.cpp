@@ -67,10 +67,13 @@ Core3::Core3(const CoreConfig& config)
    auto rewardSS = std::make_shared<RewardSS>(mObjManager);
    mSubsystems.push_back(rewardSS);
 
+   auto commonSS = std::make_shared<CommonSS>(mObjManager);
+   mSubsystems.push_back(commonSS);
+   mCommonSS = commonSS.get();
+
    mSubsystems.push_back(std::make_shared<ChallengeSS>(mObjManager, *rewardSS));
-   mSubsystems.push_back(std::make_shared<FinanceSS>(mObjManager, *rewardSS));
+   mSubsystems.push_back(std::make_shared<FinanceSS>(mObjManager, *rewardSS, *commonSS));
    mSubsystems.push_back(std::make_shared<UserSS>(mObjManager, *rewardSS));
-   mSubsystems.push_back(std::make_shared<CommonSS>(mObjManager));
    mSubsystems.push_back(std::make_shared<JournalSS>(mObjManager));
    mSubsystems.push_back(std::make_shared<CalendarSS>(mObjManager));
 
@@ -197,8 +200,7 @@ std::string Core3::executeCommandJson(const std::string& json)
 
 void Core3::notifyLongCommand(const std::string& cmd, unsigned int value)
 {
-   types::SimpleList inbox(mObjManager, Id("inbox"));
-   inbox.add("Command execution exceeds time limit: (" + std::to_string(value) + "ms) " + cmd);
+   mCommonSS->push(Id("inbox"), "Command execution exceeds time limit: (" + std::to_string(value) + "ms) " + cmd);
 }
 
 }

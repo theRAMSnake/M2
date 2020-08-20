@@ -44,7 +44,7 @@ export default function BadgetList(props)
     }   
 
     return <div>
-                <IconButton aria-label="icon" color="inherit"onClick={prepareDialog}>
+                <IconButton aria-label="icon" color="inherit" onClick={prepareDialog}>
                     <Badge badgeContent={list.objects.length} color="secondary">
                         <props.icon/>
                     </Badge>

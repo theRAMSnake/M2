@@ -126,7 +126,7 @@ void RewardSS::genContract()
             auto reward = randomItem["rewardBase"].get<Type::Int>() + randomItem["rewardPerLevel"].get<Type::Double>() * level;
             auto caption = randomItem["caption"].get<Type::String>();
 
-            boost::replace_all(caption, "%", std::to_string(std::round(goal)));
+            boost::replace_all(caption, "%", std::to_string(static_cast<std::int64_t>(std::round(goal))));
 
             obj["caption"] = caption;
             obj["config_id"] = configId;
