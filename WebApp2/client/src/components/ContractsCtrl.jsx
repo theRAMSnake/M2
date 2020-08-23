@@ -21,7 +21,7 @@ const HtmlTooltip = withStyles((theme) => ({
     tooltip: {
       backgroundColor: '#424242',
       color: '#ffffff',
-      minWidth: 300,
+      minWidth: 250,
       fontSize: theme.typography.pxToRem(12)
     },
   }))(Tooltip);
