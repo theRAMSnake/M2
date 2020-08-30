@@ -13,6 +13,7 @@
 #include "subsystems/Common.hpp"
 #include "subsystems/Journal.hpp"
 #include "subsystems/Reward.hpp"
+#include "subsystems/Strategy.hpp"
 
 namespace materia
 {
@@ -76,6 +77,7 @@ Core3::Core3(const CoreConfig& config)
    mSubsystems.push_back(std::make_shared<UserSS>(mObjManager, *rewardSS));
    mSubsystems.push_back(std::make_shared<JournalSS>(mObjManager));
    mSubsystems.push_back(std::make_shared<CalendarSS>(mObjManager));
+   mSubsystems.push_back(std::make_shared<StrategySS>(mObjManager, *rewardSS));
 
    for(auto s : mSubsystems)
    {

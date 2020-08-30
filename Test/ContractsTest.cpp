@@ -178,7 +178,7 @@ BOOST_FIXTURE_TEST_CASE( TestLeveledCreate, ContractsTest )
 
    if(confId == "id0")
    {
-      BOOST_CHECK_EQUAL(1 + 0.5 * level, c.get<int>("reward"));
+      BOOST_CHECK_EQUAL(static_cast<int>(std::round(1 + 0.5 * level)), c.get<int>("reward"));
       BOOST_CHECK_EQUAL(10 + 1 * level, c.get<int>("goal"));
       BOOST_CHECK_EQUAL(5 + 1 * level, c.get<int>("daysLeft"));
    }

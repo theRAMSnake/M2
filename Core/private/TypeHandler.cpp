@@ -36,6 +36,7 @@ ObjectPtr TypeHandler::create(const std::optional<Id> id, const IValueProvider& 
     auto newObj = std::make_shared<Object>(mType, newId);
 
     provider.populate(*newObj);
+    mType.handlers.onValidation(*newObj);
 
     mStorage->store(newId, newObj->toJson());
     mPool[newId] = newObj;
@@ -107,12 +108,15 @@ bool TypeHandler::contains(const Id id)
 void TypeHandler::modify(const Id id, const IValueProvider& provider)
 {
     auto obj = *get(id);
-    provider.populate(*obj);
+    auto newObj = std::make_shared<Object>(*obj);
+    provider.populate(*newObj);
 
-    mType.handlers.onChanged(*obj);
+    mType.handlers.onChanging(*obj, *newObj);
 
-    mStorage->store(id, obj->toJson());
-    mPool[id] = obj;
+    mStorage->store(id, newObj->toJson());
+    mPool[id] = newObj;
+
+    mType.handlers.onChanged(*newObj);
 }
 
 void TypeHandler::modify(const Object& obj)
