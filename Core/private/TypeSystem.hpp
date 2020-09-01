@@ -18,12 +18,15 @@ struct FieldDef
 
 class Object;
 void doNothing(Object& obj);
+void doNothing2(const Object&, Object&);
 
 struct EventHandlers
 {
     std::function<void(Object&)> onChanged = doNothing;
     std::function<void(Object&)> onBeforeDelete = doNothing; 
     std::function<void(Object&)> onCreated = doNothing;
+    std::function<void(Object&)> onValidation = doNothing;
+    std::function<void(const Object&, Object&)> onChanging = doNothing2;
 };
 
 struct TypeDef

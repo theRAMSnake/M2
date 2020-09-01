@@ -9,6 +9,11 @@ void doNothing(Object&)
     
 }
 
+void doNothing2(const Object&, Object&)
+{
+
+}
+
 std::optional<TypeDef> TypeSystem::get(const std::string& name) const
 {
     auto pos = std::find_if(mTypes.begin(), mTypes.end(), [name](auto x){return x.name == name;});
