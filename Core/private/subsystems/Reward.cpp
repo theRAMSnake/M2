@@ -71,6 +71,7 @@ void RewardSS::onNewDay()
             else
             {
                 obj["daysLeft"] = daysLeft;
+                mOm.modify(obj);
             }
         }
     }
