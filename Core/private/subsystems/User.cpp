@@ -30,6 +30,10 @@ Time advance(const Time src, const int recType)
     case 4:
         result.value = boost::posix_time::to_time_t(boost::posix_time::from_time_t(result.value) + boost::gregorian::months(12));
         break;
+
+    case 5:
+        result.value += 172800;
+        break;
     
     default:
         break;

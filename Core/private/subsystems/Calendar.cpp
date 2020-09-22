@@ -27,7 +27,7 @@ std::vector<TypeDef> CalendarSS::getTypes()
     result.push_back({"calendar_item", "calendar", {
         {"text", Type::String},
         {"timestamp", Type::Timestamp},
-        {"reccurencyType", Type::Option, {"None", "Weekly", "Monthly", "Quarterly", "Yearly"}},
+        {"reccurencyType", Type::Option, {"None", "Weekly", "Monthly", "Quarterly", "Yearly", "Bi-daily"}},
         {"entityType", Type::Option, {"Event", "Task"}}
         }});
 
