@@ -24,7 +24,7 @@ void Backuper::start()
 bool Backuper::getNextChunk(std::vector<char>& out)
 {
     bool hasMore = false;
-    constexpr std::size_t chunkSize = 1024*1024;
+    constexpr std::size_t chunkSize = 1024*512;
     char buf[chunkSize];
     if(!mStream.eof())
     {
