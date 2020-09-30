@@ -12,8 +12,13 @@ Backuper::Backuper(const std::string& name)
 
 void Backuper::start()
 {
-   system(("sqlite3 " + mDbName + " \".backup '/materia/materia.back'\"").c_str());
-   mStream.open("/materia/materia.back", std::ios::in | std::ios::binary);
+    if(mStream.is_open())
+    {
+        mStream.close();
+    }
+    
+    system(("sqlite3 " + mDbName + " \".backup '/materia/materia.back'\"").c_str());
+    mStream.open("/materia/materia.back", std::ios::in | std::ios::binary);
 }
 
 bool Backuper::getNextChunk(std::vector<char>& out)
