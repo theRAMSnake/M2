@@ -7,6 +7,7 @@ import SearchBar from './SearchBar.jsx'
 import ApiView from './ApiView.jsx'
 import FinanceView from './FinanceView.jsx'
 import JournalView from './JournalView.jsx'
+import StrategyView from './StrategyView.jsx'
 import QueryView from './QueryView.jsx'
 import AddItemDialog from './AddItemDialog.jsx'
 import CalendarCtrl from './CalendarCtrl.jsx'
@@ -168,6 +169,9 @@ function MainPage(props) {
 
         else if(ct == "journal")
             return (<JournalView/>);
+
+        else if(ct == "strategy")
+            return (<StrategyView/>);
     }
 
     function logout_clicked(e) {
@@ -189,6 +193,10 @@ function MainPage(props) {
         else if(index == 2)
         {
             setContentType("journal");
+        }
+        else if(index == 3)
+        {
+            setContentType("strategy");
         }
     }
 
@@ -294,7 +302,7 @@ function MainPage(props) {
                 </div>
                 <Divider />
                 <List>
-                    {['API', 'Finance', 'Journal'].map((text, index) => (
+                    {['API', 'Finance', 'Journal', 'Strategy'].map((text, index) => (
                     <ListItem button key={text} onClick={() => {menuItemClicked(index)}}>
                         <ListItemText primary={text} />
                     </ListItem>

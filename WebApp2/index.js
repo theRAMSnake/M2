@@ -5,10 +5,15 @@ const config = require('./config');
 const app = express();
 var fs = require('fs');
 var https = require('https');
+<<<<<<< HEAD
 var privateKey  = fs.readFileSync('/etc/letsencrypt/live/ramsnake.net-0002/privkey.pem', 'utf8');
 var certificate = fs.readFileSync('/etc/letsencrypt/live/ramsnake.net-0002/fullchain.pem', 'utf8');
+=======
+//var privateKey  = fs.readFileSync('???.key', 'utf8');
+//var certificate = fs.readFileSync('???.crt', 'utf8');
+>>>>>>> 8863d2179a046d080efb2d0e48a92344d3497cc8
 
-var credentials = {key: privateKey, cert: certificate};
+//var credentials = {key: privateKey, cert: certificate};
 
 app.use(express.static('./server/static/'));
 app.use(express.static('./client/dist/'));
@@ -27,6 +32,11 @@ const apiRoutes = require('./server/routes/api');
 app.use('/auth', authRoutes);
 app.use('/api', apiRoutes);
 
-var httpsServer = https.createServer(credentials, app);
+//var httpsServer = https.createServer(credentials, app);
 
+<<<<<<< HEAD
 httpsServer.listen(5758);
+=======
+//httpsServer.listen(5758);
+app.listen(5758);
+>>>>>>> 8863d2179a046d080efb2d0e48a92344d3497cc8
