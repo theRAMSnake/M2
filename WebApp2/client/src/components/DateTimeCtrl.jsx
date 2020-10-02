@@ -11,16 +11,12 @@ import {
   
 function toUTC(date)
 {
-    //console.log("toUTC: " + date.getTime() + "->" + new Date(date.getTime() + new Date().getTimezoneOffset() * 60000).getTime());
     return new Date(date.getTime() - new Date().getTimezoneOffset() * 60000).getTime();
-    //return date;
 }
 
 function fromUTC(ts)
 {
-    //console.log("fromUTC: " + ts + "->" + new Date(ts - new Date().getTimezoneOffset() * 60000).getTime());
     return new Date(ts + new Date().getTimezoneOffset() * 60000).getTime();
-    //return ts;
 }
   
 export default function DateTimeCtrl(props) 
