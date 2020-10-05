@@ -121,8 +121,15 @@ void TypeHandler::modify(const Id id, const IValueProvider& provider)
 
 void TypeHandler::modify(const Object& obj)
 {
+    auto oldObj = *get(obj.getId());
+    auto newObj = std::make_shared<Object>(obj);
+
+    mType.handlers.onChanging(*oldObj, *newObj);
+
     mStorage->store(obj.getId(), obj.toJson());    
-    mPool[obj.getId()] = std::make_shared<Object>(obj);
+    mPool[obj.getId()] = newObj;
+
+    mType.handlers.onChanged(*newObj);
 }
 
 std::vector<ObjectPtr> TypeHandler::getAll()
