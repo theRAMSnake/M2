@@ -3,6 +3,7 @@ import Materia from '../modules/materia_request'
 import { Graph } from "react-d3-graph";
 import PathCtrl from './PathCtrl.jsx'
 import m3proxy from '../modules/m3proxy'
+import QueryChain from '../modules/QueryChain'
 
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -287,30 +288,6 @@ function StrategyView(props)
         loadGraph("", () => {path.push({id: "", name: "Root"});});
     }
 
-    function loadLinks(id, cb)
-    {
-        const linkReq = {
-            operation: "query",
-            filter: "IS(strategy_link) AND .idFrom = \"" + id + "\""
-        }
-
-        Materia.exec(linkReq, (rsp) => 
-        {
-            if(rsp.object_list != "")
-            {
-                const newLinks = rsp.object_list.map(y => {
-                    return {source: y.idFrom, target: y.idTo, id: y.id};
-                });
-
-                cb(newLinks);
-            }
-            else
-            {
-                cb(null);
-            }
-        });
-    }
-
     function isNodeLocked(n)
     {
         var locked = false;
@@ -342,6 +319,10 @@ function StrategyView(props)
             {
                 n.opacity = 0.1;
             }
+        }
+        else if(n.childrenCount > 0)
+        {
+            n.color = "#FF4500";
         }
 
         if(hideLocked && isNodeLocked(n))
@@ -378,30 +359,56 @@ function StrategyView(props)
                 });
 
                 var newGraphData = {nodes: newNodes, links: []};
-                var pos = 0;
-                var linksCb = (links) => 
-                {
-                    if(links)
-                    {
-                        newGraphData.links = newGraphData.links.concat(links);
+
+                var reqs = [];
+                newNodes.forEach(x => {
+
+                    const linkReq = {
+                        operation: "query",
+                        filter: "IS(strategy_link) AND .idFrom = \"" + x.id + "\""
                     }
 
-                    pos++;
-                    if(pos < newNodes.length)
-                    {
-                        loadLinks(newNodes[pos].id, linksCb);
+                    const step = (rsp) => {
+                        if(rsp.object_list != "")
+                        {
+                            const newLinks = rsp.object_list.map(y => {
+                                return {source: y.idFrom, target: y.idTo, id: y.id};
+                            });
+            
+                            newGraphData.links = newGraphData.links.concat(newLinks);
+                        }
                     }
-                    else
-                    {
-                        successCb();
-                        newGraphData.nodes.forEach(x => setNodeStyle(x, !showCompleted, !showLocked));
-                        updateLinkStyling(newGraphData);
-                        setGraphData(newGraphData);
-                        setUpdating(false);
+
+                    reqs.push({req: linkReq, step: step});
+
+                    const childrenReq = {
+                        operation: "query",
+                        filter: "IS(strategy_node) AND .parentNodeId = \"" + x.id + '\"'
                     }
+
+                    const childrenStep = (rsp) => {
+                        if(rsp.object_list != "")
+                        {
+                            x.childrenCount = rsp.object_list.length;
+                        }
+                        else
+                        {
+                            x.childrenCount = 0;
+                        }
+                    }
+
+                    reqs.push({req: childrenReq, step: childrenStep});
+                });
+
+                var done = () => {
+                    successCb();
+                    newGraphData.nodes.forEach(x => setNodeStyle(x, !showCompleted, !showLocked));
+                    updateLinkStyling(newGraphData);
+                    setGraphData(newGraphData);
+                    setUpdating(false);
                 }
 
-                loadLinks(newNodes[pos].id, linksCb);
+                QueryChain(reqs, done);
             }
             else
             {
@@ -600,6 +607,8 @@ function StrategyView(props)
                 }
                 else
                 {
+                    selectedNode.childrenCount++;
+                    onNodeChanged(selectedNode);
                     setUpdating(false);
                 }
             });

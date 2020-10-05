@@ -4,9 +4,9 @@ import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import AddCircleOutlineIcon  from '@material-ui/icons/AddCircleOutline';
 import TextQueryDialog from './dialogs/TextQueryDialog.jsx'
+import ConfirmationDialog from './dialogs/ConfirmationDialog.jsx'
 
 import {
     IconButton
@@ -30,7 +30,8 @@ export default function ContractsCtrl(props)
 {
     const [ctr, setCtr] = React.useState({object_list: []});
     const [init, setInit] = React.useState(false);
-    const [inDialog, setInDialog] = React.useState(false);
+    const [inEditDialog, setInEditDialog] = React.useState(false);
+    const [inDeleteDialog, setInDeleteDialog] = React.useState(false);
     const [activeC, setActiveC] = React.useState(null);
 
     if(!init)
@@ -47,15 +48,38 @@ export default function ContractsCtrl(props)
         setInit(true);
     }
 
-    function prepareDialog(contract)
+    function prepareEditDialog(contract)
     {
-        setInDialog(true);
+        setInEditDialog(true);
         setActiveC(contract);
+    }
+
+    function prepareDeleteDialog(contract)
+    {
+        setInDeleteDialog(true);
+        setActiveC(contract);
+    }
+
+    function handleDeleteDialogFinished()
+    {
+        Materia.postDelete(activeC.id);
+        setInDeleteDialog(false);
+        var i = 0;
+        for(; i < ctr.length; ++i)
+        {
+            if(ctr[i].id === activeC.id)
+            {
+                ctr.splice(i, 1);
+                update();
+                break;
+            }
+        }
     }
 
     function handleDialogCanceled()
     {
-        setInDialog(false);
+        setInEditDialog(false);
+        setInDeleteDialog(false);
     }
 
     function update()
@@ -63,13 +87,13 @@ export default function ContractsCtrl(props)
         setCtr(JSON.parse(JSON.stringify(ctr)));
     }
 
-    function handleDialogFinished(text)
+    function handleEditDialogFinished(text)
     {
         var val = parseInt(text);
         if(!isNaN(val))
         {
             var total = parseInt(activeC.score) + val;
-            setInDialog(false);
+            setInEditDialog(false);
             activeC.score = total;
             Materia.postEdit(activeC.id, JSON.stringify(activeC));
 
@@ -111,7 +135,12 @@ export default function ContractsCtrl(props)
                     </React.Fragment>
                     }
                 >
-                    <IconButton style={{marginLeft: margin}} onClick={() => prepareDialog(contract)}><ConfirmationNumberIcon/></IconButton>
+                    <IconButton 
+                        style={{marginLeft: margin}} 
+                        onContextMenu={(e) => {e.preventDefault(); prepareDeleteDialog(contract);}} 
+                        onClick={() => prepareEditDialog(contract)}>
+                            <ConfirmationNumberIcon/>
+                    </IconButton>
                 </HtmlTooltip>);
         }
         return <IconButton style={{marginLeft: margin}}><ClearIcon /></IconButton>;
@@ -121,6 +150,7 @@ export default function ContractsCtrl(props)
                 {createContractItem(ctr[0], 10)}
                 {createContractItem(ctr[1], -10)}
                 {createContractItem(ctr[2], -10)}
-                {inDialog && <TextQueryDialog text="" onFinished={handleDialogFinished} onCanceled={handleDialogCanceled}/>}
+                {inEditDialog && <TextQueryDialog text="" onFinished={handleEditDialogFinished} onCanceled={handleDialogCanceled}/>}
+                <ConfirmationDialog open={inDeleteDialog} question="delete object" caption="confirm deletion" onNo={handleDialogCanceled} onYes={handleDeleteDialogFinished} />
             </div>;
 }
