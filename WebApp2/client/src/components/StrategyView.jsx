@@ -12,9 +12,11 @@ import SwapVertIcon from '@material-ui/icons/SwapVert';
 import LinkIcon from '@material-ui/icons/Link';
 import SaveIcon from '@material-ui/icons/Save';
 import DoneIcon from '@material-ui/icons/Done';
+import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 import ConfirmationDialog from './dialogs/ConfirmationDialog.jsx'
 import WatchLaterIcon  from '@material-ui/icons/WatchLater';
 import DateTimeCtrl from './DateTimeCtrl.jsx'
+import AddItemDialog from './AddItemDialog.jsx'
 
 import {
     CircularProgress,
@@ -132,6 +134,9 @@ function NodeInfoView(props)
             </IconButton>
             <IconButton edge="start" aria-label="complete" onClick={props.addLinkClicked}>
                 <LinkIcon/>
+            </IconButton>
+            <IconButton edge="start" aria-label="complete" onClick={props.addCalendarClicked}>
+                <CalendarTodayIcon/>
             </IconButton>
             <IconButton edge="start" aria-label="delete" onClick={props.deleteClicked}>
                 <DeleteIcon />
@@ -276,6 +281,7 @@ function StrategyView(props)
     const [path, setPath] = useState([]);
     const [selectedNode, setSelectedNode] = useState(null);
     const [showAddDialog, setShowAddDialog] = useState(false);
+    const [showAddReferenceDialog, setShowAddReferenceDialog] = useState(false);
     const [inDeleteDialog, setInDeleteDialog] = useState(false);
     const [parentIdToAdd, setParentIdToAdd] = useState("");
     const [selectNodeActive, setSelectNodeActive] = useState(false);
@@ -547,6 +553,7 @@ function StrategyView(props)
     function onAddDialogClosed()
     {
         setShowAddDialog(false);
+        setShowAddReferenceDialog(false);
     }
 
     function updateLinkStyling(gd)
@@ -658,6 +665,11 @@ function StrategyView(props)
     function onAddLinkClicked()
     {
         setSelectNodeActive(true);
+    }
+
+    function onAddCalendarClicked()
+    {
+        setShowAddReferenceDialog(true);
     }
 
     function onCancelClicked()
@@ -799,6 +811,7 @@ function StrategyView(props)
         <div>
         <Backdrop open={updating}><CircularProgress color="inherit"/></Backdrop>
         {showAddDialog && <AddNodeDialog onClose={onAddDialogClosed} onOk={onAddDialogOk}/>}
+        {showAddReferenceDialog && <AddItemDialog onClose={onAddDialogClosed} selectedType="calendar_item" init={{entityType: 2, text: selectedNode.title, nodeReference: selectedNode.id}}/>}
         <ConfirmationDialog open={inDeleteDialog} question="delete object" caption="confirm deletion" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
         <Grid container direction="row" justify="space-around" alignItems="flex-start">
             <div style={{width: '75vw'}}>
@@ -830,6 +843,7 @@ function StrategyView(props)
                     deleteClicked={onNodeDelete} 
                     addClicked={onNodeAddClicked}
                     addLinkClicked={onAddLinkClicked}
+                    addCalendarClicked={onAddCalendarClicked}
                     onChanged={onNodeChanged}
                     onCompleted={onNodeCompleted}
                     onSplitHorizClicked={onNodeSplitHorizClicked}

@@ -185,7 +185,7 @@ export default function CalendarCtrl(props)
 
                 return (<ListItem button key={obj.id} onClick={() => prepareEdit(index)}>
                         <ListItemIcon>
-                            {obj.entityType === "1" ? <AssignmentTurnedInIcon/> : <EventIcon/>} 
+                            {obj.entityType === "0" ? <EventIcon/> : <AssignmentTurnedInIcon/>} 
                         </ListItemIcon>
                         <ListItemText primary={dt.getHours() + ":" + dt.getMinutes().toString().padStart(2, "0") +" - " + obj.text}/>    
                         <ListItemSecondaryAction>
