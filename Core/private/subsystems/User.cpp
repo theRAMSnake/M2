@@ -1,5 +1,6 @@
 #include "User.hpp"
 #include "../ObjectManager.hpp"
+#include "Strategy.hpp"
 #include "../types/SimpleList.hpp"
 #include "../types/Variable.hpp"
 #include "../ExceptionsUtil.hpp"
@@ -42,7 +43,7 @@ Time advance(const Time src, const int recType)
     return result;
 }
 
-void complete(const Id id, ObjectManager& om, RewardSS& reward)
+void complete(const Id id, ObjectManager& om, RewardSS& reward, StrategySS& strategy)
 {
     auto objectPtr = om.get(id);
     auto object = *objectPtr;
@@ -57,6 +58,10 @@ void complete(const Id id, ObjectManager& om, RewardSS& reward)
     if(eType == 1/*task*/)
     {
         reward.addPoints(1);
+    }
+    else if(eType == 2/*strategy ref*/)
+    {
+        strategy.onCalendarReferenceCompleted(object["nodeReference"].toId());
     }
 
     if(recType != 0/*none*/)
@@ -73,34 +78,37 @@ void complete(const Id id, ObjectManager& om, RewardSS& reward)
 class CompleteCommand : public Command
 {
 public:
-   CompleteCommand(const Id& id, RewardSS& reward)
+   CompleteCommand(const Id& id, RewardSS& reward, StrategySS& strategy)
    : mId(id)
    , mReward(reward)
+   , mStrategy(strategy)
    {
 
    }
 
    ExecutionResult execute(ObjectManager& objManager) override
    {
-      complete(mId, objManager, mReward);
+      complete(mId, objManager, mReward, mStrategy);
       return Success{};
    }
 
 private:
     const Id mId;
     RewardSS& mReward;
+    StrategySS& mStrategy;
 };
 
 Command* UserSS::parseComplete(const boost::property_tree::ptree& src)
 {
    auto id = getOrThrow<Id>(src, "id", "Id is not specified");
 
-   return new CompleteCommand(id, mReward);
+   return new CompleteCommand(id, mReward, mStrategy);
 }
 
-UserSS::UserSS(ObjectManager& objMan, RewardSS& reward)
+UserSS::UserSS(ObjectManager& objMan, RewardSS& reward, StrategySS& strategy)
 : mOm(objMan)
 , mReward(reward)
+, mStrategy(strategy)
 {
 
 }

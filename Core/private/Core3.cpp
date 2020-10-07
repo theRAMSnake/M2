@@ -72,13 +72,15 @@ Core3::Core3(const CoreConfig& config)
    mSubsystems.push_back(commonSS);
    mCommonSS = commonSS.get();
 
+   auto strategySS = std::make_shared<StrategySS>(mObjManager, *rewardSS);
+   mSubsystems.push_back(strategySS);
+
    mSubsystems.push_back(std::make_shared<ChallengeSS>(mObjManager, *rewardSS));
    mSubsystems.push_back(std::make_shared<FinanceSS>(mObjManager, *rewardSS, *commonSS));
-   mSubsystems.push_back(std::make_shared<UserSS>(mObjManager, *rewardSS));
+   mSubsystems.push_back(std::make_shared<UserSS>(mObjManager, *rewardSS, *strategySS));
    mSubsystems.push_back(std::make_shared<JournalSS>(mObjManager));
    mSubsystems.push_back(std::make_shared<CalendarSS>(mObjManager));
-   mSubsystems.push_back(std::make_shared<StrategySS>(mObjManager, *rewardSS));
-
+  
    for(auto s : mSubsystems)
    {
       for(auto t : s->getTypes())

@@ -103,6 +103,7 @@ void StrategySS::handleNodeChanging(const Object& before, Object& after)
     if(before["isAchieved"].get<Type::Bool>() == false &&
         after["isAchieved"].get<Type::Bool>() == true)
     {
+        std::cout << "+";
         mReward.addPoints(after["reward"].get<Type::Int>());
     }
 }
@@ -193,6 +194,28 @@ void StrategySS::validateLink(Object& obj)
             }
         }
     }
+}
+
+void StrategySS::onCalendarReferenceCompleted(const Id& id)
+{
+    auto res = mOm.get(id);
+    if(res)
+    {
+        Object obj(*res);
+        auto tp = obj["type"].get<Type::Option>();
+        //If node goal/task -> change isAchieved
+        if(tp == 0 || tp == 1)
+        {
+            obj["isAchieved"] = true;
+        }
+        //If counter -> ++
+        else if(tp == 2)
+        {
+            obj["value"] = obj["value"].get<Type::Int>() + 1;
+        }
+
+        mOm.modify(obj);
+    }   
 }
 
 }

@@ -6,10 +6,11 @@ namespace materia
 {
 
 class ObjectManager;
+class StrategySS;
 class UserSS : public ISubsystem
 {
 public:
-    UserSS(ObjectManager& objMan, RewardSS& reward);
+    UserSS(ObjectManager& objMan, RewardSS& reward, StrategySS& strategy);
     void onNewDay() override;
     void onNewWeek() override;
     std::vector<TypeDef> getTypes() override;
@@ -23,6 +24,7 @@ private:
 
     ObjectManager& mOm;
     RewardSS& mReward;
+    StrategySS& mStrategy;
 };
 
 }

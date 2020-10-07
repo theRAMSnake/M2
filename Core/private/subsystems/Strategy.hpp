@@ -16,6 +16,8 @@ public:
     std::vector<TypeDef> getTypes() override;
     std::vector<CommandDef> getCommandDefs() override;
 
+    void onCalendarReferenceCompleted(const Id& id);
+
 private:
     void handleNodeBeforeDelete(Object& obj);
     void handleNodeChanging(const Object& before, Object& after);
