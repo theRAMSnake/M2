@@ -170,11 +170,19 @@ export default function ObjectProperties(props)
         }
         if(req.type === 'reference')
         {
+            const val = props.object[req.name];
+            if(val === "")
+            {
+                let newObj = JSON.parse(JSON.stringify(props.object));
+                newObj[req.name] = getRefOptions(req.refType)[0].id;
+
+                props.onChange(newObj);
+            }
             return <FormControl fullWidth style={{marginTop: '10px'}}>
                         <InputLabel htmlFor={req.name}>{req.name}</InputLabel>
                             <Select
                                 native
-                                value={props.object[req.name]}
+                                value={ props.object[req.name]}
                                 onChange={handleReferenceChange}
                                 inputProps={{
                                     name: req.name,

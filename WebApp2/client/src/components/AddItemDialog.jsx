@@ -78,8 +78,13 @@ function initObjectBody(typeName, init)
         var j = 0;
         for (j = 0; j < type.fields.length; j++)
         {
-            result[type.fields[j].name] = init[type.fields[j].name] ? init[type.fields[j].name] : createDefault(type.fields[j].type);
+            result[type.fields[j].name] = createDefault(type.fields[j].type);
         }
+    }
+
+    for(var f in init)
+    {
+        result[f] = init[f];
     }
 
     result.typename = typeName;
