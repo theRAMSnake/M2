@@ -1,38 +1,30 @@
 #include <iostream>
 #include <chrono>
+#include <fstream>
 #include <Core/ICore3.hpp>
+#include <vector>
+#include <string>
+#include <map>
 
 int main(int argc,  char** argv)
 {
-   if(argc < 2)
+   std::map<std::string, std::vector<int>> result;
+   std::ifstream stream("/home/snake/Work/cache_dump.txt");
+   std::string feat;
+   int order;
+   int frame;
+   while(stream >> frame >> feat >> order)
    {
-      std::cout << "Usage Profile <dbpath>";
-      return -1;
+      result[feat].push_back(order);
    }
 
-   std::string path = argv[1];
-
-   auto core = materia::createCore({path});
-   auto cmd = "{\"operation\":\"query\",\"ids\":[\"financial_report\"]}";
-   std::cout << core->executeCommandJson(cmd);
-
-   /*
-
-   std::chrono::time_point<std::chrono::high_resolution_clock> started = std::chrono::high_resolution_clock::now();
-
-   for(int i = 0; i < 1000; ++i)
+   for(auto x : result)
    {
-       if(i % 100 == 0)
-       {
-           std::cout << ".";
-           std::cout.flush();
-       }
-       core->executeCommandJson(cmd);
+      std::cout << x.first << ": ";
+      for(auto y : x.second)
+      {
+         std::cout << y << " ";
+      }
+      std::cout << std::endl;
    }
-
-   auto time_D_msec = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - started);
-
-   std::cout << "Done " + std::to_string(time_D_msec.count()) + "ms";*/
-
-   //741
-} 
+}

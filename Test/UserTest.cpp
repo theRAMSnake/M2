@@ -1,0 +1,166 @@
+#define BOOST_TEST_DYN_LINK
+#include <boost/test/unit_test.hpp>
+#include <Core/ICore3.hpp>
+#include "../Core/private/JsonSerializer.hpp"
+#include "Utils.hpp"
+
+class UserTest
+{
+public:
+   UserTest() 
+   {
+      system("rm Test.db");
+      mCore = materia::createCore({"Test.db"});
+
+      {
+         //Add inbox to prevent spontaneoues points
+         std::string inboxFill = "{\"operation\":\"create\","
+            "\"typename\":\"simple_list\","
+            "\"defined_id\":\"inbox\","
+            "\"params\":{\"objects\":[\"ddd\"]}}";
+         expectId(mCore->executeCommandJson(inboxFill));
+      }
+      {
+         boost::property_tree::ptree create;
+         create.put("operation", "create");
+         create.put("typename", "reward_pool");
+         create.put("defined_id", "pool");
+         create.put("params.amount", 0);
+         create.put("params.amountMax", 100);
+
+         expectId(mCore->executeCommandJson(writeJson(create)));
+      }
+   }
+
+protected:
+
+   std::shared_ptr<materia::ICore3> mCore;
+};
+
+BOOST_FIXTURE_TEST_CASE(CompleteGoalNode, UserTest) 
+{
+   //Create goal node
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "strategy_node");
+      create.put("defined_id", "g");
+      create.put("params.type", 0);
+      create.put("params.reward", 1);
+
+      expectId(mCore->executeCommandJson(writeJson(create)));
+   }
+   //Create reference
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "calendar_item");
+      create.put("defined_id", "c");
+      create.put("params.entityType", 2);
+      create.put("params.nodeReference", "g");
+
+      expectId(mCore->executeCommandJson(writeJson(create)));
+   }
+   //Complete reference
+   {
+      boost::property_tree::ptree complete;
+      complete.put("operation", "complete");
+      complete.put("id", "c");
+
+      mCore->executeCommandJson(writeJson(complete));
+   }
+   //Check goal node
+   auto g = queryFirst("strategy_node", *mCore);
+   BOOST_CHECK(g.get<bool>("isAchieved"));
+
+   //Check points
+   auto p = queryFirst("reward_pool", *mCore);
+   BOOST_CHECK_EQUAL(1, p.get<int>("amount"));
+}
+
+BOOST_FIXTURE_TEST_CASE(CompleteCounterStep, UserTest) 
+{
+   //Create counter node
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "strategy_node");
+      create.put("defined_id", "g");
+      create.put("params.type", 2);
+      create.put("params.target", 2);
+      create.put("params.reward", 1);
+
+      expectId(mCore->executeCommandJson(writeJson(create)));
+   }
+   //Create reference
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "calendar_item");
+      create.put("defined_id", "c");
+      create.put("params.entityType", 2);
+      create.put("params.nodeReference", "g");
+
+      expectId(mCore->executeCommandJson(writeJson(create)));
+   }
+   //Complete reference
+   {
+      boost::property_tree::ptree complete;
+      complete.put("operation", "complete");
+      complete.put("id", "c");
+
+      mCore->executeCommandJson(writeJson(complete));
+   }
+   //Check counter node
+   auto g = queryFirst("strategy_node", *mCore);
+   BOOST_CHECK(!g.get<bool>("isAchieved"));
+   BOOST_CHECK_EQUAL(1, g.get<int>("value"));
+
+   //Check points
+   auto p = queryFirst("reward_pool", *mCore);
+   BOOST_CHECK_EQUAL(0, p.get<int>("amount"));
+}
+
+
+BOOST_FIXTURE_TEST_CASE(CompleteCounterFull, UserTest) 
+{
+   //Create counter node
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "strategy_node");
+      create.put("defined_id", "g");
+      create.put("params.type", 2);
+      create.put("params.target", 1);
+      create.put("params.reward", 1);
+
+      expectId(mCore->executeCommandJson(writeJson(create)));
+   }
+   //Create reference
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "calendar_item");
+      create.put("defined_id", "c");
+      create.put("params.entityType", 2);
+      create.put("params.nodeReference", "g");
+
+      expectId(mCore->executeCommandJson(writeJson(create)));
+   }
+   //Complete reference
+   {
+      boost::property_tree::ptree complete;
+      complete.put("operation", "complete");
+      complete.put("id", "c");
+
+      mCore->executeCommandJson(writeJson(complete));
+   }
+   //Check counter node
+   auto g = queryFirst("strategy_node", *mCore);
+   BOOST_CHECK(g.get<bool>("isAchieved"));
+   BOOST_CHECK_EQUAL(1, g.get<int>("value"));
+
+   //Check points
+   auto p = queryFirst("reward_pool", *mCore);
+   BOOST_CHECK_EQUAL(1, p.get<int>("amount"));
+}

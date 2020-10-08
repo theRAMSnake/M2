@@ -287,7 +287,7 @@ function StrategyView(props)
     const [selectNodeActive, setSelectNodeActive] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [showCompleted, setShowCompleted] = useState(true);
-    const [showLocked, setShowLocked] = useState(true);
+    const [showLocked, setShowLocked] = useState(false);
 
     if(graphData == null)
     {

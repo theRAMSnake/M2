@@ -158,7 +158,7 @@ export default function ListObjectView(props)
     {
         setInsertVisible(false);
 
-        if(!object.items)
+        if(!object.objects)
         {
             var items = [];
             object['objects'] = items;            
