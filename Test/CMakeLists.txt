@@ -19,6 +19,7 @@ DatabaseTest.cpp
 ContractsTest.cpp
 Strategy3Test.cpp
 Utils.cpp
+UserTest.cpp
 )
 
 find_package(Boost COMPONENTS system python unit_test_framework filesystem REQUIRED)

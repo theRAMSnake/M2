@@ -60,6 +60,11 @@ Command* parseDescribe(const boost::property_tree::ptree& src)
    return new DescribeCommand();
 }
 
+Command* parseBackup(const boost::property_tree::ptree& src, const std::string dbFileName)
+{
+   return new BackupCommand(dbFileName);
+}
+
 Core3::Core3(const CoreConfig& config)
 : mDb(config.dbFileName)
 , mOldCore(mDb, config.dbFileName)
@@ -99,6 +104,7 @@ Core3::Core3(const CoreConfig& config)
    mCommandDefs.push_back({"modify", parseModify});
    mCommandDefs.push_back({"destroy", parseDestroy});
    mCommandDefs.push_back({"describe", parseDescribe});
+   mCommandDefs.push_back({"backup", std::bind(parseBackup, std::placeholders::_1, config.dbFileName)});
 
    mObjManager.initialize();
 }

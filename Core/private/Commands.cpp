@@ -71,4 +71,16 @@ ExecutionResult DescribeCommand::execute(ObjectManager& objManager)
     return objManager.describe();
 }
 
+ExecutionResult BackupCommand::execute(ObjectManager& objManager)
+{
+    system(("sqlite3 " + mDbName + " \".backup '/materia/materia.back'\"").c_str());
+    return Success();
+}
+
+BackupCommand::BackupCommand(const std::string& dbName)
+: mDbName(dbName)
+{
+
+}
+
 }

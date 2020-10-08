@@ -78,4 +78,14 @@ public:
     ExecutionResult execute(ObjectManager& objManager) override;
 };
 
+class BackupCommand : public Command
+{
+public:
+    BackupCommand(const std::string& dbName);
+    ExecutionResult execute(ObjectManager& objManager) override;
+
+private:
+    const std::string mDbName;
+};
+
 }
