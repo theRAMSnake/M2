@@ -64,5 +64,5 @@ module.exports = {
 
   // start Webpack in a watch mode, so Webpack will rebuild the bundle on changes
   watch: true,
-  mode: "development"
+  mode: "production"
 };

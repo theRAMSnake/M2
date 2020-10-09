@@ -1,0 +1,10 @@
+
+> webapp2@1.0.0 start /root/M2/WebApp2
+> nodemon --use_strict index.js
+
+[33m[nodemon] 2.0.3[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: js,mjs,json[39m
+[32m[nodemon] starting `node --use_strict index.js`[39m
+Server is running on http://localhost:5758 or http://127.0.0.1:5758

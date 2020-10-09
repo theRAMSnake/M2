@@ -6,7 +6,7 @@ const router = new express.Router();
 var Mutex = require('async-mutex').Mutex;
 
 const sock = new zmq.Request
-sock.connect("tcp://62.171.175.23:5756")
+sock.connect("tcp://localhost:5756")
 
 async function materiaGet(req)
 {   
