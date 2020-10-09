@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../ICore3.hpp"
-#include "Core.hpp"
 #include "TypeSystem.hpp"
 #include "ObjectManager.hpp"
 #include "CommandParser.hpp"
@@ -16,8 +15,6 @@ class Core3 : public ICore3
 public:
     Core3(const CoreConfig& config);
 
-    IBackuper& getBackuper() override;
-    IStrategy_v2& getStrategy_v2() override;
     void onNewDay() override;
     void onNewWeek() override;
 
@@ -32,7 +29,6 @@ private:
 
     Database mDb;
     TypeSystem mTypeSystem;
-    Core mOldCore;
     ObjectManager mObjManager;
     CommonSS* mCommonSS;
     std::vector<CommandDef> mCommandDefs;

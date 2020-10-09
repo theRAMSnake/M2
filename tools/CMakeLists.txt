@@ -5,9 +5,7 @@ include_directories("../build/Common")
 include_directories("..")
 
 add_executable(m2tools 
-main.cpp 
-../WebApp/materia/ZmqPbChannel.cpp
-../WebApp/materia/JournalModel.cpp
+main.cpp
 )
 
 LIST(APPEND CMAKE_MODULE_PATH "..")

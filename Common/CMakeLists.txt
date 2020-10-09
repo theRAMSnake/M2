@@ -5,7 +5,6 @@ LIST(APPEND CMAKE_MODULE_PATH "..")
 include_directories("../build/Common")
 
 find_package(Boost COMPONENTS system REQUIRED)
-find_package(Protobuf REQUIRED)
 
 add_library(m2common STATIC 
    Utils.cpp
@@ -14,6 +13,4 @@ add_library(m2common STATIC
    Password.cpp
 )
 
-add_subdirectory(messages)
-
-target_link_libraries(m2common crypto m2commonMessages)
+target_link_libraries(m2common crypto)

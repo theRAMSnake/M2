@@ -1,14 +1,23 @@
 #pragma once
 
-#include "ICore.hpp"
+#include <string>
+#include <memory>
 
 namespace materia
 {
 
-class ICore3 : public ICore
+struct CoreConfig
+{
+    std::string dbFileName;
+};
+
+class ICore3
 {
 public:
     virtual std::string executeCommandJson(const std::string& json) = 0;
+
+    virtual void onNewDay() = 0;
+    virtual void onNewWeek() = 0;
 
     virtual ~ICore3(){}
 };

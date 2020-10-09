@@ -19,6 +19,8 @@ data class CalendarItem(
         var timestamp: Long,
         var reccurencyType: Int = 0,
         var entityType: Int = 0,
+        @Optional
+        var nodeReference: String = "",
         var typename: String = "calendar_item",
         @Optional
         override var trackingInfo: StatusOfChange = StatusOfChange.None

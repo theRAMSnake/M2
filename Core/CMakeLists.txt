@@ -7,7 +7,6 @@ include_directories("..")
 include_directories("/usr/include/python3.8")
 
 add_library(m2core 
-private/Core.cpp
 private/Core3.cpp
 private/TypeSystem.cpp
 private/CommandParser.cpp
@@ -16,20 +15,15 @@ private/Commands.cpp
 private/ObjectManager.cpp
 private/Impl.cpp
 private/Database.cpp
-private/Strategy_v2.cpp
 private/Logger.cpp
 private/JsonSerializer.cpp
 private/JsonRestorationProvider.cpp
 private/EmptyValueProvider.cpp
-private/Backuper.cpp
-private/StrategyGraph.cpp
-private/NodeAttributes.cpp
 private/Object.cpp
 private/TypeHandler.cpp
 private/types/SimpleList.cpp
 private/types/Variable.cpp
 private/Type.cpp
-private/subsystems/Challenge.cpp
 private/subsystems/Finance.cpp
 private/subsystems/User.cpp
 private/subsystems/Common.cpp

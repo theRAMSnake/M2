@@ -8,7 +8,6 @@
 
 #include "subsystems/User.hpp"
 #include "subsystems/Finance.hpp"
-#include "subsystems/Challenge.hpp"
 #include "subsystems/Calendar.hpp"
 #include "subsystems/Common.hpp"
 #include "subsystems/Journal.hpp"
@@ -67,7 +66,6 @@ Command* parseBackup(const boost::property_tree::ptree& src, const std::string d
 
 Core3::Core3(const CoreConfig& config)
 : mDb(config.dbFileName)
-, mOldCore(mDb, config.dbFileName)
 , mObjManager(mDb, mTypeSystem)
 {
    auto rewardSS = std::make_shared<RewardSS>(mObjManager);
@@ -80,7 +78,6 @@ Core3::Core3(const CoreConfig& config)
    auto strategySS = std::make_shared<StrategySS>(mObjManager, *rewardSS);
    mSubsystems.push_back(strategySS);
 
-   mSubsystems.push_back(std::make_shared<ChallengeSS>(mObjManager, *rewardSS));
    mSubsystems.push_back(std::make_shared<FinanceSS>(mObjManager, *rewardSS, *commonSS));
    mSubsystems.push_back(std::make_shared<UserSS>(mObjManager, *rewardSS, *strategySS));
    mSubsystems.push_back(std::make_shared<JournalSS>(mObjManager));
@@ -107,16 +104,6 @@ Core3::Core3(const CoreConfig& config)
    mCommandDefs.push_back({"backup", std::bind(parseBackup, std::placeholders::_1, config.dbFileName)});
 
    mObjManager.initialize();
-}
-
-IStrategy_v2& Core3::getStrategy_v2()
-{
-   return mOldCore.getStrategy_v2();
-}
-
-IBackuper& Core3::getBackuper()
-{
-   return mOldCore.getBackuper();
 }
 
 void Core3::onNewDay()

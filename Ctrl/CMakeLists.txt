@@ -6,7 +6,6 @@ include_directories("..")
 
 add_executable(m2ctrl 
    main.cpp
-   ../WebApp/materia/ZmqPbChannel.cpp
 )
 
 LIST(APPEND CMAKE_MODULE_PATH "..")

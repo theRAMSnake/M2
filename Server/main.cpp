@@ -5,13 +5,12 @@
 #include <chrono>
 #include <fstream>
 #include <thread>
-#include <messages/common.pb.h>
+#include <mutex>
+#include <map>
 #include <fmt/format.h>
-#include "ServiceWrapper.hpp"
-#include "StrategyServiceImpl.hpp"
-#include "AdminServiceImpl.hpp"
 #include "Common/Codec.hpp"
 #include "Common/Password.hpp"
+#include "Core/ICore3.hpp"
 
 std::string string_to_hex(const std::string& input)
 {
@@ -56,22 +55,28 @@ private:
 
 DoubleLogger logger("m2server.log");
 std::mutex gMainMutex;
-std::map<std::string, std::shared_ptr<materia::IService>> gServices;
 static bool shutdownFlag = false;
 
-void timerFunc(materia::ICore* core)
+void timerFunc(materia::ICore3* core)
 {
-    auto t = std::time(NULL);
-    auto tm_struct = localtime(&t);
-    int hour = tm_struct->tm_hour;
-
-    if(hour != 0)
-    {
-        std::this_thread::sleep_for(std::chrono::hours(24 - hour));
-    }
-
+    int cicleCooldown = 0;
+    
     while(true)
     {
+        if(shutdownFlag)
+        {
+            return;
+        }
+
+        auto t = std::time(NULL);
+        auto tm_struct = localtime(&t);
+
+        if(cicleCooldown > 0)
+        {
+            cicleCooldown--;
+        }
+
+        if(tm_struct->tm_hour == 3 && tm_struct->tm_min == 0 && cicleCooldown == 0)
         {
             std::unique_lock<std::mutex> lock(gMainMutex);
             core->onNewDay();
@@ -83,102 +88,13 @@ void timerFunc(materia::ICore* core)
             {
                 core->onNewWeek();
             }
-        }
-        
-        std::this_thread::sleep_for(std::chrono::hours(24));
-    }
-}
 
-common::MateriaMessage handleMessage(const common::MateriaMessage& in)
-{
-    std::unique_lock<std::mutex> lock(gMainMutex); 
-    std::chrono::time_point<std::chrono::high_resolution_clock> started =
-        std::chrono::high_resolution_clock::now();
+            cicleCooldown = 3600;//Make sure we will never hit in at least one hour
 
-    try
-    {
-        auto pos = gServices.find(in.to());
-        if(pos != gServices.end())
-        {
-            auto result = pos->second->handleMessage(in);
-            auto time_D_msec = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - started);
-
-            logger << "Handled: " << in.to() << "::" << in.operationname() << " (" << std::to_string(time_D_msec.count()) << "ms)\n";
-
-            return result;
-        }
-        else
-        {
-            logger << "Target service not found: " << in.to() << "\n";
-            logger << "Details: " << in.DebugString() << "\n";
-        }
-    }
-    catch(std::exception& ex)
-    {
-        logger << ex.what() << "\n";
-    }
-
-    common::MateriaMessage errorMsg;
-
-    errorMsg.set_from("materia");
-    errorMsg.set_to(in.from());
-    errorMsg.set_error("Failed to handle message");
-
-    return errorMsg;
-}
-
-void legacyFunc(std::string password, materia::ICore3* core)
-{
-    Codec codec(password);
-
-    zmq::context_t context (1);
-    zmq::socket_t clientSocket (context, ZMQ_REP);
-    clientSocket.bind ("tcp://*:5757");
-
-    gServices.insert({"StrategyService", std::make_shared<materia::ServiceWrapper<materia::StrategyServiceImpl>>((*core))});
-    gServices.insert({"AdminService", std::make_shared<materia::ServiceWrapper<materia::AdminServiceImpl>>(*core, shutdownFlag)});
-    
-    while(true)
-    {
-        zmq::message_t clientMessage;
-        clientSocket.recv (clientMessage, zmq::recv_flags::none);
-        logger << "Received message\n";
-
-        std::string received(static_cast<const char *>(clientMessage.data()), clientMessage.size());
-        std::string decoded;
-        
-        try
-        {
-            decoded = codec.decrypt(received);
-        }
-        catch(...)
-        {
-            logger << "Decription failed\n";
-            clientSocket.send (clientMessage, zmq::send_flags::none);
-            continue;
+            core->executeCommandJson("{operation:\"push\", params:{listId: \"inbox\", value: \"Core daily updated.\"}}");
         }
 
-        common::MateriaMessage materiaMsg;
-        if(!materiaMsg.ParseFromString(decoded))
-        {
-            logger << "Cannot parse message, sending it back\n";
-            clientSocket.send (clientMessage, zmq::send_flags::none);
-            continue;
-        }
-
-        auto resp = handleMessage(materiaMsg);
-        std::string serialized;
-        resp.SerializeToString(&serialized);
-        std::string encoded = codec.encrypt(serialized);
-
-        zmq::message_t msgToSend (encoded.data(), encoded.size());
-        clientSocket.send (msgToSend, zmq::send_flags::none);
-        logger << "Sending responce\n";
-
-        if(shutdownFlag)
-        {
-            break;
-        }
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 }
 
@@ -193,7 +109,7 @@ void newFunc(std::string password, materia::ICore3* core)
     while(true)
     {
         zmq::message_t clientMessage;
-        clientSocket.recv (clientMessage, zmq::recv_flags::none);
+        (void)clientSocket.recv (clientMessage, zmq::recv_flags::none);
 
         std::string received(static_cast<const char *>(clientMessage.data()), clientMessage.size());
         std::string decoded;
@@ -213,8 +129,20 @@ void newFunc(std::string password, materia::ICore3* core)
         }
         
         logger << "In: " << decoded << "\n";
-        auto result = core->executeCommandJson(decoded);
+
+        std::string result;
+        if(decoded == "shutdown")
+        {
+            result = "shuting down";
+            shutdownFlag = true;
+        }
+        else
+        {
+            result = core->executeCommandJson(decoded);
+        }
+
         logger << "Out: " << result << "\n";
+
         std::string encoded = codec.encrypt(result);
 
         zmq::message_t msgToSend (encoded.data(), encoded.size());
@@ -233,11 +161,9 @@ int main(int argc, char *argv[])
 
     auto core = materia::createCore({"/materia/materia.db"});
 
-    std::thread legacyThread(&legacyFunc, password, core.get());
     std::thread webThread(&newFunc, password, core.get());
     std::thread timerThread(&timerFunc, core.get());
     
-    legacyThread.join();
     webThread.join();
     timerThread.join();
 

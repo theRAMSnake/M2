@@ -1,41 +1,19 @@
 #include <zmq.hpp>
 #include <iostream>
-#include "WebApp/materia/ZmqPbChannel.hpp"
-#include "WebApp/materia/MateriaServiceProxy.hpp"
-#include <messages/admin.pb.h>
 #include <Common/Password.hpp>
 
 void start(const std::string password)
 {
    system(("nohup ./m2server " + password + "&").c_str());
-   system("nohup ./run_wa.sh &");
+   system("WebApp2/run.sh");
 
    std::cout << "Done\n";
 }
 
 void stop(const std::string password)
 {
-   system("pkill WebApp");
-
-   zmq::context_t context(1);
-   zmq::socket_t socket(context, ZMQ_REQ);
-   ZmqPbChannel channel(socket, "backuper", password);
-
-   const std::string ip = "localhost";
-   socket.connect("tcp://localhost:5757");
-
-   MateriaServiceProxy<admin::AdminService> service(channel);
-
-   common::EmptyMessage empty;
-   service.getService().ShutDownCore(nullptr, &empty, &empty, nullptr);
-
-   std::cout << "Done\n";
-}
-
-void test(const std::string password)
-{
-   system(("nohup ./m2server " + password + "&").c_str());
-   system("nohup ./run_wa_test.sh & > wa.log");
+   system("killall node");
+   system("./m2tools shutdown");
 
    std::cout << "Done\n";
 }
@@ -58,9 +36,10 @@ int main(int argc, char *argv[])
    {
       stop(password);
    }
-   else if(commandName == "test")
+   else if(commandName == "restart")
    {
-      test(password);
+      stop(password);
+      start(password);
    }
    else
    {

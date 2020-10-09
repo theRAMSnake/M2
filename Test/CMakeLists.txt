@@ -10,7 +10,6 @@ include_directories("..")
 add_executable(Test 
 #EncDecTest.cpp
 RewardTest.cpp
-ChallengeTest.cpp
 NewAPITest.cpp
 ExpressionsTest.cpp
 ObjectTest.cpp
