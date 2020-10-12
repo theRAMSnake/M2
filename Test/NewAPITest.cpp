@@ -445,3 +445,34 @@ BOOST_FIXTURE_TEST_CASE( TestJournalIndexDeleteChildren, NewAPITest )
         BOOST_CHECK_EQUAL(0, counter);
     }
 }
+
+BOOST_FIXTURE_TEST_CASE( TestContains, NewAPITest ) 
+{
+    {
+        boost::property_tree::ptree create;
+        create.put("operation", "create");
+        create.put("typename", "journal_header");
+        create.put("defined_id", "parent");
+        create.put("params.isPage", false);
+        create.put("params.modified", 555);
+
+        mCore->executeCommandJson(writeJson(create));
+    }
+    {
+        boost::property_tree::ptree create;
+        create.put("operation", "create");
+        create.put("typename", "reward_contract");
+        create.put("params.value", 5);
+        create.put("params.caption", "fff bb a");
+
+        mCore->executeCommandJson(writeJson(create));
+    }
+   
+    boost::property_tree::ptree query;
+    query.put("operation", "query");
+    query.put("filter", "IS(reward_contract) AND .caption contains \"bb\"");
+    BOOST_CHECK_EQUAL(1, count(mCore->executeCommandJson(writeJson(query))));
+
+    query.put("filter", "IS(reward_contract) AND .caption contains \"aa\"");
+    BOOST_CHECK_EQUAL(0, count(mCore->executeCommandJson(writeJson(query))));
+}

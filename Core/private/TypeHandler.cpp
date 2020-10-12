@@ -68,9 +68,16 @@ std::vector<ObjectPtr> TypeHandler::query(const Filter& f)
 
     for(auto kv : mPool) 
     {   
-        if(std::get<bool>(f.evaluate(*kv.second)))
+        try
         {
-            result.push_back(kv.second);
+            if(std::get<bool>(f.evaluate(*kv.second)))
+            {
+                result.push_back(kv.second);
+            }
+        }
+        catch(...)
+        {
+            //Do nothing if expession cannot be evaluated for this object
         }
     }
 

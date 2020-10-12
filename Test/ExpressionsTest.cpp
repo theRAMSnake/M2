@@ -76,3 +76,13 @@ BOOST_FIXTURE_TEST_CASE( TestAndOrExp, ExpressionsTest )
    BOOST_CHECK_EQUAL(true, std::get<bool>(materia::parseExpression(".som contains .some1 OR .some < 10")->evaluate(p)));
    BOOST_CHECK_EQUAL(false, std::get<bool>(materia::parseExpression(".som contains .some3 OR .some < 1")->evaluate(p)));
 }
+
+BOOST_FIXTURE_TEST_CASE( TestContainsString, ExpressionsTest ) 
+{
+   materia::Object p(gType, materia::Id::Invalid);
+   p["som"] = std::string("aaa");
+   p["p"] = 5;
+
+   BOOST_CHECK_EQUAL(true, std::get<bool>(materia::parseExpression(".som contains \"aa\"")->evaluate(p)));
+   BOOST_CHECK_EQUAL(false, std::get<bool>(materia::parseExpression(".p = 5 AND .som contains \"bb\"")->evaluate(p)));
+}
