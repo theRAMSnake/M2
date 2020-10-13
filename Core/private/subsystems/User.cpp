@@ -4,6 +4,7 @@
 #include "../types/SimpleList.hpp"
 #include "../types/Variable.hpp"
 #include "../ExceptionsUtil.hpp"
+#include "../rng.hpp"
 #include <boost/date_time/gregorian/greg_date.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
@@ -119,7 +120,7 @@ void UserSS::generateNewTOD()
    types::Variable tod(mOm, Id("tip_of_the_day"));
    if(wisdom.size() > 0)
    {
-      auto pos = rand() % wisdom.size();
+      auto pos = Rng::gen32() % wisdom.size();
       tod = wisdom.at(pos);
    }
 }
@@ -127,7 +128,7 @@ void UserSS::generateNewTOD()
 void UserSS::awardInbox()
 {
    types::SimpleList inbox(mOm, Id("inbox"));
-   if(inbox.size() == 0 && rand() % 10 == 0)
+   if(inbox.size() == 0 && Rng::genProbability(0.1))
    {
       mReward.addPoints(1);
       inbox.add("Extra point awarded for empty inbox.");

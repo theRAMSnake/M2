@@ -2,6 +2,7 @@
 #include "../ObjectManager.hpp"
 #include "../Commands.hpp"
 #include "../ExceptionsUtil.hpp"
+#include "../rng.hpp"
 #include <map>
 #include <chrono>
 #include <iostream>
@@ -120,10 +121,10 @@ void FinanceSS::performFinancialAnalisys()
    else
    {
       status = "Critical";
-      auto p = (balance * -1) / 10000;
+      unsigned int p = (balance * -1) / 10000;
       mReward.addPoints(-3);
 
-      if(p > rand() % 100)
+      if(p > Rng::gen32() % 100)
       {
          mCommon.push(Id("inbox"), "Work hard curse with p = " + std::to_string(p));
       }

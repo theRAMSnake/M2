@@ -9,16 +9,16 @@ include_directories("..")
 
 add_executable(Test 
 #EncDecTest.cpp
-#RewardTest.cpp
+RewardTest.cpp
 NewAPITest.cpp
-#ExpressionsTest.cpp
-#ObjectTest.cpp
-#CoreTest.cpp
-#DatabaseTest.cpp
+ExpressionsTest.cpp
+ObjectTest.cpp
+CoreTest.cpp
+DatabaseTest.cpp
 ContractsTest.cpp
-#Strategy3Test.cpp
+Strategy3Test.cpp
 Utils.cpp
-#UserTest.cpp
+UserTest.cpp
 )
 
 find_package(Boost COMPONENTS system python unit_test_framework filesystem REQUIRED)

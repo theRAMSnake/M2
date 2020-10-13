@@ -4,6 +4,7 @@
 #include "ExceptionsUtil.hpp"
 #include "types/Variable.hpp"
 #include "types/SimpleList.hpp"
+#include "rng.hpp"
 #include <chrono>
 
 #include "subsystems/User.hpp"
@@ -68,6 +69,8 @@ Core3::Core3(const CoreConfig& config)
 : mDb(config.dbFileName)
 , mObjManager(mDb, mTypeSystem)
 {
+   Rng::seed(time(0));
+
    auto rewardSS = std::make_shared<RewardSS>(mObjManager);
    mSubsystems.push_back(rewardSS);
 

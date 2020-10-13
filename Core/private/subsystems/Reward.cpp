@@ -2,6 +2,7 @@
 #include "../ObjectManager.hpp"
 #include "../ExceptionsUtil.hpp"
 #include "../Logger.hpp"
+#include "../rng.hpp"
 #include "Reward.hpp"
 
 #include <boost/algorithm/string/replace.hpp>
@@ -116,7 +117,7 @@ void RewardSS::genContract()
     {
         auto options = cfg->getChild(Id("contracts")).getChildren();
 
-        auto& randomItem = *options[rand() % options.size()];
+        auto& randomItem = *options[Rng::gen32() % options.size()];
         auto configId = randomItem.getId().getGuid();
         auto level = (*cb)[configId].get<Type::Int>();
 
