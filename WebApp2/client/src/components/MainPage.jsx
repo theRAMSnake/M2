@@ -26,7 +26,9 @@ import {
     Badge,
     ListItemText,
     Grid,
-    Snackbar
+    Snackbar,
+    CircularProgress,
+    Backdrop
 } from "@material-ui/core";
 
 import MenuIcon from '@material-ui/icons/Menu';
@@ -110,6 +112,7 @@ function MainPage(props) {
     const [calendarItems, setCalendarItems] = React.useState({});
     const [numImportantCalendarItems, setNumImportantCalendarItems] = React.useState(0);
     const [tod, setTod] = React.useState("");
+    const [isInitialisation, setIsInitialisation] = React.useState(true);
 
     const [snackOpen, setSnackOpen] = React.useState(false);
     const [lastError, setLastError] = React.useState('');
@@ -140,7 +143,7 @@ function MainPage(props) {
         }
     }
 
-    m3proxy.initialize();
+    m3proxy.initialize(() => {setIsInitialisation(false)});
     Materia.setGlobalErrorHandler((err) => {setLastError(err); setSnackOpen(true);});
 
     if(!calendarItems.object_list)
@@ -239,6 +242,7 @@ function MainPage(props) {
 
     return (
         <div>
+            <Backdrop open={isInitialisation}><CircularProgress color="inherit"/></Backdrop>
             <AppBar position="static" color="inherit">
                 <Toolbar>
                     <IconButton

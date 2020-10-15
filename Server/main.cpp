@@ -138,6 +138,7 @@ void newFunc(std::string password, materia::ICore3* core)
         }
         else
         {
+            std::unique_lock<std::mutex> lock(gMainMutex);
             result = core->executeCommandJson(decoded);
         }
 

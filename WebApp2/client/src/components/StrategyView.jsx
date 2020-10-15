@@ -521,6 +521,8 @@ function StrategyView(props)
     const onDoubleClickNode = function(nodeId) 
     {
         setUpdating(true);
+        setSelectedNode(null);
+        setSelectNodeActive(null);
         var newPath = {id: nodeId, name: fetchNodeName(nodeId)};
         
         loadGraph(nodeId, () => {path.push(newPath);});
