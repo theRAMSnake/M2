@@ -13,7 +13,7 @@ function acceptObjects(objList)
 
 class m3Proxy
 {
-    static initialize()
+    static initialize(successCb)
     {
         if(init)
         {
@@ -48,6 +48,8 @@ class m3Proxy
                         }
                     }
                 }
+
+                successCb();
             });
         }
 
