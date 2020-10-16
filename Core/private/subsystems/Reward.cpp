@@ -42,9 +42,9 @@ std::vector<TypeDef> RewardSS::getTypes()
 void RewardSS::levelUpContract(const Id id)
 {
     auto cb = mOm.getOrCreate(Id("reward.cb"), "object");
-    (*cb)[id.getGuid()] = (*cb)[id.getGuid()].get<Type::Int>() + 1;
+    (cb)[id.getGuid()] = (cb)[id.getGuid()].get<Type::Int>() + 1;
 
-    mOm.modify(*cb);
+    mOm.modify(cb);
 }
 
 void RewardSS::onNewDay()
@@ -53,9 +53,8 @@ void RewardSS::onNewDay()
     auto ctrs = mOm.getAll("reward_contract");
 
     int totalBonus = 0;
-    for(auto c : ctrs)
+    for(auto& obj : ctrs)
     {
-        auto& obj = *c;
         if(obj["score"].get<Type::Int>() >= obj["goal"].get<Type::Int>())
         {
             totalBonus += obj["reward"].get<Type::Int>();
@@ -115,11 +114,11 @@ void RewardSS::genContract()
 
     try
     {
-        auto options = cfg->getChild(Id("contracts")).getChildren();
+        auto options = cfg.getChild(Id("contracts")).getChildren();
 
-        auto& randomItem = *options[Rng::gen32() % options.size()];
+        auto& randomItem = options[Rng::gen32() % options.size()];
         auto configId = randomItem.getId().getGuid();
-        auto level = (*cb)[configId].get<Type::Int>();
+        auto level = (cb)[configId].get<Type::Int>();
 
         auto valueProvider = FunctionToValueProviderAdapter([&randomItem, level, configId](auto& obj)
         {
@@ -193,7 +192,7 @@ void RewardSS::addPoints(const int points)
 
     while(!pools.empty() && pointsLeft > 0)
     {
-        auto& randomItem = *pools[rand() % pools.size()];
+        auto& randomItem = pools[rand() % pools.size()];
         auto amount = randomItem["amount"].get<Type::Int>();
         if(isPlus && amount < randomItem["amountMax"].get<Type::Int>())
         {
@@ -218,7 +217,7 @@ void RewardSS::addPoints(const int points)
 
     for(auto& p : pools)
     {
-       mOm.modify(*p);
+       mOm.modify(p);
     }
 }
 

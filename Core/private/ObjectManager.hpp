@@ -12,16 +12,16 @@ class ObjectManager
 public:
     ObjectManager(Database& db, TypeSystem& types);
 
-    ObjectPtr create(const std::optional<Id> id, const std::string& type, const IValueProvider& provider);
+    Object create(const std::optional<Id> id, const std::string& type, const IValueProvider& provider);
     void modify(const Id id, const IValueProvider& provider);
     void modify(const Object& obj);
-    std::vector<ObjectPtr> query(const std::vector<Id>& ids);
-    std::vector<ObjectPtr> query(const Filter& f);
+    std::vector<Object> query(const std::vector<Id>& ids);
+    std::vector<Object> query(const Filter& f);
     void destroy(const Id id);
-    std::vector<ObjectPtr> describe() const;
-    ObjectPtr get(const Id id);
-    ObjectPtr getOrCreate(const Id id, const std::string& type);
-    std::vector<ObjectPtr> getAll(const std::string& type);
+    std::vector<Object> describe() const;
+    Object get(const Id id);
+    Object getOrCreate(const Id id, const std::string& type);
+    std::vector<Object> getAll(const std::string& type);
 
     void initialize();
 

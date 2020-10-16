@@ -73,15 +73,6 @@ void Object::init()
     }
 }
 
-Object::Object(const Object& other)
-: mTypeDef(other.mTypeDef)
-, mId(other.mId)
-, mFields(other.mFields)
-, mChildren(other.mChildren)
-{
-
-}
-
 Field& Object::operator [] (const std::string& name)
 {
     auto pos = std::find_if(mFields.begin(), mFields.end(), [name](auto x){return x.mName == name;});
@@ -137,9 +128,9 @@ TypeDef Object::getType() const
 }
 
 template<>
-std::vector<ObjectPtr>::iterator find_by_id(std::vector<ObjectPtr>::iterator beg, std::vector<ObjectPtr>::iterator end, const Id id)
+std::vector<Object>::iterator find_by_id(std::vector<Object>::iterator beg, std::vector<Object>::iterator end, const Id id)
 {
-    return std::find_if(beg, end, [&](auto x)->bool {return x->getId() == id;});
+    return std::find_if(beg, end, [&](auto x)->bool {return x.getId() == id;});
 }
 
 void Object::clear()
@@ -171,26 +162,20 @@ std::string Field::getName() const
 
 void Object::setChild(const std::string& tag, const Object& child)
 {
-    mChildren[tag] = std::make_shared<Object>(child);
-}
-
-void Object::setChildren(const std::string& tag, const std::vector<ObjectPtr>& children)
-{
-    std::vector<ObjectPtr> copies;
-    for(auto& o : children)
+    auto [iter, res] = mChildren.insert({tag, child});
+    if(!res)
     {
-        copies.push_back(std::make_shared<Object>(*o));
+        iter->second = child;
     }
-
-    mChildren[tag] = copies;
 }
 
-Object::Object(Object&& other) noexcept
-: mTypeDef(std::move(other.mTypeDef))
-, mId(std::move(other.mId))
-, mFields(std::move(other.mFields))
-, mChildren(std::move(other.mChildren))
+void Object::setChildren(const std::string& tag, const std::vector<Object>& children)
 {
+    auto [iter, res] = mChildren.insert({tag, children});
+    if(!res)
+    {
+        iter->second = children;
+    }
 }
 
 Id Field::toId() const
@@ -240,10 +225,10 @@ void Object::fillObject(boost::property_tree::ptree& p, const Object& o)
     //Put children
     for(auto iter = o.mChildren.begin(); iter != o.mChildren.end(); ++iter)
     {
-        if(std::holds_alternative<ObjectPtr>(iter->second))
+        if(std::holds_alternative<Object>(iter->second))
         {
             boost::property_tree::ptree sub;
-            fillObject(sub, *std::get<ObjectPtr>(iter->second));
+            fillObject(sub, std::get<Object>(iter->second));
 
             p.put_child(iter->first, sub);
         }
@@ -251,10 +236,10 @@ void Object::fillObject(boost::property_tree::ptree& p, const Object& o)
         {
             boost::property_tree::ptree subTree;
 
-            for(auto& x : std::get<1>(iter->second))
+            for(const auto& x : std::get<1>(iter->second))
             {
                 boost::property_tree::ptree curCh;
-                fillObject(curCh, *x);
+                fillObject(curCh, x);
 
                 subTree.push_back(std::make_pair("", curCh));
             }
@@ -281,12 +266,12 @@ const Object& Object::getChild(const std::string& tag) const
         throw std::runtime_error("No such children: " + tag);
     }
 
-    return *std::get<0>(pos->second);
+    return std::get<0>(pos->second);
 }
 
-std::vector<ObjectPtr> Object::getChildren() const
+std::vector<Object> Object::getChildren() const
 {
-    std::vector<ObjectPtr> result;
+    std::vector<Object> result;
 
     for(auto x : mChildren)
     {

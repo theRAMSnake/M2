@@ -48,9 +48,9 @@ void JournalSS::handleJournalContentItemChange(Object& obj)
     auto headerId = obj["headerId"].toId();
     auto header = mOm.get(headerId);
 
-    (*header)["modified"] = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())};
+    (header)["modified"] = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())};
 
-    mOm.modify(*header);
+    mOm.modify(header);
 }
 
 void JournalSS::handleJournalContentDeleted(Object& obj)
@@ -58,10 +58,10 @@ void JournalSS::handleJournalContentDeleted(Object& obj)
     auto headerId = obj["headerId"].toId();
     auto header = mOm.get(headerId);
 
-    (*header)["modified"] = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())};
-    (*header)["isPage"] = false;
+    (header)["modified"] = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())};
+    (header)["isPage"] = false;
 
-    mOm.modify(*header);
+    mOm.modify(header);
 }
 
 void JournalSS::handleJournalHeaderDeleted(Object& obj)
@@ -70,18 +70,18 @@ void JournalSS::handleJournalHeaderDeleted(Object& obj)
 
     for(auto o : mOm.getAll("journal_content"))
     {
-        if((*o)["headerId"].toId() == headerId)
+        if((o)["headerId"].toId() == headerId)
         {
-            mOm.destroy(o->getId());
+            mOm.destroy(o.getId());
             break;
         }
     }
 
     for(auto o : mOm.getAll("journal_header"))
     {
-        if((*o)["parentFolderId"].toId() == headerId)
+        if((o)["parentFolderId"].toId() == headerId)
         {
-            mOm.destroy(o->getId());
+            mOm.destroy(o.getId());
         }
     }
 }
@@ -91,10 +91,10 @@ void JournalSS::handleJournalContentCreated(Object& obj)
     auto headerId = obj["headerId"].toId();
     auto header = mOm.get(headerId);
 
-    (*header)["modified"] = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())};
-    (*header)["isPage"] = true;
+    (header)["modified"] = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())};
+    (header)["isPage"] = true;
 
-    mOm.modify(*header);
+    mOm.modify(header);
 }
 
 std::vector<CommandDef> JournalSS::getCommandDefs()

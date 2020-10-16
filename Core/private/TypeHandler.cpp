@@ -18,10 +18,10 @@ TypeHandler::TypeHandler(
         try
         {
             JsonRestorationProvider p(json);
-            auto newObj = std::make_shared<Object>(mType, id);
-            p.populate(*newObj);
+            Object newObj(mType, id);
+            p.populate(newObj);
 
-            mPool[Id(id)] = newObj;
+            mPool.insert({Id(id), newObj});
         }
         catch(...)
         {
@@ -30,25 +30,25 @@ TypeHandler::TypeHandler(
     });
 }
 
-ObjectPtr TypeHandler::create(const std::optional<Id> id, const IValueProvider& provider)
+Object TypeHandler::create(const std::optional<Id> id, const IValueProvider& provider)
 {
     auto newId = id ? *id : Id::generate();
-    auto newObj = std::make_shared<Object>(mType, newId);
+    Object newObj(mType, newId);
 
-    provider.populate(*newObj);
-    mType.handlers.onValidation(*newObj);
+    provider.populate(newObj);
+    mType.handlers.onValidation(newObj);
 
-    mStorage->store(newId, newObj->toJson());
-    mPool[newId] = newObj;
+    mStorage->store(newId, newObj.toJson());
+    mPool.insert({newId, newObj});
 
-    mType.handlers.onCreated(*newObj);
+    mType.handlers.onCreated(newObj);
 
     return newObj;
 }
 
-std::vector<ObjectPtr> TypeHandler::query(const std::vector<Id>& ids)
+std::vector<Object> TypeHandler::query(const std::vector<Id>& ids)
 {
-    std::vector<ObjectPtr> result;
+    std::vector<Object> result;
 
     for(auto id : ids)
     {
@@ -62,15 +62,15 @@ std::vector<ObjectPtr> TypeHandler::query(const std::vector<Id>& ids)
     return result;
 }
 
-std::vector<ObjectPtr> TypeHandler::query(const Filter& f)
+std::vector<Object> TypeHandler::query(const Filter& f)
 {
-    std::vector<ObjectPtr> result;
+    std::vector<Object> result;
 
     for(auto kv : mPool) 
     {   
         try
         {
-            if(std::get<bool>(f.evaluate(*kv.second)))
+            if(std::get<bool>(f.evaluate(kv.second)))
             {
                 result.push_back(kv.second);
             }
@@ -84,7 +84,7 @@ std::vector<ObjectPtr> TypeHandler::query(const Filter& f)
     return result;
 }
 
-std::optional<ObjectPtr> TypeHandler::get(const Id& id)
+std::optional<Object> TypeHandler::get(const Id& id)
 {
     auto pos = mPool.find(id);
 
@@ -94,14 +94,14 @@ std::optional<ObjectPtr> TypeHandler::get(const Id& id)
     }
     else
     {
-        return std::optional<ObjectPtr>();
+        return std::optional<Object>();
     }
 }
 
 void TypeHandler::destroy(const Id id)
 {
     auto obj = *get(id);
-    mType.handlers.onBeforeDelete(*obj);
+    mType.handlers.onBeforeDelete(obj);
 
     mPool.erase(id);
     mStorage->erase(id);      
@@ -115,33 +115,33 @@ bool TypeHandler::contains(const Id id)
 void TypeHandler::modify(const Id id, const IValueProvider& provider)
 {
     auto obj = *get(id);
-    auto newObj = std::make_shared<Object>(*obj);
-    provider.populate(*newObj);
+    Object newObj(obj);
+    provider.populate(newObj);
 
-    mType.handlers.onChanging(*obj, *newObj);
+    mType.handlers.onChanging(obj, newObj);
 
-    mStorage->store(id, newObj->toJson());
-    mPool[id] = newObj;
+    mStorage->store(id, newObj.toJson());
+    mPool.find(id)->second = newObj;
 
-    mType.handlers.onChanged(*newObj);
+    mType.handlers.onChanged(newObj);
 }
 
 void TypeHandler::modify(const Object& obj)
 {
     auto oldObj = *get(obj.getId());
-    auto newObj = std::make_shared<Object>(obj);
+    Object newObj(obj);
 
-    mType.handlers.onChanging(*oldObj, *newObj);
+    mType.handlers.onChanging(oldObj, newObj);
 
     mStorage->store(obj.getId(), obj.toJson());    
-    mPool[obj.getId()] = newObj;
+    mPool.find(obj.getId())->second = newObj;
 
-    mType.handlers.onChanged(*newObj);
+    mType.handlers.onChanged(newObj);
 }
 
-std::vector<ObjectPtr> TypeHandler::getAll()
+std::vector<Object> TypeHandler::getAll()
 {
-    std::vector<ObjectPtr> result;
+    std::vector<Object> result;
 
     for(auto kv : mPool) 
     {   

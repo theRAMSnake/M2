@@ -46,8 +46,7 @@ Time advance(const Time src, const int recType)
 
 void complete(const Id id, ObjectManager& om, RewardSS& reward, StrategySS& strategy)
 {
-    auto objectPtr = om.get(id);
-    auto object = *objectPtr;
+    auto object = om.get(id);
 
     if(object.getType().name != "calendar_item")
     {

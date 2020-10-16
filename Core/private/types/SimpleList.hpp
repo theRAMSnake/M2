@@ -21,7 +21,7 @@ public:
 
 private:
     bool mChanged = false;
-    ObjectPtr mObject;
+    Object mObject;
     ObjectManager& mOm;
 };
 

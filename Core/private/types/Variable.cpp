@@ -16,7 +16,7 @@ Variable::Variable(ObjectManager& om, const Id& id)
 
 void Variable::operator =(const std::string& value)
 {
-    (*mObject)["value"] = value;
+    (mObject)["value"] = value;
     mChanged = true;
 }
 
@@ -24,7 +24,7 @@ Variable::~Variable()
 {
     if(mChanged)
     {
-        mOm.modify(*mObject);
+        mOm.modify(mObject);
     }
 }
 
