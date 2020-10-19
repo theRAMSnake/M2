@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 2.6)
-project(m2core)
+project(m3core)
 
 LIST(APPEND CMAKE_MODULE_PATH "..")
 
 include_directories("..")
 include_directories("/usr/include/python3.8")
 
-add_library(m2core 
+add_library(m3core 
 private/Core3.cpp
 private/TypeSystem.cpp
 private/CommandParser.cpp
@@ -36,4 +36,4 @@ private/subsystems/Strategy.cpp
 
 find_package(Boost COMPONENTS system REQUIRED)
 
-target_link_libraries(m2core m2common sqlite3 ${Boost_LIBRARIES} pthread fmt)
+target_link_libraries(m3core m3common sqlite3 ${Boost_LIBRARIES} pthread fmt)
