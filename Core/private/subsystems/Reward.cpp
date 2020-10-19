@@ -41,10 +41,13 @@ std::vector<TypeDef> RewardSS::getTypes()
 
 void RewardSS::levelUpContract(const Id id)
 {
-    auto cb = mOm.getOrCreate(Id("reward.cb"), "object");
-    (cb)[id.getGuid()] = (cb)[id.getGuid()].get<Type::Int>() + 1;
+    if(id != Id::Invalid)
+    {
+        auto cb = mOm.getOrCreate(Id("reward.cb"), "object");
+        (cb)[id.getGuid()] = (cb)[id.getGuid()].get<Type::Int>() + 1;
 
-    mOm.modify(cb);
+        mOm.modify(cb);
+    }
 }
 
 void RewardSS::onNewDay()
