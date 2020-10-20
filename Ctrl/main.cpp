@@ -5,7 +5,7 @@
 void start(const std::string password)
 {
    system(("nohup ./m2server " + password + "&").c_str());
-   system("WebApp2/run.sh");
+   system("cd ../WebApp2 && ./run.sh");
 
    std::cout << "Done\n";
 }
