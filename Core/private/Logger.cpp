@@ -21,6 +21,6 @@ void Logger::Log(const std::string& data)
 
 Logger::Logger()
 {
-    mFile.open("m2core.log", std::ofstream::out | std::ofstream::trunc);
+    mFile.open("m3core.log", std::ofstream::out | std::ofstream::trunc);
     mFile << std::endl << "-------------------------------------------------------------------------------" << std::endl;
 }

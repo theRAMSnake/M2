@@ -54,7 +54,7 @@ data class ObjectList(val id: String, val typename: String, val object_list: Lis
 fun loadSubreddits(): List<String>
 {
     val op = "{\"operation\":\"query\", \"ids\":[\"config.news\"]}"
-    val p = Runtime.getRuntime().exec(arrayOf("./m2tools", op))
+    val p = Runtime.getRuntime().exec(arrayOf("./m3tools", op))
     val input = BufferedReader(InputStreamReader(p.getInputStream()));
     p.waitFor()
     

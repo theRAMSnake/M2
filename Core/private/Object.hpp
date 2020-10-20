@@ -156,8 +156,9 @@ class Object
 {
 public:
     Object(const TypeDef& type, const Id id);
-    Object(const Object& other);
-    Object(Object&& other) noexcept;
+    Object(const Object& other) = default;
+    Object(Object&& other) noexcept = default;
+    Object& operator= (const Object& other) = default;
     
     Field& operator [] (const std::string& name);
     const Field& operator [] (const std::string& name) const;
@@ -165,11 +166,11 @@ public:
     std::vector<Field>::const_iterator begin() const;
     std::vector<Field>::const_iterator end() const;
     
-    void setChildren(const std::string& tag, const std::vector<std::shared_ptr<Object>>& children);
+    void setChildren(const std::string& tag, const std::vector<Object>& children);
     void setChild(const std::string& tag, const Object& child);
 
     const Object& getChild(const std::string& tag) const;
-    std::vector<std::shared_ptr<Object>> getChildren() const;
+    std::vector<Object> getChildren() const;
 
     TypeDef getType() const;
     Id getId() const;
@@ -185,13 +186,11 @@ private:
     TypeDef mTypeDef;
     Id mId;
     std::vector<Field> mFields;
-    using ChildrenHolder = std::variant<std::shared_ptr<Object>, std::vector<std::shared_ptr<Object>>>;
+    using ChildrenHolder = std::variant<Object, std::vector<Object>>;
     std::map<std::string, ChildrenHolder> mChildren;
 };
 
-using ObjectPtr = std::shared_ptr<Object>;
-
 template<>
-std::vector<ObjectPtr>::iterator find_by_id(std::vector<ObjectPtr>::iterator beg, std::vector<ObjectPtr>::iterator end, const Id id);
+std::vector<Object>::iterator find_by_id(std::vector<Object>::iterator beg, std::vector<Object>::iterator end, const Id id);
 
 }

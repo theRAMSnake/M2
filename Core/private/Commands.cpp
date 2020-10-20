@@ -14,7 +14,7 @@ CreateCommand::CreateCommand(const std::optional<Id> id, const std::string& type
 ExecutionResult CreateCommand::execute(ObjectManager& objManager)
 {
     JsonRestorationProvider provider(mParams);
-    return objManager.create(mId, mTypeName, provider)->getId();
+    return objManager.create(mId, mTypeName, provider).getId();
 }
 
 ModifyCommand::ModifyCommand(const Id& id, const std::string& params)

@@ -4,9 +4,10 @@ const crypto = require('crypto');
 const pass = require("../pass");
 const router = new express.Router();
 var Mutex = require('async-mutex').Mutex;
+const logger = require('./logger');
 
 const sock = new zmq.Request
-sock.connect("tcp://localhost:5756")
+sock.connect("tcp://62.171.175.23:5756")
 
 async function materiaGet(req)
 {   
@@ -37,7 +38,7 @@ router.post('/materia', (req, res) =>
     mutex
     .acquire()
     .then(function(release) {
-        console.log(JSON.stringify(req.body));
+        logger.info(JSON.stringify(req.body));
         materiaGet(JSON.stringify(req.body)).then( (results) =>
         {
             release();
@@ -45,7 +46,7 @@ router.post('/materia', (req, res) =>
                 message: results.toString()
             });
             
-            console.log(results);
+            logger.info(results);
         });
         
     });    

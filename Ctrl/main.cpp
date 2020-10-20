@@ -4,7 +4,7 @@
 
 void start(const std::string password)
 {
-   system(("nohup ./m2server " + password + "&").c_str());
+   system(("nohup ./m3server " + password + "&").c_str());
    system("cd ../WebApp2 && ./run.sh");
 
    std::cout << "Done\n";
@@ -13,7 +13,7 @@ void start(const std::string password)
 void stop(const std::string password)
 {
    system("killall node");
-   system("./m2tools shutdown");
+   system("./m3tools shutdown");
 
    std::cout << "Done\n";
 }
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 {
    if(argc < 2)
    {
-      std::cout << "Usage m2ctrl <command>";
+      std::cout << "Usage m3ctrl <command>";
       return -1;
    }
 

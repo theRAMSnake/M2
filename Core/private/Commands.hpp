@@ -17,7 +17,7 @@ struct Error
     std::string error;
 };
 
-using ObjectList = std::vector<ObjectPtr>;
+using ObjectList = std::vector<Object>;
 using ExecutionResult = std::variant<Success, Error, ObjectList, std::string, Id>;
 
 class ObjectManager;

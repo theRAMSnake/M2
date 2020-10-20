@@ -15,10 +15,10 @@ void StrategySS::onNewDay()
 {
    for(auto o : mOm.getAll("strategy_node"))
    {
-       if((*o)["type"].get<Type::Option>() == 4 && (*o)["date"].get<Type::Timestamp>().value < time(0))
+       if((o)["type"].get<Type::Option>() == 4 && (o)["date"].get<Type::Timestamp>().value < time(0))
        {
-           (*o)["isAchieved"] = true;
-           mOm.modify(*o);
+           (o)["isAchieved"] = true;
+           mOm.modify(o);
        }
    }
 }
@@ -75,19 +75,19 @@ void StrategySS::handleNodeBeforeDelete(Object& obj)
     //Delete all children
     for(auto o : mOm.getAll("strategy_node"))
     {
-        if((*o)["parentNodeId"].toId() == obj.getId())
+        if((o)["parentNodeId"].toId() == obj.getId())
         {
-            mOm.destroy(o->getId());
+            mOm.destroy(o.getId());
         }
     }
 
     //Break all links
     for(auto& l : mOm.getAll("strategy_link"))
     {
-        if((*l)["idFrom"].toId() == obj.getId() ||
-            (*l)["idTo"].toId() == obj.getId())
+        if((l)["idFrom"].toId() == obj.getId() ||
+            (l)["idTo"].toId() == obj.getId())
         {
-            mOm.destroy(l->getId());
+            mOm.destroy(l.getId());
         }
     }
 }
@@ -127,20 +127,23 @@ void StrategySS::validateNode(Object& obj)
     auto parentId = obj["parentNodeId"].toId();
     if(parentId != Id::Invalid)
     {
-        auto p = mOm.get(parentId);
-        if(!p)
+        try
+        {
+            auto p = mOm.get(parentId);
+
+            //Go up, Achieve root faster than self
+            while((p)["parentNodeId"].toId() != Id::Invalid)
+            {
+                p = mOm.get((p)["parentNodeId"].toId());
+                if(p.getId() == obj.getId())
+                {
+                    throw std::runtime_error("Node validation failed: parent children relations forms loop");
+                }
+            }
+        }
+        catch(...)
         {
             throw std::runtime_error("Node validation failed: parent does not exist");
-        }
-
-        //Go up, Achieve root faster than self
-        while((*p)["parentNodeId"].toId() != Id::Invalid)
-        {
-            p = mOm.get((*p)["parentNodeId"].toId());
-            if(p->getId() == obj.getId())
-            {
-                throw std::runtime_error("Node validation failed: parent children relations forms loop");
-            }
         }
     }
 }
@@ -150,8 +153,8 @@ void StrategySS::validateLink(Object& obj)
     //Make sure link is unique
     for(auto& l : mOm.getAll("strategy_link"))
     {
-        if((*l)["idFrom"].toId() == obj["idFrom"].toId() &&
-            (*l)["idTo"].toId() == obj["idTo"].toId())
+        if((l)["idFrom"].toId() == obj["idFrom"].toId() &&
+            (l)["idTo"].toId() == obj["idTo"].toId())
         {
             throw std::runtime_error("Link validation failed: not unique");
         }
@@ -164,7 +167,12 @@ void StrategySS::validateLink(Object& obj)
     }
 
     //Check both nodes exist
-    if(!mOm.get(obj["idFrom"].toId()) || !mOm.get(obj["idTo"].toId()))
+    try
+    {
+        mOm.get(obj["idFrom"].toId());
+        mOm.get(obj["idTo"].toId());
+    }
+    catch(...)
     {
         throw std::runtime_error("Link validation failed: refered node does not exist");
     }
@@ -172,23 +180,23 @@ void StrategySS::validateLink(Object& obj)
     //Make sure no loops exist => Go forward until same node is reached or endpoint is reached
     std::set<Id> visitedLinks;
     
-    auto next = std::make_shared<Object>(obj);
-    visitedLinks.insert(next->getId());
+    Object next(obj);
+    visitedLinks.insert(next.getId());
     bool nextFound = true;
     while(nextFound)
     {
         nextFound = false;
         for(auto& l : mOm.getAll("strategy_link"))
         {
-            if((*l)["idFrom"].toId() == (*next)["idTo"].toId())
+            if((l)["idFrom"].toId() == (next)["idTo"].toId())
             {
-                if(visitedLinks.contains(l->getId()))
+                if(visitedLinks.contains(l.getId()))
                 {
                     throw std::runtime_error("Link validation failed: graph forms loop");
                 }
 
                 nextFound = true;
-                visitedLinks.insert(l->getId());
+                visitedLinks.insert(l.getId());
                 next = l;
                 break;
             }
@@ -198,10 +206,9 @@ void StrategySS::validateLink(Object& obj)
 
 void StrategySS::onCalendarReferenceCompleted(const Id& id)
 {
-    auto res = mOm.get(id);
-    if(res)
+    try
     {
-        Object obj(*res);
+        Object obj = mOm.get(id);
         auto tp = obj["type"].get<Type::Option>();
         //If node goal/task -> change isAchieved
         if(tp == 0 || tp == 1)
@@ -214,8 +221,12 @@ void StrategySS::onCalendarReferenceCompleted(const Id& id)
             obj["value"] = obj["value"].get<Type::Int>() + 1;
         }
 
-        mOm.modify(obj);
-    }   
+        mOm.modify(obj);   
+    }
+    catch(...)
+    {
+        //No problem - reference is weak
+    }
 }
 
 }

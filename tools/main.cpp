@@ -37,7 +37,7 @@ int main(int argc,  char** argv)
 {
    if(argc < 2)
    {
-      std::cout << "Usage m2tools <op>";
+      std::cout << "Usage m3tools <op>";
       return -1;
    }
 

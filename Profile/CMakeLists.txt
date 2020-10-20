@@ -12,7 +12,7 @@ main.cpp
 
 find_package(Boost COMPONENTS system filesystem REQUIRED)
 
-target_link_libraries(Profile m2common m2core ${Boost_LIBRARIES} pthread)
+target_link_libraries(Profile m3common m3core ${Boost_LIBRARIES} pthread)
 
 add_custom_command(
         TARGET Profile POST_BUILD

@@ -23,7 +23,7 @@ UserTest.cpp
 
 find_package(Boost COMPONENTS system python unit_test_framework filesystem REQUIRED)
 
-target_link_libraries(Test m2common m2core crypto python3.8 ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread)
+target_link_libraries(Test m3common m3core crypto python3.8 ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread)
 
 add_custom_command(
         TARGET Test POST_BUILD

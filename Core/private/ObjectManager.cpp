@@ -24,7 +24,7 @@ void ObjectManager::initialize()
     }
 }
 
-ObjectPtr ObjectManager::create(const std::optional<Id> id, const std::string& type, const IValueProvider& provider)
+Object ObjectManager::create(const std::optional<Id> id, const std::string& type, const IValueProvider& provider)
 {
     auto pos = mHandlers.find(type); 
     if(pos == mHandlers.end())
@@ -46,9 +46,9 @@ ObjectPtr ObjectManager::create(const std::optional<Id> id, const std::string& t
     return pos->second->create(id, provider);
 }
 
-std::vector<ObjectPtr> ObjectManager::query(const std::vector<Id>& ids)
+std::vector<Object> ObjectManager::query(const std::vector<Id>& ids)
 {
-    std::vector<ObjectPtr> objects;
+    std::vector<Object> objects;
 
     for(auto& h : mHandlers)
     {
@@ -64,9 +64,9 @@ std::vector<ObjectPtr> ObjectManager::query(const std::vector<Id>& ids)
     return objects;
 }
 
-std::vector<ObjectPtr> ObjectManager::query(const Filter& filter)
+std::vector<Object> ObjectManager::query(const Filter& filter)
 {
-    std::vector<ObjectPtr> objects;
+    std::vector<Object> objects;
 
     for(auto& h : mHandlers)
     {
@@ -118,30 +118,30 @@ void ObjectManager::modify(const Object& obj)
     }
 }
 
-std::vector<ObjectPtr> ObjectManager::describe() const
+std::vector<Object> ObjectManager::describe() const
 {
-    std::vector<ObjectPtr> result;
+    std::vector<Object> result;
 
     auto objType = mTypes.get("object");
     for(auto t : mTypes.get())
     {
-        auto obj = std::make_shared<Object>(*objType, Id::Invalid);
-        (*obj)["name"] = t.name;
+        Object obj(*objType, Id::Invalid);
+        obj["name"] = t.name;
 
-        std::vector<ObjectPtr> fields;
+        std::vector<Object> fields;
 
         for(auto f : t.fields)
         {
-            auto field = std::make_shared<Object>(*objType, Id::Invalid);
-            (*field)["name"] = f.name;
-            (*field)["type"] = to_string(f.type);
-            (*field)["options"] = f.options;
-            (*field)["refType"] = f.refType;
+            Object field(*objType, Id::Invalid);
+            field["name"] = f.name;
+            field["type"] = to_string(f.type);
+            field["options"] = f.options;
+            field["refType"] = f.refType;
 
             fields.push_back(field);
         }
 
-        obj->setChildren("fields", fields);
+        obj.setChildren("fields", fields);
 
         result.push_back(obj);
     }
@@ -149,7 +149,7 @@ std::vector<ObjectPtr> ObjectManager::describe() const
     return result;
 }
 
-ObjectPtr ObjectManager::get(const Id id)
+Object ObjectManager::get(const Id id)
 {
     for(auto& h : mHandlers)
     {
@@ -162,7 +162,7 @@ ObjectPtr ObjectManager::get(const Id id)
     throw std::runtime_error(fmt::format("Object with id {} not found", id.getGuid()));
 }
 
-ObjectPtr ObjectManager::getOrCreate(const Id id, const std::string& type)
+Object ObjectManager::getOrCreate(const Id id, const std::string& type)
 {
     for(auto& h : mHandlers)
     {
@@ -178,7 +178,7 @@ ObjectPtr ObjectManager::getOrCreate(const Id id, const std::string& type)
     return get(id);
 }
 
-std::vector<ObjectPtr> ObjectManager::getAll(const std::string& type)
+std::vector<Object> ObjectManager::getAll(const std::string& type)
 {
     if(mHandlers.contains(type))
     {

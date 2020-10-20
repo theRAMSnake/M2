@@ -1,22 +1,22 @@
 cmake_minimum_required(VERSION 2.6)
-project(m2server)
+project(m3server)
 
 LIST(APPEND CMAKE_MODULE_PATH "..")
 
 include_directories("../build/Common")
 include_directories("..")
 
-add_executable(m2server
+add_executable(m3server
 main.cpp
 )
 
 
 find_package(Boost COMPONENTS system REQUIRED)
 
-target_link_libraries(m2server m2common m2core ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread fmt)
+target_link_libraries(m3server m3common m3core ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread fmt)
 
 add_custom_command(
-        TARGET m2server POST_BUILD
+        TARGET m3server POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
-                ${CMAKE_CURRENT_BINARY_DIR}/m2server
-                ../../bin/m2server)
+                ${CMAKE_CURRENT_BINARY_DIR}/m3server
+                ../../bin/m3server)

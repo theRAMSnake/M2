@@ -27,11 +27,11 @@ public:
         );
 
     //Id must be unique
-    ObjectPtr create(const std::optional<Id> id, const IValueProvider& provider);
-    std::vector<ObjectPtr> query(const std::vector<Id>& ids);
-    std::vector<ObjectPtr> query(const Filter& f);
-    std::optional<ObjectPtr> get(const Id& id);
-    std::vector<ObjectPtr> getAll();
+    Object create(const std::optional<Id> id, const IValueProvider& provider);
+    std::vector<Object> query(const std::vector<Id>& ids);
+    std::vector<Object> query(const Filter& f);
+    std::optional<Object> get(const Id& id);
+    std::vector<Object> getAll();
     //Id must be present
     void destroy(const Id id);
     bool contains(const Id id);
@@ -43,7 +43,7 @@ private:
     const TypeDef mType;
     std::unique_ptr<DatabaseTable> mStorage;
     
-    std::map<Id, ObjectPtr> mPool;
+    std::map<Id, Object> mPool;
 };
 
 }

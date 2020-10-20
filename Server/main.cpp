@@ -53,7 +53,7 @@ private:
     std::ofstream mFile;
 };
 
-DoubleLogger logger("m2server.log");
+DoubleLogger logger("m3server.log");
 std::mutex gMainMutex;
 static bool shutdownFlag = false;
 
@@ -113,8 +113,6 @@ void newFunc(std::string password, materia::ICore3* core)
 
         std::string received(static_cast<const char *>(clientMessage.data()), clientMessage.size());
         std::string decoded;
-
-        logger << "Received message " << string_to_hex(received) << "\n";
         
         try
         {

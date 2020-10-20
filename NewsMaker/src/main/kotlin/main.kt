@@ -10,12 +10,12 @@ fun publishFile(filename: String)
     val lines = File("$filename").readText().replace("\"", "\\\"");
     run{
         val op = "{\"operation\":\"destroy\", \"id\":\"newsfeed\"}"
-        val p = Runtime.getRuntime().exec(arrayOf("./m2tools", op))
+        val p = Runtime.getRuntime().exec(arrayOf("./m3tools", op))
         p.waitFor()
     }
     run{
         val op = "{\"operation\":\"create\", \"typename\":\"object\", \"defined_id\":\"newsfeed\", \"params\":{\"content\":\"$lines\"}}"
-        val p = Runtime.getRuntime().exec(arrayOf("./m2tools", op))
+        val p = Runtime.getRuntime().exec(arrayOf("./m3tools", op))
         p.waitFor()
     }
     Runtime.getRuntime().exec("rm $filename")

@@ -61,9 +61,8 @@ void FinanceSS::performFinancialAnalisys()
    auto categories = mOm.getAll("finance_category");
    auto events = mOm.getAll("finance_event");
 
-   for(auto e : events)
+   for(auto& ev : events)
    {
-      auto ev = *e;
       if(isWithinLastYear(ev))
       {
          auto month = getMonthAlignment(ev);
@@ -132,15 +131,15 @@ void FinanceSS::performFinancialAnalisys()
 
    //Compile report
    auto obj = mOm.getOrCreate(Id("financial_report"), "object");
-   obj->clear();
-   (*obj)["balance"] = balance;
-   (*obj)["status"] = status;
+   obj.clear();
+   (obj)["balance"] = balance;
+   (obj)["status"] = status;
 
    for(auto d : amountByCategory)
    {
       Object curCatBreakdown({"object"}, Id::generate());
       auto catPos = find_by_id(categories, d.first);
-      auto catName = catPos == categories.end() ? d.first.getGuid() : (**catPos)["name"].get<Type::String>();
+      auto catName = catPos == categories.end() ? d.first.getGuid() : (*catPos)["name"].get<Type::String>();
 
       curCatBreakdown["name"] = catName;
       
@@ -153,7 +152,7 @@ void FinanceSS::performFinancialAnalisys()
 
       curCatBreakdown["total"] = static_cast<int>(total);
 
-      obj->setChild(catName, curCatBreakdown);
+      obj.setChild(catName, curCatBreakdown);
    }
 
    Object totalPerMonth({"object"}, Id::generate());
@@ -163,9 +162,9 @@ void FinanceSS::performFinancialAnalisys()
       totalPerMonth[getDateStr(m.first)] = m.second;
    }
 
-   obj->setChild("totalPerMonth", totalPerMonth);
+   obj.setChild("totalPerMonth", totalPerMonth);
 
-   mOm.modify(*obj);
+   mOm.modify(obj);
 }
 
 FinanceSS::FinanceSS(ObjectManager& om, RewardSS& reward, CommonSS& common)
