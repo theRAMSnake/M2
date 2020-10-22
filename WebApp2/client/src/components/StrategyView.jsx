@@ -7,6 +7,7 @@ import QueryChain from '../modules/QueryChain'
 
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import DeleteIcon from '@material-ui/icons/Delete';
+import ClearAllIcon from '@material-ui/icons/ClearAll';
 import SwapHorizIcon from '@material-ui/icons/SwapHoriz';
 import SwapVertIcon from '@material-ui/icons/SwapVert';
 import LinkIcon from '@material-ui/icons/Link';
@@ -281,6 +282,7 @@ function StrategyView(props)
     const [path, setPath] = useState([]);
     const [selectedNode, setSelectedNode] = useState(null);
     const [showAddDialog, setShowAddDialog] = useState(false);
+    const [showClearDialog, setShowClearDialog] = useState(false);
     const [showAddReferenceDialog, setShowAddReferenceDialog] = useState(false);
     const [inDeleteDialog, setInDeleteDialog] = useState(false);
     const [parentIdToAdd, setParentIdToAdd] = useState("");
@@ -630,6 +632,11 @@ function StrategyView(props)
         setParentIdToAdd(graphData.nodes[0].parentNodeId);
     }
 
+    function onClearClicked()
+    {
+        setShowClearDialog(true);
+    }
+
     function onNodeAddClicked()
     {
         setShowAddDialog(true);
@@ -809,12 +816,29 @@ function StrategyView(props)
         setGraphData(JSON.parse(JSON.stringify(graphData)));
     }
     
+    function onClearDialogCancel()
+    {
+        setShowClearDialog(false);
+    }
+
+    function onClearDialogOk()
+    {
+        setShowClearDialog(false);
+
+        setUpdating(true);
+
+        graphData.nodes.filter(x => x.isAchieved === 'true').forEach(x => Materia.postDelete(x.id));
+
+        loadGraph(path[path.length - 1].id, () => {});
+    }
+
     return (
         <div>
         <Backdrop open={updating}><CircularProgress color="inherit"/></Backdrop>
         {showAddDialog && <AddNodeDialog onClose={onAddDialogClosed} onOk={onAddDialogOk}/>}
         {showAddReferenceDialog && <AddItemDialog onClose={onAddDialogClosed} selectedType="calendar_item" init={{entityType: 2, text: selectedNode.title, nodeReference: selectedNode.id}}/>}
         <ConfirmationDialog open={inDeleteDialog} question="delete object" caption="confirm deletion" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
+        <ConfirmationDialog open={showClearDialog} question="clear it" caption="confirm clear" onNo={onClearDialogCancel} onYes={onClearDialogOk} />
         <Grid container direction="row" justify="space-around" alignItems="flex-start">
             <div style={{width: '75vw'}}>
                 <FormControlLabel margin='dense' control={<Checkbox onChange={handleShowCompletedChange} checked={showCompleted} />} label="Show Completed" />
@@ -822,6 +846,9 @@ function StrategyView(props)
                 <Grid container direction="row" justify="flex-start" alignItems="center">
                     <IconButton edge="start" aria-label="complete" onClick={onAddClicked}>
                         <AddCircleOutlineIcon/>
+                    </IconButton>
+                    <IconButton edge="start" aria-label="clear" onClick={onClearClicked}>
+                        <ClearAllIcon/>
                     </IconButton>
                     {path.length > 0 && <PathCtrl currentText={path[path.length - 1].name} pathList={path.slice(0, path.length - 1)} onClick={onPathClick}/>}
                 </Grid>

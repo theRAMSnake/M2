@@ -25,6 +25,7 @@ class Command
 {
 public:
     virtual ExecutionResult execute(ObjectManager& objManager) = 0;
+    virtual bool isLong() const;
     virtual ~Command() {}
 };
 
@@ -83,6 +84,7 @@ class BackupCommand : public Command
 public:
     BackupCommand(const std::string& dbName);
     ExecutionResult execute(ObjectManager& objManager) override;
+    bool isLong() const override;
 
 private:
     const std::string mDbName;
