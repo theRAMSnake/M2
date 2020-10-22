@@ -47,6 +47,16 @@ class Materia
         Materia.exec(rq, () => {});
     }
 
+    static sendDelete(s, cb)
+    {
+        var rq = {
+            operation: "destroy",
+            id: s
+        };
+
+        Materia.exec(rq, cb);
+    }
+
     static postComplete(s)
     {
         var rq = {
@@ -55,6 +65,16 @@ class Materia
         };
 
         Materia.exec(rq, () => {});
+    }
+
+    static sendComplete(s, cb)
+    {
+        var rq = {
+            operation: "complete",
+            id: s
+        };
+
+        Materia.exec(rq, cb);
     }
 
     static post(rq)
@@ -71,6 +91,17 @@ class Materia
         };
 
         Materia.exec(rq, () => {});
+    }
+
+    static sendEdit(id, s, cb)
+    {
+        var rq = {
+            operation: "modify",
+            id: id,
+            params: JSON.parse(s)
+        };
+
+        Materia.exec(rq, cb);
     }
 }
 

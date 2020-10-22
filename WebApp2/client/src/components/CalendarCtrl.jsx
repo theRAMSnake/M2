@@ -145,25 +145,22 @@ export default function CalendarCtrl(props)
     function onEditDialogOk()
     {
         setInDeleteDialog(false);
-        Materia.postEdit(objectInEdit.id, JSON.stringify(objectInEdit));
+        Materia.sendEdit(objectInEdit.id, JSON.stringify(objectInEdit), (resp) => {props.onChanged()});
         setObjectInEdit(null);
-        props.onChanged();
     }
 
     function onDeleteDialogOk()
     {
         setInDeleteDialog(false);
-        Materia.postDelete(todayItems[focusedItemIndex].id);
+        Materia.sendDelete(todayItems[focusedItemIndex].id, (resp) => {props.onChanged()});
         setFocusedItemIndex(-1);
-        props.onChanged();
     }
 
     function onCompleteDialogOk()
     {
         setInCompleteDialog(false);
-        Materia.postComplete(todayItems[focusedItemIndex].id);
+        Materia.sendComplete(todayItems[focusedItemIndex].id, (resp) => {props.onChanged()});
         setFocusedItemIndex(-1);
-        props.onChanged();
     }
 
     return <div>
