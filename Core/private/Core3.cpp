@@ -173,9 +173,13 @@ std::string Core3::executeCommandJson(const std::string& json)
    std::chrono::time_point<std::chrono::high_resolution_clock> started = std::chrono::high_resolution_clock::now();
    std::string result;
 
+   bool longCommand = false;
+
    try
    {
       auto cmd = parseCommand(json, mCommandDefs);
+
+      longCommand = cmd->isLong();
 
       result = formatResponce(cmd->execute(mObjManager));
    }
@@ -190,7 +194,7 @@ std::string Core3::executeCommandJson(const std::string& json)
 
    auto time_D_msec = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - started);
 
-   if(time_D_msec > std::chrono::milliseconds(250))
+   if(longCommand && time_D_msec > std::chrono::milliseconds(250))
    {
       notifyLongCommand(json, time_D_msec.count());
    }

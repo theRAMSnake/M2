@@ -83,4 +83,14 @@ BackupCommand::BackupCommand(const std::string& dbName)
 
 }
 
+bool BackupCommand::isLong() const
+{
+    return true;
+}
+
+bool Command::isLong() const
+{
+    return false;
+}
+
 }
