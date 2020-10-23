@@ -194,7 +194,7 @@ std::string Core3::executeCommandJson(const std::string& json)
 
    auto time_D_msec = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - started);
 
-   if(longCommand && time_D_msec > std::chrono::milliseconds(250))
+   if(!longCommand && time_D_msec > std::chrono::milliseconds(250))
    {
       notifyLongCommand(json, time_D_msec.count());
    }
