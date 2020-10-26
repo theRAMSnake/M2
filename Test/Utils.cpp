@@ -48,6 +48,15 @@ std::string queryAll(const std::string& type, materia::ICore3& core)
    return core.executeCommandJson(writeJson(query));
 }
 
+std::string queryCondition(const std::string& type, const std::string& condition, materia::ICore3& core)
+{
+   boost::property_tree::ptree query;
+   query.put("operation", "query");
+   query.put("filter", "IS(" + type + ") AND " + condition);
+
+   return core.executeCommandJson(writeJson(query));
+}
+
 boost::property_tree::ptree queryFirst(const std::string& type, materia::ICore3& core)
 {
    boost::property_tree::ptree query;

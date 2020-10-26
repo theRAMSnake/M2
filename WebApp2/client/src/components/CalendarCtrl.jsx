@@ -20,7 +20,8 @@ import {
     ListItemIcon,
     List,
     ListItem,
-    Grid
+    Grid,
+    Typography
 } from "@material-ui/core";
 
 function toUTC(date)
@@ -39,12 +40,12 @@ function extractItems(calendarItems, date)
     var endts = Math.floor(end / 1000);
     
     var r = calendarItems.filter((x) => {
-        return (Number(x.timestamp) >= startts) && (Number(x.timestamp) <= endts);
+        return ( Number(x.timestamp) >= startts) && (Number(x.timestamp) <= endts);
     });
 
     console.log("extract");
 
-    return r.sort((x, y) => { return Number(x.timestamp) - Number(y.timestamp); });
+    return r.sort((x, y) => { return x.urgency == y.urgency ? Number(x.timestamp) - Number(y.timestamp) : y.urgency - x.urgency });
 }
 
 export default function CalendarCtrl(props)
@@ -184,7 +185,10 @@ export default function CalendarCtrl(props)
                         <ListItemIcon>
                             {obj.entityType === "0" ? <EventIcon/> : <AssignmentTurnedInIcon/>} 
                         </ListItemIcon>
-                        <ListItemText primary={dt.getHours() + ":" + dt.getMinutes().toString().padStart(2, "0") +" - " + obj.text}/>    
+                        <ListItemText disableTypography primary={
+                            <Typography variant="body1" style={{ color: obj.urgency == 1 ? '#ff2929' : '#FFFFFF'}}>
+                                {dt.getHours() + ":" + dt.getMinutes().toString().padStart(2, "0") +" - " + obj.text}
+                            </Typography>}/>    
                         <ListItemSecondaryAction>
                             <IconButton edge="end" size='small' aria-label="complete" onClick={() => prepareComplete(index)}>
                                 <DoneIcon fontSize='small'/>

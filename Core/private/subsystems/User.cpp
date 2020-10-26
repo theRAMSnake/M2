@@ -134,10 +134,26 @@ void UserSS::awardInbox()
    }
 }
 
+void UserSS::advanceExpiredCalendarItems()
+{
+   auto curTime = time(0);
+   auto curDayBegin = curTime - (curTime % 86400);
+   for(auto o : mOm.getAll("calendar_item"))
+   {
+       if((o)["entityType"].get<Type::Option>() != 0/*Event*/ && (o)["timestamp"].get<Type::Timestamp>().value < curTime)
+       {
+           o["timestamp"] = Time(curDayBegin + (o["timestamp"].get<Type::Timestamp>().value % 86400));
+           
+           mOm.modify(o);
+       }
+   }
+}
+
 void UserSS::onNewDay()
 {
    awardInbox(); 
    generateNewTOD();
+   advanceExpiredCalendarItems();
 }
 
 void UserSS::onNewWeek()
