@@ -5,15 +5,7 @@ const config = require('./config');
 const app = express();
 var fs = require('fs');
 
-if(config.UseHttps)
-{
-    
-}
-//var https = require('https');
-//var privateKey  = fs.readFileSync('???.key', 'utf8');
-//var certificate = fs.readFileSync('???.crt', 'utf8');
 
-//var credentials = {key: privateKey, cert: certificate};
 
 app.use(express.static('./server/static/'));
 app.use(express.static('./client/dist/'));
@@ -32,7 +24,15 @@ const apiRoutes = require('./server/routes/api');
 app.use('/auth', authRoutes);
 app.use('/api', apiRoutes);
 
-//var httpsServer = https.createServer(credentials, app);
-
-//httpsServer.listen(5758);
-app.listen(5758);
+if(config.UseHttps)
+{
+    var privateKey  = fs.readFileSync('/etc/letsencrypt/live/ramsnake.net-0002/privkey.pem', 'utf8');
+    var certificate = fs.readFileSync('/etc/letsencrypt/live/ramsnake.net-0002/fullchain.pem', 'utf8');
+    var credentials = {key: privateKey, cert: certificate};
+    var httpsServer = https.createServer(credentials, app);
+    httpsServer.listen(5758);
+}
+else
+{
+    app.listen(5758);
+}
