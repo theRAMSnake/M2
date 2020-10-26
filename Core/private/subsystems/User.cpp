@@ -142,7 +142,7 @@ void UserSS::advanceExpiredCalendarItems()
    {
        if((o)["entityType"].get<Type::Option>() != 0/*Event*/ && (o)["timestamp"].get<Type::Timestamp>().value < curTime)
        {
-           o["timestamp"] = Time(curDayBegin + (o["timestamp"].get<Type::Timestamp>().value % 86400));
+           o["timestamp"] = Time{curDayBegin + (o["timestamp"].get<Type::Timestamp>().value % 86400)};
            
            mOm.modify(o);
        }
