@@ -5,8 +5,6 @@ const config = require('./config');
 const app = express();
 var fs = require('fs');
 
-
-
 app.use(express.static('./server/static/'));
 app.use(express.static('./client/dist/'));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -26,6 +24,7 @@ app.use('/api', apiRoutes);
 
 if(config.UseHttps)
 {
+    const https = require('https');
     var privateKey  = fs.readFileSync('/etc/letsencrypt/live/ramsnake.net-0002/privkey.pem', 'utf8');
     var certificate = fs.readFileSync('/etc/letsencrypt/live/ramsnake.net-0002/fullchain.pem', 'utf8');
     var credentials = {key: privateKey, cert: certificate};
