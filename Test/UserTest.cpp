@@ -164,3 +164,33 @@ BOOST_FIXTURE_TEST_CASE(CompleteCounterFull, UserTest)
    auto p = queryFirst("reward_pool", *mCore);
    BOOST_CHECK_EQUAL(1, p.get<int>("amount"));
 }
+
+BOOST_FIXTURE_TEST_CASE(AdvanceCalendar, UserTest) 
+{
+   boost::property_tree::ptree create;
+   create.put("operation", "create");
+   create.put("typename", "calendar_item");
+   create.put("params.text", "a");
+   create.put("params.timestamp", 80000/*outdated*/);
+   create.put("params.entityType", 1);
+
+   expectId(mCore->executeCommandJson(writeJson(create)));
+
+   create.put("params.entityType", 0);
+
+   expectId(mCore->executeCommandJson(writeJson(create)));
+
+   create.put("params.timestamp", time(0) + 100000);
+   create.put("params.entityType", 1);
+
+   expectId(mCore->executeCommandJson(writeJson(create)));
+
+   create.put("params.timestamp", time(0) + 500000);
+
+   expectId(mCore->executeCommandJson(writeJson(create)));
+
+   mCore->onNewDay();
+
+   BOOST_CHECK_EQUAL(4, count(queryAll("calendar_item", *mCore)));
+   BOOST_CHECK_EQUAL(1, count(queryCondition("calendar_item", ".timestamp < " + std::to_string(time(0)), *mCore)));
+}

@@ -19,6 +19,7 @@ public:
 private:
     void generateNewTOD();
     void awardInbox();
+    void advanceExpiredCalendarItems();
 
     Command* parseComplete(const boost::property_tree::ptree& src);
 
