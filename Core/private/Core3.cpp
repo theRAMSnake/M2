@@ -6,6 +6,7 @@
 #include "types/SimpleList.hpp"
 #include "rng.hpp"
 #include <chrono>
+#include <random>
 
 #include "subsystems/User.hpp"
 #include "subsystems/Finance.hpp"
@@ -69,7 +70,8 @@ Core3::Core3(const CoreConfig& config)
 : mDb(config.dbFileName)
 , mObjManager(mDb, mTypeSystem)
 {
-   Rng::seed(time(0));
+   std::random_device rd;
+   Rng::seed(rd());
 
    auto rewardSS = std::make_shared<RewardSS>(mObjManager);
    mSubsystems.push_back(rewardSS);
