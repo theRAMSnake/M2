@@ -70,9 +70,6 @@ Core3::Core3(const CoreConfig& config)
 : mDb(config.dbFileName)
 , mObjManager(mDb, mTypeSystem)
 {
-   std::random_device rd;
-   Rng::seed(rd());
-
    auto rewardSS = std::make_shared<RewardSS>(mObjManager);
    mSubsystems.push_back(rewardSS);
 

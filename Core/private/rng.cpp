@@ -1,15 +1,12 @@
 #include "rng.hpp"
 #include <boost/random.hpp>
+#include <random>
 
-thread_local boost::random::mt19937 rng;
+std::random_device rd;
+thread_local boost::random::mt19937 rng (rd());
 thread_local boost::uniform_real<> doubleGen(-1.0, 1.0);
 thread_local boost::uniform_real<> perturbationGen(-0.05, 0.05);
 thread_local boost::uniform_real<> realGen(0, 1.0);
-
-void Rng::seed(const unsigned int seed)
-{
-   rng.seed(seed);
-}
 
 bool Rng::genProbability(const double chance)
 {
