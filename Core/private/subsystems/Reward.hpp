@@ -17,6 +17,8 @@ public:
     std::vector<CommandDef> getCommandDefs() override;
 
     void addPoints(const int points);
+    void setMod(const Id& id, const std::string& desc, const double value);
+    void removeMod(const Id& id);
 
 private:
     Command* parseRewardCommand(const boost::property_tree::ptree& src);

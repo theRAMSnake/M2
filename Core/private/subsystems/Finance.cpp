@@ -100,34 +100,29 @@ void FinanceSS::performFinancialAnalisys(const boost::gregorian::date& newDate)
 
    if(ratio > 1.5)
    {
-      mReward.addPoints(3);
+      mReward.setMod(Id("mod.finance"), "Excellent finance", 0.15);
       status = "Excellent";
    }
    else if(ratio > 1.2)
    {
-      mReward.addPoints(2);
+      mReward.setMod(Id("mod.finance"), "Great finance", 0.1);
       status = "Great";
    }
    else if(ratio > 1.1)
    {
+      mReward.setMod(Id("mod.finance"), "Good finance", 0.05);
       status = "Good";
-      mReward.addPoints(1);
    }
    else if(ratio > 1)
    {
+      mReward.removeMod(Id("mod.finance"));
       status = "Ok";
    }
    else
    {
       status = "Critical";
       unsigned int p = (balance * -1) / 10000;
-      mReward.addPoints(-3);
-
-      if(p > Rng::gen32() % 100)
-      {
-         //Add 25% debuff to points instead
-         mCommon.push(Id("inbox"), "Work hard curse with p = " + std::to_string(p));
-      }
+      mReward.setMod(Id("mod.finance"), "Bad finance", -p * 2);
    }
 
    //Compile report

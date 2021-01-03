@@ -37,6 +37,18 @@ void Variable::inc(const int value)
     mChanged = true;
 }
 
+bool Variable::operator> (const int x) const
+{
+    try
+    {
+        return mObject["value"].get<Type::Int>() > x;
+    }
+    catch(std::runtime_error&)
+    {
+        return false;
+    }
+}
+
 Variable::~Variable()
 {
     if(mChanged)

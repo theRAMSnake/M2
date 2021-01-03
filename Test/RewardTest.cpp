@@ -237,3 +237,39 @@ BOOST_FIXTURE_TEST_CASE( AddPointsModifiedNegTest, RewardTest )
    v = *query("p1", *mCore);
    BOOST_CHECK_EQUAL("35", v.get<std::string>("amount"));
 }
+
+BOOST_FIXTURE_TEST_CASE( PresetModifiersTest, RewardTest ) 
+{
+   //Inbox, calendar, workburden - all active
+   set("work.burden", 0, *mCore);
+
+   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 2));
+
+   BOOST_CHECK(query("mod.inbox", *mCore));
+   BOOST_CHECK(query("mod.calendar", *mCore));
+   BOOST_CHECK(query("mod.workburden", *mCore));
+   BOOST_CHECK_EQUAL(0.1, query("mod.workburden", *mCore)->get<double>("value"));
+
+   //Inbox, calendar, workburden - all disabled
+   boost::property_tree::ptree push;
+   push.put("operation", "push");
+   push.put("listId", "inbox");
+   push.put("value", "val");
+   mCore->executeCommandJson(writeJson(push));
+
+   boost::property_tree::ptree create;
+   create.put("operation", "create");
+   create.put("typename", "calendar_item");
+   create.put("params.timestamp", 25);
+   create.put("params.entityType", 1);
+   mCore->executeCommandJson(writeJson(create));
+
+   set("work.burden", 500, *mCore);
+
+   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 2));
+
+   BOOST_CHECK(!query("mod.inbox", *mCore));
+   BOOST_CHECK(!query("mod.calendar", *mCore));
+   BOOST_CHECK(query("mod.workburden", *mCore));
+   BOOST_CHECK_EQUAL(-0.2, query("mod.workburden", *mCore)->get<double>("value"));
+}

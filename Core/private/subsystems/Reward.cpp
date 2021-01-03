@@ -38,7 +38,7 @@ std::vector<TypeDef> RewardSS::getTypes()
         }});
 
     result.push_back({"reward_modifier", "reward_modifiers", {
-        {"name", Type::String},
+        {"desc", Type::String},
         {"value", Type::Double}
         }});
 
@@ -106,13 +106,23 @@ void RewardSS::onNewDay(const boost::gregorian::date& date)
         addPoints(totalBonus);
     }
 
+    types::Variable wb(mOm, Id("work.burden"));
+
+    if(wb > 0)
+    {
+        setMod(Id("mod.workburden"), "Bad work", -0.2);
+    }
+    else
+    {
+        setMod(Id("mod.workburden"), "Good work", 0.1);
+    }
+
     if(date.day_of_week() != boost::gregorian::Sunday && 
         date.day_of_week() != boost::gregorian::Saturday)
     {
         auto cfg = mOm.getOrCreate(Id("config.reward"), "object");
         auto wbpd = cfg["workburdenPerDay"].get<Type::Int>();
 
-        types::Variable wb(mOm, Id("work.burden"));
         wb.inc(wbpd);
     }
 }
@@ -266,4 +276,22 @@ void RewardSS::addPoints(const int points)
     }
 }
 
+void RewardSS::setMod(const Id& id, const std::string& desc, const double value)
+{
+    removeMod(id);
+
+    auto valueProvider = FunctionToValueProviderAdapter([&desc, value](auto& obj)
+    {
+        obj["desc"] = desc;
+        obj["value"] = value;
+    });
+
+    mOm.create(id, "reward_modifier", valueProvider);
+}
+
+void RewardSS::removeMod(const Id& id)
+{
+    mOm.destroy(id);
+}
+    
 }
