@@ -2,6 +2,7 @@
 #include <boost/test/unit_test.hpp>
 #include <Core/ICore3.hpp>
 #include "../Core/private/JsonSerializer.hpp"
+#include "Utils.hpp"
 
 class RewardTest
 {
@@ -75,4 +76,35 @@ BOOST_FIXTURE_TEST_CASE( AddPoints, RewardTest )
          BOOST_CHECK_EQUAL(0, a);
       }
    }
+}
+
+BOOST_FIXTURE_TEST_CASE( AddWorkburden, RewardTest ) 
+{
+   boost::property_tree::ptree create;
+   create.put("operation", "create");
+   create.put("typename", "object");
+   create.put("defined_id", "config.reward");
+   create.put("params.workburdenPerDay", 200);
+
+   mCore->executeCommandJson(writeJson(create));
+
+   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 1)); //Friday
+   auto v = *query("work.burden", *mCore);
+   BOOST_CHECK_EQUAL("200", v.get<std::string>("value"));
+
+   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 2));
+   v = *query("work.burden", *mCore);
+   BOOST_CHECK_EQUAL("200", v.get<std::string>("value"));
+
+   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 3));
+   v = *query("work.burden", *mCore);
+   BOOST_CHECK_EQUAL("200", v.get<std::string>("value"));
+
+   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 4));
+   v = *query("work.burden", *mCore);
+   BOOST_CHECK_EQUAL("400", v.get<std::string>("value"));
+
+   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 5));
+   v = *query("work.burden", *mCore);
+   BOOST_CHECK_EQUAL("600", v.get<std::string>("value"));
 }

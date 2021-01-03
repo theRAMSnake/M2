@@ -12,7 +12,7 @@ CommonSS::CommonSS(ObjectManager& objMan)
 
 }
 
-void CommonSS::onNewDay()
+void CommonSS::onNewDay(const boost::gregorian::date& date)
 {
 
 }

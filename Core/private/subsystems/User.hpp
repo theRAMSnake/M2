@@ -11,7 +11,7 @@ class UserSS : public ISubsystem
 {
 public:
     UserSS(ObjectManager& objMan, RewardSS& reward, StrategySS& strategy);
-    void onNewDay() override;
+    void onNewDay(const boost::gregorian::date& date) override;
     void onNewWeek() override;
     std::vector<TypeDef> getTypes() override;
     std::vector<CommandDef> getCommandDefs() override;
@@ -19,7 +19,7 @@ public:
 private:
     void generateNewTOD();
     void awardInbox();
-    void advanceExpiredCalendarItems();
+    void advanceExpiredCalendarItems(const boost::gregorian::date& date);
 
     Command* parseComplete(const boost::property_tree::ptree& src);
 

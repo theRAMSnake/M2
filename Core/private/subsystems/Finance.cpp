@@ -41,7 +41,7 @@ std::string getDateStr(const boost::gregorian::date src)
    return os.str();
 }
 
-void FinanceSS::performFinancialAnalisys()
+void FinanceSS::performFinancialAnalisys(const boost::gregorian::date& newDate)
 {
    int grandTotal = 0;
    unsigned int totalEarnings = 0;
@@ -50,7 +50,7 @@ void FinanceSS::performFinancialAnalisys()
    std::map<boost::gregorian::date, int> total_per_month;
    std::map<boost::gregorian::date, int> months;
 
-   auto date = alignToStartOfMonth(boost::gregorian::date(boost::gregorian::day_clock::local_day()));
+   auto date = alignToStartOfMonth(newDate);
 
    for(int i = 0; i < 12; i++)
    {
@@ -125,6 +125,7 @@ void FinanceSS::performFinancialAnalisys()
 
       if(p > Rng::gen32() % 100)
       {
+         //Add 25% debuff to points instead
          mCommon.push(Id("inbox"), "Work hard curse with p = " + std::to_string(p));
       }
    }
@@ -175,9 +176,9 @@ FinanceSS::FinanceSS(ObjectManager& om, RewardSS& reward, CommonSS& common)
 
 }
 
-void FinanceSS::onNewDay()
+void FinanceSS::onNewDay(const boost::gregorian::date& date)
 {
-    performFinancialAnalisys();
+   performFinancialAnalisys(date);
 }
 
 void FinanceSS::onNewWeek()

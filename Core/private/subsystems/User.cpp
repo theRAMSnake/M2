@@ -134,9 +134,17 @@ void UserSS::awardInbox()
    }
 }
 
-void UserSS::advanceExpiredCalendarItems()
+static std::time_t to_time_t(const boost::gregorian::date& date )
 {
-   auto curTime = time(0);
+	using namespace boost::posix_time;
+	static ptime epoch(boost::gregorian::date(1970, 1, 1));
+	time_duration::sec_type secs = (ptime(date,seconds(0)) - epoch).total_seconds();
+	return std::time_t(secs);
+}
+
+void UserSS::advanceExpiredCalendarItems(const boost::gregorian::date& date)
+{
+   auto curTime = to_time_t(date);
    auto curDayBegin = curTime - (curTime % 86400);
    for(auto o : mOm.getAll("calendar_item"))
    {
@@ -149,11 +157,11 @@ void UserSS::advanceExpiredCalendarItems()
    }
 }
 
-void UserSS::onNewDay()
+void UserSS::onNewDay(const boost::gregorian::date& date)
 {
    awardInbox(); 
    generateNewTOD();
-   advanceExpiredCalendarItems();
+   advanceExpiredCalendarItems(date);
 }
 
 void UserSS::onNewWeek()

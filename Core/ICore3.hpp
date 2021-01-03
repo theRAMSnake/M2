@@ -2,6 +2,7 @@
 
 #include <string>
 #include <memory>
+#include "boost/date_time/gregorian/gregorian_types.hpp"
 
 namespace materia
 {
@@ -16,7 +17,7 @@ class ICore3
 public:
     virtual std::string executeCommandJson(const std::string& json) = 0;
 
-    virtual void onNewDay() = 0;
+    virtual void onNewDay(const boost::gregorian::date& date) = 0;
     virtual void onNewWeek() = 0;
 
     virtual ~ICore3(){}

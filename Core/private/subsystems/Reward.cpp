@@ -3,6 +3,7 @@
 #include "../ExceptionsUtil.hpp"
 #include "../Logger.hpp"
 #include "../rng.hpp"
+#include "../types/Variable.hpp"
 #include "Reward.hpp"
 
 #include <boost/algorithm/string/replace.hpp>
@@ -50,7 +51,17 @@ void RewardSS::levelUpContract(const Id id)
     }
 }
 
-void RewardSS::onNewDay()
+int getCurrentDayOfWeek()
+{
+    time_t rawtime;
+    tm * timeinfo;
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    return timeinfo->tm_wday;
+}
+
+void RewardSS::onNewDay(const boost::gregorian::date& date)
 {
     const std::size_t MAX_CONTRACTS = 3;
     auto ctrs = mOm.getAll("reward_contract");
@@ -88,6 +99,16 @@ void RewardSS::onNewDay()
     if(totalBonus != 0)
     {
         addPoints(totalBonus);
+    }
+
+    if(date.day_of_week() != boost::gregorian::Sunday && 
+        date.day_of_week() != boost::gregorian::Saturday)
+    {
+        auto cfg = mOm.getOrCreate(Id("config.reward"), "object");
+        auto wbpd = cfg["workburdenPerDay"].get<Type::Int>();
+
+        types::Variable wb(mOm, Id("work.burden"));
+        wb.inc(wbpd);
     }
 }
 

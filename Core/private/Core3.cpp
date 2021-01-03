@@ -108,11 +108,11 @@ Core3::Core3(const CoreConfig& config)
    mObjManager.initialize();
 }
 
-void Core3::onNewDay()
+void Core3::onNewDay(const boost::gregorian::date& date)
 {
    for(auto s : mSubsystems)
    {
-      s->onNewDay();
+      s->onNewDay(date);
    }
 }
 

@@ -11,13 +11,13 @@ class FinanceSS : public ISubsystem
 {
 public:
     FinanceSS(ObjectManager& objMan, RewardSS& reward, CommonSS& common);
-    void onNewDay() override;
+    void onNewDay(const boost::gregorian::date& date) override;
     void onNewWeek() override;
     std::vector<TypeDef> getTypes() override;
     std::vector<CommandDef> getCommandDefs() override;
 
 private:
-    void performFinancialAnalisys();
+    void performFinancialAnalisys(const boost::gregorian::date& date);
 
     ObjectManager& mOm;
     RewardSS& mReward;

@@ -10,7 +10,7 @@ class RewardSS : public ISubsystem
 public:
     RewardSS(ObjectManager& objMan);
 
-    void onNewDay() override;
+    void onNewDay(const boost::gregorian::date& date) override;
     void onNewWeek() override;
     
     std::vector<TypeDef> getTypes() override;

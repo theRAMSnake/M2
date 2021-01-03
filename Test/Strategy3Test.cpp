@@ -44,7 +44,7 @@ BOOST_FIXTURE_TEST_CASE( UpdateWaitNode, StrategyTest )
 
     expectId(mCore->executeCommandJson(writeJson(create)));
 
-    mCore->onNewDay();
+    mCore->onNewDay(boost::gregorian::day_clock::local_day());
 
     auto w1 = query("w1", *mCore);
     auto w2 = query("w2", *mCore);

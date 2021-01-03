@@ -102,7 +102,14 @@ private:
                 return static_cast<std::int64_t>(val);
             if constexpr (std::is_same<T, std::string>::value)
             {
-                return static_cast<std::int64_t>(boost::lexical_cast<int>(val));
+                try
+                {
+                    return static_cast<std::int64_t>(boost::lexical_cast<int>(val));
+                }
+                catch(boost::bad_lexical_cast&)
+                {
+                    
+                }
             }
             break;
 

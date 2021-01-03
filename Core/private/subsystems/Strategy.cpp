@@ -1,5 +1,6 @@
 #include "Strategy.hpp"
 #include "../ObjectManager.hpp"
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 namespace materia
 {
@@ -11,11 +12,19 @@ StrategySS::StrategySS(ObjectManager& objMan, RewardSS& reward)
 
 }
 
-void StrategySS::onNewDay()
+static std::time_t to_time_t(const boost::gregorian::date& date )
+{
+	using namespace boost::posix_time;
+	static ptime epoch(boost::gregorian::date(1970, 1, 1));
+	time_duration::sec_type secs = (ptime(date,seconds(0)) - epoch).total_seconds();
+	return std::time_t(secs);
+}
+
+void StrategySS::onNewDay(const boost::gregorian::date& date)
 {
    for(auto o : mOm.getAll("strategy_node"))
    {
-       if((o)["type"].get<Type::Option>() == 4 && (o)["date"].get<Type::Timestamp>().value < time(0))
+       if((o)["type"].get<Type::Option>() == 4 && (o)["date"].get<Type::Timestamp>().value < to_time_t(date))
        {
            (o)["isAchieved"] = true;
            mOm.modify(o);

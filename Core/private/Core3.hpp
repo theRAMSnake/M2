@@ -15,7 +15,7 @@ class Core3 : public ICore3
 public:
     Core3(const CoreConfig& config);
 
-    void onNewDay() override;
+    void onNewDay(const boost::gregorian::date& date) override;
     void onNewWeek() override;
 
     std::string executeCommandJson(const std::string& json) override;
