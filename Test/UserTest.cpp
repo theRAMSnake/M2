@@ -189,7 +189,7 @@ BOOST_FIXTURE_TEST_CASE(AdvanceCalendar, UserTest)
 
    expectId(mCore->executeCommandJson(writeJson(create)));
 
-   mCore->onNewDay();
+   mCore->onNewDay(boost::gregorian::day_clock::local_day());
 
    BOOST_CHECK_EQUAL(4, count(queryAll("calendar_item", *mCore)));
    BOOST_CHECK_EQUAL(1, count(queryCondition("calendar_item", ".timestamp < " + std::to_string(time(0)), *mCore)));

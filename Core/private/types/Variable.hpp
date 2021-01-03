@@ -16,6 +16,8 @@ public:
     Variable(ObjectManager& om, const Id& id);
     ~Variable();
     void operator =(const std::string& value);
+    void inc(const int value);
+    bool operator >(const int x) const;
 
 private:
     bool mChanged = false;

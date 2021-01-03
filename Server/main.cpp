@@ -79,7 +79,7 @@ void timerFunc(materia::ICore3* core)
         if(tm_struct->tm_hour == 3 && tm_struct->tm_min == 0 && cicleCooldown == 0)
         {
             std::unique_lock<std::mutex> lock(gMainMutex);
-            core->onNewDay();
+            core->onNewDay(boost::gregorian::day_clock::local_day());
 
             t = std::time(NULL);
             tm_struct = localtime(&t);

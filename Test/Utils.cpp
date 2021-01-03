@@ -89,3 +89,26 @@ std::optional<boost::property_tree::ptree> query(const std::string& id, materia:
 
    return std::optional<boost::property_tree::ptree>();
 }
+
+void set(const std::string& id, const int value, materia::ICore3& core)
+{
+   if(query(id, core))
+   {
+      boost::property_tree::ptree modify;
+      modify.put("operation", "modify");
+      modify.put("id", id);
+      modify.put("params.value", value);
+
+      core.executeCommandJson(writeJson(modify));
+   }
+   else
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "variable");
+      create.put("defined_id", id);
+      create.put("params.value", value);
+
+      core.executeCommandJson(writeJson(create));
+   }
+}

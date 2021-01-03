@@ -11,7 +11,7 @@ class StrategySS : public ISubsystem
 {
 public:
     StrategySS(ObjectManager& objMan, RewardSS& reward);
-    void onNewDay() override;
+    void onNewDay(const boost::gregorian::date& date) override;
     void onNewWeek() override;
     std::vector<TypeDef> getTypes() override;
     std::vector<CommandDef> getCommandDefs() override;

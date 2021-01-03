@@ -41,7 +41,7 @@ std::string getDateStr(const boost::gregorian::date src)
    return os.str();
 }
 
-void FinanceSS::performFinancialAnalisys()
+void FinanceSS::performFinancialAnalisys(const boost::gregorian::date& newDate)
 {
    int grandTotal = 0;
    unsigned int totalEarnings = 0;
@@ -50,7 +50,7 @@ void FinanceSS::performFinancialAnalisys()
    std::map<boost::gregorian::date, int> total_per_month;
    std::map<boost::gregorian::date, int> months;
 
-   auto date = alignToStartOfMonth(boost::gregorian::date(boost::gregorian::day_clock::local_day()));
+   auto date = alignToStartOfMonth(newDate);
 
    for(int i = 0; i < 12; i++)
    {
@@ -100,33 +100,29 @@ void FinanceSS::performFinancialAnalisys()
 
    if(ratio > 1.5)
    {
-      mReward.addPoints(3);
+      mReward.setMod(Id("mod.finance"), "Excellent finance", 0.15);
       status = "Excellent";
    }
    else if(ratio > 1.2)
    {
-      mReward.addPoints(2);
+      mReward.setMod(Id("mod.finance"), "Great finance", 0.1);
       status = "Great";
    }
    else if(ratio > 1.1)
    {
+      mReward.setMod(Id("mod.finance"), "Good finance", 0.05);
       status = "Good";
-      mReward.addPoints(1);
    }
    else if(ratio > 1)
    {
+      mReward.removeMod(Id("mod.finance"));
       status = "Ok";
    }
    else
    {
       status = "Critical";
       unsigned int p = (balance * -1) / 10000;
-      mReward.addPoints(-3);
-
-      if(p > Rng::gen32() % 100)
-      {
-         mCommon.push(Id("inbox"), "Work hard curse with p = " + std::to_string(p));
-      }
+      mReward.setMod(Id("mod.finance"), "Bad finance", -p * 2);
    }
 
    //Compile report
@@ -175,9 +171,9 @@ FinanceSS::FinanceSS(ObjectManager& om, RewardSS& reward, CommonSS& common)
 
 }
 
-void FinanceSS::onNewDay()
+void FinanceSS::onNewDay(const boost::gregorian::date& date)
 {
-    performFinancialAnalisys();
+   performFinancialAnalisys(date);
 }
 
 void FinanceSS::onNewWeek()

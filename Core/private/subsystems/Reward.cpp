@@ -3,6 +3,7 @@
 #include "../ExceptionsUtil.hpp"
 #include "../Logger.hpp"
 #include "../rng.hpp"
+#include "../types/Variable.hpp"
 #include "Reward.hpp"
 
 #include <boost/algorithm/string/replace.hpp>
@@ -36,6 +37,11 @@ std::vector<TypeDef> RewardSS::getTypes()
         {"goal", Type::Int}
         }});
 
+    result.push_back({"reward_modifier", "reward_modifiers", {
+        {"desc", Type::String},
+        {"value", Type::Double}
+        }});
+
     return result;
 }
 
@@ -50,7 +56,17 @@ void RewardSS::levelUpContract(const Id id)
     }
 }
 
-void RewardSS::onNewDay()
+int getCurrentDayOfWeek()
+{
+    time_t rawtime;
+    tm * timeinfo;
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    return timeinfo->tm_wday;
+}
+
+void RewardSS::onNewDay(const boost::gregorian::date& date)
 {
     const std::size_t MAX_CONTRACTS = 3;
     auto ctrs = mOm.getAll("reward_contract");
@@ -88,6 +104,26 @@ void RewardSS::onNewDay()
     if(totalBonus != 0)
     {
         addPoints(totalBonus);
+    }
+
+    types::Variable wb(mOm, Id("work.burden"));
+
+    if(wb > 0)
+    {
+        setMod(Id("mod.workburden"), "Bad work", -0.2);
+    }
+    else
+    {
+        setMod(Id("mod.workburden"), "Good work", 0.1);
+    }
+
+    if(date.day_of_week() != boost::gregorian::Sunday && 
+        date.day_of_week() != boost::gregorian::Saturday)
+    {
+        auto cfg = mOm.getOrCreate(Id("config.reward"), "object");
+        auto wbpd = cfg["workburdenPerDay"].get<Type::Int>();
+
+        wb.inc(wbpd);
     }
 }
 
@@ -186,12 +222,28 @@ Command* RewardSS::parseRewardCommand(const boost::property_tree::ptree& src)
    return new RewardCommand(pts, *this);
 }
 
+double RewardSS::calculateTotalModifier()
+{
+    double result = 0;
+
+    for(auto &m: mOm.getAll("reward_modifier"))
+    {
+        result += m["value"].get<Type::Double>();
+    }
+
+    return result;
+}
+
 void RewardSS::addPoints(const int points)
 {
+    bool isPlus = points > 0;
+    auto mod = calculateTotalModifier();
+    auto pointsModified = static_cast<double>(points) + static_cast<double>(points) * (isPlus ? mod : -mod) + mLeftOver;
+    int pointsLeft = std::abs(static_cast<int>(pointsModified));
+    mLeftOver = pointsModified - static_cast<int>(pointsModified);
+
     auto pools = mOm.getAll("reward_pool");
     unsigned int attemptCounter = 0;
-    int pointsLeft = std::abs(points);
-    bool isPlus = points > 0;
 
     while(!pools.empty() && pointsLeft > 0)
     {
@@ -224,4 +276,22 @@ void RewardSS::addPoints(const int points)
     }
 }
 
+void RewardSS::setMod(const Id& id, const std::string& desc, const double value)
+{
+    removeMod(id);
+
+    auto valueProvider = FunctionToValueProviderAdapter([&desc, value](auto& obj)
+    {
+        obj["desc"] = desc;
+        obj["value"] = value;
+    });
+
+    mOm.create(id, "reward_modifier", valueProvider);
+}
+
+void RewardSS::removeMod(const Id& id)
+{
+    mOm.destroy(id);
+}
+    
 }

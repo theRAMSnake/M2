@@ -68,33 +68,33 @@ protected:
 
 BOOST_FIXTURE_TEST_CASE( TestNewDayEmpty, ContractsTest ) 
 {
-   mCore->onNewDay();
+   mCore->onNewDay(boost::gregorian::day_clock::local_day());
 
    BOOST_CHECK_EQUAL(1, count(queryAll("reward_contract", *mCore)));
 }
 
 BOOST_FIXTURE_TEST_CASE( TestNewDayFull, ContractsTest ) 
 {
-   mCore->onNewDay();
+   mCore->onNewDay(boost::gregorian::day_clock::local_day());
 
    BOOST_CHECK_EQUAL(1, count(queryAll("reward_contract", *mCore)));
 
-   mCore->onNewDay();
+   mCore->onNewDay(boost::gregorian::day_clock::local_day());
 
    BOOST_CHECK_EQUAL(2, count(queryAll("reward_contract", *mCore)));
 
-   mCore->onNewDay();
+   mCore->onNewDay(boost::gregorian::day_clock::local_day());
 
    BOOST_CHECK_EQUAL(3, count(queryAll("reward_contract", *mCore)));
 
-   mCore->onNewDay();
+   mCore->onNewDay(boost::gregorian::day_clock::local_day());
 
    BOOST_CHECK_EQUAL(3, count(queryAll("reward_contract", *mCore)));
 }
 
 BOOST_FIXTURE_TEST_CASE( TestNewDayCompleted, ContractsTest ) 
 {
-   mCore->onNewDay();
+   mCore->onNewDay(boost::gregorian::day_clock::local_day());
 
    auto c = queryFirst("reward_contract", *mCore);
 
@@ -109,7 +109,7 @@ BOOST_FIXTURE_TEST_CASE( TestNewDayCompleted, ContractsTest )
 
    mCore->executeCommandJson(writeJson(modify));
 
-   mCore->onNewDay();
+   mCore->onNewDay(boost::gregorian::day_clock::local_day());
 
    //Expect removed
    auto cont = query(id, *mCore);
@@ -126,9 +126,9 @@ BOOST_FIXTURE_TEST_CASE( TestNewDayCompleted, ContractsTest )
 
 BOOST_FIXTURE_TEST_CASE( TestNewDayCompletedFull, ContractsTest ) 
 {
-   mCore->onNewDay();
-   mCore->onNewDay();
-   mCore->onNewDay();
+   mCore->onNewDay(boost::gregorian::day_clock::local_day());
+   mCore->onNewDay(boost::gregorian::day_clock::local_day());
+   mCore->onNewDay(boost::gregorian::day_clock::local_day());
 
    auto c = queryFirst("reward_contract", *mCore);
 
@@ -141,7 +141,7 @@ BOOST_FIXTURE_TEST_CASE( TestNewDayCompletedFull, ContractsTest )
 
    mCore->executeCommandJson(writeJson(modify));
 
-   mCore->onNewDay();
+   mCore->onNewDay(boost::gregorian::day_clock::local_day());
 
    BOOST_CHECK_EQUAL(3, count(queryAll("reward_contract", *mCore)));
 }
@@ -151,7 +151,7 @@ BOOST_FIXTURE_TEST_CASE( TestLeveledCreate, ContractsTest )
    //Complete 10 contracts
    for(int i = 0; i < 10; ++i)
    {
-      mCore->onNewDay();
+      mCore->onNewDay(boost::gregorian::day_clock::local_day());
 
       auto c = queryFirst("reward_contract", *mCore);
 
@@ -165,7 +165,7 @@ BOOST_FIXTURE_TEST_CASE( TestLeveledCreate, ContractsTest )
       mCore->executeCommandJson(writeJson(modify));
    }
 
-   mCore->onNewDay();
+   mCore->onNewDay(boost::gregorian::day_clock::local_day());
 
    //Check levels
    auto conf = query("reward.cb", *mCore);
@@ -192,7 +192,7 @@ BOOST_FIXTURE_TEST_CASE( TestLeveledCreate, ContractsTest )
 
 BOOST_FIXTURE_TEST_CASE( TestExpiration, ContractsTest ) 
 {
-   mCore->onNewDay();
+   mCore->onNewDay(boost::gregorian::day_clock::local_day());
    auto c = queryFirst("reward_contract", *mCore);
    auto id = c.get<std::string>("id");
    auto exp = c.get<int>("daysLeft");
@@ -200,7 +200,7 @@ BOOST_FIXTURE_TEST_CASE( TestExpiration, ContractsTest )
    while(true)
    {
       exp--;
-      mCore->onNewDay();
+      mCore->onNewDay(boost::gregorian::day_clock::local_day());
 
       auto cont = query(id, *mCore);
       if(exp == 0)
@@ -226,6 +226,6 @@ BOOST_FIXTURE_TEST_CASE( Test40Days, ContractsTest )
 {
    for(int i = 0; i < 40; ++i)
    {
-      mCore->onNewDay();
+      mCore->onNewDay(boost::gregorian::day_clock::local_day());
    }
 }

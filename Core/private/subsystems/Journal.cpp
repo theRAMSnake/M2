@@ -10,7 +10,7 @@ JournalSS::JournalSS(ObjectManager& objMan)
 
 }
 
-void JournalSS::onNewDay()
+void JournalSS::onNewDay(const boost::gregorian::date& date)
 {
 
 }

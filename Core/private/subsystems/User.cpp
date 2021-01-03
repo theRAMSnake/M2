@@ -127,33 +127,54 @@ void UserSS::generateNewTOD()
 void UserSS::awardInbox()
 {
    types::SimpleList inbox(mOm, Id("inbox"));
-   if(inbox.size() == 0 && Rng::genProbability(0.1))
+   if(inbox.size() == 0)
    {
-      mReward.addPoints(1);
-      inbox.add("Extra point awarded for empty inbox.");
+       mReward.setMod(Id("mod.inbox"), "Clean inbox", 0.1);
+   }
+   else
+   {
+       mReward.removeMod(Id("mod.inbox"));
    }
 }
 
-void UserSS::advanceExpiredCalendarItems()
+static std::time_t to_time_t(const boost::gregorian::date& date )
 {
-   auto curTime = time(0);
+	using namespace boost::posix_time;
+	static ptime epoch(boost::gregorian::date(1970, 1, 1));
+	time_duration::sec_type secs = (ptime(date,seconds(0)) - epoch).total_seconds();
+	return std::time_t(secs);
+}
+
+void UserSS::advanceExpiredCalendarItems(const boost::gregorian::date& date)
+{
+   bool hasExpiredItems = false;
+   auto curTime = to_time_t(date);
    auto curDayBegin = curTime - (curTime % 86400);
    for(auto o : mOm.getAll("calendar_item"))
    {
        if((o)["entityType"].get<Type::Option>() != 0/*Event*/ && (o)["timestamp"].get<Type::Timestamp>().value < curTime)
        {
            o["timestamp"] = Time{curDayBegin + (o["timestamp"].get<Type::Timestamp>().value % 86400)};
-           
+           hasExpiredItems = true;
            mOm.modify(o);
        }
    }
+
+   if(hasExpiredItems)
+   {
+       mReward.removeMod(Id("mod.calendar"));
+   }
+   else
+   {
+       mReward.setMod(Id("mod.calendar"), "Clean calendar", 0.1);
+   }
 }
 
-void UserSS::onNewDay()
+void UserSS::onNewDay(const boost::gregorian::date& date)
 {
-   awardInbox(); 
+   awardInbox();
    generateNewTOD();
-   advanceExpiredCalendarItems();
+   advanceExpiredCalendarItems(date);
 }
 
 void UserSS::onNewWeek()

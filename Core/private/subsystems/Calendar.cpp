@@ -10,7 +10,7 @@ CalendarSS::CalendarSS(ObjectManager& objMan)
 
 }
 
-void CalendarSS::onNewDay()
+void CalendarSS::onNewDay(const boost::gregorian::date& date)
 {
 
 }

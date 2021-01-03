@@ -23,7 +23,7 @@ protected:
 
 BOOST_FIXTURE_TEST_CASE( NewDayTest, CoreTest ) 
 {  
-   mCore->onNewDay();
+   mCore->onNewDay(boost::gregorian::day_clock::local_day());
 }
 
 BOOST_FIXTURE_TEST_CASE( NewWeekTest, CoreTest ) 
