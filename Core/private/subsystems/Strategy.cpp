@@ -112,7 +112,6 @@ void StrategySS::handleNodeChanging(const Object& before, Object& after)
     if(before["isAchieved"].get<Type::Bool>() == false &&
         after["isAchieved"].get<Type::Bool>() == true)
     {
-        std::cout << "+";
         mReward.addPoints(after["reward"].get<Type::Int>());
     }
 }

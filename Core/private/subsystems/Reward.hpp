@@ -22,7 +22,9 @@ private:
     Command* parseRewardCommand(const boost::property_tree::ptree& src);
     void genContract();
     void levelUpContract(const Id id);
+    double calculateTotalModifier();
 
+    double mLeftOver = 0.0;
     ObjectManager& mOm;
 };
 

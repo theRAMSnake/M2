@@ -37,6 +37,11 @@ std::vector<TypeDef> RewardSS::getTypes()
         {"goal", Type::Int}
         }});
 
+    result.push_back({"reward_modifier", "reward_modifiers", {
+        {"name", Type::String},
+        {"value", Type::Double}
+        }});
+
     return result;
 }
 
@@ -207,12 +212,28 @@ Command* RewardSS::parseRewardCommand(const boost::property_tree::ptree& src)
    return new RewardCommand(pts, *this);
 }
 
+double RewardSS::calculateTotalModifier()
+{
+    double result = 0;
+
+    for(auto &m: mOm.getAll("reward_modifier"))
+    {
+        result += m["value"].get<Type::Double>();
+    }
+
+    return result;
+}
+
 void RewardSS::addPoints(const int points)
 {
+    bool isPlus = points > 0;
+    auto mod = calculateTotalModifier();
+    auto pointsModified = static_cast<double>(points) + static_cast<double>(points) * (isPlus ? mod : -mod) + mLeftOver;
+    int pointsLeft = std::abs(static_cast<int>(pointsModified));
+    mLeftOver = pointsModified - static_cast<int>(pointsModified);
+
     auto pools = mOm.getAll("reward_pool");
     unsigned int attemptCounter = 0;
-    int pointsLeft = std::abs(points);
-    bool isPlus = points > 0;
 
     while(!pools.empty() && pointsLeft > 0)
     {
