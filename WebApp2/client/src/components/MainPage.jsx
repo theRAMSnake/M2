@@ -2,6 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import Auth from '../modules/auth'
 import m3proxy from '../modules/m3proxy'
+import materiaModel from '../modules/model'
 import Materia from '../modules/materia_request'
 import SearchBar from './SearchBar.jsx'
 import ApiView from './ApiView.jsx'
@@ -12,6 +13,8 @@ import QueryView from './QueryView.jsx'
 import AddItemDialog from './AddItemDialog.jsx'
 import CalendarCtrl from './CalendarCtrl.jsx'
 import ContractsCtrl from './ContractsCtrl.jsx'
+import VariableBurndown from './VariableBurndown.jsx'
+import ConstantPanel from './ConstantPanel.jsx'
 
 import {
     AppBar,
@@ -104,6 +107,7 @@ function calculateNumImportantCalendarItems(calendarItems)
 function MainPage(props) {
     
     const classes = useStyles();
+    const [refreshCnt, setRefreshCnt] = React.useState(0);
     const [ldOpen, setldOpen] = React.useState(false);
     const [rdOpen, setrdOpen] = React.useState(false);
     const [contentType, setContentType] = React.useState("");
@@ -143,8 +147,15 @@ function MainPage(props) {
         }
     }
 
+    function refresh()
+    {
+        setRefreshCnt(refreshCnt+1);
+    }
+
     m3proxy.initialize(() => {setIsInitialisation(false)});
     Materia.setGlobalErrorHandler((err) => {setLastError(err); setSnackOpen(true);});
+    materiaModel.init();
+    materiaModel.setOnUpdateCallback(refresh);
 
     if(!calendarItems.object_list)
     {
@@ -260,6 +271,8 @@ function MainPage(props) {
                     <ContractsCtrl/>
                     <SearchBar onSubmit={searchBarSubmit}/>
                     <div className={classes.grow} />
+                    <ConstantPanel value={materiaModel.getRewardModifier()}/>
+                    <VariableBurndown var={materiaModel.getWorkBurden()} commit={materiaModel.setWorkBurden}/>
                     <BadgetList id='watch_list' icon={WatchLaterIcon}/>
                     <BadgetList id='inbox' icon={MailIcon}/>
                     <IconButton color="inherit" onClick={onAddClicked}>

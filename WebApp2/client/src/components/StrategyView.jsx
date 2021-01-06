@@ -821,6 +821,10 @@ function StrategyView(props)
         setShowClearDialog(false);
     }
 
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     function onClearDialogOk()
     {
         setShowClearDialog(false);
@@ -828,6 +832,8 @@ function StrategyView(props)
         setUpdating(true);
 
         graphData.nodes.filter(x => x.isAchieved === 'true').forEach(x => Materia.postDelete(x.id));
+
+        sleep(2000);
 
         loadGraph(path[path.length - 1].id, () => {});
     }
