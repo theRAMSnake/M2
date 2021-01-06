@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) =>
   }),
 );
 
-export default function VariableBurndown(props) 
+export default function ConstantPanel(props) 
 {
     const classes = useStyles();
 
