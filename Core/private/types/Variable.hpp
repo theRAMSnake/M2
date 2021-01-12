@@ -16,6 +16,7 @@ public:
     Variable(ObjectManager& om, const Id& id);
     ~Variable();
     void operator =(const std::string& value);
+    void operator =(const int value);
     void inc(const int value);
     bool operator >(const int x) const;
 
