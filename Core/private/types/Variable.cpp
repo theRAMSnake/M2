@@ -20,6 +20,12 @@ void Variable::operator =(const std::string& value)
     mChanged = true;
 }
 
+void Variable::operator =(const int value)
+{
+    (mObject)["value"] = value;
+    mChanged = true;
+}
+
 void Variable::inc(const int value)
 {
     int oldVal = 0;
