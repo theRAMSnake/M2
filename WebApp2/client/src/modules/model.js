@@ -2,7 +2,8 @@ import Materia from '../modules/materia_request'
 
 var init = false;
 var workBurden = 0;
-var rewardModifier = "0%"
+var primaryFocus = "";
+var rewardModifiers = null
 var onUpdateCallback = () => {}
 
 //High level representation of materia client staff
@@ -32,19 +33,24 @@ class materiaModel
         {
             const req = {
                 operation: "query",
+                ids: ["primary_focus"]
+            };
+            
+            Materia.exec(req, (r) => 
+            {
+                primaryFocus = r.object_list[0].value;
+                onUpdateCallback();
+            });
+        }
+        {
+            const req = {
+                operation: "query",
                 filter: "IS(reward_modifier)"
             };
 
             Materia.exec(req, (r) => 
             {
-                var total = 0.0;
-                
-                r.object_list.forEach(x => {
-                    total += parseFloat(x.value)
-                });
-
-                console.log(total);
-                rewardModifier = parseInt((total * 100).toString()).toString() + "%";
+                rewardModifiers = r.object_list;
 
                 onUpdateCallback();
             });
@@ -56,9 +62,14 @@ class materiaModel
         return workBurden;
     }
 
-    static getRewardModifier()
+    static getPrimaryFocus()
     {
-        return rewardModifier;
+        return primaryFocus;
+    }
+
+    static getRewardModifiers()
+    {
+        return rewardModifiers;
     }
 
     static setWorkBurden(newValue)
@@ -67,6 +78,17 @@ class materiaModel
             if(cb.success === "1")
             {
                 workBurden = Number(newValue);
+                onUpdateCallback();
+            }
+        });
+    }
+
+    static setPrimaryFocus(newValue)
+    {
+        Materia.sendEdit("primary_focus", JSON.stringify({value: newValue}), (cb) => { 
+            if(cb.success === "1")
+            {
+                primaryFocus = newValue;
                 onUpdateCallback();
             }
         });

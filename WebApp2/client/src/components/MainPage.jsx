@@ -14,7 +14,8 @@ import AddItemDialog from './AddItemDialog.jsx'
 import CalendarCtrl from './CalendarCtrl.jsx'
 import ContractsCtrl from './ContractsCtrl.jsx'
 import VariableBurndown from './VariableBurndown.jsx'
-import ConstantPanel from './ConstantPanel.jsx'
+import VariablePanel from './VariablePanel.jsx'
+import RewardModifierView from './RewardModifierView.jsx'
 
 import {
     AppBar,
@@ -271,7 +272,8 @@ function MainPage(props) {
                     <ContractsCtrl/>
                     <SearchBar onSubmit={searchBarSubmit}/>
                     <div className={classes.grow} />
-                    <ConstantPanel value={materiaModel.getRewardModifier()}/>
+                    <VariablePanel value={materiaModel.getPrimaryFocus()} commit={materiaModel.setPrimaryFocus} length={250}/>
+                    <RewardModifierView value={materiaModel.getRewardModifiers()}/>
                     <VariableBurndown var={materiaModel.getWorkBurden()} commit={materiaModel.setWorkBurden}/>
                     <BadgetList id='watch_list' icon={WatchLaterIcon}/>
                     <BadgetList id='inbox' icon={MailIcon}/>
