@@ -1,5 +1,6 @@
 import React from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import TextQueryDialog from './dialogs/TextQueryDialog.jsx'
 
 import {
     Typography,
@@ -19,12 +20,31 @@ const useStyles = makeStyles((theme) =>
   }),
 );
 
-export default function ConstantPanel(props) 
+export default function VariablePanel(props) 
 {
     const classes = useStyles();
 
+    const [inEditDialog, setInEditDialog] = React.useState(false);
+
+    function prepareEditDialog()
+    {
+        setInEditDialog(true);
+    }
+
+    function handleDialogCanceled()
+    {
+        setInEditDialog(false);
+    }
+
+    function handleEditDialogFinished(text)
+    {
+        setInEditDialog(false);
+        props.commit(text);
+    }
+
     return  <Paper elevation={3}>
-                <Box width={60} onClick={() => prepareEditDialog()}>
+                {inEditDialog && <TextQueryDialog text="" onFinished={handleEditDialogFinished} onCanceled={handleDialogCanceled}/>}
+                <Box width={props.length} onClick={() => prepareEditDialog()}>
                     <Typography variant="h6" align="center" className={classes.unselectable}>
                         {props.value}
                     </Typography>
