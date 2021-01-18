@@ -51,6 +51,7 @@ void JsonRestorationProvider::populate(Object& obj) const
                 case Type::String: f = c.second.get_value<std::string>();break;
                 case Type::Reference: f = c.second.get_value<std::string>();break;
                 case Type::Option: f = c.second.get_value<int>();break;
+                case Type::Choice: f = c.second.get_value<std::string>();break;
                 case Type::StringArray: f = extractArray(c.second);break;
                 default: throw std::runtime_error("Unknown type"); 
             }

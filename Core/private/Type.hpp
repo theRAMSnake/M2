@@ -18,7 +18,8 @@ enum class Type
     Timestamp,
     Option,
     Money,
-    Reference
+    Reference,
+    Choice
 };
 
 struct Time
@@ -71,6 +72,12 @@ template<>
 struct TypeTraits<Type::Option>
 {
    using Class = std::int64_t;
+};
+
+template<>
+struct TypeTraits<Type::Choice>
+{
+   using Class = std::string;
 };
 
 template<>

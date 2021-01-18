@@ -24,7 +24,7 @@ void StrategySS::onNewDay(const boost::gregorian::date& date)
 {
    for(auto o : mOm.getAll("strategy_node"))
    {
-       if((o)["type"].get<Type::Option>() == 4 && (o)["date"].get<Type::Timestamp>().value < to_time_t(date))
+       if((o)["typeChoice"].get<Type::Choice>() == "Wait" && (o)["date"].get<Type::Timestamp>().value < to_time_t(date))
        {
            (o)["isAchieved"] = true;
            mOm.modify(o);
@@ -47,6 +47,7 @@ std::vector<TypeDef> StrategySS::getTypes()
         {"title", Type::String},
         {"details", Type::String},
         {"type", Type::Option, allowedTypes},
+        {"typeChoice", Type::Choice, allowedTypes},
         {"isAchieved", Type::Bool},
         {"parentNodeId", Type::String},
         {"date", Type::Timestamp},
@@ -103,7 +104,7 @@ void StrategySS::handleNodeBeforeDelete(Object& obj)
 
 void StrategySS::handleNodeChanging(const Object& before, Object& after)
 {
-    if(after["type"].get<Type::Option>() == 2 && after["value"].get<Type::Int>() >= 
+    if(after["typeChoice"].get<Type::Choice>() == "Counter" && after["value"].get<Type::Int>() >= 
         after["target"].get<Type::Int>())
     {
         after["isAchieved"] = true;
@@ -119,8 +120,8 @@ void StrategySS::handleNodeChanging(const Object& before, Object& after)
 void StrategySS::validateNode(Object& obj)
 {
     //Check type is in the range
-    auto opt = obj["type"].get<Type::Option>();
-    if(opt < 0 || opt >= static_cast<int>(allowedTypes.size()))
+    auto opt = obj["typeChoice"].get<Type::Choice>();
+    if(std::find(allowedTypes.begin(), allowedTypes.end(), opt) == allowedTypes.end())
     {
         throw std::runtime_error("Node validation failed: unsupported type");
     }
@@ -217,14 +218,14 @@ void StrategySS::onCalendarReferenceCompleted(const Id& id)
     try
     {
         Object obj = mOm.get(id);
-        auto tp = obj["type"].get<Type::Option>();
+        auto tp = obj["typeChoice"].get<Type::Choice>();
         //If node goal/task -> change isAchieved
-        if(tp == 0 || tp == 1)
+        if(tp == "Goal" || tp == "Task")
         {
             obj["isAchieved"] = true;
         }
         //If counter -> ++
-        else if(tp == 2)
+        else if(tp == "Counter")
         {
             obj["value"] = obj["value"].get<Type::Int>() + 1;
         }
