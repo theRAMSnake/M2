@@ -17,6 +17,7 @@ std::string to_string(const Type t)
         case Type::StringArray: return "array";
         case Type::Timestamp: return "timestamp";
         case Type::Option: return "option";
+        case Type::Choice: return "choice";
     }
 
     throw std::runtime_error("unknown type");

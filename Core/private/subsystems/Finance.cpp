@@ -68,7 +68,7 @@ void FinanceSS::performFinancialAnalisys(const boost::gregorian::date& newDate)
          auto month = getMonthAlignment(ev);
          auto amount = ev["amountEuroCents"].get<Type::Money>();
          auto catId = ev["categoryId"].toId();
-         if(ev["type"].get<Type::Option>() == 0/*spending*/)
+         if(ev["typeChoice"].get<Type::Choice>() == "Spending")
          {
             amountByCategory[catId][month] -= amount;
             grandTotal -= amount;
@@ -189,6 +189,7 @@ std::vector<TypeDef> FinanceSS::getTypes()
     result.push_back({"finance_event", "finance_events", {
         {"categoryId", Type::Reference, {}, "finance_category"},
         {"type", Type::Option, {"Spending", "Earning"}},
+        {"typeChoice", Type::Choice, {"Spending", "Earning"}},
         {"details", Type::String},
         {"amountEuroCents", Type::Money},
         {"timestamp", Type::Timestamp}

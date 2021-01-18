@@ -11,34 +11,30 @@
 namespace materia
 {
 
-Time advance(const Time src, const int recType)
+Time advance(const Time src, const std::string recType)
 {
+    //"Weekly", "Monthly", "Quarterly", "Yearly", "Bi-daily"
     Time result = src;
 
-    switch (recType)
+    if(recType == "Weekly")
     {
-    case 1:
         result.value += 604800;
-        break;
-
-    case 2:
+    }
+    else if(recType == "Monthly")
+    {
         result.value = boost::posix_time::to_time_t(boost::posix_time::from_time_t(result.value) + boost::gregorian::months(1));
-        break;
-
-    case 3:
+    }
+    else if(recType == "Quarterly")
+    {
         result.value = boost::posix_time::to_time_t(boost::posix_time::from_time_t(result.value) + boost::gregorian::months(3));
-        break;
-
-    case 4:
+    }
+    else if(recType == "Yearly")
+    {
         result.value = boost::posix_time::to_time_t(boost::posix_time::from_time_t(result.value) + boost::gregorian::months(12));
-        break;
-
-    case 5:
+    }
+    else if(recType == "Bi-daily")
+    {    
         result.value += 172800;
-        break;
-    
-    default:
-        break;
     }
 
     return result;
@@ -53,18 +49,18 @@ void complete(const Id id, ObjectManager& om, RewardSS& reward, StrategySS& stra
         throw std::runtime_error(fmt::format("Type {} is not completable", object.getType().name));
     }
 
-    auto eType = object["entityType"].get<Type::Option>();
-    auto recType = object["reccurencyType"].get<Type::Option>();
-    if(eType == 1/*task*/)
+    auto eType = object["entityTypeChoice"].get<Type::Choice>();
+    auto recType = object["reccurencyTypeChoice"].get<Type::Choice>();
+    if(eType == "Task")
     {
         reward.addPoints(1);
     }
-    else if(eType == 2/*strategy ref*/)
+    else if(eType == "StrategyNodeReference")
     {
         strategy.onCalendarReferenceCompleted(object["nodeReference"].toId());
     }
 
-    if(recType != 0/*none*/)
+    if(recType != "None")
     {
         object["timestamp"] = advance(object["timestamp"].get<Type::Timestamp>(), recType);
         om.modify(object);
@@ -152,7 +148,7 @@ void UserSS::advanceExpiredCalendarItems(const boost::gregorian::date& date)
    auto curDayBegin = curTime - (curTime % 86400);
    for(auto o : mOm.getAll("calendar_item"))
    {
-       if((o)["entityType"].get<Type::Option>() != 0/*Event*/ && (o)["timestamp"].get<Type::Timestamp>().value < curTime)
+       if((o)["entityTypeChoice"].get<Type::Choice>() != "Event" && (o)["timestamp"].get<Type::Timestamp>().value < curTime)
        {
            o["timestamp"] = Time{curDayBegin + (o["timestamp"].get<Type::Timestamp>().value % 86400)};
            hasExpiredItems = true;

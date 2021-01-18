@@ -122,6 +122,7 @@ private:
             break;
 
         case Type::String:
+        case Type::Choice:
         case Type::Reference:
             //Anything
             return std::to_string(val);
@@ -185,6 +186,8 @@ public:
     void clear();
 
     std::string toJson() const;
+
+    bool choiceAndOptionBinderPatch();
 
 private:
     void init();
