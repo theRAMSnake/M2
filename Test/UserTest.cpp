@@ -45,7 +45,7 @@ BOOST_FIXTURE_TEST_CASE(CompleteGoalNode, UserTest)
       create.put("operation", "create");
       create.put("typename", "strategy_node");
       create.put("defined_id", "g");
-      create.put("params.type", 0);
+      create.put("params.typeChoice", "Task");
       create.put("params.reward", 1);
 
       expectId(mCore->executeCommandJson(writeJson(create)));
@@ -56,7 +56,7 @@ BOOST_FIXTURE_TEST_CASE(CompleteGoalNode, UserTest)
       create.put("operation", "create");
       create.put("typename", "calendar_item");
       create.put("defined_id", "c");
-      create.put("params.entityType", 2);
+      create.put("params.entityTypeChoice", "StrategyNodeReference");
       create.put("params.nodeReference", "g");
 
       expectId(mCore->executeCommandJson(writeJson(create)));
@@ -86,7 +86,7 @@ BOOST_FIXTURE_TEST_CASE(CompleteCounterStep, UserTest)
       create.put("operation", "create");
       create.put("typename", "strategy_node");
       create.put("defined_id", "g");
-      create.put("params.type", 2);
+      create.put("params.typeChoice", "Counter");
       create.put("params.target", 2);
       create.put("params.reward", 1);
 
@@ -98,7 +98,7 @@ BOOST_FIXTURE_TEST_CASE(CompleteCounterStep, UserTest)
       create.put("operation", "create");
       create.put("typename", "calendar_item");
       create.put("defined_id", "c");
-      create.put("params.entityType", 2);
+      create.put("params.entityTypeChoice", "StrategyNodeReference");
       create.put("params.nodeReference", "g");
 
       expectId(mCore->executeCommandJson(writeJson(create)));
@@ -130,7 +130,7 @@ BOOST_FIXTURE_TEST_CASE(CompleteCounterFull, UserTest)
       create.put("operation", "create");
       create.put("typename", "strategy_node");
       create.put("defined_id", "g");
-      create.put("params.type", 2);
+      create.put("params.typeChoice", "Counter");
       create.put("params.target", 1);
       create.put("params.reward", 1);
 
@@ -142,7 +142,7 @@ BOOST_FIXTURE_TEST_CASE(CompleteCounterFull, UserTest)
       create.put("operation", "create");
       create.put("typename", "calendar_item");
       create.put("defined_id", "c");
-      create.put("params.entityType", 2);
+      create.put("params.entityTypeChoice", "StrategyNodeReference");
       create.put("params.nodeReference", "g");
 
       expectId(mCore->executeCommandJson(writeJson(create)));
@@ -172,16 +172,16 @@ BOOST_FIXTURE_TEST_CASE(AdvanceCalendar, UserTest)
    create.put("typename", "calendar_item");
    create.put("params.text", "a");
    create.put("params.timestamp", 80000/*outdated*/);
-   create.put("params.entityType", 1);
+   create.put("params.entityTypeChoice", "Task");
 
    expectId(mCore->executeCommandJson(writeJson(create)));
 
-   create.put("params.entityType", 0);
+   create.put("params.entityTypeChoice", "Event");
 
    expectId(mCore->executeCommandJson(writeJson(create)));
 
    create.put("params.timestamp", time(0) + 100000);
-   create.put("params.entityType", 1);
+   create.put("params.entityTypeChoice", "Task");
 
    expectId(mCore->executeCommandJson(writeJson(create)));
 

@@ -6,11 +6,6 @@
 namespace materia
 {
 
-bool choiceAndOptionBinderPatch(Object& obj)
-{
-    return obj.choiceAndOptionBinderPatch();
-}
-
 TypeHandler::TypeHandler(
     const TypeDef& type, 
     Database& db
@@ -18,7 +13,6 @@ TypeHandler::TypeHandler(
 : mType(type)
 , mStorage(db.getTable(type.tableName))
 {
-    bool needOverwrite = false;
     mStorage->foreach([&](std::string id, std::string json) 
     {
         try
@@ -27,9 +21,6 @@ TypeHandler::TypeHandler(
             Object newObj(mType, id);
             p.populate(newObj);
 
-            auto patchRes = choiceAndOptionBinderPatch(newObj);
-            needOverwrite = needOverwrite || patchRes;
-
             mPool.insert({Id(id), newObj});
         }
         catch(...)
@@ -37,14 +28,6 @@ TypeHandler::TypeHandler(
             throw std::runtime_error("Type handler initialization failed: Failed to restore object: " + json);
         }
     });
-
-    if(needOverwrite)
-    {
-        for(auto kv : mPool) 
-        {   
-            mStorage->store(kv.first, kv.second.toJson());
-        }
-    }
 }
 
 Object TypeHandler::create(const std::optional<Id> id, const IValueProvider& provider)
@@ -53,7 +36,6 @@ Object TypeHandler::create(const std::optional<Id> id, const IValueProvider& pro
     Object newObj(mType, newId);
 
     provider.populate(newObj);
-    choiceAndOptionBinderPatch(newObj);
     mType.handlers.onValidation(newObj);
 
     mStorage->store(newId, newObj.toJson());
@@ -136,8 +118,6 @@ void TypeHandler::modify(const Id id, const IValueProvider& provider)
     Object newObj(obj);
     provider.populate(newObj);
 
-    choiceAndOptionBinderPatch(newObj);
-
     mType.handlers.onChanging(obj, newObj);
 
     mStorage->store(id, newObj.toJson());
@@ -151,7 +131,6 @@ void TypeHandler::modify(const Object& obj)
     auto oldObj = *get(obj.getId());
     Object newObj(obj);
 
-    choiceAndOptionBinderPatch(newObj);
     mType.handlers.onChanging(oldObj, newObj);
 
     mStorage->store(obj.getId(), obj.toJson());    

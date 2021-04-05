@@ -261,7 +261,7 @@ BOOST_FIXTURE_TEST_CASE( PresetModifiersTest, RewardTest )
    create.put("operation", "create");
    create.put("typename", "calendar_item");
    create.put("params.timestamp", 25);
-   create.put("params.entityType", 1);
+   create.put("params.entityTypeChoice", "Task");
    mCore->executeCommandJson(writeJson(create));
 
    set("work.burden", 500, *mCore);
@@ -272,4 +272,48 @@ BOOST_FIXTURE_TEST_CASE( PresetModifiersTest, RewardTest )
    BOOST_CHECK(!query("mod.calendar", *mCore));
    BOOST_CHECK(query("mod.workburden", *mCore));
    BOOST_CHECK_EQUAL(-0.2, query("mod.workburden", *mCore)->get<double>("value"));
+}
+
+BOOST_FIXTURE_TEST_CASE( TestBigCounterRewardWithMods, RewardTest ) 
+{
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "reward_pool");
+      create.put("defined_id", "p1");
+      create.put("params.amount", 0);
+      create.put("params.amountMax", 100);
+
+      mCore->executeCommandJson(writeJson(create));
+   }
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "reward_modifier");
+      create.put("params.value", -0.2);
+
+      mCore->executeCommandJson(writeJson(create));
+   }
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "strategy_node");
+      create.put("defined_id", "counter");
+      create.put("params.typeChoice", "Counter");
+      create.put("params.target", 10);
+      create.put("params.reward", 100);
+
+      expectId(mCore->executeCommandJson(writeJson(create)));
+   }
+   {
+      boost::property_tree::ptree modify;
+      modify.put("operation", "modify");
+      modify.put("params.value", 10);
+      modify.put("id", "counter");
+
+      mCore->executeCommandJson(writeJson(modify));
+   }
+
+   auto v = *query("p1", *mCore);
+   BOOST_CHECK_EQUAL("80", v.get<std::string>("amount"));
 }

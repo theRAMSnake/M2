@@ -46,7 +46,6 @@ std::vector<TypeDef> StrategySS::getTypes()
     result.push_back({"strategy_node", "strategy_nodes", {
         {"title", Type::String},
         {"details", Type::String},
-        {"type", Type::Option, allowedTypes},
         {"typeChoice", Type::Choice, allowedTypes},
         {"isAchieved", Type::Bool},
         {"parentNodeId", Type::String},

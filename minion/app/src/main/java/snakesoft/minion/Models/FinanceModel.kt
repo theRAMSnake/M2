@@ -24,7 +24,8 @@ data class FinanceEvent(
         var categoryId: java.util.UUID,
         var details: String,
         var timestamp: Long,
-        var amountEuroCents: Long
+        var amountEuroCents: Long,
+        var typeChoice: String = "Spending"
 )
 
 @Serializable

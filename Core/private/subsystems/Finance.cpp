@@ -188,7 +188,6 @@ std::vector<TypeDef> FinanceSS::getTypes()
     result.push_back({"finance_category", "finance_categories", {{"name", Type::String}}});
     result.push_back({"finance_event", "finance_events", {
         {"categoryId", Type::Reference, {}, "finance_category"},
-        {"type", Type::Option, {"Spending", "Earning"}},
         {"typeChoice", Type::Choice, {"Spending", "Earning"}},
         {"details", Type::String},
         {"amountEuroCents", Type::Money},

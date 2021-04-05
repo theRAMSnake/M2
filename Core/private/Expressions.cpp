@@ -156,7 +156,6 @@ public:
                 case Type::Int: return object[mIdentifier].get<Type::Int>();
                 case Type::Money: return object[mIdentifier].get<Type::Money>();
                 case Type::Timestamp: return object[mIdentifier].get<Type::Timestamp>().value;
-                case Type::Option: return object[mIdentifier].get<Type::Option>();
                 case Type::Choice: return object[mIdentifier].get<Type::Choice>();
                 case Type::Double: return object[mIdentifier].get<Type::Double>();
                 case Type::Bool: return object[mIdentifier].get<Type::Bool>();

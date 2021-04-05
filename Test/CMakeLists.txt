@@ -8,22 +8,22 @@ include_directories("../build/Common")
 include_directories("..")
 
 add_executable(Test 
-#EncDecTest.cpp
-#RewardTest.cpp
-#NewAPITest.cpp
-#ExpressionsTest.cpp
-#ObjectTest.cpp
+EncDecTest.cpp
+RewardTest.cpp
+NewAPITest.cpp
+ExpressionsTest.cpp
+ObjectTest.cpp
 CoreTest.cpp
-#DatabaseTest.cpp
-#ContractsTest.cpp
-#Strategy3Test.cpp
-#Utils.cpp
-#UserTest.cpp
+DatabaseTest.cpp
+ContractsTest.cpp
+Strategy3Test.cpp
+Utils.cpp
+UserTest.cpp
 )
 
-find_package(Boost COMPONENTS system python unit_test_framework filesystem REQUIRED)
+find_package(Boost COMPONENTS system unit_test_framework filesystem REQUIRED)
 
-target_link_libraries(Test m3common m3core crypto python3.8 ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread)
+target_link_libraries(Test m3common m3core crypto ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread)
 
 add_custom_command(
         TARGET Test POST_BUILD

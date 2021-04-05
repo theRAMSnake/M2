@@ -34,7 +34,7 @@ BOOST_FIXTURE_TEST_CASE( UpdateWaitNode, StrategyTest )
     create.put("operation", "create");
     create.put("typename", "strategy_node");
     create.put("defined_id", "w1");
-    create.put("params.type", 4);
+    create.put("params.typeChoice", "Wait");
     create.put("params.date", 100);
 
     expectId(mCore->executeCommandJson(writeJson(create)));
@@ -116,7 +116,7 @@ BOOST_FIXTURE_TEST_CASE( CounterIsAchievedCalculation, StrategyTest )
     create.put("operation", "create");
     create.put("typename", "strategy_node");
     create.put("defined_id", "counter");
-    create.put("params.type", 2);
+    create.put("params.typeChoice", "Counter");
     create.put("params.target", 10);
 
     expectId(mCore->executeCommandJson(writeJson(create)));

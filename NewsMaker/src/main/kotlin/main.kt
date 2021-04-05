@@ -21,6 +21,41 @@ fun publishFile(filename: String)
     Runtime.getRuntime().exec("rm $filename")
 }
 
+fun publishSnpContent(content: List<SnPItem>)
+{
+    var contentJson = "{"
+    var i = 0
+    for (x in content) 
+    {
+        if(i != 0)
+        {
+            contentJson += ","
+        }
+
+        contentJson += "\"$i\": {"
+        contentJson += "\"id\": \"${i}\","
+        contentJson += "\"company\": \"${x.company}\","
+        contentJson += "\"ticker\": \"${x.ticker}\","
+        contentJson += "\"weight\": ${x.weight},"
+        contentJson += "\"price\": ${x.price}"
+        contentJson += "}"
+
+        i++
+    }
+    contentJson += "}"
+
+    run{
+        val op = "{\"operation\":\"destroy\", \"id\":\"data.snp\"}"
+        val p = Runtime.getRuntime().exec(arrayOf("./m3tools", op))
+        p.waitFor()
+    }
+    run{
+        val op = "{\"operation\":\"create\", \"typename\":\"object\", \"defined_id\":\"data.snp\", \"params\":$contentJson}"
+        val p = Runtime.getRuntime().exec(arrayOf("./m3tools", op))
+        p.waitFor()
+    }
+}
+
 fun genNewsFile(): String
 {
     val cal = java.util.Calendar.getInstance()
@@ -74,6 +109,9 @@ fun main(args: Array<String>)
 {
     val filename = genNewsFile()
     publishFile(filename)
+
+    val snpContent = genSnpContent()
+    publishSnpContent(snpContent)
 
     println("Done")
 }

@@ -151,7 +151,7 @@ function NodeInfoView(props)
             <IconButton edge="start" onClick={props.onSplitHorizClicked}>
                 <SwapHorizIcon/>
             </IconButton>
-            {(node.type == 0 || node.type == 1) && !isAchieved && <IconButton edge="end" aria-label="complete" onClick={completeClicked}>
+            {(node.typeChoice === "Goal" || node.typeChoice === "Task") && !isAchieved && <IconButton edge="end" aria-label="complete" onClick={completeClicked}>
                 <DoneIcon/>
             </IconButton>}
             <Divider/>
@@ -159,12 +159,12 @@ function NodeInfoView(props)
                 <Typography color={isAchieved ? "primary" : "white"} variant="h6">{isAchieved ? "Achieved" : "In Progress"}</Typography>
             </Grid>
             <TextField inputProps={{onChange: handleTitleChange}} value={title} fullWidth id="title" label="Title" />
-            {!isAchieved && node.type != 3 && node.type != 4 && <TextField inputProps={{onChange: handleRewardChange, type: 'number'}} value={reward} fullWidth id="reward" label="Reward" />}
-            {!isAchieved && node.type == 2 && <Grid container direction="row" justify="space-around" alignItems="center">
+            {!isAchieved && node.typeChoice !== "Watch" && node.type != "Wait" && <TextField inputProps={{onChange: handleRewardChange, type: 'number'}} value={reward} fullWidth id="reward" label="Reward" />}
+            {!isAchieved && node.typeChoice === "Counter" && <Grid container direction="row" justify="space-around" alignItems="center">
                     <TextField inputProps={{onChange: handleValueChange, type: 'number', style: { width: "150px" }}} value={value} id="value" label="Value" />
                     <TextField inputProps={{onChange: handleTargetChange, type: 'number', style: { width: "150px" }}} value={target} id="target" label="Target" />
                 </Grid>}
-            {!isAchieved && node.hggggoyyooooooooo8type == 4 && <DateTimeCtrl onChange={handleDTChange} value={date} id="date"/>}
+            {!isAchieved && node.typeChoice === "Wait" && <DateTimeCtrl onChange={handleDTChange} value={date} id="date"/>}
             <TextField inputProps={{onChange: handleNotesChange}} multiline={true} rows="25" value={details} fullWidth id="notes" label="Details" />
         </div>
         );
@@ -172,13 +172,13 @@ function NodeInfoView(props)
 
 function GetNodeTypes()
 {
-    return m3proxy.getType("strategy_node").fields.find(x => x.name === "type").options;
+    return m3proxy.getType("strategy_node").fields.find(x => x.name === "typeChoice").options;
 }
 
 function AddNodeDialog(props)
 {
     const [title, setTitle] = useState("");
-    const [type, setType] = useState(0);
+    const [type, setType] = useState("Task");
     const [target, setTarget] = useState(0);
     const [date, setDate] = useState(Math.floor(new Date() / 1000));
 
@@ -218,11 +218,11 @@ function AddNodeDialog(props)
                                 id: "Type",
                             }}
                             >
-                            {GetNodeTypes().map((obj, index) => <option aria-label="None" value={index} key={index} >{obj}</option>)}
+                            {GetNodeTypes().map((obj, index) => <option aria-label="None" value={obj} key={index} >{obj}</option>)}
                         </Select>
                 </FormControl>
-                {type == 2/*Counter*/ && <TextField inputProps={{onChange: handleTargetChange, type: 'number'}} value={target} fullWidth id="target" label="Target" />}
-                {type == 4 && <DateTimeCtrl onChange={handleDTChange} value={date} id="date"/>}
+                {type === "Counter" && <TextField inputProps={{onChange: handleTargetChange, type: 'number'}} value={target} fullWidth id="target" label="Target" />}
+                {type === "Wait" && <DateTimeCtrl onChange={handleDTChange} value={date} id="date"/>}
             </DialogContent>
             <DialogActions>
                 <Button onClick={props.onClose} variant="contained" color="primary">
@@ -578,15 +578,15 @@ function StrategyView(props)
         {
             var obj = {
                 title: title,
-                type: type,
+                typeChoice: type,
                 parentNodeId: parentIdToAdd,
                 target: target,
-                reward: (type == 0 || type == 1 || type == 2) ? 1 : 0,
+                reward: (type === "Goal" || type === "Task" || type === "Counter") ? 1 : 0,
                 x: Math.random() * 500,
                 y: Math.random() * 500
             };
 
-            if(type == 4)
+            if(type === "Wait")
             {
                 obj.date = timestamp;
             }
@@ -842,7 +842,7 @@ function StrategyView(props)
         <div>
         <Backdrop open={updating}><CircularProgress color="inherit"/></Backdrop>
         {showAddDialog && <AddNodeDialog onClose={onAddDialogClosed} onOk={onAddDialogOk}/>}
-        {showAddReferenceDialog && <AddItemDialog onClose={onAddDialogClosed} selectedType="calendar_item" init={{entityType: 2, text: selectedNode.title, nodeReference: selectedNode.id}}/>}
+        {showAddReferenceDialog && <AddItemDialog onClose={onAddDialogClosed} selectedType="calendar_item" init={{entityType: "StrategyNodeReference", text: selectedNode.title, nodeReference: selectedNode.id}}/>}
         <ConfirmationDialog open={inDeleteDialog} question="delete object" caption="confirm deletion" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
         <ConfirmationDialog open={showClearDialog} question="clear it" caption="confirm clear" onNo={onClearDialogCancel} onYes={onClearDialogOk} />
         <Grid container direction="row" justify="space-around" alignItems="flex-start">
@@ -858,7 +858,7 @@ function StrategyView(props)
                     </IconButton>
                     {path.length > 0 && <PathCtrl currentText={path[path.length - 1].name} pathList={path.slice(0, path.length - 1)} onClick={onPathClick}/>}
                 </Grid>
-                {graphData && <WatchPanel nodes={graphData.nodes.filter(x => x.type == 3 && x.isAchieved==='false')} completed={onWatchCompleted}/>}
+                {graphData && <WatchPanel nodes={graphData.nodes.filter(x => x.typeChoice === "Watch" && x.isAchieved==='false')} completed={onWatchCompleted}/>}
                 {graphData && <Graph
                     id="graph-id"
                     data={graphData}

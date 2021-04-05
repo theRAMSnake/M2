@@ -45,7 +45,6 @@ void Object::init()
         {   
             case Type::Int: 
             case Type::Money: 
-            case Type::Option:
                 mFields.push_back({f, false, std::int64_t(0)}); 
                 break;
 
@@ -220,7 +219,6 @@ void Object::fillObject(boost::property_tree::ptree& p, const Object& o)
             case Type::Bool: p.put(f.getName(), f.get<Type::Bool>());break;
             case Type::String: p.put(f.getName(), f.get<Type::String>());break;
             case Type::Reference: p.put(f.getName(), f.get<Type::Reference>());break;
-            case Type::Option: p.put(f.getName(), f.get<Type::Option>());break;
             case Type::Choice: p.put(f.getName(), f.get<Type::Choice>()); break;
             case Type::StringArray: putArray(p, f.getName(), f.get<Type::StringArray>());break;
             default: throw std::runtime_error("Unknown type"); 
@@ -284,36 +282,6 @@ std::vector<Object> Object::getChildren() const
     }
 
     return result;
-}
-
-bool Object::choiceAndOptionBinderPatch()
-{
-    std::vector<std::string> optionFields;
-    for(auto& f : mFields)
-    {
-        if(f.getType() == Type::Option)
-        {
-            optionFields.push_back(f.getName());
-        }
-    }
-
-    bool changed = false;
-
-    for(auto& o : optionFields)
-    {
-        auto choiceFieldName = o + "Choice";
-        auto& choiceVal = (*this)[choiceFieldName];
-        auto& optVal = (*this)[o];
-
-        if(choiceVal.get<Type::Choice>() != choiceVal.mDef->options[optVal.get<Type::Option>()])
-        {
-            changed = true;
-
-            choiceVal = choiceVal.mDef->options[optVal.get<Type::Option>()];
-        }
-    }
-
-    return changed;
 }
 
 }
