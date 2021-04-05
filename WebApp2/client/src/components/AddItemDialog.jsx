@@ -38,14 +38,16 @@ function fromUTC(date)
 
 }
 
-function createDefault(type)
+function createDefault(f)
 {
+    var type = f.type;
+
     if(type === 'string') return "";
     if(type === 'array') return [];
     if(type === 'bool') return false;
     if(type === 'int') return 0;
     if(type === 'double') return 0.0;
-    if(type === 'option') return 0;
+    if(type === 'choice') return f.options[0];
     if(type === 'money') return 0;
     if(type === 'reference') return "";
     if(type === 'timestamp') return Math.floor(toUTC(new Date()) / 1000);
@@ -60,7 +62,7 @@ function createObjectBody(typeName)
         var j = 0;
         for (j = 0; j < type.fields.length; j++)
         {
-            result[type.fields[j].name] = createDefault(type.fields[j].type);
+            result[type.fields[j].name] = createDefault(type.fields[j]);
         }
     }
 
@@ -78,7 +80,7 @@ function initObjectBody(typeName, init)
         var j = 0;
         for (j = 0; j < type.fields.length; j++)
         {
-            result[type.fields[j].name] = createDefault(type.fields[j].type);
+            result[type.fields[j].name] = createDefault(type.fields[j]);
         }
     }
 

@@ -90,7 +90,7 @@ export default function ObjectProperties(props)
         props.onChange(newObj);
     }
 
-    function handleOptionChange(e)
+    function handleChoiceChange(e)
     {
         let newObj = JSON.parse(JSON.stringify(props.object));
         newObj[e.target.id] = e.target.value;
@@ -134,19 +134,21 @@ export default function ObjectProperties(props)
         if(req.type === 'double') 
             return <TextField inputProps={{onChange: handleDoubleFieldChange, type: 'number', step:'any'}} value={props.object[req.name]} id={req.name} fullWidth label={req.name} />;
         if(req.type === 'option')
+            return <div/>;
+        if(req.type === 'choice')
         {
             return <FormControl fullWidth style={{marginTop: '10px'}}>
                         <InputLabel htmlFor={req.name}>{req.name}</InputLabel>
                             <Select
                                 native
                                 value={props.object[req.name]}
-                                onChange={handleOptionChange}
+                                onChange={handleChoiceChange}
                                 inputProps={{
                                     name: req.name,
                                     id: req.name,
                                 }}
                                 >
-                                {req.options.map((obj, index) => <option aria-label="None" value={index} key={index} >{obj}</option>)}
+                                {req.options.map((obj, index) => <option aria-label="None" value={obj} key={index} >{obj}</option>)}
                             </Select>
                     </FormControl>
         }

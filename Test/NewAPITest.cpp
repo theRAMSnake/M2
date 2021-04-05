@@ -210,7 +210,7 @@ BOOST_FIXTURE_TEST_CASE( TestCompletable, NewAPITest )
     create.put("defined_id", "id");
     create.put("params.text", "a");
     create.put("params.timestamp", 10);
-    create.put("params.reccurencyType", 1);
+    create.put("params.reccurencyTypeChoice", "Weekly");
 
     auto tr = readJson<boost::property_tree::ptree>(mCore->executeCommandJson(writeJson(create)));
 
@@ -246,7 +246,7 @@ BOOST_FIXTURE_TEST_CASE( TestCompletable2, NewAPITest )
     create.put("defined_id", "id");
     create.put("params.text", "a");
     create.put("params.timestamp", 10);
-    create.put("params.reccurencyType", 0);
+    create.put("params.reccurencyTypeChoice", "None");
 
     auto tr = readJson<boost::property_tree::ptree>(mCore->executeCommandJson(writeJson(create)));
 

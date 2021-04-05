@@ -11,7 +11,7 @@ public:
    {
       mType.name = "test";
       mType.fields = std::vector<materia::FieldDef>{
-          {"f1", materia::Type::Timestamp}, {"f2", materia::Type::Option, {"o1", "o2"}},
+          {"f1", materia::Type::Timestamp}, {"f2", materia::Type::Choice, {"o1", "o2"}},
           {"f3", materia::Type::Money}, {"f4", materia::Type::Reference}
           };
 
@@ -36,13 +36,13 @@ BOOST_FIXTURE_TEST_CASE( TestTimestamp, ObjectTest )
 
 BOOST_FIXTURE_TEST_CASE( TestOption, ObjectTest ) 
 {
-    (*mObject)["f2"] = 1;
-    BOOST_CHECK_EQUAL(1, (*mObject)["f2"].get<materia::Type::Option>());
+    (*mObject)["f2"] = "1";
+    BOOST_CHECK_EQUAL("1", (*mObject)["f2"].get<materia::Type::Choice>());
 
     materia::JsonRestorationProvider p(mObject->toJson());
     p.populate(*mObject);   
 
-    BOOST_CHECK_EQUAL(1, (*mObject)["f2"].get<materia::Type::Option>());
+    BOOST_CHECK_EQUAL("1", (*mObject)["f2"].get<materia::Type::Choice>());
 }
 
 BOOST_FIXTURE_TEST_CASE( TestMoney, ObjectTest ) 

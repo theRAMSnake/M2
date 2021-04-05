@@ -16,7 +16,6 @@ enum class Type
     Bool,
     StringArray,
     Timestamp,
-    Option,
     Money,
     Reference,
     Choice
@@ -66,12 +65,6 @@ template<>
 struct TypeTraits<Type::Timestamp>
 {
    using Class = Time;
-};
-
-template<>
-struct TypeTraits<Type::Option>
-{
-   using Class = std::int64_t;
 };
 
 template<>

@@ -95,7 +95,6 @@ private:
             break;
 
         case Type::Int:
-        case Type::Option:
         case Type::Money:
             //Any integral type
             if constexpr (std::is_integral<T>::value)
@@ -186,8 +185,6 @@ public:
     void clear();
 
     std::string toJson() const;
-
-    bool choiceAndOptionBinderPatch();
 
 private:
     void init();

@@ -275,7 +275,6 @@ function MainPage(props) {
                     <VariablePanel value={materiaModel.getPrimaryFocus()} commit={materiaModel.setPrimaryFocus} length={250}/>
                     <RewardModifierView value={materiaModel.getRewardModifiers()}/>
                     <VariableBurndown var={materiaModel.getWorkBurden()} commit={materiaModel.setWorkBurden}/>
-                    <BadgetList id='watch_list' icon={WatchLaterIcon}/>
                     <BadgetList id='inbox' icon={MailIcon}/>
                     <IconButton color="inherit" onClick={onAddClicked}>
                         <AddCircleOutlineIcon/>

@@ -20,6 +20,7 @@ private:
     void generateNewTOD();
     void awardInbox();
     void advanceExpiredCalendarItems(const boost::gregorian::date& date);
+    void updatePortfolio();
 
     Command* parseComplete(const boost::property_tree::ptree& src);
 

@@ -17,11 +17,12 @@ data class CalendarItem(
         override var id: java.util.UUID,
         var text: String,
         var timestamp: Long,
-        var reccurencyType: Int = 0,
-        var entityType: Int = 0,
         @Optional
         var nodeReference: String = "",
         var typename: String = "calendar_item",
+        var reccurencyTypeChoice: String = "None",
+        var entityTypeChoice: String = "Task",
+        var urgencyChoice: String = "Not Urgent",
         @Optional
         override var trackingInfo: StatusOfChange = StatusOfChange.None
 ) : ITrackable
@@ -30,8 +31,9 @@ data class CalendarItem(
 data class CalendarParams(
         var text: String,
         var timestamp: Long,
-        var reccurencyType: Int = 0,
-        var entityType: Int = 0
+        var reccurencyTypeChoice: String,
+        var entityTypeChoice: String,
+        var urgencyChoice: String
 )
 
 @Serializable
@@ -51,7 +53,7 @@ class CalendarServiceProxy(private val mMateriaConnection: MateriaConnection) {
         val jsonData = "{\"operation\": \"query\", \"filter\": \"IS(calendar_item)\"}"
         val resp = mMateriaConnection.sendMessage(jsonData)
         println(resp)
-        return JSON.parse(QueryResult.serializer(), resp).object_list
+        return JSON.nonstrict.parse(QueryResult.serializer(), resp).object_list
     }
 
     @Throws(InvalidProtocolBufferException::class, MateriaUnreachableException::class)
@@ -64,7 +66,7 @@ class CalendarServiceProxy(private val mMateriaConnection: MateriaConnection) {
     @Throws(InvalidProtocolBufferException::class, MateriaUnreachableException::class)
     fun addItem(item: CalendarItem)
     {
-        val cp = CalendarParams(item.text, item.timestamp, item.reccurencyType, item.entityType)
+        val cp = CalendarParams(item.text, item.timestamp, item.reccurencyTypeChoice, item.entityTypeChoice, item.urgencyChoice)
         var ca = CalendarAdd("create", "calendar_item", cp)
         mMateriaConnection.sendMessage(JSON.stringify(CalendarAdd.serializer(), ca))
     }
@@ -72,7 +74,7 @@ class CalendarServiceProxy(private val mMateriaConnection: MateriaConnection) {
     @Throws(InvalidProtocolBufferException::class, MateriaUnreachableException::class)
     fun editItem(item: CalendarItem): Boolean
     {
-        val cp = CalendarParams(item.text, item.timestamp, item.reccurencyType, item.entityType)
+        val cp = CalendarParams(item.text, item.timestamp, item.reccurencyTypeChoice, item.entityTypeChoice, item.urgencyChoice)
         var ca = CalendarModify("modify", item.id.toString(), cp)
         mMateriaConnection.sendMessage(JSON.stringify(CalendarModify.serializer(), ca))
         return true

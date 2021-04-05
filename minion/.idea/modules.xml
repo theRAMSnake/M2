@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="minion/app" />
-      <module fileurl="file://$PROJECT_DIR$/extendedCalendarView/extendedCalendarView.iml" filepath="$PROJECT_DIR$/extendedCalendarView/extendedCalendarView.iml" group="minion/extendedCalendarView" />
-      <module fileurl="file://$PROJECT_DIR$/minion.iml" filepath="$PROJECT_DIR$/minion.iml" group="minion" />
+      <module fileurl="file://$PROJECT_DIR$/minion.iml" filepath="$PROJECT_DIR$/minion.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/minion.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/minion.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/extendedCalendarView/minion.extendedCalendarView.iml" filepath="$PROJECT_DIR$/.idea/modules/extendedCalendarView/minion.extendedCalendarView.iml" />
     </modules>
   </component>
 </project>

@@ -29,6 +29,11 @@ function toUTC(date)
     return new Date(date.getTime() - date.getTimezoneOffset() * 60000);
 }
 
+function getUrgencyValue(u)
+{
+    return u === "Urgent" ? 1 : 0;
+}
+
 function extractItems(calendarItems, date)
 {
     var start = new Date(date);
@@ -45,7 +50,10 @@ function extractItems(calendarItems, date)
 
     console.log("extract");
 
-    return r.sort((x, y) => { return x.urgency == y.urgency ? Number(x.timestamp) - Number(y.timestamp) : y.urgency - x.urgency });
+    return r.sort((x, y) => { 
+        return x.urgencyChoice === y.urgencyChoice ? 
+            Number(x.timestamp) - Number(y.timestamp) : 
+            getUrgencyValue(y.urgencyChoice) - getUrgencyValue(x.urgencyChoice) });
 }
 
 export default function CalendarCtrl(props)
@@ -183,10 +191,10 @@ export default function CalendarCtrl(props)
 
                 return (<ListItem button key={obj.id} onClick={() => prepareEdit(index)}>
                         <ListItemIcon>
-                            {obj.entityType === "0" ? <EventIcon/> : <AssignmentTurnedInIcon/>} 
+                            {obj.entityTypeChoice === "Event" ? <EventIcon/> : <AssignmentTurnedInIcon/>} 
                         </ListItemIcon>
                         <ListItemText disableTypography primary={
-                            <Typography variant="body1" style={{ color: obj.urgency == 1 ? '#ff2929' : '#FFFFFF'}}>
+                            <Typography variant="body1" style={{ color: obj.urgencyChoice === "Urgent" ? '#ff2929' : '#FFFFFF'}}>
                                 {dt.getHours() + ":" + dt.getMinutes().toString().padStart(2, "0") +" - " + obj.text}
                             </Typography>}/>    
                         <ListItemSecondaryAction>
