@@ -191,7 +191,7 @@ void UserSS::updatePortfolio()
         double totalWeight = 0.0;
         for(auto c : snp.getChildren())
         {
-            totalWeight += c["wieght"].get<Type::Double>();
+            totalWeight += c["weight"].get<Type::Double>();
         }
 
         auto moneyPerWeight = totalMoney / totalWeight;
@@ -205,7 +205,7 @@ void UserSS::updatePortfolio()
             Object item(c);
             item["amount"] = (item["weight"].get<Type::Double>() * moneyPerWeight) / item["price"].get<Type::Double>();
 
-            result.setChild(item["company"].get<Type::String>(), item);
+            result.setChild(item["ticker"].get<Type::String>(), item);
         }
 
         mOm.modify(result);
