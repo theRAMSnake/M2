@@ -842,7 +842,7 @@ function StrategyView(props)
         <div>
         <Backdrop open={updating}><CircularProgress color="inherit"/></Backdrop>
         {showAddDialog && <AddNodeDialog onClose={onAddDialogClosed} onOk={onAddDialogOk}/>}
-        {showAddReferenceDialog && <AddItemDialog onClose={onAddDialogClosed} selectedType="calendar_item" init={{entityType: "StrategyNodeReference", text: selectedNode.title, nodeReference: selectedNode.id}}/>}
+        {showAddReferenceDialog && <AddItemDialog onClose={onAddDialogClosed} selectedType="calendar_item" init={{entityTypeChoice: "StrategyNodeReference", text: selectedNode.title, nodeReference: selectedNode.id}}/>}
         <ConfirmationDialog open={inDeleteDialog} question="delete object" caption="confirm deletion" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
         <ConfirmationDialog open={showClearDialog} question="clear it" caption="confirm clear" onNo={onClearDialogCancel} onYes={onClearDialogOk} />
         <Grid container direction="row" justify="space-around" alignItems="flex-start">
