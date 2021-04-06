@@ -41,7 +41,6 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import AddCircleOutlineIcon  from '@material-ui/icons/AddCircleOutline';
 import CalendarTodayIcon  from '@material-ui/icons/CalendarToday';
 import MailIcon  from '@material-ui/icons/Mail';
-import WatchLaterIcon  from '@material-ui/icons/WatchLater';
 
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MuiAlert from '@material-ui/lab/Alert';
@@ -87,15 +86,20 @@ const useStyles = makeStyles((theme) =>
 
 function calculateNumImportantCalendarItems(calendarItems)
 {
+    if(!calendarItems)
+    {
+        return 0;
+    }
+
     var curDate = new Date();
     curDate.setHours(23,59,59,999);
     var ts = Math.floor(curDate / 1000);
 
     var result = 0;
     var i = 0;
-    for(; i < calendarItems.object_list.length; ++i)
+    for(; i < calendarItems.length; ++i)
     {
-        var item = calendarItems.object_list[i];
+        var item = calendarItems[i];
         if(Number(item.timestamp) < ts)
         {
             result++;
@@ -114,39 +118,10 @@ function MainPage(props) {
     const [contentType, setContentType] = React.useState("");
     const [query, setQuery] = React.useState("");
     const [showAddDlg, setShowAddDlg] = React.useState(false);
-    const [calendarItems, setCalendarItems] = React.useState({});
-    const [numImportantCalendarItems, setNumImportantCalendarItems] = React.useState(0);
-    const [tod, setTod] = React.useState("");
     const [isInitialisation, setIsInitialisation] = React.useState(true);
 
     const [snackOpen, setSnackOpen] = React.useState(false);
     const [lastError, setLastError] = React.useState('');
-
-    function requestCalendarItems()
-    {
-        const req = {
-            operation: "query",
-            filter: "IS(calendar_item)"
-        };
-
-        Materia.exec(req, (r) => {
-            var c = r;
-            setCalendarItems(c);
-            setNumImportantCalendarItems(calculateNumImportantCalendarItems(c));
-        });
-
-        {
-            const req = {
-                operation: "query",
-                ids: ["tip_of_the_day"]
-            };
-    
-            Materia.exec(req, (r) => {
-                var c = r;
-                setTod(c.object_list[0].value);
-            });
-        }
-    }
 
     function refresh()
     {
@@ -157,16 +132,6 @@ function MainPage(props) {
     Materia.setGlobalErrorHandler((err) => {setLastError(err); setSnackOpen(true);});
     materiaModel.init();
     materiaModel.setOnUpdateCallback(refresh);
-
-    if(!calendarItems.object_list)
-    {
-        requestCalendarItems();
-    }
-
-    function onCalendarChanged()
-    {
-        requestCalendarItems();
-    }
 
     function getContentView(ct) 
     {
@@ -280,7 +245,7 @@ function MainPage(props) {
                         <AddCircleOutlineIcon/>
                     </IconButton>
                     <IconButton color="inherit" onClick={handleRightDrawerOpen}>
-                        <Badge badgeContent={numImportantCalendarItems} color="secondary">
+                        <Badge badgeContent={calculateNumImportantCalendarItems(materiaModel.getCalendarItems())} color="secondary">
                             <CalendarTodayIcon/>
                         </Badge>
                     </IconButton>
@@ -296,7 +261,7 @@ function MainPage(props) {
             <Divider/>
             <Grid  style={{paddingTop:'5px'}} container direction="column" justify="center" alignItems="center">
                 <Typography variant="h4" className={classes.mar} color="primary">
-                    {tod}
+                    {materiaModel.getTod()}
                 </Typography>
             </Grid>
             <Divider/>
@@ -343,7 +308,7 @@ function MainPage(props) {
                     </Typography>
                 </div>
                 <Divider />
-                {calendarItems.object_list && <CalendarCtrl items={calendarItems.object_list} onChanged={onCalendarChanged}/>}
+                {materiaModel.getCalendarItems() && <CalendarCtrl items={materiaModel.getCalendarItems()} onChanged={materiaModel.invalidateCalendar}/>}
             </Drawer>
         </div>
     );

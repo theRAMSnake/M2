@@ -130,6 +130,16 @@ void RewardSS::onNewDay(const boost::gregorian::date& date)
             wb = 600;
         }
     }
+
+    types::Variable debt(mOm, Id("reward.debt"));
+    if(debt > 0)
+    {
+        setMod(Id("mod.punisher"), "Punisher", -0.15);
+    }
+    else
+    {
+        removeMod(Id("mod.punisher"));
+    }
 }
 
 template<class F>
@@ -250,8 +260,17 @@ void RewardSS::addPoints(const int points)
     auto pools = mOm.getAll("reward_pool");
     unsigned int attemptCounter = 0;
 
+    types::Variable debt(mOm, Id("reward.debt"));
+
     while(!pools.empty() && pointsLeft > 0)
     {
+        if(debt > 0)
+        {
+            debt.inc(-1);
+            pointsLeft--;
+            continue;
+        }
+
         auto& randomItem = pools[rand() % pools.size()];
         auto amount = randomItem["amount"].get<Type::Int>();
         if(isPlus && amount < randomItem["amountMax"].get<Type::Int>())

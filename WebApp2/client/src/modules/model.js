@@ -3,7 +3,9 @@ import Materia from '../modules/materia_request'
 var init = false;
 var workBurden = 0;
 var primaryFocus = "";
-var rewardModifiers = null
+var rewardModifiers = null;
+var calendarItems = null;
+var tod = "";
 var onUpdateCallback = () => {}
 
 //High level representation of materia client staff
@@ -55,6 +57,20 @@ class materiaModel
                 onUpdateCallback();
             });
         }
+        {
+            const req = {
+                operation: "query",
+                ids: ["tip_of_the_day"]
+            };
+    
+            Materia.exec(req, (r) => {
+                var c = r;
+                tod = c.object_list[0].value;
+
+                onUpdateCallback();
+            });
+        }
+        this.invalidateCalendar();
     }
 
     static getWorkBurden()
@@ -65,6 +81,16 @@ class materiaModel
     static getPrimaryFocus()
     {
         return primaryFocus;
+    }
+
+    static getTod()
+    {
+        return tod;
+    }
+
+    static getCalendarItems()
+    {
+        return calendarItems;
     }
 
     static getRewardModifiers()
@@ -97,6 +123,64 @@ class materiaModel
     static setOnUpdateCallback(cb)
     {
         onUpdateCallback = cb;
+    }
+
+    static invalidateCalendar()
+    {
+        {
+            const req = {
+                operation: "query",
+                filter: "IS(calendar_item)"
+            };
+    
+            Materia.exec(req, (r) => {
+                var c = r;
+                calendarItems = c.object_list;
+
+                var ids = [];
+
+                calendarItems.forEach(x => 
+                {
+                    if(x.entityTypeChoice === "StrategyNodeReference")
+                    {
+                        ids.push(x.nodeReference);
+                    }
+                });
+
+                if(ids.length > 0)
+                {
+                    const loadStrategyNodes = {
+                        operation: "query",
+                        ids: ids
+                    };
+            
+                    Materia.exec(loadStrategyNodes, (r) => 
+                    {
+                        var nodes = r.object_list;
+
+                        calendarItems.forEach(x => 
+                        {
+                            if(x.entityTypeChoice === "StrategyNodeReference")
+                            {
+                                var n = nodes.find(y => {
+                                    return y.id === x.nodeReference
+                                });
+
+                                if(n && n.typeChoice === "Counter")
+                                {
+                                    var suffix = "(" + n.value + "/" + n.target + ")";
+                                    x.text += suffix;
+                                }
+                            }
+                        });
+        
+                        onUpdateCallback();
+                    });
+                }
+
+                onUpdateCallback();
+            });
+        }
     }
 }
 

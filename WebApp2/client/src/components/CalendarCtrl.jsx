@@ -48,8 +48,6 @@ function extractItems(calendarItems, date)
         return ( Number(x.timestamp) >= startts) && (Number(x.timestamp) <= endts);
     });
 
-    console.log("extract");
-
     return r.sort((x, y) => { 
         return x.urgencyChoice === y.urgencyChoice ? 
             Number(x.timestamp) - Number(y.timestamp) : 

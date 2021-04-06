@@ -7,6 +7,7 @@
 #include "../rng.hpp"
 #include <boost/date_time/gregorian/greg_date.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/algorithm/string.hpp>
 
 namespace materia
 {
@@ -205,7 +206,10 @@ void UserSS::updatePortfolio()
             Object item(c);
             item["amount"] = (item["weight"].get<Type::Double>() * moneyPerWeight) / item["price"].get<Type::Double>();
 
-            result.setChild(item["ticker"].get<Type::String>(), item);
+            auto key = item["ticker"].get<Type::String>();
+            boost::algorithm::replace_all(key, ".", "_");
+
+            result.setChild(key, item);
         }
 
         mOm.modify(result);
