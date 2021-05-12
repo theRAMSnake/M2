@@ -193,7 +193,7 @@ export default function CalendarCtrl(props)
                         </ListItemIcon>
                         <ListItemText disableTypography primary={
                             <Typography variant="body1" style={{ color: obj.urgencyChoice === "Urgent" ? '#ff2929' : '#FFFFFF'}}>
-                                {dt.getHours() + ":" + dt.getMinutes().toString().padStart(2, "0") +" - " + obj.text}
+                                {dt.getHours() + ":" + dt.getMinutes().toString().padStart(2, "0") +" - " + obj.text + obj.suffix}
                             </Typography>}/>    
                         <ListItemSecondaryAction>
                             <IconButton edge="end" size='small' aria-label="complete" onClick={() => prepareComplete(index)}>
