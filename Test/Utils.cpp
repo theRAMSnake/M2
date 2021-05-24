@@ -78,7 +78,6 @@ std::optional<boost::property_tree::ptree> query(const std::string& id, materia:
    std::string query = "{\"operation\": \"query\", \"ids\":[\"" + id + "\"]}";
 
    auto result = core.executeCommandJson(query);
-   //std::cout << result;
 
    auto ol = readJson<boost::property_tree::ptree>(result);
     
@@ -111,4 +110,19 @@ void set(const std::string& id, const int value, materia::ICore3& core)
 
       core.executeCommandJson(writeJson(create));
    }
+}
+
+void putArray(boost::property_tree::ptree& ptree, const std::string& fname, const std::vector<std::string>& values)
+{
+    boost::property_tree::ptree subTree;
+
+    for(auto x : values)
+    {
+        boost::property_tree::ptree curCh;
+        curCh.put("", x);
+
+        subTree.push_back(std::make_pair("", curCh));
+    }
+
+    ptree.add_child(fname, subTree);
 }
