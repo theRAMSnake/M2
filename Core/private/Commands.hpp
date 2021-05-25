@@ -62,6 +62,16 @@ private:
     const std::shared_ptr<Filter> mFilter;
 };
 
+class RandomCommand : public Command
+{
+public:
+    RandomCommand(const std::string& typeName);
+    ExecutionResult execute(ObjectManager& objManager) override;
+
+private:
+    const std::string mTypeName;
+};
+
 class ModifyCommand : public Command
 {
 public:

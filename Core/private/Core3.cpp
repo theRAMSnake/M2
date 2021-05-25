@@ -49,6 +49,13 @@ Command* parseDestroy(const boost::property_tree::ptree& src)
    return new DestroyCommand(id);
 }
 
+Command* parseRandom(const boost::property_tree::ptree& src)
+{
+   auto tn = getOrThrow<std::string>(src, "typename", "Typename is not specified");
+
+   return new RandomCommand(tn);
+}
+
 Command* parseModify(const boost::property_tree::ptree& src)
 {
    auto id = getOrThrow<Id>(src, "id", "Id is not specified");
@@ -105,6 +112,7 @@ Core3::Core3(const CoreConfig& config)
    mCommandDefs.push_back({"modify", parseModify});
    mCommandDefs.push_back({"destroy", parseDestroy});
    mCommandDefs.push_back({"describe", parseDescribe});
+   mCommandDefs.push_back({"random", parseRandom});
    mCommandDefs.push_back({"backup", std::bind(parseBackup, std::placeholders::_1, config.dbFileName)});
 
    mObjManager.initialize();
