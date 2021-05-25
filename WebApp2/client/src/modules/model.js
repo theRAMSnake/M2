@@ -160,6 +160,7 @@ class materiaModel
 
                         calendarItems.forEach(x => 
                         {
+                            x.suffix = ""
                             if(x.entityTypeChoice === "StrategyNodeReference")
                             {
                                 var n = nodes.find(y => {
