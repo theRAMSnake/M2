@@ -27,6 +27,14 @@ std::string to_string(const std::vector<std::string>& src)
 namespace materia
 {
 
+void ensureValidKeyName(const std::string& key)
+{
+    if(key.find('.') != std::string::npos)
+    {
+        throw std::runtime_error("Invalid key name: " + key);
+    }
+}
+
 Object::Object(const TypeDef& type, const Id id)
 : mTypeDef(type)
 , mId(id)
@@ -85,6 +93,7 @@ Field& Object::operator [] (const std::string& name)
     }
     else
     {
+        ensureValidKeyName(name);
         mFields.push_back({name, false, std::int64_t(0)}); 
         return mFields.back();
     }
@@ -165,6 +174,7 @@ std::string Field::getName() const
 
 void Object::setChild(const std::string& tag, const Object& child)
 {
+    ensureValidKeyName(tag);
     auto [iter, res] = mChildren.insert({tag, child});
     if(!res)
     {
@@ -174,6 +184,7 @@ void Object::setChild(const std::string& tag, const Object& child)
 
 void Object::setChildren(const std::string& tag, const std::vector<Object>& children)
 {
+    ensureValidKeyName(tag);
     auto [iter, res] = mChildren.insert({tag, children});
     if(!res)
     {

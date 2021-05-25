@@ -32,6 +32,7 @@ private/subsystems/Journal.cpp
 private/subsystems/Calendar.cpp
 private/subsystems/Reward.cpp
 private/subsystems/Strategy.cpp
+private/subsystems/Ideas.cpp
 )
 
 find_package(Boost COMPONENTS system REQUIRED)

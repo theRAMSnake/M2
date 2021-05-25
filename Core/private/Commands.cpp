@@ -1,5 +1,7 @@
 #include "Commands.hpp"
 #include "JsonRestorationProvider.hpp"
+#include "rng.hpp"
+
 namespace materia
 {
 
@@ -69,6 +71,26 @@ ExecutionResult DestroyCommand::execute(ObjectManager& objManager)
 ExecutionResult DescribeCommand::execute(ObjectManager& objManager)
 {
     return objManager.describe();
+}
+
+RandomCommand::RandomCommand(const std::string& typeName)
+: mTypeName(typeName)
+{
+
+}
+
+ExecutionResult RandomCommand::execute(ObjectManager& objManager)
+{
+    auto items = objManager.getAll(mTypeName);
+    if(!items.empty())
+    {
+        auto pos = Rng::genChoise(items.size());
+        return ObjectList{items[pos]};
+    }
+    else
+    {
+        return Error{"No items for " + mTypeName};
+    }
 }
 
 ExecutionResult BackupCommand::execute(ObjectManager& objManager)

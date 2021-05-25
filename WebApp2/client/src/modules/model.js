@@ -168,8 +168,7 @@ class materiaModel
 
                                 if(n && n.typeChoice === "Counter")
                                 {
-                                    var suffix = "(" + n.value + "/" + n.target + ")";
-                                    x.text += suffix;
+                                    x.suffix = "(" + n.value + "/" + n.target + ")";
                                 }
                             }
                         });

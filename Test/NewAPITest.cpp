@@ -476,3 +476,30 @@ BOOST_FIXTURE_TEST_CASE( TestContains, NewAPITest )
     query.put("filter", "IS(reward_contract) AND .caption contains \"aa\"");
     BOOST_CHECK_EQUAL(0, count(mCore->executeCommandJson(writeJson(query))));
 }
+
+BOOST_FIXTURE_TEST_CASE( TestRandom, NewAPITest ) 
+{
+    boost::property_tree::ptree create;
+    create.put("operation", "create");
+    create.put("typename", "variable");
+    create.put("params.value", "a");
+
+    mCore->executeCommandJson(writeJson(create));
+
+    create.put("params.value", "b");
+    mCore->executeCommandJson(writeJson(create));
+
+    create.put("params.value", "c");
+    mCore->executeCommandJson(writeJson(create));
+
+    create.put("params.value", "d");
+    mCore->executeCommandJson(writeJson(create));
+
+    create.put("params.value", "e");
+    mCore->executeCommandJson(writeJson(create));
+
+    boost::property_tree::ptree query;
+    query.put("operation", "random");
+    query.put("typename", "variable");
+    BOOST_CHECK_EQUAL(1, count(mCore->executeCommandJson(writeJson(query))));
+}
