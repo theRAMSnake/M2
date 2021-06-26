@@ -8,6 +8,9 @@ const useStyles = makeStyles((theme) =>
     root: {
         flexGrow: 1,
     },
+    grow: {
+      flexGrow: 1,
+    },
     search: {
         position: 'relative',
         borderRadius: theme.shape.borderRadius,
