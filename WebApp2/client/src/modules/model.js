@@ -182,6 +182,69 @@ class materiaModel
             });
         }
     }
+
+    static getRandomIdea(cb)
+    {
+        const req = {
+            operation: "random",
+            typename: "idea"
+        };
+
+        Materia.exec(req, (r) => {
+            cb(r.object_list[0]);
+        });
+    }
+
+    static getIdea(id, cb)
+    {
+        const req = {
+            operation: "query",
+            ids: [id]
+        };
+
+        Materia.exec(req, (r) => {
+            cb(r.object_list[0]);
+        });
+    }
+
+    static getRelevantIdeas(id, cb)
+    {
+        const req = {
+            operation: "getRelatedIdeas",
+            id: id
+        };
+
+        Materia.exec(req, (r) => {
+            cb(r.object_list);
+        });
+    }
+
+    static searchIdeas(keyword, cb)
+    {
+        const req = {
+            operation: "searchIdeas",
+            searchString: keyword
+        };
+
+        Materia.exec(req, (r) => {
+            cb(r.object_list);
+        });
+    }
+
+    static createIdea(title, htgs, content)
+    {
+        const req = {
+            operation: "create",
+            typename: "idea",
+            params: {
+                title: title,
+                hashtags: htgs,
+                content: content
+            }
+        };
+
+        Materia.post(req);
+    }
 }
 
 export default materiaModel;
