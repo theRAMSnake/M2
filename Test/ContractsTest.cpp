@@ -28,6 +28,7 @@ public:
          create.put("params.contracts.0.timeGrowth", 1);
          create.put("params.contracts.0.rewardBase", 1);
          create.put("params.contracts.0.rewardPerLevel", 0.5);
+         create.put("params.contracts.0.reward_mod_id", "");
          create.put("params.contracts.1.id", "id1");
          create.put("params.contracts.1.typename", "object");
          create.put("params.contracts.1.caption", "fff");
@@ -37,6 +38,7 @@ public:
          create.put("params.contracts.1.timeGrowth", 0);
          create.put("params.contracts.1.rewardBase", 1);
          create.put("params.contracts.1.rewardPerLevel", 3);
+         create.put("params.contracts.1.reward_mod_id", "");
 
          expectId(mCore->executeCommandJson(writeJson(create)));
       }
@@ -51,13 +53,22 @@ public:
          expectId(mCore->executeCommandJson(writeJson(create)));
       }
       {
-         //Add inbox to prevent spontaneoues points
-         std::string inboxFill = "{\"operation\":\"create\","
-            "\"typename\":\"simple_list\","
-            "\"defined_id\":\"inbox\","
-            "\"params\":{\"objects\":[\"ddd\"]}}";
-         expectId(mCore->executeCommandJson(inboxFill));
+         boost::property_tree::ptree create;
+         create.put("operation", "create");
+         create.put("typename", "reward_modifier");
+         create.put("defined_id", "test_mod");
+         create.put("params.value", 0);
+
+         expectId(mCore->executeCommandJson(writeJson(create)));
       }
+      // {
+      //    //Add inbox to prevent spontaneoues points
+      //    std::string inboxFill = "{\"operation\":\"create\","
+      //       "\"typename\":\"simple_list\","
+      //       "\"defined_id\":\"inbox\","
+      //       "\"params\":{\"objects\":[\"ddd\"]}}";
+      //    expectId(mCore->executeCommandJson(inboxFill));
+      // }
    }
 
 protected:
@@ -84,11 +95,7 @@ BOOST_FIXTURE_TEST_CASE( TestNewDayFull, ContractsTest )
 
    mCore->onNewDay(boost::gregorian::day_clock::local_day());
 
-   BOOST_CHECK_EQUAL(3, count(queryAll("reward_contract", *mCore)));
-
-   mCore->onNewDay(boost::gregorian::day_clock::local_day());
-
-   BOOST_CHECK_EQUAL(3, count(queryAll("reward_contract", *mCore)));
+   BOOST_CHECK_EQUAL(2, count(queryAll("reward_contract", *mCore)));
 }
 
 BOOST_FIXTURE_TEST_CASE( TestNewDayCompleted, ContractsTest ) 
@@ -142,7 +149,7 @@ BOOST_FIXTURE_TEST_CASE( TestNewDayCompletedFull, ContractsTest )
 
    mCore->onNewDay(boost::gregorian::day_clock::local_day());
 
-   BOOST_CHECK_EQUAL(3, count(queryAll("reward_contract", *mCore)));
+   BOOST_CHECK_EQUAL(2, count(queryAll("reward_contract", *mCore)));
 }
 
 BOOST_FIXTURE_TEST_CASE( TestLeveledCreate, ContractsTest ) 
@@ -217,8 +224,8 @@ BOOST_FIXTURE_TEST_CASE( TestExpiration, ContractsTest )
    auto p = queryFirst("reward_pool", *mCore);
    BOOST_CHECK_EQUAL(0, p.get<int>("amount"));
 
-   //Check we still have 3 contracts
-   BOOST_CHECK_EQUAL(3, count(queryAll("reward_contract", *mCore)));
+   //Check we still have 2 contracts
+   BOOST_CHECK_EQUAL(2, count(queryAll("reward_contract", *mCore)));
 }
 
 BOOST_FIXTURE_TEST_CASE( Test40Days, ContractsTest ) 
@@ -227,4 +234,70 @@ BOOST_FIXTURE_TEST_CASE( Test40Days, ContractsTest )
    {
       mCore->onNewDay(boost::gregorian::day_clock::local_day());
    }
+}
+
+BOOST_FIXTURE_TEST_CASE( TestModContract, ContractsTest ) 
+{
+   {
+      auto config = query("config.reward", *mCore);
+
+      BOOST_CHECK(config);
+
+      auto& c = *config;
+
+      c.put("contracts.2.id", "id2");
+      c.put("contracts.2.typename", "object");
+      c.put("contracts.2.caption", "fff");
+      c.put("contracts.2.goal", 100);
+      c.put("contracts.2.goalGrowth", 0);
+      c.put("contracts.2.time", 5);
+      c.put("contracts.2.timeGrowth", 0);
+      c.put("contracts.2.rewardBase", 1);
+      c.put("contracts.2.rewardPerLevel", 0);
+      c.put("contracts.2.reward_mod_id", "test_mod");
+
+      boost::property_tree::ptree modify;
+      modify.put("operation", "modify");
+      modify.put_child("params", c);
+      modify.put("id", "config.reward");
+   }
+
+   double boostAmount = 0;
+   for(int i = 0; i < 200; ++i)
+   {
+      mCore->onNewDay(boost::gregorian::day_clock::local_day());
+
+      auto contrt = query("reward_contract", *mCore);
+      if(contrt)
+      {
+         auto& c = *contrt;
+
+         auto id = c.get<std::string>("id");
+         auto mod_id = c.get<std::string>("reward_mod_id");
+
+         if(mod_id != "test_mod")
+         {
+            boost::property_tree::ptree destroy;
+            destroy.put("operation", "destroy");
+            destroy.put("id", id);
+            mCore->executeCommandJson(writeJson(destroy));
+         }
+         else
+         {
+            boost::property_tree::ptree modify;
+            modify.put("operation", "modify");
+            modify.put("params.score", 10000);
+            modify.put("id", id);
+
+            mCore->executeCommandJson(writeJson(modify));
+
+            boostAmount += 1.0 / 100;
+         }
+      }
+   }
+
+   auto mod = query("test_mod", *mCore);
+
+   BOOST_CHECK(mod);
+   BOOST_CHECK_EQUAL(boostAmount, mod->get<double>("value"));
 }

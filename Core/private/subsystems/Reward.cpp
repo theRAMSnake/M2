@@ -34,7 +34,8 @@ std::vector<TypeDef> RewardSS::getTypes()
         {"reward", Type::Int},
         {"daysLeft", Type::Int},
         {"score", Type::Int},
-        {"goal", Type::Int}
+        {"goal", Type::Int},
+        {"reward_mod_id", Type::String}, //If mod is set - 1% of reward will be added to the mod
         }});
 
     result.push_back({"reward_modifier", "reward_modifiers", {
@@ -68,7 +69,7 @@ int getCurrentDayOfWeek()
 
 void RewardSS::onNewDay(const boost::gregorian::date& date)
 {
-    const std::size_t MAX_CONTRACTS = 3;
+    const std::size_t MAX_CONTRACTS = 2;
     auto ctrs = mOm.getAll("reward_contract");
 
     int totalBonus = 0;
@@ -76,7 +77,19 @@ void RewardSS::onNewDay(const boost::gregorian::date& date)
     {
         if(obj["score"].get<Type::Int>() >= obj["goal"].get<Type::Int>())
         {
-            totalBonus += obj["reward"].get<Type::Int>();
+            auto modId = obj["reward_mod_id"].get<Type::String>();
+            if(modId == "")
+            {
+                totalBonus += obj["reward"].get<Type::Int>();
+            }
+            else
+            {
+                //Mod reward
+                auto mod = mOm.getOrCreate(Id(modId), "reward_modifier");
+                mod["value"] = mod["value"].get<Type::Double>() + static_cast<double>(obj["reward"].get<Type::Int>()) / 100;
+                mOm.modify(mod);
+            }
+            
             levelUpContract(obj["config_id"].get<Type::String>());
             mOm.destroy(obj.getId());
         }
@@ -188,6 +201,7 @@ void RewardSS::genContract()
             obj["reward"] = static_cast<std::int64_t>(std::round(reward));
             obj["daysLeft"] = static_cast<std::int64_t>(std::round(time));
             obj["score"] = 0;
+            obj["reward_mod_id"] = randomItem["reward_mod_id"].get<Type::String>();
             obj["goal"] = static_cast<std::int64_t>(std::round(goal));
         });
 
