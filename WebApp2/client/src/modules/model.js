@@ -145,6 +145,8 @@ class materiaModel
                     {
                         ids.push(x.nodeReference);
                     }
+
+                    x.suffix = ""
                 });
 
                 if(ids.length > 0)

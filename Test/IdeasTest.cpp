@@ -172,8 +172,8 @@ BOOST_FIXTURE_TEST_CASE( Search_ContentMatch, IdeasTest )
 BOOST_FIXTURE_TEST_CASE( Search_HashTagMatchTwoWords, IdeasTest ) 
 {
    std::vector<std::string> ideas = search("#devices #computers");
-   BOOST_CHECK(ideas[0] == "Mouse");
-   BOOST_CHECK(ideas[1] == "Printer");
+   BOOST_CHECK(ideas[0] == "Printer");
+   BOOST_CHECK(ideas[1] == "Mouse");
    BOOST_CHECK(ideas[2] == "Car");
 }
 
