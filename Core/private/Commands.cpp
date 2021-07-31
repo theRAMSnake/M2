@@ -56,6 +56,24 @@ ExecutionResult QueryCommand::execute(ObjectManager& objManager)
     }
 }
 
+CountCommand::CountCommand(std::shared_ptr<Filter>& filter)
+: mFilter(std::move(filter))
+{
+
+}
+
+ExecutionResult CountCommand::execute(ObjectManager& objManager)
+{
+    if(static_cast<bool>(mFilter))
+    {
+        return objManager.query(*mFilter).size();
+    }
+    else
+    {
+        throw std::runtime_error("Cannot execute count without filter");
+    }
+}
+
 DestroyCommand::DestroyCommand(const Id& id)
 : mId(id)
 {

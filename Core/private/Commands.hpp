@@ -18,7 +18,7 @@ struct Error
 };
 
 using ObjectList = std::vector<Object>;
-using ExecutionResult = std::variant<Success, Error, ObjectList, std::string, Id>;
+using ExecutionResult = std::variant<Success, Error, ObjectList, std::string, Id, std::size_t>;
 
 class ObjectManager;
 class Command
@@ -59,6 +59,16 @@ public:
 
 private:
     const std::vector<Id> mIds;
+    const std::shared_ptr<Filter> mFilter;
+};
+
+class CountCommand : public Command
+{
+public:
+    CountCommand(std::shared_ptr<Filter>& filter);
+    ExecutionResult execute(ObjectManager& objManager) override;
+
+private:
     const std::shared_ptr<Filter> mFilter;
 };
 

@@ -42,6 +42,13 @@ Command* parseQuery(const boost::property_tree::ptree& src)
    return new QueryCommand(filter, ids);
 }
 
+Command* parseCount(const boost::property_tree::ptree& src)
+{
+   auto filter = parseFilter(src);
+
+   return new CountCommand(filter);
+}
+
 Command* parseDestroy(const boost::property_tree::ptree& src)
 {
    auto id = getOrThrow<Id>(src, "id", "Id is not specified");
@@ -113,6 +120,7 @@ Core3::Core3(const CoreConfig& config)
    mCommandDefs.push_back({"destroy", parseDestroy});
    mCommandDefs.push_back({"describe", parseDescribe});
    mCommandDefs.push_back({"random", parseRandom});
+   mCommandDefs.push_back({"count", parseCount});
    mCommandDefs.push_back({"backup", std::bind(parseBackup, std::placeholders::_1, config.dbFileName)});
 
    mObjManager.initialize();
@@ -155,6 +163,10 @@ std::string Core3::formatResponce(const ExecutionResult& result)
    else if(std::holds_alternative<std::string>(result))
    {
       responce["result"] = std::get<std::string>(result);
+   }
+   else if(std::holds_alternative<std::size_t>(result))
+   {
+      responce["result"] = std::get<std::size_t>(result);
    }
    else if(std::holds_alternative<Id>(result))
    {
