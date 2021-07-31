@@ -71,6 +71,7 @@ function IdeasView(props)
     const classes = useStyles();
 
     const [updating, setUpdating] = useState(false);
+    const [ideaCount, setIdeaCount] = useState(0);
     const [inAddDialog, setinAddDialog] = useState(false);
     const [curIdea, setCurIdea] = useState(null);
     const [searchText, setSearchText] = useState("");
@@ -100,6 +101,11 @@ function IdeasView(props)
         materiaModel.getRandomIdea((i)=>{
             setCurIdea(i);
             updateSecondaryIdeaList(i, searchText);
+
+            materiaModel.getIdeaCount((cnt)=>{
+                console.log(cnt)
+                setIdeaCount(cnt);
+            });
         });
     }
 
@@ -157,6 +163,9 @@ function IdeasView(props)
                 <IconButton onClick={selectRandomIdea}>
                     <HelpOutlineIcon/>
                 </IconButton>
+                <Typography variant="body1">
+                    Total ideas: {ideaCount}
+                </Typography>
             </div>
             <div style={{flexGrow: 1}} />
             <Box style={{width: '20vw', marginTop: 10}}>

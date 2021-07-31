@@ -197,6 +197,19 @@ class materiaModel
         });
     }
 
+    static getIdeaCount(cb)
+    {
+        const req = {
+            operation: "count",
+            filter: "IS(idea)"
+        };
+
+        Materia.exec(req, (r) => {
+            cb(r.result);
+        });
+    }
+
+
     static getIdea(id, cb)
     {
         const req = {
