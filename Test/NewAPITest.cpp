@@ -503,3 +503,32 @@ BOOST_FIXTURE_TEST_CASE( TestRandom, NewAPITest )
     query.put("typename", "variable");
     BOOST_CHECK_EQUAL(1, count(mCore->executeCommandJson(writeJson(query))));
 }
+
+BOOST_FIXTURE_TEST_CASE( TestCount, NewAPITest ) 
+{ 
+    boost::property_tree::ptree create;
+    create.put("operation", "create");
+    create.put("typename", "variable");
+    create.put("params.value", "a");
+    
+    for(std::size_t i = 0; i < 5; ++i)
+    {
+        create.put("params.value", i);
+        mCore->executeCommandJson(writeJson(create));
+    }
+
+    boost::property_tree::ptree create2;
+    create2.put("operation", "create");
+    create2.put("typename", "variable");
+    mCore->executeCommandJson(writeJson(create2));
+
+    boost::property_tree::ptree query;
+    query.put("operation", "count");
+    
+    query.put("filter", "IS(variable) AND .value < \"3\"");
+
+    auto result = mCore->executeCommandJson(writeJson(query));
+    auto ol = readJson<boost::property_tree::ptree>(result);
+    
+    BOOST_CHECK_EQUAL(3, ol.get<std::size_t>("result"));
+}
