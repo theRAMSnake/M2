@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <optional>
 #include <Core/ICore3.hpp>
 #include <boost/property_tree/ptree.hpp>
 

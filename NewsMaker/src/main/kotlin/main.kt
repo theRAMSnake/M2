@@ -63,6 +63,8 @@ fun genNewsFile(): String
 
     var filecontent = "<head><style>a { text-decoration: none;} </style> </head><body>"
 
+    filecontent += genNlTimesContent()
+
     filecontent += genRedditContent()
     try
     {
@@ -75,25 +77,9 @@ fun genNewsFile(): String
 
     filecontent += genSteamContent()
 
-    try
-    {
-        filecontent += genNextLaunchContent()
-    }
-    catch(e: Exception)
-    {
-        filecontent += "<h1>Next Launch Failed </h1>"
-    }
-
-    try
-    {
-        filecontent += genMetacriticContent()
-    }
-    catch(e: Exception)
-    {
-        filecontent += "<h1>Metacritic Failed</h1>"
-    }
-
     filecontent += "</body>"
+
+    print(filecontent)
 
     File(filename).writeText(filecontent)
 
