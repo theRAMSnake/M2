@@ -11,6 +11,7 @@
 #include "Common/Codec.hpp"
 #include "Common/Password.hpp"
 #include "Core/ICore3.hpp"
+#include <served/served.hpp>
 
 std::string string_to_hex(const std::string& input)
 {
@@ -98,6 +99,7 @@ void timerFunc(materia::ICore3* core)
     }
 }
 
+
 void newFunc(std::string password, materia::ICore3* core)
 {
     Codec codec(password);
@@ -154,6 +156,71 @@ void newFunc(std::string password, materia::ICore3* core)
     }
 }
 
+void newFunc2(std::string password, materia::ICore3* core)
+{
+    try
+    {
+        Codec codec(password);
+        served::net::server* server = nullptr; 
+        served::multiplexer mux;
+
+        mux.handle("/api")
+            .get([&codec, core, server](served::response & res, const served::request & req) {
+                std::string decoded;
+
+                std::string toSend = "";
+
+                try
+                {
+                    decoded = codec.decrypt(req.body());
+                }
+                catch(...)
+                {
+                    logger << "Decription failed\n";
+                    logger << "against " << string_to_hex(codec.encrypt("test")) << "\n";
+                    toSend = req.body();
+                }
+
+                logger << "In: " << decoded << "\n";
+
+                std::string result;
+                if(decoded == "shutdown")
+                {
+                    toSend = "shuting down";
+                    shutdownFlag = true;
+                }
+                else
+                {
+                    std::unique_lock<std::mutex> lock(gMainMutex);
+                    toSend = core->executeCommandJson(decoded);
+                }
+
+                logger << "Out: " << toSend << "\n";
+
+                toSend = codec.encrypt(toSend);
+
+                if(shutdownFlag)
+                {
+                    server->stop();
+                }
+
+                res << toSend;    
+		});
+
+        served::net::server srv("127.0.0.1", "5755", mux);
+        server = &srv;
+        srv.run(4);
+    }
+    catch(std::exception& e)
+    {
+        logger << "Server has crashed with an error: " << e.what();
+    }
+    catch(...)
+    {
+        logger << "Server has crashed for unknown reason";
+    }
+}
+
 int main(int argc, char *argv[])
 {
     std::string password = materia::getPassword();
@@ -161,9 +228,11 @@ int main(int argc, char *argv[])
     auto core = materia::createCore({"/materia/materia.db"});
 
     std::thread webThread(&newFunc, password, core.get());
+    std::thread webThread2(&newFunc2, password, core.get());
     std::thread timerThread(&timerFunc, core.get());
     
     webThread.join();
+    webThread2.join();
     timerThread.join();
 
     return 0;

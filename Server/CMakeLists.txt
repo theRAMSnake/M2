@@ -5,6 +5,8 @@ LIST(APPEND CMAKE_MODULE_PATH "..")
 
 include_directories("../build/Common")
 include_directories("..")
+include_directories("~/served/src")
+link_directories("~/served/lib")
 
 add_executable(m3server
 main.cpp
@@ -13,7 +15,7 @@ main.cpp
 
 find_package(Boost COMPONENTS system REQUIRED)
 
-target_link_libraries(m3server m3common m3core ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread fmt)
+target_link_libraries(m3server m3common m3core ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread fmt libserved.so)
 
 add_custom_command(
         TARGET m3server POST_BUILD
