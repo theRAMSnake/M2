@@ -14,7 +14,6 @@ namespace materia
 
 Time advance(const Time src, const std::string recType)
 {
-    //"Weekly", "Monthly", "Quarterly", "Yearly", "Bi-daily"
     Time result = src;
 
     if(recType == "Weekly")
@@ -36,6 +35,10 @@ Time advance(const Time src, const std::string recType)
     else if(recType == "Bi-daily")
     {    
         result.value += 172800;
+    }
+    else if(recType == "Daily")
+    {    
+        result.value += 86400;
     }
 
     return result;
