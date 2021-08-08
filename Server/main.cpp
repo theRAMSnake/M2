@@ -197,7 +197,7 @@ void newFunc2(std::string password, materia::ICore3* core)
 
                 logger << "Out: " << toSend << "\n";
 
-                toSend = codec.encrypt(base64_encode(toSend));
+                toSend = base64_encode(codec.encrypt(toSend));
 
                 if(shutdownFlag)
                 {
