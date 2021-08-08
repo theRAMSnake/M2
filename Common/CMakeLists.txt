@@ -9,6 +9,7 @@ find_package(Boost COMPONENTS system REQUIRED)
 add_library(m3common STATIC 
    Utils.cpp
    Id.cpp
+   Base64.cpp
    Codec.cpp
    Password.cpp
 )

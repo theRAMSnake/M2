@@ -10,6 +10,7 @@
 #include <fmt/format.h>
 #include "Common/Codec.hpp"
 #include "Common/Password.hpp"
+#include "Common/Base64.hpp"
 #include "Core/ICore3.hpp"
 #include <served/served.hpp>
 
@@ -172,12 +173,11 @@ void newFunc2(std::string password, materia::ICore3* core)
 
                 try
                 {
-                    decoded = codec.decrypt(req.body());
+                    decoded = codec.decrypt(base64_decode(req.body()));
                 }
                 catch(...)
                 {
                     logger << "Decription failed\n";
-                    logger << "against " << string_to_hex(codec.encrypt("test")) << "\n";
                     toSend = req.body();
                 }
 
@@ -197,7 +197,7 @@ void newFunc2(std::string password, materia::ICore3* core)
 
                 logger << "Out: " << toSend << "\n";
 
-                toSend = codec.encrypt(toSend);
+                toSend = codec.encrypt(base64_encode(toSend));
 
                 if(shutdownFlag)
                 {
