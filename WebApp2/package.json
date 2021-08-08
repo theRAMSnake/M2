@@ -50,6 +50,7 @@
     "style-loader": "^1.2.1",
     "validator": "^13.0.0",
     "winston": "^3.3.3",
+    "xmlhttprequest": "^1.8.0",
     "zeromq": "^6.0.0-beta.6"
   },
   "devDependencies": {
