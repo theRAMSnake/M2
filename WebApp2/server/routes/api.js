@@ -1,15 +1,45 @@
 const express = require('express');
-const zmq = require("zeromq")
 const crypto = require('crypto');
 const pass = require("../pass");
 const router = new express.Router();
 var Mutex = require('async-mutex').Mutex;
 const logger = require('./logger');
+const http = require("http")
 
-const sock = new zmq.Request
-sock.connect("tcp://62.171.175.23:5756")
 
-async function materiaGet(req)
+function m4req(op, cb, errCb)
+{
+    const options = {
+      host: 'ramsnake.net',
+      port: 5754,
+      path: '/api',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/html',
+        'Content-Length': op.length
+      }
+    };
+    const req = http.request(options, resp => {
+        let output = ''
+        resp.on('data', (chunk) => {
+          output += chunk;
+        });
+
+        resp.on('end', () => {
+            cb(output);
+        });
+
+    });
+
+    req.on('error', (e) => {
+      console.error(`problem with request: ${e.message}`);
+    });
+
+    req.write(op);
+    req.end();
+}
+
+function materiaGet(req, cb)
 {   
     var key = crypto.createHash('sha256').update(pass, 'utf8').digest();
 
@@ -21,15 +51,17 @@ async function materiaGet(req)
     let encrypted = cipher.update(plaintext, 'utf8', 'hex');
     encrypted += cipher.final('hex');
 
-    let msg = Buffer.from(encrypted, 'hex');
+    let msg = Buffer.from(encrypted, 'hex').toString('base64');
+    
+    m4req(msg, (result)=>{
+        result = Buffer.from(result, 'base64');
+        let decipher = crypto.createDecipheriv('aes-256-cbc', key, IV);
+        decipher.setAutoPadding(true);
+        let decrypted = decipher.update(result, 'binary', 'utf8');
+        let encoded = (decrypted + decipher.final('utf8'));
+        cb(encoded);
 
-    sock.send(msg);
-    const [result] = await sock.receive();
-
-    let decipher = crypto.createDecipheriv('aes-256-cbc', key, IV);
-    decipher.setAutoPadding(true);
-    let decrypted = decipher.update(result, 'binary', 'utf8');
-    return (decrypted + decipher.final('utf8'));
+    }, (err)=>{});
 }
 
 const mutex = new Mutex();
@@ -38,17 +70,13 @@ router.post('/materia', (req, res) =>
     mutex
     .acquire()
     .then(function(release) {
-        logger.info(JSON.stringify(req.body));
-        materiaGet(JSON.stringify(req.body)).then( (results) =>
+        materiaGet(JSON.stringify(req.body), (results) =>
         {
             release();
             res.status(200).json({
                 message: results.toString()
             });
-            
-            logger.info(results);
         });
-        
     });    
 });
 
