@@ -165,7 +165,7 @@ void newFunc2(std::string password, materia::ICore3* core)
         served::multiplexer mux;
 
         mux.handle("/api")
-            .get([&codec, core, server](served::response & res, const served::request & req) {
+          .post([&codec, core, server](served::response & res, const served::request & req) {
                 std::string decoded;
 
                 std::string toSend = "";
@@ -207,7 +207,7 @@ void newFunc2(std::string password, materia::ICore3* core)
                 res << toSend;    
 		});
 
-        served::net::server srv("127.0.0.1", "5755", mux);
+        served::net::server srv("0.0.0.0", "5754", mux);
         server = &srv;
         srv.run(4);
     }
