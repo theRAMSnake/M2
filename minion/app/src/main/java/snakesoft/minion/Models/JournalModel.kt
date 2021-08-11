@@ -1,10 +1,8 @@
 package snakesoft.minion.Models
 
-import common.Common
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.list
-import snakesoft.minion.Activities.getInvalidId
 import snakesoft.minion.materia.JournalServiceProxy
 import snakesoft.minion.materia.MateriaConnection
 import snakesoft.minion.materia.MateriaUnreachableException
@@ -69,7 +67,7 @@ class JournalModel(private val Db: LocalDatabase)
 
     private fun saveState()
     {
-        val json = Json.stringify(JournalIndexItem.serializer().list, Items)
+        val json = Json.encodeToString(ListSerializer(JournalIndexItem.serializer()), Items)
 
         Db.put("JournalIndex", json)
 
@@ -100,7 +98,7 @@ class JournalModel(private val Db: LocalDatabase)
     {
         try
         {
-            Items = Json.parse(JournalIndexItem.serializer().list, Db["JournalIndex"])
+            Items = Json.decodeFromString(ListSerializer(JournalIndexItem.serializer()), Db["JournalIndex"])
         }
         catch(ex: Exception)
         {

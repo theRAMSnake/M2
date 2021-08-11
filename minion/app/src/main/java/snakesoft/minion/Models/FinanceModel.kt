@@ -1,7 +1,5 @@
 package snakesoft.minion.Models
 
-import finance.Finance
-
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import snakesoft.minion.Activities.getInvalidId
@@ -84,13 +82,13 @@ class FinanceModel(private val Db: LocalDatabase)
 
     private fun saveState()
     {
-        var json = Json.stringify(FinanceEvent.serializer().list, Events.toList())
+        var json = Json.encodeToString(Events.toList())
         Db.put("FinanceEvents", json)
 
-        json = Json.stringify(FinanceCategory.serializer().list, Categories.toList())
+        json = Json.encodeToString(Categories.toList())
         Db.put("FinanceCategories", json)
 
-        json = Json.stringify(DetailsToCategoryMapping.serializer().list, DetailsToCategoryMap.toList())
+        json = Json.encodeToString(DetailsToCategoryMap.toList())
         Db.put("DetailsToCategoryMap", json)
 
         Db.put("LastSMSReadDate", LastSMSReadDate.toString())
@@ -116,10 +114,10 @@ class FinanceModel(private val Db: LocalDatabase)
     {
         try
         {
-            Events = Json.parse(FinanceEvent.serializer().list, Db["FinanceEvents"])
-            Categories = Json.parse(FinanceCategory.serializer().list, Db["FinanceCategories"])
+            Events = Json.decodeFromString(Db["FinanceEvents"])
+            Categories = Json.decodeFromString(Db["FinanceCategories"])
             LastSMSReadDate = Db["LastSMSReadDate"].toLong()
-            DetailsToCategoryMap = Json.parse(DetailsToCategoryMapping.serializer().list, Db["DetailsToCategoryMap"])
+            DetailsToCategoryMap = Json.decodeFromString(Db["DetailsToCategoryMap"])
         }
         catch(ex: Exception)
         {

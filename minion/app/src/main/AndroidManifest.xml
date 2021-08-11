@@ -17,6 +17,7 @@
         android:label="Minion"
         android:roundIcon="@mipmap/m104"
         android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme">
         <activity android:name=".Activities.MainActivity">
             <intent-filter>

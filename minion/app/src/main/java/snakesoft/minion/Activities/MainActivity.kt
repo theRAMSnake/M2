@@ -2,7 +2,7 @@ package snakesoft.minion.Activities
 
 import android.content.*
 import android.graphics.Color
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Telephony
 import android.util.Log
@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity()
     {
         super.onCreate(savedInstanceState)
 
-        val intent = Intent(applicationContext, ClipboardListenerService::class.java)
+        Intent(applicationContext, ClipboardListenerService::class.java)
 
         MainActivityUI().setContentView(this)
     }

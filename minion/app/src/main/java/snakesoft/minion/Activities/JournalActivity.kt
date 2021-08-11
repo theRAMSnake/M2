@@ -3,7 +3,7 @@ package snakesoft.minion.Activities
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.text.Html
 import android.view.View
 import com.unnamed.b.atv.model.TreeNode

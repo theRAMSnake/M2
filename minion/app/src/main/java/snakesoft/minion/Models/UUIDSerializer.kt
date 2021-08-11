@@ -1,16 +1,19 @@
 package snakesoft.minion.Models
 
 import kotlinx.serialization.*
-import kotlinx.serialization.internal.StringDescriptor
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import java.util.*
 
 @Serializer(forClass = UUID::class)
 object UUIDSerializer : KSerializer<UUID> {
-    override val descriptor: SerialDescriptor
-        get() = StringDescriptor.withName("UUID")
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("UUID", PrimitiveKind.STRING)
 
-    override fun serialize(encoder: Encoder, obj: UUID) {
-        encoder.encodeString(obj.toString())
+    override fun serialize(encoder: Encoder, value: UUID) {
+        encoder.encodeString(value.toString())
     }
 
     override fun deserialize(decoder: Decoder): UUID {

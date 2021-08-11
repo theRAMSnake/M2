@@ -1,7 +1,5 @@
 package snakesoft.minion.Models
 
-import calendar.Calendar
-import common.Common
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import snakesoft.minion.materia.*
@@ -64,7 +62,7 @@ class CalendarModel(private val Db: LocalDatabase)
 
     private fun saveState()
     {
-        val json = Json.stringify(CalendarItem.serializer().list, Items.toList())
+        val json = Json.encodeToString(Items.toList())
 
         Db.put("CalendarItems", json)
     }
@@ -80,7 +78,7 @@ class CalendarModel(private val Db: LocalDatabase)
     {
         try
         {
-            Items = TrackedCollection(Json.parse(CalendarItem.serializer().list, Db["CalendarItems"]))
+            Items = TrackedCollection(Json.decodeFromString(Db["CalendarItems"]))
         }
         catch(ex: Exception)
         {

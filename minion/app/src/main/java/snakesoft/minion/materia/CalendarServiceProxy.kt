@@ -1,12 +1,7 @@
 package snakesoft.minion.materia
 
-import com.google.protobuf.InvalidProtocolBufferException
-
-import calendar.Calendar
-import common.Common
-import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JSON
+import kotlinx.serialization.json.Json
 import snakesoft.minion.Models.ITrackable
 import snakesoft.minion.Models.StatusOfChange
 import snakesoft.minion.Models.UUIDSerializer
@@ -17,13 +12,11 @@ data class CalendarItem(
         override var id: java.util.UUID,
         var text: String,
         var timestamp: Long,
-        @Optional
         var nodeReference: String = "",
         var typename: String = "calendar_item",
         var reccurencyTypeChoice: String = "None",
         var entityTypeChoice: String = "Task",
         var urgencyChoice: String = "Not Urgent",
-        @Optional
         override var trackingInfo: StatusOfChange = StatusOfChange.None
 ) : ITrackable
 
@@ -47,36 +40,35 @@ data class CalendarAdd(val operation: String = "create", val typename: String = 
 
 class CalendarServiceProxy(private val mMateriaConnection: MateriaConnection) {
 
-    @Throws(InvalidProtocolBufferException::class, MateriaUnreachableException::class)
+    @Throws(MateriaUnreachableException::class)
     fun query(): List<CalendarItem>
     {
         val jsonData = "{\"operation\": \"query\", \"filter\": \"IS(calendar_item)\"}"
         val resp = mMateriaConnection.sendMessage(jsonData)
-        println(resp)
-        return JSON.nonstrict.parse(QueryResult.serializer(), resp).object_list
+        return format.decodeFromString(QueryResult.serializer(), resp).object_list
     }
 
-    @Throws(InvalidProtocolBufferException::class, MateriaUnreachableException::class)
+    @Throws(MateriaUnreachableException::class)
     fun completeItem(id: java.util.UUID)
     {
         val jsonData = "{\"operation\": \"complete\", \"id\": \"${id}\"}"
         mMateriaConnection.sendMessage(jsonData)
     }
 
-    @Throws(InvalidProtocolBufferException::class, MateriaUnreachableException::class)
+    @Throws(MateriaUnreachableException::class)
     fun addItem(item: CalendarItem)
     {
         val cp = CalendarParams(item.text, item.timestamp, item.reccurencyTypeChoice, item.entityTypeChoice, item.urgencyChoice)
         var ca = CalendarAdd("create", "calendar_item", cp)
-        mMateriaConnection.sendMessage(JSON.stringify(CalendarAdd.serializer(), ca))
+        mMateriaConnection.sendMessage(Json.encodeToString(CalendarAdd.serializer(), ca))
     }
 
-    @Throws(InvalidProtocolBufferException::class, MateriaUnreachableException::class)
+    @Throws(MateriaUnreachableException::class)
     fun editItem(item: CalendarItem): Boolean
     {
         val cp = CalendarParams(item.text, item.timestamp, item.reccurencyTypeChoice, item.entityTypeChoice, item.urgencyChoice)
         var ca = CalendarModify("modify", item.id.toString(), cp)
-        mMateriaConnection.sendMessage(JSON.stringify(CalendarModify.serializer(), ca))
+        mMateriaConnection.sendMessage(Json.encodeToString(CalendarModify.serializer(), ca))
         return true
     }
 }

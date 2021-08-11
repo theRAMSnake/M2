@@ -7,7 +7,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.provider.Telephony
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.view.Gravity
 import org.jetbrains.anko.*
 import org.jetbrains.anko.design.longSnackbar
