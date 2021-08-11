@@ -71,7 +71,7 @@ class InboxModel(private val Db: LocalDatabase)
 
     private fun saveState()
     {
-        val json = Json.stringify(InboxItem.serializer().list, Items.toList())
+        val json = Json.encodeToString(Items.toList())
 
         Db.put("InboxItems", json)
     }
@@ -89,7 +89,7 @@ class InboxModel(private val Db: LocalDatabase)
     {
         try
         {
-            Items = TrackedCollection(Json.parse(InboxItem.serializer().list, Db["InboxItems"]))
+            Items = TrackedCollection(Json.decodeFromString(Db["InboxItems"]))
         }
         catch(ex: Exception)
         {

@@ -1,7 +1,7 @@
 package snakesoft.minion.Activities
 
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.ItemTouchHelper
 import android.view.View
 import android.view.ViewGroup
 import snakesoft.minion.Models.Event1
@@ -11,14 +11,14 @@ import java.util.*
 class SwipeToDeleteCallback(private val Adapter: RichListViewAdapter)
     : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT)
 {
-    override fun onMove(recyclerView: RecyclerView?, viewHolder: RecyclerView.ViewHolder?, target: RecyclerView.ViewHolder?): Boolean
+    override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean
     {
         return true
     }
 
-    override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, direction: Int)
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int)
     {
-        val position = viewHolder!!.adapterPosition
+        val position = viewHolder.adapterPosition
         Adapter.deleteItem(position)
     }
 }

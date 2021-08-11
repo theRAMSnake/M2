@@ -1,9 +1,7 @@
 package snakesoft.minion.materia
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JSON
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.list
 
 class InboxServiceProxy(private val mMateriaConnection: MateriaConnection)
 {

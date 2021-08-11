@@ -1,11 +1,19 @@
 package snakesoft.minion.materia
 
-import org.zeromq.ZMQ
+import android.util.Base64
+import android.util.Base64.*
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.IOException
 import java.nio.charset.Charset
 import java.security.MessageDigest
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
+
 
 fun ByteArray.toHexString() : String {
     return this.joinToString("") {
@@ -43,48 +51,35 @@ fun decrypt(password: String, data: ByteArray): ByteArray {
     return cipher.doFinal(data)
 }
 
-//Encapsulates ZMQ communication with materia server
-class MateriaConnection(Ip: String, val Password: String, val Port: String)
+class MateriaConnection(var Ip: String, val Password: String, val Port: String)
 {
-    private var mSocket: ZMQ.Socket
-    private var mContext: ZMQ.Context = ZMQ.context(1)
-
-    init
-    {
-        mSocket = mContext.socket(ZMQ.REQ)
-        mSocket.connect("tcp://$Ip:$Port")
-        mSocket.receiveTimeOut = 30000
-    }
-
-    @Throws(MateriaUnreachableException::class)
-    internal fun sendMessage(payload: com.google.protobuf.ByteString, serviceName: String, operationName: String): com.google.protobuf.ByteString
-    {
-        //println("Password is: ${Password}")
-        //val encrypted = encrypt(Password, "dddtttyyyuuu".toByteArray())
-        //println("Encrypted is: ${encrypted.toHexString()}")
-
-        val toSend = common.Common.MateriaMessage.newBuilder()
-                .setFrom("minion")
-                .setTo(serviceName)
-                .setOperationName(operationName)
-                .setPayload(payload)
-                .build()
-
-        mSocket.send(encrypt(Password, toSend.toByteArray()))
-        val response = mSocket.recv() ?: throw MateriaUnreachableException()
-
-        val result = common.Common.MateriaMessage.parseFrom(decrypt(Password, response))
-        return result.payload
-    }
+    val client = OkHttpClient()
+    val mediaType: MediaType = "text/html; charset=utf-8".toMediaType()
 
     @Throws(MateriaUnreachableException::class)
     internal fun sendMessage(payload: String): String
     {
         println("payload: $payload")
-        mSocket.send(encrypt(Password, payload.toByteArray()))
-        val response = mSocket.recv() ?: throw MateriaUnreachableException()
+        val based = Base64.encodeToString(encrypt(Password, payload.toByteArray()), NO_WRAP)
+        println("based: $based")
+        val toSend = based.toRequestBody(mediaType)
+        val request = Request.Builder()
+                .url("http://ramsnake.net:5754/api")
+                .addHeader("Content-Length", "${toSend.contentLength()}")
+                .post(toSend)
+                .build()
 
-        val dc = decrypt(Password, response).toString(Charset.defaultCharset())
+        var result = ""
+        client.newCall(request).execute().use{ response ->
+            if (!response.isSuccessful)
+            {
+                throw IOException("Unexpected code $response")
+            }
+
+            result = response.body!!.string()
+        }
+
+        val dc = decrypt(Password, Base64.decode(result, DEFAULT)).toString(Charset.defaultCharset())
         println("resp: $dc")
         return dc
     }

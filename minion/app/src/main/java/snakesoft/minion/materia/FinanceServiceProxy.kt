@@ -1,11 +1,7 @@
 package snakesoft.minion.materia
 
-import com.google.protobuf.InvalidProtocolBufferException
-
-import common.Common
-import finance.Finance
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JSON
+import kotlinx.serialization.json.Json
 import snakesoft.minion.Models.FinanceCategory
 import snakesoft.minion.Models.FinanceEvent
 
@@ -17,18 +13,18 @@ data class FinanceAdd(val operation: String = "create", val typename: String = "
 
 class FinanceServiceProxy(private val mMateriaConnection: MateriaConnection)
 {
-    @Throws(InvalidProtocolBufferException::class, MateriaUnreachableException::class)
+    @Throws(MateriaUnreachableException::class)
     fun loadCategories(): List<FinanceCategory>
     {
         val jsonData = "{\"operation\": \"query\", \"filter\": \"IS(finance_category)\"}"
         val resp = mMateriaConnection.sendMessage(jsonData)
-        return JSON.parse(FinanceCatResult.serializer(), resp).object_list
+        return format.decodeFromString(FinanceCatResult.serializer(), resp).object_list
     }
 
-    @Throws(InvalidProtocolBufferException::class, MateriaUnreachableException::class)
+    @Throws(MateriaUnreachableException::class)
     fun addEvent(item: FinanceEvent)
     {
         var ca = FinanceAdd(params = item)
-        mMateriaConnection.sendMessage(JSON.stringify(FinanceAdd.serializer(), ca))
+        mMateriaConnection.sendMessage(Json.encodeToString(FinanceAdd.serializer(), ca))
     }
 }
