@@ -1,5 +1,4 @@
 #include <iostream>
-#include <zmq.hpp>
 #include <cstdlib>
 #include <iomanip>
 #include <chrono>
@@ -100,63 +99,6 @@ void timerFunc(materia::ICore3* core)
     }
 }
 
-
-void newFunc(std::string password, materia::ICore3* core)
-{
-    Codec codec(password);
-
-    zmq::context_t context (1);
-    zmq::socket_t clientSocket (context, ZMQ_REP);
-    clientSocket.bind ("tcp://*:5756");
-
-    while(true)
-    {
-        zmq::message_t clientMessage;
-        (void)clientSocket.recv (clientMessage, zmq::recv_flags::none);
-
-        std::string received(static_cast<const char *>(clientMessage.data()), clientMessage.size());
-        std::string decoded;
-        
-        try
-        {
-            decoded = codec.decrypt(received);
-        }
-        catch(...)
-        {
-            logger << "Decription failed\n";
-            logger << "against " << string_to_hex(codec.encrypt("test")) << "\n";
-            clientSocket.send (clientMessage, zmq::send_flags::none);
-            continue;
-        }
-        
-        logger << "In: " << decoded << "\n";
-
-        std::string result;
-        if(decoded == "shutdown")
-        {
-            result = "shuting down";
-            shutdownFlag = true;
-        }
-        else
-        {
-            std::unique_lock<std::mutex> lock(gMainMutex);
-            result = core->executeCommandJson(decoded);
-        }
-
-        logger << "Out: " << result << "\n";
-
-        std::string encoded = codec.encrypt(result);
-
-        zmq::message_t msgToSend (encoded.data(), encoded.size());
-        clientSocket.send (msgToSend, zmq::send_flags::none);
-
-        if(shutdownFlag)
-        {
-            break;
-        }
-    }
-}
-
 void newFunc2(std::string password, materia::ICore3* core)
 {
     try
@@ -227,11 +169,9 @@ int main(int argc, char *argv[])
 
     auto core = materia::createCore({"/materia/materia.db"});
 
-    std::thread webThread(&newFunc, password, core.get());
     std::thread webThread2(&newFunc2, password, core.get());
     std::thread timerThread(&timerFunc, core.get());
     
-    webThread.join();
     webThread2.join();
     timerThread.join();
 
