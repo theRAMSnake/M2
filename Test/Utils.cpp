@@ -126,3 +126,8 @@ void putArray(boost::property_tree::ptree& ptree, const std::string& fname, cons
 
     ptree.add_child(fname, subTree);
 }
+
+int queryVar(const std::string& name, materia::ICore3& core)
+{
+    return query(name, core)->get<int>("value");
+}

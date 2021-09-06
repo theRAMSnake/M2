@@ -13,3 +13,4 @@ std::optional<boost::property_tree::ptree> query(const std::string& id, materia:
 boost::property_tree::ptree queryFirst(const std::string& type, materia::ICore3& core);
 void set(const std::string& id, const int value, materia::ICore3& core);
 void putArray(boost::property_tree::ptree& ptree, const std::string& fname, const std::vector<std::string>& values);
+int queryVar(const std::string& name, materia::ICore3& core);
