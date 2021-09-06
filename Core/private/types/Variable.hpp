@@ -18,7 +18,10 @@ public:
     void operator =(const std::string& value);
     void operator =(const int value);
     void inc(const int value);
+    void dec(const int value);
     bool operator >(const int x) const;
+    bool operator <(const int x) const;
+    int asInt() const;
 
 private:
     bool mChanged = false;

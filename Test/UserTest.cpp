@@ -20,16 +20,6 @@ public:
             "\"params\":{\"objects\":[\"ddd\"]}}";
          expectId(mCore->executeCommandJson(inboxFill));
       }
-      {
-         boost::property_tree::ptree create;
-         create.put("operation", "create");
-         create.put("typename", "reward_pool");
-         create.put("defined_id", "pool");
-         create.put("params.amount", 0);
-         create.put("params.amountMax", 100);
-
-         expectId(mCore->executeCommandJson(writeJson(create)));
-      }
    }
 
 protected:
@@ -74,12 +64,12 @@ BOOST_FIXTURE_TEST_CASE(CompleteGoalNode, UserTest)
    BOOST_CHECK(g.get<bool>("isAchieved"));
 
    //Check points
-   auto p = queryFirst("reward_pool", *mCore);
-   BOOST_CHECK_EQUAL(1, p.get<int>("amount"));
+   BOOST_CHECK_EQUAL(100, queryVar("reward.points", *mCore));
 }
 
 BOOST_FIXTURE_TEST_CASE(CompleteCounterStep, UserTest) 
 {
+   set("reward.points", 0, *mCore);
    //Create counter node
    {
       boost::property_tree::ptree create;
@@ -117,8 +107,7 @@ BOOST_FIXTURE_TEST_CASE(CompleteCounterStep, UserTest)
    BOOST_CHECK_EQUAL(1, g.get<int>("value"));
 
    //Check points
-   auto p = queryFirst("reward_pool", *mCore);
-   BOOST_CHECK_EQUAL(0, p.get<int>("amount"));
+   BOOST_CHECK_EQUAL(0, queryVar("reward.points", *mCore));
 }
 
 
@@ -161,8 +150,7 @@ BOOST_FIXTURE_TEST_CASE(CompleteCounterFull, UserTest)
    BOOST_CHECK_EQUAL(1, g.get<int>("value"));
 
    //Check points
-   auto p = queryFirst("reward_pool", *mCore);
-   BOOST_CHECK_EQUAL(1, p.get<int>("amount"));
+   BOOST_CHECK_EQUAL(100, queryVar("reward.points", *mCore));
 }
 
 BOOST_FIXTURE_TEST_CASE(AdvanceCalendar, UserTest) 

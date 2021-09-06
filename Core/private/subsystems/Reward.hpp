@@ -26,7 +26,6 @@ private:
     void levelUpContract(const Id id);
     double calculateTotalModifier();
 
-    double mLeftOver = 0.0;
     ObjectManager& mOm;
 };
 

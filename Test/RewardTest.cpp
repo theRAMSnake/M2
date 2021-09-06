@@ -114,16 +114,6 @@ BOOST_FIXTURE_TEST_CASE( AddPointsModifiedPosPosTest, RewardTest )
    {
       boost::property_tree::ptree create;
       create.put("operation", "create");
-      create.put("typename", "reward_pool");
-      create.put("defined_id", "p1");
-      create.put("params.amount", 0);
-      create.put("params.amountMax", 100);
-
-      mCore->executeCommandJson(writeJson(create));
-   }
-   {
-      boost::property_tree::ptree create;
-      create.put("operation", "create");
       create.put("typename", "reward_modifier");
       create.put("params.value", 0.1);
 
@@ -143,27 +133,15 @@ BOOST_FIXTURE_TEST_CASE( AddPointsModifiedPosPosTest, RewardTest )
    rwd.put("points", 10);
    mCore->executeCommandJson(writeJson(rwd));
 
-   auto v = *query("p1", *mCore);
-   BOOST_CHECK_EQUAL("12", v.get<std::string>("amount"));
+   BOOST_CHECK_EQUAL(1250, queryVar("reward.points", *mCore));
 
    mCore->executeCommandJson(writeJson(rwd));
 
-   v = *query("p1", *mCore);
-   BOOST_CHECK_EQUAL("25", v.get<std::string>("amount"));
+   BOOST_CHECK_EQUAL(2500, queryVar("reward.points", *mCore));
 }
 
 BOOST_FIXTURE_TEST_CASE( AddPointsModifiedPosNegTest, RewardTest ) 
 {
-   {
-      boost::property_tree::ptree create;
-      create.put("operation", "create");
-      create.put("typename", "reward_pool");
-      create.put("defined_id", "p1");
-      create.put("params.amount", 0);
-      create.put("params.amountMax", 100);
-
-      mCore->executeCommandJson(writeJson(create));
-   }
    {
       boost::property_tree::ptree create;
       create.put("operation", "create");
@@ -186,27 +164,15 @@ BOOST_FIXTURE_TEST_CASE( AddPointsModifiedPosNegTest, RewardTest )
    rwd.put("points", 10);
    mCore->executeCommandJson(writeJson(rwd));
 
-   auto v = *query("p1", *mCore);
-   BOOST_CHECK_EQUAL("7", v.get<std::string>("amount"));
+   BOOST_CHECK_EQUAL(750, queryVar("reward.points", *mCore));
 
    mCore->executeCommandJson(writeJson(rwd));
 
-   v = *query("p1", *mCore);
-   BOOST_CHECK_EQUAL("15", v.get<std::string>("amount"));
+   BOOST_CHECK_EQUAL(1500, queryVar("reward.points", *mCore));
 }
 
 BOOST_FIXTURE_TEST_CASE( AddPointsModifiedNegTest, RewardTest ) 
 {
-   {
-      boost::property_tree::ptree create;
-      create.put("operation", "create");
-      create.put("typename", "reward_pool");
-      create.put("defined_id", "p1");
-      create.put("params.amount", 50);
-      create.put("params.amountMax", 100);
-
-      mCore->executeCommandJson(writeJson(create));
-   }
    {
       boost::property_tree::ptree create;
       create.put("operation", "create");
@@ -229,13 +195,11 @@ BOOST_FIXTURE_TEST_CASE( AddPointsModifiedNegTest, RewardTest )
    rwd.put("points", -10);
    mCore->executeCommandJson(writeJson(rwd));
 
-   auto v = *query("p1", *mCore);
-   BOOST_CHECK_EQUAL("43", v.get<std::string>("amount"));
+   BOOST_CHECK_EQUAL(-750, queryVar("reward.points", *mCore));
 
    mCore->executeCommandJson(writeJson(rwd));
 
-   v = *query("p1", *mCore);
-   BOOST_CHECK_EQUAL("35", v.get<std::string>("amount"));
+   BOOST_CHECK_EQUAL(-1500, queryVar("reward.points", *mCore));
 }
 
 BOOST_FIXTURE_TEST_CASE( PresetModifiersTest, RewardTest ) 
@@ -265,7 +229,7 @@ BOOST_FIXTURE_TEST_CASE( PresetModifiersTest, RewardTest )
    mCore->executeCommandJson(writeJson(create));
 
    set("work.burden", 500, *mCore);
-   set("reward.debt", 5, *mCore);
+   set("reward.points", -5, *mCore);
 
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 2));
 
@@ -279,18 +243,8 @@ BOOST_FIXTURE_TEST_CASE( PresetModifiersTest, RewardTest )
    BOOST_CHECK_EQUAL(-0.15, query("mod.punisher", *mCore)->get<double>("value"));
 }
 
-BOOST_FIXTURE_TEST_CASE( TestBigCounterRewardWithMods, RewardTest ) 
+BOOST_FIXTURE_TEST_CASE( TestBigCounterRewardWithModsAndChestAssigned, RewardTest ) 
 {
-   {
-      boost::property_tree::ptree create;
-      create.put("operation", "create");
-      create.put("typename", "reward_pool");
-      create.put("defined_id", "p1");
-      create.put("params.amount", 0);
-      create.put("params.amountMax", 100);
-
-      mCore->executeCommandJson(writeJson(create));
-   }
    {
       boost::property_tree::ptree create;
       create.put("operation", "create");
@@ -319,23 +273,14 @@ BOOST_FIXTURE_TEST_CASE( TestBigCounterRewardWithMods, RewardTest )
       mCore->executeCommandJson(writeJson(modify));
    }
 
-   auto v = *query("p1", *mCore);
-   BOOST_CHECK_EQUAL("80", v.get<std::string>("amount"));
+   BOOST_CHECK_EQUAL(500, queryVar("reward.points", *mCore));
+
+   BOOST_CHECK_EQUAL(3, count(queryAll("reward_item", *mCore)));
 }
 
 BOOST_FIXTURE_TEST_CASE( AddPointsDebtTest, RewardTest ) 
 {
    set("reward.debt", 5, *mCore);
-   {
-      boost::property_tree::ptree create;
-      create.put("operation", "create");
-      create.put("typename", "reward_pool");
-      create.put("defined_id", "p1");
-      create.put("params.amount", 0);
-      create.put("params.amountMax", 100);
-
-      mCore->executeCommandJson(writeJson(create));
-   }
 
    {
       boost::property_tree::ptree rwd;
@@ -343,19 +288,7 @@ BOOST_FIXTURE_TEST_CASE( AddPointsDebtTest, RewardTest )
       rwd.put("points", 3);
       mCore->executeCommandJson(writeJson(rwd));
 
-      auto v = *query("p1", *mCore);
-      BOOST_CHECK_EQUAL("0", v.get<std::string>("amount"));
-
-      BOOST_CHECK_EQUAL(2, query("reward.debt", *mCore)->get<double>("value"));
-   }
-   {
-      boost::property_tree::ptree rwd;
-      rwd.put("operation", "reward");
-      rwd.put("points", 3);
-      mCore->executeCommandJson(writeJson(rwd));
-
-      auto v = *query("p1", *mCore);
-      BOOST_CHECK_EQUAL("1", v.get<std::string>("amount"));
+      BOOST_CHECK_EQUAL(-200, queryVar("reward.points", *mCore));
 
       BOOST_CHECK_EQUAL(0, query("reward.debt", *mCore)->get<double>("value"));
    }
@@ -365,9 +298,16 @@ BOOST_FIXTURE_TEST_CASE( AddPointsDebtTest, RewardTest )
       rwd.put("points", 3);
       mCore->executeCommandJson(writeJson(rwd));
 
-      auto v = *query("p1", *mCore);
-      BOOST_CHECK_EQUAL("4", v.get<std::string>("amount"));
+      BOOST_CHECK_EQUAL(100, queryVar("reward.points", *mCore));
+      BOOST_CHECK_EQUAL(0, query("reward.debt", *mCore)->get<double>("value"));
+   }
+   {
+      boost::property_tree::ptree rwd;
+      rwd.put("operation", "reward");
+      rwd.put("points", 3);
+      mCore->executeCommandJson(writeJson(rwd));
 
+      BOOST_CHECK_EQUAL(400, queryVar("reward.points", *mCore));
       BOOST_CHECK_EQUAL(0, query("reward.debt", *mCore)->get<double>("value"));
    }
 }

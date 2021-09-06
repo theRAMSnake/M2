@@ -22,10 +22,9 @@ std::vector<TypeDef> RewardSS::getTypes()
 {
     std::vector<TypeDef> result;
 
-    result.push_back({"reward_pool", "reward", {
+    result.push_back({"reward_item", "reward_items", {
         {"name", Type::String},
         {"amount", Type::Int},
-        {"amountMax", Type::Int}
         }});
 
     result.push_back({"reward_contract", "contracts", {
@@ -144,8 +143,8 @@ void RewardSS::onNewDay(const boost::gregorian::date& date)
         }
     }
 
-    types::Variable debt(mOm, Id("reward.debt"));
-    if(debt > 0)
+    types::Variable points(mOm, Id("reward.points"));
+    if(points < 0)
     {
         setMod(Id("mod.punisher"), "Punisher", -0.15);
     }
@@ -265,52 +264,31 @@ double RewardSS::calculateTotalModifier()
 
 void RewardSS::addPoints(const int points)
 {
-    bool isPlus = points > 0;
-    auto mod = calculateTotalModifier();
-    auto pointsModified = static_cast<double>(points) + static_cast<double>(points) * (isPlus ? mod : -mod) + mLeftOver;
-    int pointsLeft = std::abs(static_cast<int>(pointsModified));
-    mLeftOver = pointsModified - static_cast<int>(pointsModified);
-
-    auto pools = mOm.getAll("reward_pool");
-    unsigned int attemptCounter = 0;
-
     types::Variable debt(mOm, Id("reward.debt"));
+    types::Variable pool(mOm, Id("reward.points"));
 
-    while(!pools.empty() && pointsLeft > 0)
+    if(debt > 0)
     {
-        if(debt > 0)
-        {
-            debt.inc(-1);
-            pointsLeft--;
-            continue;
-        }
-
-        auto& randomItem = pools[rand() % pools.size()];
-        auto amount = randomItem["amount"].get<Type::Int>();
-        if(isPlus && amount < randomItem["amountMax"].get<Type::Int>())
-        {
-            randomItem["amount"] = amount + 1;
-            
-            pointsLeft--;
-        }
-        else if(!isPlus && amount > 0)
-        {
-            randomItem["amount"] = amount - 1;
-            pointsLeft--;
-        }
-        else
-        {
-            attemptCounter++;
-            if(attemptCounter == 100)
-            {
-                break;
-            }
-        }
+        pool.dec(debt.asInt() * 100);
+        debt = 0;
     }
 
-    for(auto& p : pools)
+    bool isPlus = points > 0;
+    auto mod = calculateTotalModifier();
+    auto pointsToAssign = static_cast<double>(points) * 100 * (isPlus ? 1.0 + mod : 1.0 - mod);
+
+    pool.inc(pointsToAssign);
+
+    while(pool > 2500)
     {
-       mOm.modify(p);
+        pool.dec(2500);
+
+        auto vp = FunctionToValueProviderAdapter([](auto& obj)
+        {
+            obj["name"] = "chest";
+        });
+
+        mOm.create({}, "reward_item", vp);
     }
 }
 

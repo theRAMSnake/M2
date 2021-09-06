@@ -26,6 +26,11 @@ void Variable::operator =(const int value)
     mChanged = true;
 }
 
+void Variable::dec(const int value)
+{
+    inc(-value);
+}
+
 void Variable::inc(const int value)
 {
     int oldVal = 0;
@@ -43,11 +48,28 @@ void Variable::inc(const int value)
     mChanged = true;
 }
 
+int Variable::asInt() const
+{
+    return mObject["value"].get<Type::Int>();
+}
+
 bool Variable::operator> (const int x) const
 {
     try
     {
         return mObject["value"].get<Type::Int>() > x;
+    }
+    catch(std::runtime_error&)
+    {
+        return false;
+    }
+}
+
+bool Variable::operator< (const int x) const
+{
+    try
+    {
+        return mObject["value"].get<Type::Int>() < x;
     }
     catch(std::runtime_error&)
     {

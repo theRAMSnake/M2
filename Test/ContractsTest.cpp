@@ -45,30 +45,12 @@ public:
       {
          boost::property_tree::ptree create;
          create.put("operation", "create");
-         create.put("typename", "reward_pool");
-         create.put("defined_id", "pool");
-         create.put("params.amount", 0);
-         create.put("params.amountMax", 100);
-
-         expectId(mCore->executeCommandJson(writeJson(create)));
-      }
-      {
-         boost::property_tree::ptree create;
-         create.put("operation", "create");
          create.put("typename", "reward_modifier");
          create.put("defined_id", "test_mod");
          create.put("params.value", 0);
 
          expectId(mCore->executeCommandJson(writeJson(create)));
       }
-      // {
-      //    //Add inbox to prevent spontaneoues points
-      //    std::string inboxFill = "{\"operation\":\"create\","
-      //       "\"typename\":\"simple_list\","
-      //       "\"defined_id\":\"inbox\","
-      //       "\"params\":{\"objects\":[\"ddd\"]}}";
-      //    expectId(mCore->executeCommandJson(inboxFill));
-      // }
    }
 
 protected:
@@ -104,7 +86,7 @@ BOOST_FIXTURE_TEST_CASE( TestNewDayCompleted, ContractsTest )
 
    auto c = queryFirst("reward_contract", *mCore);
 
-   auto expectedReward = c.get<int>("reward");
+   auto expectedReward = c.get<int>("reward") * 130; //130 because of modifiers
    auto id = c.get<std::string>("id");
    auto configId = c.get<std::string>("config_id");
    
@@ -122,8 +104,7 @@ BOOST_FIXTURE_TEST_CASE( TestNewDayCompleted, ContractsTest )
    BOOST_CHECK(!cont);
 
    //Expect points added
-   auto p = queryFirst("reward_pool", *mCore);
-   BOOST_CHECK_EQUAL(expectedReward, p.get<int>("amount"));
+   BOOST_CHECK_EQUAL(expectedReward, queryVar("reward.points", *mCore));
 
    //Expect level raised
    auto conf = query("reward.cb", *mCore);
@@ -198,6 +179,7 @@ BOOST_FIXTURE_TEST_CASE( TestLeveledCreate, ContractsTest )
 
 BOOST_FIXTURE_TEST_CASE( TestExpiration, ContractsTest ) 
 {
+   set("reward.points", 1, *mCore);
    mCore->onNewDay(boost::gregorian::day_clock::local_day());
    auto c = queryFirst("reward_contract", *mCore);
    auto id = c.get<std::string>("id");
@@ -221,8 +203,7 @@ BOOST_FIXTURE_TEST_CASE( TestExpiration, ContractsTest )
    }
 
    //Check no points is awarded
-   auto p = queryFirst("reward_pool", *mCore);
-   BOOST_CHECK_EQUAL(0, p.get<int>("amount"));
+   BOOST_CHECK_EQUAL(1, queryVar("reward.points", *mCore));
 
    //Check we still have 2 contracts
    BOOST_CHECK_EQUAL(2, count(queryAll("reward_contract", *mCore)));

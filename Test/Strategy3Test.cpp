@@ -140,16 +140,6 @@ BOOST_FIXTURE_TEST_CASE( Rewarding, StrategyTest )
     {
         boost::property_tree::ptree create;
         create.put("operation", "create");
-        create.put("typename", "reward_pool");
-        create.put("defined_id", "pool");
-        create.put("params.amount", 0);
-        create.put("params.amountMax", 100);
-
-        expectId(mCore->executeCommandJson(writeJson(create)));
-    }
-    {
-        boost::property_tree::ptree create;
-        create.put("operation", "create");
         create.put("typename", "strategy_node");
         create.put("defined_id", "g");
         create.put("params.type", 0);
@@ -165,8 +155,7 @@ BOOST_FIXTURE_TEST_CASE( Rewarding, StrategyTest )
 
     mCore->executeCommandJson(writeJson(modify));
 
-    auto p = queryFirst("reward_pool", *mCore);
-    BOOST_CHECK_EQUAL(10, p.get<int>("amount"));
+    BOOST_CHECK_EQUAL(1000, queryVar("reward.points", *mCore));
 }
 
 BOOST_FIXTURE_TEST_CASE( CreateInvalidNode, StrategyTest ) 
