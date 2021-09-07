@@ -4,6 +4,9 @@
 #include "../Core/private/JsonSerializer.hpp"
 #include "Utils.hpp"
 
+#include <boost/date_time/gregorian/greg_date.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 class RewardTest
 {
 public:
@@ -276,6 +279,50 @@ BOOST_FIXTURE_TEST_CASE( TestBigCounterRewardWithModsAndChestAssigned, RewardTes
    BOOST_CHECK_EQUAL(500, queryVar("reward.points", *mCore));
 
    BOOST_CHECK_EQUAL(3, count(queryAll("reward_item", *mCore)));
+}
+
+static std::time_t to_time_t(const boost::gregorian::date& date )
+{
+	using namespace boost::posix_time;
+	static ptime epoch(boost::gregorian::date(1970, 1, 1));
+	time_duration::sec_type secs = (ptime(date,seconds(0)) - epoch).total_seconds();
+	return std::time_t(secs);
+}
+
+BOOST_FIXTURE_TEST_CASE( ModifierExpiration, RewardTest ) 
+{
+   auto expirationDate = boost::gregorian::date(2021, boost::gregorian::Jan, 7);
+
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "reward_modifier");
+      create.put("params.value", 0.1);
+      create.put("params.validUntil", to_time_t(expirationDate));
+      create.put("defined_id", "expirable");
+
+      expectId(mCore->executeCommandJson(writeJson(create)));
+   }
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "reward_modifier");
+      create.put("params.value", 0.1);
+      create.put("defined_id", "non_expirable");
+
+      expectId(mCore->executeCommandJson(writeJson(create)));
+   }
+   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 1));
+   BOOST_CHECK(query("expirable", *mCore));
+   BOOST_CHECK(query("non_expirable", *mCore));
+
+   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 2));
+   BOOST_CHECK(query("expirable", *mCore));
+   BOOST_CHECK(query("non_expirable", *mCore));
+
+   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 9));
+   BOOST_CHECK(!query("expirable", *mCore));
+   BOOST_CHECK(query("non_expirable", *mCore));
 }
 
 BOOST_FIXTURE_TEST_CASE( AddPointsDebtTest, RewardTest ) 
