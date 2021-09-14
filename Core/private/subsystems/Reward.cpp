@@ -6,6 +6,8 @@
 #include "../types/Variable.hpp"
 #include "Reward.hpp"
 
+#include <boost/date_time/gregorian/greg_date.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/algorithm/string/replace.hpp>
 
 namespace materia
@@ -39,7 +41,8 @@ std::vector<TypeDef> RewardSS::getTypes()
 
     result.push_back({"reward_modifier", "reward_modifiers", {
         {"desc", Type::String},
-        {"value", Type::Double}
+        {"value", Type::Double},
+        {"validUntil", Type::Timestamp}
         }});
 
     return result;
@@ -64,6 +67,14 @@ int getCurrentDayOfWeek()
     timeinfo = localtime(&rawtime);
 
     return timeinfo->tm_wday;
+}
+
+static std::time_t to_time_t(const boost::gregorian::date& date )
+{
+	using namespace boost::posix_time;
+	static ptime epoch(boost::gregorian::date(1970, 1, 1));
+	time_duration::sec_type secs = (ptime(date,seconds(0)) - epoch).total_seconds();
+	return std::time_t(secs);
 }
 
 void RewardSS::onNewDay(const boost::gregorian::date& date)
@@ -151,6 +162,15 @@ void RewardSS::onNewDay(const boost::gregorian::date& date)
     else
     {
         removeMod(Id("mod.punisher"));
+    }
+
+    auto curTime = to_time_t(date);
+    for(auto o : mOm.getAll("reward_modifier"))
+    {
+       if(o["validUntil"].get<Type::Timestamp>().value < curTime)
+       {
+          removeMod(o.getId());
+       }
     }
 }
 
