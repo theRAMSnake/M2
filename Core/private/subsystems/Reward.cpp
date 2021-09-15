@@ -221,13 +221,26 @@ void applyItem(ObjectManager& om,const Object& item)
         if(isStackable(name))
         {
             auto items = om.getAll("reward_item");
+            bool found = false;
             for(auto& item : items)
             {
                 if(item["name"].get<Type::String>() == name) 
                 {
                     item["amount"] = item["amount"].get<Type::Int>() + 1;
                     om.modify(item);
+                    found = true;
                 }
+            }
+
+            if(!found)
+            {
+                auto vp = FunctionToValueProviderAdapter([name](auto& obj)
+                {
+                    obj["name"] = name;
+                    obj["amount"] = 1;
+                });
+
+                om.create({}, "reward_item", vp);
             }
         }
         else
