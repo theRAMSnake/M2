@@ -211,7 +211,7 @@ BOOST_FIXTURE_TEST_CASE( TestGen100Chests, ChestAndItemsTest )
            BOOST_CHECK_EQUAL(7, mod.get<int>("duration"));
            BOOST_CHECK_EQUAL(1, mod.get<int>("value"));
        }
-       else if(chestType == "tokens")
+       else if(chestType == "token")
        {
            //Expect exactly one stacked item
            BOOST_CHECK_EQUAL(1, count(queryAll("reward_item", *mCore)));
@@ -227,6 +227,11 @@ BOOST_FIXTURE_TEST_CASE( TestGen100Chests, ChestAndItemsTest )
            auto item = queryFirst("reward_item", *mCore);
 
            BOOST_CHECK_EQUAL('v', item.get<std::string>("name")[0]);
+       }
+       else
+       {
+           //Unknown chest type
+           BOOST_CHECK(false);
        }
        deleteAll("reward_item", *mCore); 
        deleteAll("reward_modifier", *mCore); 
