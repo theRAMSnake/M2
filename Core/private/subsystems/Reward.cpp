@@ -64,7 +64,8 @@ std::vector<TypeDef> RewardSS::getTypes()
     result.push_back({"reward_modifier", "reward_modifiers", {
         {"desc", Type::String},
         {"value", Type::Double},
-        {"validUntil", Type::Timestamp}
+        {"validUntil", Type::Timestamp},
+        {"expirable", Type::Bool}
         }});
 
     return result;
@@ -375,7 +376,7 @@ void RewardSS::onNewDay(const boost::gregorian::date& date)
     auto curTime = to_time_t(date);
     for(auto o : mOm.getAll("reward_modifier"))
     {
-       if(o.contains("validUntil") && o["validUntil"].get<Type::Timestamp>().value < curTime)
+       if(o["expirable"].get<Type::Bool>() && o["validUntil"].get<Type::Timestamp>().value < curTime)
        {
           removeMod(o.getId());
        }

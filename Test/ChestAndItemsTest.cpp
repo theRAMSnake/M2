@@ -62,36 +62,64 @@ public:
          create.put("params.items.3.name", "b2");
          create.put("params.items.3.value", 4);
          create.put("params.items.3.category", "typeb");
-         /*create.put("params.chests.4.id", "id4");
+         create.put("params.chests.4.id", "id4");
          create.put("params.chests.4.typename", "object");
          create.put("params.chests.4.name", "moded");
          create.put("params.chests.4.weight", 0.5);
          create.put("params.chests.4.premium", "mods");
+         create.put("params.items.4.id", "id4");
+         create.put("params.items.4.typename", "object");
+         create.put("params.items.4.name", "mod");
+         create.put("params.items.4.value", 4);
+         create.put("params.items.4.category", "mods");
+         create.put("params.items.4.behavior.id", "bhv");
+         create.put("params.items.4.behavior.typename", "object");
+         create.put("params.items.4.behavior.type", "add_mod");
+         create.put("params.items.4.behavior.name", "mod");
+         create.put("params.items.4.behavior.duration", 7);
+         create.put("params.items.4.behavior.value", 1);
          create.put("params.chests.5.id", "id5");
          create.put("params.chests.5.typename", "object");
          create.put("params.chests.5.name", "token");
          create.put("params.chests.5.weight", 0.5);
-         create.put("params.chests.5.premium", "token");
+         create.put("params.chests.5.fillwith", "token");
+         create.put("params.items.5.id", "id5");
+         create.put("params.items.5.typename", "object");
+         create.put("params.items.5.name", "A Token");
+         create.put("params.items.5.value", 1);
+         create.put("params.items.5.category", "token");
          create.put("params.chests.6.id", "id6");
          create.put("params.chests.6.typename", "object");
          create.put("params.chests.6.name", "from_list");
          create.put("params.chests.6.weight", 0.5);
          create.put("params.chests.6.premium", "from_list");
-*/
+         create.put("params.items.6.id", "id6");
+         create.put("params.items.6.typename", "object");
+         create.put("params.items.6.name", "fl");
+         create.put("params.items.6.value", 4);
+         create.put("params.items.6.category", "from_list");
+         create.put("params.items.6.behavior.id", "bhv");
+         create.put("params.items.6.behavior.typename", "object");
+         create.put("params.items.6.behavior.type", "fetch_from_list");
+         create.put("params.items.6.behavior.source", "list");
+
          expectId(mCore->executeCommandJson(writeJson(create)));
 
-/*         boost::property_tree::ptree createList;
+         boost::property_tree::ptree createList;
          createList.put("operation", "create");
          createList.put("typename", "simple_list");
          createList.put("defined_id", "list");
+         createList.put("params", "");
          expectId(mCore->executeCommandJson(writeJson(createList)));
 
          boost::property_tree::ptree push;
          push.put("operation", "push");
          push.put("listId", "list");
          push.put("value", "v1");
-         expectId(mCore->executeCommandJson(writeJson(push)));
-         */
+         mCore->executeCommandJson(writeJson(push));
+         
+         push.put("value", "v2");
+         mCore->executeCommandJson(writeJson(push));
       }
    }
 
@@ -177,16 +205,30 @@ BOOST_FIXTURE_TEST_CASE( TestGen100Chests, ChestAndItemsTest )
        }
        else if(chestType == "moded")
        {
-
+           //Expect to see a mod
+           auto mod = queryFirst("reward_modifier", *mCore);
+           BOOST_CHECK_EQUAL("mod", mod.get<std::string>("desc"));
+           BOOST_CHECK_EQUAL(7, mod.get<int>("duration"));
+           BOOST_CHECK_EQUAL(1, mod.get<int>("value"));
        }
        else if(chestType == "tokens")
        {
+           //Expect exactly one stacked item
+           BOOST_CHECK_EQUAL(1, count(queryAll("reward_item", *mCore)));
+           auto item = queryFirst("reward_item", *mCore);
 
+           BOOST_CHECK_EQUAL("A Token", item.get<std::string>("name"));
+           BOOST_CHECK_EQUAL(25, item.get<int>("amount"));
        }
        else if(chestType == "from_list")
        {
+           //Expect exactly one item from the list
+           BOOST_CHECK_EQUAL(1, count(queryAll("reward_item", *mCore)));
+           auto item = queryFirst("reward_item", *mCore);
 
+           BOOST_CHECK_EQUAL('v', item.get<std::string>("name")[0]);
        }
        deleteAll("reward_item", *mCore); 
+       deleteAll("reward_modifier", *mCore); 
    }
 }

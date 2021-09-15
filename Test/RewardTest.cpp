@@ -300,6 +300,7 @@ BOOST_FIXTURE_TEST_CASE( ModifierExpiration, RewardTest )
       create.put("typename", "reward_modifier");
       create.put("params.value", 0.1);
       create.put("params.validUntil", to_time_t(expirationDate));
+      create.put("params.expirable", true);
       create.put("defined_id", "expirable");
 
       expectId(mCore->executeCommandJson(writeJson(create)));
@@ -309,10 +310,13 @@ BOOST_FIXTURE_TEST_CASE( ModifierExpiration, RewardTest )
       create.put("operation", "create");
       create.put("typename", "reward_modifier");
       create.put("params.value", 0.1);
+      create.put("params.expirable", false);
+      create.put("params.validUntil", to_time_t(expirationDate));
       create.put("defined_id", "non_expirable");
 
       expectId(mCore->executeCommandJson(writeJson(create)));
    }
+
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 1));
    BOOST_CHECK(query("expirable", *mCore));
    BOOST_CHECK(query("non_expirable", *mCore));
