@@ -19,8 +19,10 @@ public:
     void addPoints(const int points);
     void setMod(const Id& id, const std::string& desc, const double value);
     void removeMod(const Id& id);
+    Object useChest();
 
 private:
+    Command* parseUseChestCommand(const boost::property_tree::ptree& src);
     Command* parseRewardCommand(const boost::property_tree::ptree& src);
     void genContract();
     void levelUpContract(const Id id);

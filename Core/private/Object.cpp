@@ -295,4 +295,10 @@ std::vector<Object> Object::getChildren() const
     return result;
 }
 
+const bool Object::contains(const std::string& fieldName) const
+{
+    return std::find_if(mFields.begin(), mFields.end(), [fieldName](auto f){return f.getName() == fieldName;}) != mFields.end() ||
+       mChildren.contains(fieldName); 
+}
+
 }

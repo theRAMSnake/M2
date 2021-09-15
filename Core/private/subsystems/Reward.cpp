@@ -4,15 +4,37 @@
 #include "../Logger.hpp"
 #include "../rng.hpp"
 #include "../types/Variable.hpp"
+#include "../types/SimpleList.hpp"
 #include "Reward.hpp"
 
 #include <boost/date_time/gregorian/greg_date.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/algorithm/string/replace.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/cxx11/any_of.hpp>
 
 namespace materia
 {
 
+template<class F>
+class FunctionToValueProviderAdapter : public IValueProvider
+{
+public:
+    FunctionToValueProviderAdapter(F f)
+    : mF(f)
+    {
+
+    }
+
+    void populate(Object& obj) const override
+    {
+        mF(obj);
+    }
+
+private:
+    F mF;
+};
 
 RewardSS::RewardSS(ObjectManager& objMan)
 : mOm(objMan)
@@ -75,6 +97,192 @@ static std::time_t to_time_t(const boost::gregorian::date& date )
 	static ptime epoch(boost::gregorian::date(1970, 1, 1));
 	time_duration::sec_type secs = (ptime(date,seconds(0)) - epoch).total_seconds();
 	return std::time_t(secs);
+}
+
+void consumeChest(ObjectManager& om)
+{
+    auto items = om.getAll("reward_item");
+    auto chestPos = std::find_if(items.begin(), items.end(), [](auto& c){
+            Field f = c["name"];
+            std::string src = f.get<Type::String>();
+            return src == "chest";});
+
+    if(chestPos == items.end())
+    {
+        throw std::logic_error("No chest available");
+    }
+
+    om.destroy(chestPos->getId());
+}
+
+Object weightedRandom(const std::vector<Object> srcs)
+{
+    for(int i = 0; i < 5000; ++i)
+    {
+        auto& randomItem = srcs[Rng::gen32() % srcs.size()];
+        auto weight = randomItem["weight"].get<Type::Double>();
+        if(Rng::genProbability(weight))
+        {
+            return randomItem;
+        }
+    }
+    
+    throw std::logic_error("Unable to generate weightedRandom after 5000 attempts");
+}
+
+Object selectChestType(ObjectManager& om)
+{
+    auto cfg = om.getOrCreate(Id("config.reward"), "object");
+    auto options = cfg.getChild(Id("chests")).getChildren();
+    return weightedRandom(options);
+}
+
+Object pickItem(const std::vector<Object>& cfg, const std::string& category)
+{
+    std::vector<Object> options;
+    for(const auto& item : cfg)
+    {
+        if(item["category"].get<Type::String>() == category)
+        {
+            options.push_back(item);
+        } 
+    }
+    if(options.empty())
+    {
+        throw std::logic_error("Broken reward config, cannot generate item of category: " + category);
+    }
+    return options[Rng::gen32() % options.size()];
+}
+
+Object pickItem(const std::vector<Object>& cfg, const std::vector<std::string>& categories, const int value)
+{
+    std::vector<Object> options;
+    for(const auto& item : cfg)
+    {
+        auto category = item["category"].get<Type::String>();
+        if(std::find(categories.begin(), categories.end(), category) != categories.end() && item["value"].get<Type::Int>() <= value)
+        {
+            options.push_back(item);
+        } 
+    }
+    if(options.empty())
+    {
+        throw std::logic_error("Broken reward config, cannot generate item of categories and value: " + std::to_string(value));
+    }
+    return options[Rng::gen32() % options.size()];
+}
+
+void createMod(ObjectManager& om, const std::string& name, const double value, const int duration)
+{
+    auto valueProvider = FunctionToValueProviderAdapter([&name, value, duration](auto& obj)
+    {
+        obj["desc"] = name;
+        obj["value"] = value;
+        obj["duration"] = duration;
+    });
+
+    om.create({}, "reward_modifier", valueProvider);
+}
+
+bool isStackable(const std::string& name)
+{
+    return name.find("Token") != std::string::npos;
+}
+
+void applyItem(ObjectManager& om,const Object& item)
+{
+    auto name = item["name"].get<Type::String>();
+    if(item.contains("behavior"))
+    {
+        auto behavior = item.getChild("behavior");
+        auto type = behavior["type"].get<Type::String>();
+        if(type == "add_mod")
+        {
+            createMod(om, behavior["name"].get<Type::String>(), behavior["value"].get<Type::Double>(), behavior["duration"].get<Type::Int>());
+        }
+        else if(type == "fetch_from_list")
+        {
+            types::SimpleList lst(om, Id(behavior["source"].get<Type::String>()));
+            auto vp = FunctionToValueProviderAdapter([&lst](auto& obj)
+            {
+                obj["name"] = lst.at(Rng::gen32() % lst.size());
+            });
+
+            om.create({}, "reward_item", vp);
+        }
+        else
+        {
+            throw std::logic_error("Unknown item behavior type: " + type);
+        }
+    }
+    else
+    {
+        if(isStackable(name))
+        {
+            auto items = om.getAll("reward_item");
+            for(auto& item : items)
+            {
+                if(item["name"].get<Type::String>() == name) 
+                {
+                    item["amount"] = item["amount"].get<Type::Int>() + 1;
+                    om.modify(item);
+                }
+            }
+        }
+        else
+        {
+            auto vp = FunctionToValueProviderAdapter([name](auto& obj)
+            {
+                obj["name"] = name;
+            });
+
+            om.create({}, "reward_item", vp);
+        }
+    }
+}
+
+Object applyChest(ObjectManager& om, const Object& chestType)
+{
+    Object report({"object"}, Id("report"));
+    std::vector<std::string> gainedItems;
+    report["chestType"] = chestType["name"].get<Type::String>();
+
+    auto cfg = om.getOrCreate(Id("config.reward"), "object");
+    auto itemsCfg = cfg.getChild(Id("items")).getChildren();
+    auto chestValuesLeft = cfg["chestValues"].get<Type::Int>();
+    
+    if(chestType.contains("premium"))
+    {
+        auto premium = chestType["premium"].get<Type::String>();
+        auto newItemCfg = pickItem(itemsCfg, premium);
+        gainedItems.push_back(newItemCfg["name"].get<Type::String>());
+        chestValuesLeft -= newItemCfg["value"].get<Type::Int>();
+        applyItem(om, newItemCfg);
+    }
+
+    if(chestType.contains("fillwith"))
+    {
+        std::vector<std::string> fillwith;
+        boost::split(fillwith, chestType["fillwith"].get<Type::String>(), boost::is_any_of(";"));
+        while(chestValuesLeft > 0)
+        {
+            auto newItemCfg = pickItem(itemsCfg, fillwith, chestValuesLeft);
+            gainedItems.push_back(newItemCfg["name"].get<Type::String>());
+            chestValuesLeft -= newItemCfg["value"].get<Type::Int>();
+            applyItem(om, newItemCfg);
+        }
+    }
+
+    report["gainedItems"] = gainedItems;
+
+    return report;
+}
+
+Object RewardSS::useChest()
+{
+    consumeChest(mOm);
+    auto chestType = selectChestType(mOm);
+    return applyChest(mOm, chestType);
 }
 
 void RewardSS::onNewDay(const boost::gregorian::date& date)
@@ -167,31 +375,13 @@ void RewardSS::onNewDay(const boost::gregorian::date& date)
     auto curTime = to_time_t(date);
     for(auto o : mOm.getAll("reward_modifier"))
     {
-       if(o["validUntil"].get<Type::Timestamp>().value < curTime)
+       if(o.contains("validUntil") && o["validUntil"].get<Type::Timestamp>().value < curTime)
        {
           removeMod(o.getId());
        }
     }
 }
 
-template<class F>
-class FunctionToValueProviderAdapter : public IValueProvider
-{
-public:
-    FunctionToValueProviderAdapter(F f)
-    : mF(f)
-    {
-
-    }
-
-    void populate(Object& obj) const override
-    {
-        mF(obj);
-    }
-
-private:
-    F mF;
-};
 
 void RewardSS::genContract()
 {
@@ -239,7 +429,8 @@ void RewardSS::onNewWeek()
 
 std::vector<CommandDef> RewardSS::getCommandDefs()
 {
-    return {{"reward", std::bind(&RewardSS::parseRewardCommand, this, std::placeholders::_1)}};
+    return {{"reward", std::bind(&RewardSS::parseRewardCommand, this, std::placeholders::_1)}, 
+    {"useChest", std::bind(&RewardSS::parseUseChestCommand, this, std::placeholders::_1)}};
 }
 
 class RewardCommand : public Command
@@ -262,6 +453,36 @@ private:
     const int mPts;
     RewardSS& mReward;
 };
+
+class UseChestCommand : public Command
+{
+public:
+   UseChestCommand(RewardSS& reward)
+   : mReward(reward)
+   {
+
+   }
+
+   ExecutionResult execute(ObjectManager& objManager) override
+   {
+      try 
+      {
+          return std::vector<Object>{mReward.useChest()};
+      }
+      catch(std::exception& e)
+      {
+          throw std::logic_error{std::string("Unable to use a chest: ") + e.what()};
+      }
+   }
+
+private:
+    RewardSS& mReward;
+};
+
+Command* RewardSS::parseUseChestCommand(const boost::property_tree::ptree& src)
+{
+   return new UseChestCommand(*this);
+}
 
 Command* RewardSS::parseRewardCommand(const boost::property_tree::ptree& src)
 {
@@ -299,7 +520,7 @@ void RewardSS::addPoints(const int points)
 
     pool.inc(pointsToAssign);
 
-    while(pool > 2500)
+    while(pool.asInt() >= 2500)
     {
         pool.dec(2500);
 

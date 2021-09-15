@@ -140,7 +140,8 @@ BOOST_FIXTURE_TEST_CASE( AddPointsModifiedPosPosTest, RewardTest )
 
    mCore->executeCommandJson(writeJson(rwd));
 
-   BOOST_CHECK_EQUAL(2500, queryVar("reward.points", *mCore));
+   //Go consumed
+   BOOST_CHECK_EQUAL(0, queryVar("reward.points", *mCore));
 }
 
 BOOST_FIXTURE_TEST_CASE( AddPointsModifiedPosNegTest, RewardTest ) 
