@@ -13,6 +13,7 @@ RewardTest.cpp
 NewAPITest.cpp
 ExpressionsTest.cpp
 ObjectTest.cpp
+ChestAndItemsTest.cpp
 CoreTest.cpp
 DatabaseTest.cpp
 ContractsTest.cpp

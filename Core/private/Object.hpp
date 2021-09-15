@@ -178,6 +178,8 @@ public:
 
     const Object& getChild(const std::string& tag) const;
     std::vector<Object> getChildren() const;
+    
+    const bool contains(const std::string& fieldName) const;
 
     TypeDef getType() const;
     Id getId() const;

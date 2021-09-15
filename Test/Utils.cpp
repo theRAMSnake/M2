@@ -73,6 +73,20 @@ boost::property_tree::ptree queryFirst(const std::string& type, materia::ICore3&
    throw std::runtime_error("Empty list loaded");
 }
 
+void deleteAll(const std::string& type, materia::ICore3& core)
+{
+   auto all = queryAll(type, core);
+   auto ol = readJson<boost::property_tree::ptree>(all);
+    
+   for(auto& v : ol.get_child("object_list"))
+   {
+       boost::property_tree::ptree dlt;
+       dlt.put("operation", "destroy");
+       dlt.put("id", v.second.get<std::string>("id"));
+
+       core.executeCommandJson(writeJson(dlt));
+   }
+}
 std::optional<boost::property_tree::ptree> query(const std::string& id, materia::ICore3& core)
 {
    std::string query = "{\"operation\": \"query\", \"ids\":[\"" + id + "\"]}";
