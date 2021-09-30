@@ -197,6 +197,30 @@ class materiaModel
         });
     }
 
+    static getRewardPoints(cb)
+    {
+        const req = {
+            operation: "query",
+            ids: ["reward.points"]
+        };
+
+        Materia.exec(req, (r) => {
+            cb(Number(r.object_list[0].value));
+        });
+    }
+
+    static getRewardItems(cb)
+    {
+        const req = {
+            operation: "query",
+            filter: "IS(reward_item)"
+        };
+
+        Materia.exec(req, (r) => {
+            cb(r.object_list);
+        });
+    }
+
     static getIdeaCount(cb)
     {
         const req = {

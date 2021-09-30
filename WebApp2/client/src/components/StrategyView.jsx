@@ -293,7 +293,58 @@ function StrategyView(props)
 
     if(graphData == null)
     {
-        loadGraph("", () => {path.push({id: "", name: "Root"});});
+        if(props.initPath === "/")
+        {
+            loadGraph("", () => {path.push({id: "", name: "Root"});});
+        }
+        else
+        {
+            resolvePath(props.initPath, result => {
+                loadGraph(result[result.length - 1].id, () => {path.push(...result);});
+            });
+        }
+    }
+    
+    function resolvePath(path, cb)
+    {
+        const splitted = path.split("/");
+        var filter = "IS(strategy_node) AND ";
+        for(var i = 1; i < splitted.length; ++i)
+        {
+            if(i != 1)
+            {
+                filter += " OR ";
+            }
+            filter += ".title = \"" + splitted[i] + "\"";
+        }
+
+        console.log("Requesting: " + filter);
+        const req = {
+            operation: "query",
+            filter: filter
+        }
+        Materia.exec(req, (r) =>
+        {
+            var resultPath = [{id: "", name: "Root"}]
+            if(r.object_list != "")
+            {
+                console.log("Got " + JSON.stringify(r));
+                for(var j = 1; j < splitted.length; ++j)
+                {
+                    const val = r.object_list.find(x => x.title === splitted[j]);
+                    if(!val)
+                    {
+                        console.log("Not found " + splitted[j]);
+                        break;
+                    }
+
+                    console.log("Found " + splitted[j]);
+                    resultPath.push({id: val.id, name: val.title});
+                }
+            }
+
+            cb(resultPath);
+        }); 
     }
 
     function isNodeLocked(n)
