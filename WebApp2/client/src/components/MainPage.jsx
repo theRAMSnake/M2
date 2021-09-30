@@ -10,6 +10,7 @@ import FinanceView from './FinanceView.jsx'
 import JournalView from './JournalView.jsx'
 import StrategyView from './StrategyView.jsx'
 import IdeasView from './IdeasView.jsx'
+import RewardView from './RewardView.jsx'
 import QueryView from './QueryView.jsx'
 import AddItemDialog from './AddItemDialog.jsx'
 import CalendarCtrl from './CalendarCtrl.jsx'
@@ -118,6 +119,7 @@ function MainPage(props) {
     const [rdOpen, setrdOpen] = React.useState(false);
     const [contentType, setContentType] = React.useState("");
     const [query, setQuery] = React.useState("");
+    const [strategyPath, setStrategyPath] = React.useState("/");
     const [showAddDlg, setShowAddDlg] = React.useState(false);
     const [isInitialisation, setIsInitialisation] = React.useState(true);
 
@@ -152,7 +154,10 @@ function MainPage(props) {
             return (<JournalView/>);
 
         else if(ct == "strategy")
-            return (<StrategyView/>);
+            return (<StrategyView initPath={strategyPath}/>);
+
+        else if(ct == "reward")
+            return (<RewardView/>);
 
         else if(ct == "ideas")
             return (<IdeasView/>);
@@ -184,14 +189,26 @@ function MainPage(props) {
         }
         else if(index == 4)
         {
+            setContentType("reward");
+        }
+        else if(index == 5)
+        {
             setContentType("ideas");
         }
     }
 
     function searchBarSubmit(text)
     {
-        setContentType("query");
-        setQuery(text);
+        if(text.charAt(0) === "/")
+        {
+            setContentType("strategy");
+            setStrategyPath(text);
+        }
+        else
+        {
+            setContentType("query");
+            setQuery(text);
+        }
     }
 
     const handleLeftDrawerOpen = () => {
@@ -293,7 +310,7 @@ function MainPage(props) {
                 </div>
                 <Divider />
                 <List>
-                    {['API', 'Finance', 'Journal', 'Strategy', 'Ideas'].map((text, index) => (
+                    {['API', 'Finance', 'Journal', 'Strategy', 'Reward', 'Ideas'].map((text, index) => (
                     <ListItem button key={text} onClick={() => {menuItemClicked(index)}}>
                         <ListItemText primary={text} />
                     </ListItem>
