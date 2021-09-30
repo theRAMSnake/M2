@@ -116,16 +116,20 @@ void consumeChest(ObjectManager& om)
     om.destroy(chestPos->getId());
 }
 
-Object weightedRandom(const std::vector<Object> srcs)
+Object weightedRandom(const std::vector<Object>& srcs)
 {
     for(int i = 0; i < 5000; ++i)
     {
         auto& randomItem = srcs[Rng::gen32() % srcs.size()];
         auto weight = randomItem["weight"].get<Type::Double>();
+
+        LOG("Trying to get " + randomItem["name"].get<Type::String>());
         if(Rng::genProbability(weight))
         {
+            LOG("YES!");
             return randomItem;
         }
+        LOG("NO");
     }
     
     throw std::logic_error("Unable to generate weightedRandom after 5000 attempts");
