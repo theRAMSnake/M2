@@ -221,6 +221,17 @@ class materiaModel
         });
     }
 
+    static useChest(cb)
+    {
+        const req = {
+            operation: "useChest"
+        };
+
+        Materia.exec(req, (r) => {
+            cb(r.object_list[0]);
+        });
+    }
+
     static getIdeaCount(cb)
     {
         const req = {
