@@ -128,7 +128,7 @@ export default function ObjectProperties(props)
         if(req.type === 'string') 
             return <TextField inputProps={{onChange: handleFieldChange}} value={props.object[req.name]} fullWidth id={req.name} label={req.name} />;
         if(req.type === 'bool') 
-            return <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: handleCbChange}} id={req.name} checked={props.object[req.name]} />} label={req.name} />
+            return <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: handleCbChange}} id={req.name} checked={props.object[req.name].toString() === "true"} />} label={req.name} />
         if(req.type === 'int') 
             return <TextField inputProps={{onChange: handleIntFieldChange, type: 'number'}} value={props.object[req.name]} id={req.name} fullWidth label={req.name} />;
         if(req.type === 'double') 
