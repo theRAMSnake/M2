@@ -113,7 +113,6 @@ void Database::threadFunc()
 void Database::queueStore(std::shared_ptr<BinderHolder> binder, const Id& id, const std::string& data)
 {
     std::unique_lock<std::mutex> lock(mMutex);
-    LOG("Store is enqued for " + id.getGuid());
     mQueue.push_back({true, binder, id, data});
     mCondVar.notify_one();
 }
@@ -121,7 +120,6 @@ void Database::queueStore(std::shared_ptr<BinderHolder> binder, const Id& id, co
 void Database::queueErase(std::shared_ptr<BinderHolder> binder, const Id& id)
 {
     std::unique_lock<std::mutex> lock(mMutex);
-    LOG("Erase is enqued for " + id.getGuid());
     mQueue.push_back({false, binder, id});
     mCondVar.notify_one();
 }

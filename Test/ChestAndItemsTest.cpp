@@ -87,6 +87,7 @@ public:
          create.put("params.items.5.typename", "object");
          create.put("params.items.5.name", "A Token");
          create.put("params.items.5.value", 1);
+         create.put("params.items.5.amount", 2);
          create.put("params.items.5.category", "token");
          create.put("params.chests.6.id", "id6");
          create.put("params.chests.6.typename", "object");
@@ -218,7 +219,7 @@ BOOST_FIXTURE_TEST_CASE( TestGen100Chests, ChestAndItemsTest )
            auto item = queryFirst("reward_item", *mCore);
 
            BOOST_CHECK_EQUAL("A Token", item.get<std::string>("name"));
-           BOOST_CHECK_EQUAL(25, item.get<int>("amount"));
+           BOOST_CHECK_EQUAL(1+24*2, item.get<int>("amount"));
        }
        else if(chestType == "from_list")
        {

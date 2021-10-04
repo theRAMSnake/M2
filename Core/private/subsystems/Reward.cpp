@@ -226,12 +226,12 @@ void applyItem(ObjectManager& om,const Object& item)
         {
             auto items = om.getAll("reward_item");
             bool found = false;
-            for(auto& item : items)
+            for(auto& x : items)
             {
-                if(item["name"].get<Type::String>() == name) 
+                if(x["name"].get<Type::String>() == name) 
                 {
-                    item["amount"] = item["amount"].get<Type::Int>() + 1;
-                    om.modify(item);
+                    x["amount"] = x["amount"].get<Type::Int>() + item["amount"].get<Type::Int>();
+                    om.modify(x);
                     found = true;
                 }
             }
