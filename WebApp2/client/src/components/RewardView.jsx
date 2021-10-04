@@ -4,6 +4,7 @@ import materiaModel from '../modules/model'
 import Materia from '../modules/materia_request'
 import Bar from 'react-meter-bar';
 import TextQueryDialog from './dialogs/TextQueryDialog.jsx'
+import ConfirmationDialog from './dialogs/ConfirmationDialog.jsx'
 
 import {
     IconButton,
@@ -12,6 +13,8 @@ import {
     ListItemIcon,
     List,
     ListItem,
+    ListItemSecondaryAction,
+    ListItemButton,
     Typography,
     Box,
     Paper,
@@ -19,6 +22,7 @@ import {
     MuiAlert
 } from "@material-ui/core";
 import WorkIcon from '@material-ui/icons/Work';
+import DeleteIcon from '@material-ui/icons/Delete';
 import BuildIcon from '@material-ui/icons/Build';
 import AccessibilityIcon from '@material-ui/icons/Accessibility';
 import ImportantDevicesIcon from '@material-ui/icons/ImportantDevices';
@@ -49,6 +53,8 @@ function RewardView(props)
     const [snackOpen, setSnackOpen] = useState(false);
     const [snackText, setSnackText] = useState("");
     const [currentToken, setCurrentToken] = useState("");
+    const [inDeleteDialog, setInDeleteDialog] = React.useState(false);
+    const [focusedItemId, setFocusedItemId] = React.useState(-1);
     
     if(points == null)
     {
@@ -78,7 +84,7 @@ function RewardView(props)
             materiaModel.useChest(result => {
                 materiaModel.getRewardItems((items) => { setItems(items); });
                 setSnackText(result.chestType);
-                setSnakeOpen(true);
+                setSnackOpen(true);
             });
         }
     }
@@ -108,6 +114,26 @@ function RewardView(props)
         setCurrentToken("");
     }
 
+    function onDeleteDialogCancel()
+    {
+        setInDeleteDialog(false);
+        setFocusedItemId(-1);
+    }
+
+    function prepareDelete(id)
+    {
+        setInDeleteDialog(true);
+        setFocusedItemId(id);
+    }
+
+    function onDeleteDialogOk()
+    {
+        setInDeleteDialog(false);
+        Materia.sendDelete(focusedItemId);
+        materiaModel.getRewardItems((items) => { setItems(items); });
+        setFocusedItemId(-1);
+    }
+
     return (
         <div>
             <Snackbar open={snackOpen} autoHideDuration={6000} onClose={handleSnackClose}>
@@ -115,6 +141,7 @@ function RewardView(props)
                     {snackText}
                 </Alert>
             </Snackbar>
+            <ConfirmationDialog open={inDeleteDialog} question="delete item" caption="confirm deletion" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
             {currentToken.length > 0 && <TextQueryDialog text={getNumTokens(currentToken)} onFinished={handleEditDialogFinished} onCanceled={handleDialogCanceled}/>}
             <Grid container direction="column" justify="flex-start" alignItems="center">
                 <div style={{width: '80vw', paddingTop:'5px'}}>
@@ -163,13 +190,15 @@ function RewardView(props)
                     </Grid>
                 }
                 <List>
-                {items && getOtherItems().map(x => { 
-                    <ListItem button key={x.id}>
-                        <ListItemText disableTypography primary={
-                            <Typography variant="body1">
-                                {x.name}
-                            </Typography>}/>    
-                    </ListItem>
+                {items && getOtherItems().map(x => {
+                    return (<ListItem button>
+                              <ListItemText primary={x.name} />
+                                <ListItemSecondaryAction>
+                                    <IconButton edge="end" size='small' aria-label="delete" onClick={() => prepareDelete(x.id)}>
+                                        <DeleteIcon fontSize='small'/>
+                                    </IconButton>
+                                </ListItemSecondaryAction>
+                            </ListItem>);
                 })}
                 </List>
             </Grid>
