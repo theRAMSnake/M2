@@ -57,6 +57,7 @@ private:
 DoubleLogger logger("m3server.log");
 std::mutex gMainMutex;
 static bool shutdownFlag = false;
+served::net::server* server = nullptr; 
 
 void timerFunc(materia::ICore3* core)
 {
@@ -66,6 +67,7 @@ void timerFunc(materia::ICore3* core)
     {
         if(shutdownFlag)
         {
+            server->stop();
             return;
         }
 
@@ -104,11 +106,10 @@ void newFunc2(std::string password, materia::ICore3* core)
     try
     {
         Codec codec(password);
-        served::net::server* server = nullptr; 
         served::multiplexer mux;
 
         mux.handle("/api")
-          .post([&codec, core, server](served::response & res, const served::request & req) {
+            .post([&codec, core, server](served::response & res, const served::request & req) {
                 std::string decoded;
 
                 std::string toSend = "";
@@ -141,12 +142,8 @@ void newFunc2(std::string password, materia::ICore3* core)
 
                 toSend = base64_encode(codec.encrypt(toSend));
 
-                if(shutdownFlag)
-                {
-                    server->stop();
-                }
-
                 res << toSend;    
+
 		});
 
         served::net::server srv("0.0.0.0", "5754", mux);
@@ -156,10 +153,12 @@ void newFunc2(std::string password, materia::ICore3* core)
     catch(std::exception& e)
     {
         logger << "Server has crashed with an error: " << e.what();
+        abort();
     }
     catch(...)
     {
         logger << "Server has crashed for unknown reason";
+        abort();
     }
 }
 
