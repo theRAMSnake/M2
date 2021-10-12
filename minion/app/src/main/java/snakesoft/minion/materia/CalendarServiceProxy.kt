@@ -36,7 +36,7 @@ data class QueryResult(val id: String, val typename: String, val object_list: Li
 data class CalendarModify(val operation: String = "modify", val id: String, val params: CalendarParams)
 
 @Serializable
-data class CalendarAdd(val operation: String = "create", val typename: String = "calendar_item", var params: CalendarParams)
+data class CalendarAdd(val operation: String, val typename: String, var params: CalendarParams)
 
 class CalendarServiceProxy(private val mMateriaConnection: MateriaConnection) {
 

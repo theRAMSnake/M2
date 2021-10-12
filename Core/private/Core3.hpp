@@ -4,6 +4,7 @@
 #include "TypeSystem.hpp"
 #include "ObjectManager.hpp"
 #include "CommandParser.hpp"
+#include "Connections.hpp"
 #include "ISubsystem.hpp"
 
 namespace materia
@@ -30,6 +31,7 @@ private:
     Database mDb;
     TypeSystem mTypeSystem;
     ObjectManager mObjManager;
+    Connections mConnections;
     CommonSS* mCommonSS;
     std::vector<CommandDef> mCommandDefs;
     std::vector<std::shared_ptr<ISubsystem>> mSubsystems;
