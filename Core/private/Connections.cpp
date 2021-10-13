@@ -41,17 +41,29 @@ void Connections::validate(const Id& a, const Id& b, const ConnectionType type) 
         throw std::runtime_error(fmt::format("Connection already exists: {} to {} of type {}", a.getGuid(), b.getGuid(), static_cast<int>(type)));
     }
 
-    if(type == ConnectionType::Hierarchy)
+    if(type == ConnectionType::Hierarchy || type == ConnectionType::Extension)
     {
         //Make sure b is not an ancestor of a
-        std::optional<Id> curParent = a;
-        while(curParent)
+        std::optional<Id> curPre = a;
+        while(curPre)
         {
-            if(*curParent == b)
+            if(*curPre == b)
             {
-                throw std::runtime_error(fmt::format("Cannot create 'Hierarchy' connection: {} is already and ancestor of {}", b.getGuid(), a.getGuid()));
+                throw std::runtime_error(fmt::format("Cannot create connection: {} is already an ancestor of {}", b.getGuid(), a.getGuid()));
             }
-            curParent = getParentOf(*curParent); 
+            curPre = getPredecessorOf(*curPre, type); 
+        }
+    }
+
+    if(type == ConnectionType::Extension)
+    {
+        //Make sure a does not already have an extension
+        auto ext = std::find_if(mConnections.begin(), mConnections.end(), [&](auto x){
+                return x.a == a && x.type == ConnectionType::Extension;
+            });
+        if(ext != mConnections.end())
+        {
+            throw std::runtime_error(fmt::format("Cannot create connection: {} already extended", a.getGuid()));
         }
     }
 }
@@ -84,11 +96,11 @@ std::vector<Connection> Connections::get(const Id& a) const
     return subset;
 }
 
-std::optional<Id> Connections::getParentOf(const Id& id) const
+std::optional<Id> Connections::getPredecessorOf(const Id& id, const ConnectionType type) const
 {
     for(const auto& i : mConnections)
     {
-        if(i.b == id && i.type == ConnectionType::Hierarchy)
+        if(i.b == id && i.type == type)
         {
             return i.a;
         }

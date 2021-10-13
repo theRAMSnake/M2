@@ -42,7 +42,7 @@ public:
 
 private:
     void validate(const Id& a, const Id& b, const ConnectionType type) const;
-    std::optional<Id> getParentOf(const Id& id) const;
+    std::optional<Id> getPredecessorOf(const Id& id, const ConnectionType type) const;
 
     std::unique_ptr<DatabaseTable> mStorage;
     std::vector<Connection> mConnections;

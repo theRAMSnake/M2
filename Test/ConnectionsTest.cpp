@@ -133,3 +133,49 @@ BOOST_FIXTURE_TEST_CASE( TestHierarchy_ObjectRemove, ConnectionsTest )
     BOOST_CHECK_EQUAL(1, mConnections->get(p2).size());
     BOOST_CHECK_EQUAL(1, mConnections->get(c3).size());
 }
+
+BOOST_FIXTURE_TEST_CASE( TestExtension, ConnectionsTest ) 
+{
+    materia::Id parent = materia::Id::generate();
+    materia::Id ex = materia::Id::generate();
+    materia::Id exOfEx = materia::Id::generate();
+
+    mConnections->create(parent, ex, materia::ConnectionType::Extension);    
+    mConnections->create(ex, exOfEx, materia::ConnectionType::Extension);    
+    BOOST_CHECK_THROW(mConnections->create(ex, parent, materia::ConnectionType::Extension), std::runtime_error);    
+    BOOST_CHECK_THROW(mConnections->create(exOfEx, parent, materia::ConnectionType::Extension), std::runtime_error);    
+    BOOST_CHECK_THROW(mConnections->create(parent, materia::Id::generate(), materia::ConnectionType::Extension), std::runtime_error);    
+}
+
+BOOST_FIXTURE_TEST_CASE( TestExtension_ObjectRemove, ConnectionsTest ) 
+{
+    materia::EmptyValueProvider empty;
+    auto p1 = materia::Id::generate();
+    auto p2 = materia::Id::generate();
+    auto e1 = materia::Id::generate();
+    auto e2 = materia::Id::generate();
+    auto e3 = materia::Id::generate();
+
+    mOm->create(p1, "object", empty);
+    mOm->create(p2, "object", empty);
+    mOm->create(e1, "object", empty);
+    mOm->create(e2, "object", empty);
+    mOm->create(e3, "object", empty);
+
+    mConnections->create(p1, e1, materia::ConnectionType::Extension);    
+    mConnections->create(e1, e2, materia::ConnectionType::Extension);    
+    mConnections->create(p2, e3, materia::ConnectionType::Extension);    
+
+    mOm->destroy(p1);
+    BOOST_CHECK(mOm->query({p1}).empty());
+    BOOST_CHECK(mOm->query({e1}).empty());
+    BOOST_CHECK(mOm->query({e2}).empty());
+    BOOST_CHECK(!mOm->query({p2}).empty());
+    BOOST_CHECK(!mOm->query({e3}).empty());
+
+    BOOST_CHECK_EQUAL(0, mConnections->get(p1).size());
+    BOOST_CHECK_EQUAL(0, mConnections->get(e1).size());
+    BOOST_CHECK_EQUAL(0, mConnections->get(e2).size());
+    BOOST_CHECK_EQUAL(1, mConnections->get(p2).size());
+    BOOST_CHECK_EQUAL(1, mConnections->get(e3).size());
+}
