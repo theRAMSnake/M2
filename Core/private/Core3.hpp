@@ -30,8 +30,8 @@ private:
 
     Database mDb;
     TypeSystem mTypeSystem;
-    ObjectManager mObjManager;
     Connections mConnections;
+    ObjectManager mObjManager;
     CommonSS* mCommonSS;
     std::vector<CommandDef> mCommandDefs;
     std::vector<std::shared_ptr<ISubsystem>> mSubsystems;

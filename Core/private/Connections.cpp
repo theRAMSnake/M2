@@ -25,7 +25,7 @@ void Connections::remove(const Id& id)
     mStorage->erase(id);
 }
 
-Id Connections::create(const Id& a, const Id& b, const ConnectionType type)
+void Connections::validate(const Id& a, const Id& b, const ConnectionType type) const
 {
     if(a == b)
     {
@@ -40,6 +40,25 @@ Id Connections::create(const Id& a, const Id& b, const ConnectionType type)
     {
         throw std::runtime_error(fmt::format("Connection already exists: {} to {} of type {}", a.getGuid(), b.getGuid(), static_cast<int>(type)));
     }
+
+    if(type == ConnectionType::Hierarchy)
+    {
+        //Make sure b is not an ancestor of a
+        std::optional<Id> curParent = a;
+        while(curParent)
+        {
+            if(*curParent == b)
+            {
+                throw std::runtime_error(fmt::format("Cannot create 'Hierarchy' connection: {} is already and ancestor of {}", b.getGuid(), a.getGuid()));
+            }
+            curParent = getParentOf(*curParent); 
+        }
+    }
+}
+
+Id Connections::create(const Id& a, const Id& b, const ConnectionType type)
+{
+    validate(a, b, type);
 
     auto id = Id::generate();
     mConnections.push_back({id, a, b, type});
@@ -65,4 +84,16 @@ std::vector<Connection> Connections::get(const Id& a) const
     return subset;
 }
 
+std::optional<Id> Connections::getParentOf(const Id& id) const
+{
+    for(const auto& i : mConnections)
+    {
+        if(i.b == id && i.type == ConnectionType::Hierarchy)
+        {
+            return i.a;
+        }
+    }
+
+    return {};
+}
 }
