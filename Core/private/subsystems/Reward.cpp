@@ -194,7 +194,7 @@ bool isStackable(const std::string& name)
     return name.find("Token") != std::string::npos;
 }
 
-void applyItem(ObjectManager& om,const Object& item)
+void applyItem(ObjectManager& om, const Object& item)
 {
     auto name = item["name"].get<Type::String>();
     if(item.contains("behavior"))
@@ -230,7 +230,7 @@ void applyItem(ObjectManager& om,const Object& item)
             {
                 if(x["name"].get<Type::String>() == name) 
                 {
-                    x["amount"] = x["amount"].get<Type::Int>() + item["amount"].get<Type::Int>();
+                    x["amount"] = x["amount"].get<Type::Int>() + (item.contains("amount") ? item["amount"].get<Type::Int>() : 1);
                     om.modify(x);
                     found = true;
                 }
