@@ -83,7 +83,8 @@ Command* parseBackup(const boost::property_tree::ptree& src, const std::string d
 
 Core3::Core3(const CoreConfig& config)
 : mDb(config.dbFileName)
-, mObjManager(mDb, mTypeSystem)
+, mConnections(mDb)
+, mObjManager(mDb, mTypeSystem, mConnections)
 {
    auto rewardSS = std::make_shared<RewardSS>(mObjManager);
    mSubsystems.push_back(rewardSS);

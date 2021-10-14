@@ -7,10 +7,11 @@
 namespace materia
 {
 
+class Connections;
 class ObjectManager
 {
 public:
-    ObjectManager(Database& db, TypeSystem& types);
+    ObjectManager(Database& db, TypeSystem& types, Connections& connections);
 
     Object create(const std::optional<Id> id, const std::string& type, const IValueProvider& provider);
     void modify(const Id id, const IValueProvider& provider);
@@ -30,6 +31,7 @@ private:
 
     std::map<std::string, std::shared_ptr<TypeHandler>> mHandlers;
     Database& mDb;
+    Connections& mConnections;
     TypeSystem& mTypes;
 };
 

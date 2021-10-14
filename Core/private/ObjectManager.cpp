@@ -2,6 +2,7 @@
 #include "JsonSerializer.hpp"
 #include "ExceptionsUtil.hpp"
 #include "TypeName.hpp"
+#include "Connections.hpp"
 #include "EmptyValueProvider.hpp"
 
 namespace materia
@@ -9,8 +10,9 @@ namespace materia
 
 const unsigned int QUERY_LIMIT = 50;
 
-ObjectManager::ObjectManager(Database& db, TypeSystem& types)
+ObjectManager::ObjectManager(Database& db, TypeSystem& types, Connections& connections)
 : mDb(db)
+, mConnections(connections)
 , mTypes(types)
 {
     
@@ -88,6 +90,25 @@ void ObjectManager::destroy(const Id id)
     {
         if(h.second->contains(id))
         {
+            auto connections = mConnections.get(id);
+
+            //Remove all children and extensions
+            for(auto c : connections)
+            {
+                if(c.a == id && (c.type == ConnectionType::Hierarchy || c.type == ConnectionType::Extension))
+                {
+                    destroy(c.b);
+                }
+            }
+
+            connections = mConnections.get(id);
+
+            //Clear all connections
+            for(auto c : connections)
+            {
+                mConnections.remove(c.id);
+            }
+
             h.second->destroy(id);
             break;
         }

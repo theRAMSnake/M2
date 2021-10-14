@@ -24,6 +24,7 @@ private/TypeHandler.cpp
 private/types/SimpleList.cpp
 private/types/Variable.cpp
 private/Type.cpp
+private/Connections.cpp
 private/rng.cpp
 private/subsystems/Finance.cpp
 private/subsystems/User.cpp

@@ -79,7 +79,7 @@ function RewardView(props)
     
     function useChest()
     {
-        if(getNumChests != 0)
+        if(getNumChests() != 0)
         {
             materiaModel.useChest(result => {
                 materiaModel.getRewardItems((items) => { setItems(items); });
