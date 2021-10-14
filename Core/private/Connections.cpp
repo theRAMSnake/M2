@@ -66,6 +66,31 @@ void Connections::validate(const Id& a, const Id& b, const ConnectionType type) 
             throw std::runtime_error(fmt::format("Cannot create connection: {} already extended", a.getGuid()));
         }
     }
+
+    if(type == ConnectionType::Requirement)
+    {
+        //Make sure no loops exist => Go forward from b and make sure a is not reached.
+        std::set<Id> toVisit;
+        toVisit.insert(b);
+
+        while(!toVisit.empty())
+        {
+            auto cur = *toVisit.begin();
+            toVisit.erase(toVisit.begin());
+
+            for(auto c : get(cur))
+            {
+                if(c.type == ConnectionType::Requirement && c.a == cur)
+                {
+                    if(c.b == a)
+                    {
+                        throw std::runtime_error(fmt::format("Cannot create connection: {} already a requirement for {}", b.getGuid(), a.getGuid()));
+                    }
+                    toVisit.insert(c.b);
+                }
+            }
+        }
+    }
 }
 
 Id Connections::create(const Id& a, const Id& b, const ConnectionType type)

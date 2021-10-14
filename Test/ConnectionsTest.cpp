@@ -179,3 +179,16 @@ BOOST_FIXTURE_TEST_CASE( TestExtension_ObjectRemove, ConnectionsTest )
     BOOST_CHECK_EQUAL(1, mConnections->get(p2).size());
     BOOST_CHECK_EQUAL(1, mConnections->get(e3).size());
 }
+
+BOOST_FIXTURE_TEST_CASE( TestRequirement, ConnectionsTest ) 
+{
+    materia::Id parent = materia::Id::generate();
+    materia::Id ex = materia::Id::generate();
+    materia::Id exOfEx = materia::Id::generate();
+
+    mConnections->create(parent, ex, materia::ConnectionType::Requirement);    
+    mConnections->create(ex, exOfEx, materia::ConnectionType::Requirement);    
+    BOOST_CHECK_THROW(mConnections->create(ex, parent, materia::ConnectionType::Requirement), std::runtime_error);    
+    BOOST_CHECK_THROW(mConnections->create(exOfEx, parent, materia::ConnectionType::Requirement), std::runtime_error);    
+    mConnections->create(parent, materia::Id::generate(), materia::ConnectionType::Requirement);    
+}
