@@ -27,12 +27,14 @@ struct Connection
     ConnectionType type;
 };
 
+Connection jsonToConnection(const Id& id, const std::string& json);
+
 class Connections
 {
 public:
     Connections(Database& db);
     
-    //It is assumed that object are being cleaned up as neccessary
+    //It is assumed that objects are being cleaned up as neccessary
     void remove(const Id& id);
 
     //It is assumed that both a and b exists

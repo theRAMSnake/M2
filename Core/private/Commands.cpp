@@ -1,4 +1,5 @@
 #include "Commands.hpp"
+#include "Connections.hpp"
 #include "JsonRestorationProvider.hpp"
 #include "rng.hpp"
 
@@ -15,8 +16,20 @@ CreateCommand::CreateCommand(const std::optional<Id> id, const std::string& type
 
 ExecutionResult CreateCommand::execute(ObjectManager& objManager)
 {
-    JsonRestorationProvider provider(mParams);
-    return objManager.create(mId, mTypeName, provider).getId();
+    if(mTypeName == "connection")
+    {
+        if(mId)
+        {
+            throw std::runtime_error("Specifiyng id for connection is not allowed");
+        }
+        auto con = jsonToConnection(Id::generate(), mParams);
+        return objManager.getConnections().create(con.a, con.b, con.type);
+    }
+    else
+    {
+        JsonRestorationProvider provider(mParams);
+        return objManager.create(mId, mTypeName, provider).getId();
+    }
 }
 
 ModifyCommand::ModifyCommand(const Id& id, const std::string& params)

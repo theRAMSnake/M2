@@ -26,6 +26,11 @@ void ObjectManager::initialize()
     }
 }
 
+Connections& ObjectManager::getConnections()
+{
+    return mConnections;
+}
+
 Object ObjectManager::create(const std::optional<Id> id, const std::string& type, const IValueProvider& provider)
 {
     auto pos = mHandlers.find(type); 
@@ -86,6 +91,7 @@ std::vector<Object> ObjectManager::query(const Filter& filter)
 
 void ObjectManager::destroy(const Id id)
 {
+    mConnections.remove(id);
     for(auto& h : mHandlers)
     {
         if(h.second->contains(id))
