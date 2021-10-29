@@ -4,6 +4,7 @@
 #include <string>
 #include "TypeSystem.hpp"
 #include "ObjectManager.hpp"
+#include "Connections.hpp"
 
 namespace materia
 {
@@ -18,7 +19,8 @@ struct Error
 };
 
 using ObjectList = std::vector<Object>;
-using ExecutionResult = std::variant<Success, Error, ObjectList, std::string, Id, std::size_t>;
+using ConnectionsList = std::vector<Connection>;
+using ExecutionResult = std::variant<Success, Error, ObjectList, std::pair<ObjectList, ConnectionsList>, std::string, Id, std::size_t>;
 
 class ObjectManager;
 class Command

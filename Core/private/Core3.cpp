@@ -161,6 +161,16 @@ std::string Core3::formatResponce(const ExecutionResult& result)
       auto& objList = std::get<ObjectList>(result);
       responce.setChildren("object_list", objList);
    }
+   else if(std::holds_alternative<std::pair<ObjectList, ConnectionsList>>(result))
+   {
+      auto& p = std::get<std::pair<ObjectList, ConnectionsList>>(result);
+      auto& objList = p.first;
+      responce.setChildren("object_list", objList);
+
+      ObjectList conList;
+      std::transform(p.second.begin(), p.second.end(), std::back_inserter(conList), [](auto x){return connectionToObject(x);});
+      responce.setChildren("connection_list", conList);
+   }
    else if(std::holds_alternative<std::string>(result))
    {
       responce["result"] = std::get<std::string>(result);

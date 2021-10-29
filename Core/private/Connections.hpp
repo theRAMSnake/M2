@@ -1,5 +1,6 @@
 #pragma once
 #include "Database.hpp"
+#include "Object.hpp"
 
 namespace materia
 {
@@ -12,7 +13,7 @@ enum class ConnectionType
     //B extends A. There can be only one extension of A. Non recursive. B is owned by A.
     Extension,
 
-    //B refers to A. No restrictions.
+    //B refered by A. No restrictions.
     Reference,
 
     //B requires A. No loops allowed. A and B are both independent of each other.
@@ -27,7 +28,10 @@ struct Connection
     ConnectionType type;
 };
 
+bool operator < (const Connection& a, const Connection& b);
+
 Connection jsonToConnection(const Id& id, const std::string& json);
+Object connectionToObject(const Connection& src);
 
 class Connections
 {

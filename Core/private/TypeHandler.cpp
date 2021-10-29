@@ -62,7 +62,7 @@ std::vector<Object> TypeHandler::query(const std::vector<Id>& ids)
     return result;
 }
 
-std::vector<Object> TypeHandler::query(const Filter& f)
+std::vector<Object> TypeHandler::query(const Filter& f, const Connections& cons)
 {
     std::vector<Object> result;
 
@@ -70,7 +70,7 @@ std::vector<Object> TypeHandler::query(const Filter& f)
     {   
         try
         {
-            if(std::get<bool>(f.evaluate(kv.second)))
+            if(std::get<bool>(f.evaluate(kv.second, cons)))
             {
                 result.push_back(kv.second);
             }

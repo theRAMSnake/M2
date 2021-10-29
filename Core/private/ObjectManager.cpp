@@ -77,7 +77,7 @@ std::vector<Object> ObjectManager::query(const Filter& filter)
 
     for(auto& h : mHandlers)
     {
-        auto newObjects = h.second->query(filter);
+        auto newObjects = h.second->query(filter, mConnections);
         objects.insert(objects.end(), newObjects.begin(), newObjects.end());
 
         if(objects.size() > QUERY_LIMIT)

@@ -1,8 +1,10 @@
 #include "Expressions.hpp"
+#include "Connections.hpp"
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 #include <fmt/format.h>
 #include <iostream>
+#include <regex>
 
 namespace materia
 {
@@ -14,7 +16,7 @@ enum class TokenType
     Int,
     Double,
     Bool,
-    Is,
+    Functor,
     Operator_Less,
     Operator_Greater,
     Operator_Equals,
@@ -27,6 +29,7 @@ struct Token
 {
     TokenType type;
     std::string symbol;
+    std::string symbol2;
 };
 
 bool isInteger(const std::string& src)
@@ -88,14 +91,18 @@ Token parseToken(const std::string& src)
     {
         return {TokenType::Int, src};
     }
-    else if(src.size() > 3 && src[0] == 'I' && src[1] == 'S' && src[2] == '(' && src.find(')') != std::string::npos)
+    else if(src.find('(') != std::string::npos && src.find(')') != std::string::npos)
     {
-        return {TokenType::Is, src.substr(3, src.find(')') - 3)};
+        const std::regex r("([a-zA-Z]+)[(](.+)[)]");
+        std::smatch m;
+
+        if(std::regex_match(src, m, r))
+        {
+            return {TokenType::Functor, m[1], m[2]};
+        }
     }
-    else
-    {
-        throw std::runtime_error(fmt::format("Unrecognisable token {}", src));
-    }
+
+    throw std::runtime_error(fmt::format("Unrecognisable token {}", src));
 }
 
 std::vector<Token> tokenize(const std::string& src)
@@ -119,7 +126,7 @@ bool isValue(const Token& t)
         t.type == TokenType::Int ||
         t.type == TokenType::Double ||
         t.type == TokenType::Bool ||
-        t.type == TokenType::Is;
+        t.type == TokenType::Functor;
 }
 
 bool isComparison(const Token& t)
@@ -145,7 +152,7 @@ public:
 
     }
 
-    Value evaluate(const Object& object) const
+    Value evaluate(const Object& object, const Connections& cons) const
     {
         try
         {
@@ -176,22 +183,75 @@ private:
     std::string mIdentifier;
 };
 
-class IsExpression : public Expression
+bool evaluateConnectionsFunctor(const Id& id, const bool isA, const ConnectionType& type, const Connections& cons)
+{
+    auto objCons = cons.get(id);
+    auto pos = std::find_if(objCons.begin(), objCons.end(), [&](auto x){return ((isA && x.a == id) || (!isA && x.b == id)) && x.type == type;});
+    return pos != objCons.end();
+}
+
+Value evaluateFunctor(const std::string& name, const std::string& arg, const Object& object, const Connections& cons)
+{
+    if(name == "IS")
+    {
+        return object.getType().name == arg;
+    }
+    else if(name == "ParentOf")
+    {
+        return evaluateConnectionsFunctor(object.getId(), true, ConnectionType::Hierarchy, cons);
+    }
+    else if(name == "ChildOf")
+    {
+        return evaluateConnectionsFunctor(object.getId(), false, ConnectionType::Hierarchy, cons);
+    }
+    else if(name == "Refers")
+    {
+        return evaluateConnectionsFunctor(object.getId(), true, ConnectionType::Reference, cons);
+    }
+    else if(name == "ReferedBy")
+    {
+        return evaluateConnectionsFunctor(object.getId(), false, ConnectionType::Reference, cons);
+    }
+    else if(name == "ExtendedBy")
+    {
+        return evaluateConnectionsFunctor(object.getId(), true, ConnectionType::Extension, cons);
+    }
+    else if(name == "Extends")
+    {
+        return evaluateConnectionsFunctor(object.getId(), false, ConnectionType::Extension, cons);
+    }
+    else if(name == "Enables")
+    {
+        return evaluateConnectionsFunctor(object.getId(), true, ConnectionType::Requirement, cons);
+    }
+    else if(name == "Requires")
+    {
+        return evaluateConnectionsFunctor(object.getId(), false, ConnectionType::Requirement, cons);
+    }
+    else
+    {
+        throw std::runtime_error("Unknown functor: " + name);
+    }
+}
+
+class FunctorExpression : public Expression
 {
 public:
-    IsExpression(const Token t)
-    : mTypeName(t.symbol)
+    FunctorExpression(const Token t)
+    : mName(t.symbol)
+    , mArg(t.symbol2)
     {
 
     }
 
-    Value evaluate(const Object& object) const
+    Value evaluate(const Object& object, const Connections& cons) const
     {
-        return object.getType().name == mTypeName;
+        return evaluateFunctor(mName, mArg, object, cons);
     }
 
 private:
-    std::string mTypeName;
+    const std::string mName;
+    const std::string mArg;
 };
 
 class StringExpression : public Expression
@@ -203,7 +263,7 @@ public:
 
     }
 
-    Value evaluate(const Object& object) const
+    Value evaluate(const Object& object, const Connections& cons) const
     {
         return mStr;
     }
@@ -221,7 +281,7 @@ public:
 
     }
 
-    Value evaluate(const Object& object) const
+    Value evaluate(const Object& object, const Connections& cons) const
     {
         return mVal;
     }
@@ -239,7 +299,7 @@ public:
 
     }
 
-    Value evaluate(const Object& object) const
+    Value evaluate(const Object& object, const Connections& cons) const
     {
         return mVal;
     }
@@ -257,7 +317,7 @@ public:
 
     }
 
-    Value evaluate(const Object& object) const
+    Value evaluate(const Object& object, const Connections& cons) const
     {
         return mVal;
     }
@@ -285,8 +345,8 @@ std::shared_ptr<Expression> createValueExpression(const Token t)
         case TokenType::Bool:
             return std::make_shared<BoolExpression>(t);
 
-        case TokenType::Is:
-            return std::make_shared<IsExpression>(t);
+        case TokenType::Functor:
+            return std::make_shared<FunctorExpression>(t);
 
         default:
             throw std::runtime_error(fmt::format("Expression of type {} is not supported", t.type));
@@ -304,10 +364,10 @@ public:
 
     }
 
-    Value evaluate(const Object& object) const
+    Value evaluate(const Object& object, const Connections& cons) const
     {
-        auto a1 = mArg1->evaluate(object);
-        auto a2 = mArg2->evaluate(object);
+        auto a1 = mArg1->evaluate(object, cons);
+        auto a2 = mArg2->evaluate(object, cons);
 
         return mVfunc(a1, a2);
     }

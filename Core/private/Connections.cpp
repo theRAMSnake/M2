@@ -152,6 +152,21 @@ std::string toString(const ConnectionType& ct)
     }
 }
 
+bool operator < (const Connection& a, const Connection& b)
+{
+    return std::make_tuple(a.type, a.a, a.b) < std::make_tuple(b.type, b.a, b.b);
+}
+
+Object connectionToObject(const Connection& src)
+{
+    Object result({"connection"}, src.id);
+    result["A"] = src.a.getGuid();
+    result["B"] = src.b.getGuid();
+    result["type"] = toString(src.type);
+
+    return result;
+}
+
 Id Connections::create(const Id& a, const Id& b, const ConnectionType type)
 {
     validate(a, b, type);
@@ -159,12 +174,7 @@ Id Connections::create(const Id& a, const Id& b, const ConnectionType type)
     auto id = Id::generate();
     mConnections.push_back({id, a, b, type});
 
-    Object serializer({"connection"}, id);
-    serializer["A"] = a.getGuid();
-    serializer["B"] = b.getGuid();
-    serializer["type"] = toString(type);
-
-    mStorage->store(id, serializer.toJson());
+    mStorage->store(id, connectionToObject(mConnections.back()).toJson());
     return id;
 }
 
