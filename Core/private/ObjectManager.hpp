@@ -26,6 +26,8 @@ public:
 
     void initialize();
 
+    Connections& getConnections();
+
 private:
     TypeHandler& getHandler(const std::string& typeName);
 

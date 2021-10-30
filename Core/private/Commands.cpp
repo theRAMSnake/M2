@@ -1,4 +1,5 @@
 #include "Commands.hpp"
+#include "Connections.hpp"
 #include "JsonRestorationProvider.hpp"
 #include "rng.hpp"
 
@@ -15,8 +16,20 @@ CreateCommand::CreateCommand(const std::optional<Id> id, const std::string& type
 
 ExecutionResult CreateCommand::execute(ObjectManager& objManager)
 {
-    JsonRestorationProvider provider(mParams);
-    return objManager.create(mId, mTypeName, provider).getId();
+    if(mTypeName == "connection")
+    {
+        if(mId)
+        {
+            throw std::runtime_error("Specifiyng id for connection is not allowed");
+        }
+        auto con = jsonToConnection(Id::generate(), mParams);
+        return objManager.getConnections().create(con.a, con.b, con.type);
+    }
+    else
+    {
+        JsonRestorationProvider provider(mParams);
+        return objManager.create(mId, mTypeName, provider).getId();
+    }
 }
 
 ModifyCommand::ModifyCommand(const Id& id, const std::string& params)
@@ -42,18 +55,32 @@ QueryCommand::QueryCommand(std::shared_ptr<Filter>& filter, const std::vector<Id
 
 ExecutionResult QueryCommand::execute(ObjectManager& objManager)
 {
+    std::pair<ObjectList, ConnectionsList> result;
+
     if(!mIds.empty())
     {
-        return ObjectList{objManager.query(mIds)};
+        result.first = objManager.query(mIds);
     }
     else if(static_cast<bool>(mFilter))
     {
-        return objManager.query(*mFilter);
+        result.first = objManager.query(*mFilter);
     }
     else
     {
-        throw std::runtime_error("Cannot execute query without ids or filter");
+        throw std::runtime_error("Cannot execute query without either ids or filter");
     }
+
+    std::set<Connection> resultCons;
+
+    for(const auto& o : result.first)
+    {
+        auto cons = objManager.getConnections().get(o.getId());
+        std::copy(cons.begin(), cons.end(), std::inserter(resultCons, resultCons.begin()));
+    }
+
+    std::copy(resultCons.begin(), resultCons.end(), std::back_inserter(result.second));
+
+    return result;
 }
 
 CountCommand::CountCommand(std::shared_ptr<Filter>& filter)

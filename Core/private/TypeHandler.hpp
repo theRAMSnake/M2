@@ -10,7 +10,7 @@ namespace materia
 {
 
 using Filter = Expression;
-
+class Connections;
 class IValueProvider
 {
 public:
@@ -29,7 +29,7 @@ public:
     //Id must be unique
     Object create(const std::optional<Id> id, const IValueProvider& provider);
     std::vector<Object> query(const std::vector<Id>& ids);
-    std::vector<Object> query(const Filter& f);
+    std::vector<Object> query(const Filter& f, const Connections& cons);
     std::optional<Object> get(const Id& id);
     std::vector<Object> getAll();
     //Id must be present

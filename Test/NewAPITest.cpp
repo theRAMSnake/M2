@@ -532,3 +532,46 @@ BOOST_FIXTURE_TEST_CASE( TestCount, NewAPITest )
     
     BOOST_CHECK_EQUAL(3, ol.get<std::size_t>("result"));
 }
+
+BOOST_FIXTURE_TEST_CASE( TestQueryWithConnections, NewAPITest ) 
+{ 
+    boost::property_tree::ptree create;
+    create.put("operation", "create");
+    create.put("typename", "variable");
+    create.put("params.value", "a");
+
+    for(std::size_t i = 0; i < 3; ++i)
+    {
+        create.put("params.defined_id", "id" + std::to_string(i));
+        expectId(mCore->executeCommandJson(writeJson(create)));
+    }
+
+    create.put("typename", "connection");
+    create.put("params.A", "id0");
+    create.put("params.B", "id1");
+    create.put("params.type", "Reference");
+
+    expectId(mCore->executeCommandJson(writeJson(create)));
+
+    create.put("params.A", "id2");
+
+    expectId(mCore->executeCommandJson(writeJson(create)));
+
+    for(int i = 0; i < 3; ++i)
+    {
+        std::string id = "id" + std::to_string(i);
+        boost::property_tree::ptree query;
+        query.put("operation", "query");
+        query.put("filter", "IS(variable) AND .id = \"" + id + "\"");
+
+        auto result = mCore->executeCommandJson(writeJson(query));
+        
+        auto ol = readJson<boost::property_tree::ptree>(result);
+        
+        for(auto& v : ol.get_child("connection_list"))
+        {
+           BOOST_CHECK(id == v.second.get<std::string>("a") || id == v.second.get<std::string>("b"));
+           BOOST_CHECK_EQUAL("Reference", v.second.get<std::string>("type"));
+        }
+    }
+}

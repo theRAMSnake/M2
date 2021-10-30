@@ -6,23 +6,58 @@
 namespace materia
 {
 
+ConnectionType toConnectionType(const std::string& str)
+{
+    if(str == "Hierarchy")
+    {
+        return ConnectionType::Hierarchy;
+    }
+    else if(str == "Extension")
+    {
+        return ConnectionType::Extension;
+    }
+    else if(str == "Reference")
+    {
+        return ConnectionType::Reference;
+    }
+    else if(str == "Requirement")
+    {
+        return ConnectionType::Requirement;
+    }
+    else
+    {
+        throw std::runtime_error("Unknown connection type: " + str);
+    }
+}
+
+Connection jsonToConnection(const Id& id, const std::string& json)
+{
+    JsonRestorationProvider p(json);
+    Object newObj({"connection"}, id);
+    p.populate(newObj);
+
+    const Object expected = newObj;
+    
+    return {Id(id), expected["A"].toId(), expected["B"].toId(), toConnectionType(expected["type"].get<Type::String>())};
+}
+
 Connections::Connections(Database& db)
 : mStorage(db.getTable("connections"))
 {
     mStorage->foreach([&](std::string id, std::string json) 
     {
-        JsonRestorationProvider p(json);
-        Object newObj({"connection"}, id);
-        p.populate(newObj);
-
-        mConnections.push_back({Id(id), newObj["A"].toId(), newObj["B"].toId(), static_cast<ConnectionType>(newObj["type"].get<Type::Int>())});
+        mConnections.push_back(jsonToConnection(id, json));
     });
 }
 
 void Connections::remove(const Id& id)
 {
-    mConnections.erase(find_by_id(mConnections, id));
-    mStorage->erase(id);
+    auto pos = find_by_id(mConnections, id);
+    if(pos != mConnections.end())
+    {
+        mConnections.erase(pos);
+        mStorage->erase(id);
+    }
 }
 
 void Connections::validate(const Id& a, const Id& b, const ConnectionType type) const
@@ -93,6 +128,45 @@ void Connections::validate(const Id& a, const Id& b, const ConnectionType type) 
     }
 }
 
+std::string toString(const ConnectionType& ct)
+{
+    if(ct == ConnectionType::Hierarchy)
+    {
+        return "Hierarchy";
+    }
+    else if(ct == ConnectionType::Extension)
+    {
+        return "Extension";
+    }
+    else if(ct == ConnectionType::Reference)
+    {
+        return "Reference";
+    }
+    else if(ct == ConnectionType::Requirement)
+    {
+        return "Requirement";
+    }
+    else
+    {
+        throw std::runtime_error("Unhandled connection type: " + std::to_string(static_cast<int>(ct)));
+    }
+}
+
+bool operator < (const Connection& a, const Connection& b)
+{
+    return std::make_tuple(a.type, a.a, a.b) < std::make_tuple(b.type, b.a, b.b);
+}
+
+Object connectionToObject(const Connection& src)
+{
+    Object result({"connection"}, src.id);
+    result["A"] = src.a.getGuid();
+    result["B"] = src.b.getGuid();
+    result["type"] = toString(src.type);
+
+    return result;
+}
+
 Id Connections::create(const Id& a, const Id& b, const ConnectionType type)
 {
     validate(a, b, type);
@@ -100,12 +174,7 @@ Id Connections::create(const Id& a, const Id& b, const ConnectionType type)
     auto id = Id::generate();
     mConnections.push_back({id, a, b, type});
 
-    Object serializer({"connection"}, id);
-    serializer["A"] = a.getGuid();
-    serializer["B"] = b.getGuid();
-    serializer["type"] = static_cast<int>(type);
-
-    mStorage->store(id, serializer.toJson());
+    mStorage->store(id, connectionToObject(mConnections.back()).toJson());
     return id;
 }
 

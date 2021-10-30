@@ -26,6 +26,11 @@ void ObjectManager::initialize()
     }
 }
 
+Connections& ObjectManager::getConnections()
+{
+    return mConnections;
+}
+
 Object ObjectManager::create(const std::optional<Id> id, const std::string& type, const IValueProvider& provider)
 {
     auto pos = mHandlers.find(type); 
@@ -72,7 +77,7 @@ std::vector<Object> ObjectManager::query(const Filter& filter)
 
     for(auto& h : mHandlers)
     {
-        auto newObjects = h.second->query(filter);
+        auto newObjects = h.second->query(filter, mConnections);
         objects.insert(objects.end(), newObjects.begin(), newObjects.end());
 
         if(objects.size() > QUERY_LIMIT)
@@ -86,6 +91,7 @@ std::vector<Object> ObjectManager::query(const Filter& filter)
 
 void ObjectManager::destroy(const Id id)
 {
+    mConnections.remove(id);
     for(auto& h : mHandlers)
     {
         if(h.second->contains(id))

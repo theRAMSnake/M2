@@ -7,10 +7,11 @@ namespace materia
 {
 
 using Value = std::variant<std::int64_t, double, std::string, bool>;
+class Connections;
 class Expression
 {
 public:
-    virtual Value evaluate(const Object& object) const = 0;
+    virtual Value evaluate(const Object& object, const Connections& cons) const = 0;
 
     virtual ~Expression(){}
 };
