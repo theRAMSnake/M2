@@ -109,7 +109,7 @@ void newFunc2(std::string password, materia::ICore3* core)
         served::multiplexer mux;
 
         mux.handle("/api")
-            .post([&codec, core, server](served::response & res, const served::request & req) {
+            .post([&codec, core](served::response & res, const served::request & req) {
                 std::string decoded;
 
                 std::string toSend = "";
