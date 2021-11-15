@@ -39,11 +39,13 @@ import ClearAllIcon from '@material-ui/icons/ClearAll';
 import AddJournalItemDialog from './AddJournalItemDialog.jsx'
 import TextQueryDialog from './dialogs/TextQueryDialog.jsx'
 
-function sortIndex(src)
+function sortHeaders(items, conns)
 {
     //1 - x is greated
-    return src.sort((x, y) => { 
-        if(x.isPage === y.isPage)
+    return items.sort((x, y) => { 
+        const xIsPage = conns.filter(i => i.A === x.id && i.type === "Extension").length != 0;
+        const yIsPage = conns.filter(i => i.A === y.id && i.type === "Extension").length != 0;
+        if(xIsPage == yIsPage)
         {
             if(x.title > y.title)
             {
@@ -58,7 +60,7 @@ function sortIndex(src)
         }
         else
         {
-            return x.isPage === 'true' ? 1 : -1;
+            return xIsPage ? 1 : -1;
         }
     });
 }
@@ -66,7 +68,8 @@ function sortIndex(src)
 function JournalView(props) 
 {
     const [updating, setUpdating] = useState(true);
-    const [index, setIndex] = useState(null);
+    const [headers, setHeaders] = useState(null);
+    const [conns, setConns] = useState(null);
     const [curPage, setCurPage] = useState(null);
     const [content, setContent] = useState("");
     const [changed, setChanged] = useState(false);
@@ -78,7 +81,7 @@ function JournalView(props)
     const [selectedId, setSelectedId] = useState("");
     const [selectedItemIsPage, setSelectedItemIsPage] = useState(true);
 
-    function updateIndex()
+    function updateHeaders()
     {
         const req = {
             operation: "query",
@@ -86,47 +89,61 @@ function JournalView(props)
         };
 
         Materia.exec(req, (r) => {
-            setIndex(sortIndex(r.object_list));
+            setConns(r.connection_list);
+            setHeaders(sortHeaders(r.object_list, r.connection_list));
             setUpdating(false);
         });
     }
 
-    if(index == null)
+    if(headers == null)
     {
-        updateIndex();
+        updateHeaders();
     }
 
     function fetchChildren(id)
     {
-        var items = index.filter(x => {return x.parentFolderId === id;});
+        var items = []
+        if(id === "")
+        {
+            items = headers.filter(x => {return conns.findIndex(y => y.B === x.id && y.type === "Hierarchy") == -1;});
+        }
+        else
+        {
+            var childrenIds = conns.filter(x => x.A === id && x.type === "Hierarchy").map(x => x.B);
+            items = headers.filter(x => {return childrenIds.findIndex(y => y === x.id) != -1;})
+        }
 
         if(items.length == 0)
         {
             return <div/>
         }
 
-        return items.map((obj) => <TreeItem key={obj.id} 
+        return items.map((obj) => {
+            const isPage = conns.filter(i => i.A === obj.id && i.type === "Extension").length != 0;
+
+            return <TreeItem key={obj.id} 
             nodeId={obj.id} 
             label={obj.title} 
-            endIcon={obj.isPage === 'true' ? <DescriptionIcon/> : <FolderIcon/>}
+            endIcon={isPage ? <DescriptionIcon/> : <FolderIcon/>}
             collapseIcon={<FolderOpenIcon/>}
             expandIcon={<FolderIcon/>}>
-                {obj.isPage === 'false' && fetchChildren(obj.id)}
-        </TreeItem>);
+                {!isPage && fetchChildren(obj.id)}
+            </TreeItem>
+        });
     }
 
     function afterSelect(id)
     {
         setSelectedId(id);
-        var items = index.filter(x => {return x.id === id;});
-        if(items[0].isPage === 'true')
+        const isPage = conns.filter(i => i.A === id && i.type === "Extension").length != 0;
+        if(isPage)
         {
             setSelectedItemIsPage(true);
             setUpdating(true);
-
+            
             const req = {
                 operation: "query",
-                filter: 'IS(journal_content) AND .headerId = "' + id + '"'
+                filter: 'IS(journal_content) AND Extends(' + id + ')'
             };
     
             Materia.exec(req, (r) => {
@@ -208,15 +225,16 @@ function JournalView(props)
 
     function onClearDialogOk()
     {
+        return ;
         setInClearDialog(false);
         setUpdating(true);
 
-        var items = index.filter(x => {return x.parentFolderId === selectedId;});
+        var items = headers.filter(x => {return x.parentFolderId === selectedId;});
         items.forEach(element => {
             Materia.postDelete(element.id);
         });
 
-        updateIndex();
+        updateHeaders();
     }
 
     function onDeleteDialogCancel()
@@ -231,7 +249,7 @@ function JournalView(props)
 
         Materia.postDelete(selectedId);
 
-        updateIndex();
+        updateHeaders();
     }
 
     function onAddDialogCancel()
@@ -241,6 +259,7 @@ function JournalView(props)
 
     function onAddDialogOk(newtitle, isPage)
     {
+        return ;
         setInAddDialog(false);
         setUpdating(true);
 
@@ -273,14 +292,14 @@ function JournalView(props)
                     Materia.post(sreq);
                 }
 
-                updateIndex();
+                updateHeaders();
             });
         }
     }
 
     function getCurTitle()
     {
-        var items = index.filter(x => {return x.id === selectedId;});
+        var items = headers.filter(x => {return x.id === selectedId;});
         return items[0].title;
     }
 
@@ -289,12 +308,12 @@ function JournalView(props)
         setInEditDialog(false);
         setUpdating(true);
 
-        var items = index.filter(x => {return x.id === selectedId;});
+        var items = headers.filter(x => {return x.id === selectedId;});
         var obj = items[0];
         obj.title = text;
 
         Materia.postEdit(obj.id, JSON.stringify(obj));
-        updateIndex();
+        updateHeaders();
     }
 
     function handleRenameCanceled()
@@ -309,7 +328,7 @@ function JournalView(props)
         <ConfirmationDialog open={inClearDialog} question="clear" caption="confirm clear" onNo={onClearDialogCancel} onYes={onClearDialogOk} />
         <ConfirmationDialog open={inDeleteDialog} question="delete" caption="confirm delete" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
         {inEditDialog && <TextQueryDialog text={getCurTitle()} onFinished={handleRenameFinished} onCanceled={handleRenameCanceled}/>}
-        {index &&
+        {headers &&
         <Grid container direction="row" justify="space-around" alignItems="flex-start">
             <div>
             <IconButton edge="start" onClick={onAddClicked}>
