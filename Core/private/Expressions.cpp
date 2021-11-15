@@ -183,10 +183,10 @@ private:
     std::string mIdentifier;
 };
 
-bool evaluateConnectionsFunctor(const Id& id, const bool isA, const ConnectionType& type, const Connections& cons)
+bool evaluateConnectionsFunctor(const Id& A, const Id& B, const ConnectionType& type, const Connections& cons)
 {
-    auto objCons = cons.get(id);
-    auto pos = std::find_if(objCons.begin(), objCons.end(), [&](auto x){return ((isA && x.a == id) || (!isA && x.b == id)) && x.type == type;});
+    auto objCons = cons.get(A);
+    auto pos = std::find_if(objCons.begin(), objCons.end(), [&](auto x){return x.b == B && x.type == type;});
     return pos != objCons.end();
 }
 
@@ -198,35 +198,35 @@ Value evaluateFunctor(const std::string& name, const std::string& arg, const Obj
     }
     else if(name == "ParentOf")
     {
-        return evaluateConnectionsFunctor(object.getId(), true, ConnectionType::Hierarchy, cons);
+        return evaluateConnectionsFunctor(object.getId(), arg, ConnectionType::Hierarchy, cons);
     }
     else if(name == "ChildOf")
     {
-        return evaluateConnectionsFunctor(object.getId(), false, ConnectionType::Hierarchy, cons);
+        return evaluateConnectionsFunctor(arg, object.getId(), ConnectionType::Hierarchy, cons);
     }
     else if(name == "Refers")
     {
-        return evaluateConnectionsFunctor(object.getId(), true, ConnectionType::Reference, cons);
+        return evaluateConnectionsFunctor(object.getId(), arg, ConnectionType::Reference, cons);
     }
     else if(name == "ReferedBy")
     {
-        return evaluateConnectionsFunctor(object.getId(), false, ConnectionType::Reference, cons);
+        return evaluateConnectionsFunctor(arg, object.getId(), ConnectionType::Reference, cons);
     }
     else if(name == "ExtendedBy")
     {
-        return evaluateConnectionsFunctor(object.getId(), true, ConnectionType::Extension, cons);
+        return evaluateConnectionsFunctor(object.getId(), arg, ConnectionType::Extension, cons);
     }
     else if(name == "Extends")
     {
-        return evaluateConnectionsFunctor(object.getId(), false, ConnectionType::Extension, cons);
+        return evaluateConnectionsFunctor(arg, object.getId(), ConnectionType::Extension, cons);
     }
     else if(name == "Enables")
     {
-        return evaluateConnectionsFunctor(object.getId(), true, ConnectionType::Requirement, cons);
+        return evaluateConnectionsFunctor(object.getId(), arg, ConnectionType::Requirement, cons);
     }
     else if(name == "Requires")
     {
-        return evaluateConnectionsFunctor(object.getId(), false, ConnectionType::Requirement, cons);
+        return evaluateConnectionsFunctor(arg, object.getId(), ConnectionType::Requirement, cons);
     }
     else
     {
