@@ -121,7 +121,7 @@ void FinanceSS::performFinancialAnalisys(const boost::gregorian::date& newDate)
    else
    {
       status = "Critical";
-      auto p = balance / 10000.0; // 1% per 100 EUR
+      auto p = balance / 1000000.0; // 1% per 100 EUR
       mReward.setMod(Id("mod.finance"), "Bad finance", p);
    }
 

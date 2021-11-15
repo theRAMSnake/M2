@@ -1,0 +1,1 @@
+/usr/bin/c++   -Wall -pedantic -std=c++2a -O3 -DNDEBUG  -rdynamic CMakeFiles/m2ctrl.dir/main.cpp.o CMakeFiles/m2ctrl.dir/__/WebApp/materia/ZmqPbChannel.cpp.o  -o m2ctrl  ../Common/libm2common.a /usr/lib64/libboost_system.so.1.72.0 -lzmq -lpthread -lcrypto ../Common/messages/libm2commonMessages.a /usr/lib64/libboost_system.so.1.72.0 -lprotobuf 

@@ -1,11 +1,13 @@
 #include <zmq.hpp>
 #include <iostream>
+#include <thread>
+#include <chrono>
 #include <Common/Password.hpp>
 
 void start(const std::string password)
 {
    system(("nohup ./m3server " + password + "&").c_str());
-   system("WebApp2/run.sh");
+   system("cd ../WebApp2 && ./run.sh");
 
    std::cout << "Done\n";
 }
@@ -13,7 +15,7 @@ void start(const std::string password)
 void stop(const std::string password)
 {
    system("killall node");
-   system("./m3tools shutdown");
+   system("./m4tools shutdown");
 
    std::cout << "Done\n";
 }
@@ -39,6 +41,7 @@ int main(int argc, char *argv[])
    else if(commandName == "restart")
    {
       stop(password);
+      std::this_thread::sleep_for(std::chrono::seconds(5));
       start(password);
    }
    else
