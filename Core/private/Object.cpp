@@ -301,4 +301,20 @@ const bool Object::contains(const std::string& fieldName) const
        mChildren.contains(fieldName); 
 }
 
+void Object::clear(const std::string& fieldName)
+{
+    if(contains(fieldName))
+    {
+        auto pos = std::find_if(mFields.begin(), mFields.end(), [fieldName](auto f){return f.getName() == fieldName;});
+        if(pos->mReadonly || pos->mDef)
+        {
+            throw std::runtime_error("Attempt to clear mandatory or readonly field");
+        }
+        else
+        {
+            mFields.erase(pos);
+        }
+    }
+}
+
 }

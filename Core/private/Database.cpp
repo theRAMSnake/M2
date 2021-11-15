@@ -97,7 +97,6 @@ void Database::threadFunc()
         {
             if(x.isStore)
             {
-                LOG("Operation is executed for " + x.id.getGuid());
                 x.binder->get() << x.id << x.data;
             }
             else

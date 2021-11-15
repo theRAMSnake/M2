@@ -180,6 +180,7 @@ public:
     std::vector<Object> getChildren() const;
     
     const bool contains(const std::string& fieldName) const;
+    void clear(const std::string& fieldName);
 
     TypeDef getType() const;
     Id getId() const;

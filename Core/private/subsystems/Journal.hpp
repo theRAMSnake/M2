@@ -17,8 +17,9 @@ public:
 private:
     void handleJournalContentItemChange(Object& obj);
     void handleJournalContentDeleted(Object& obj);
-    void handleJournalHeaderDeleted(Object& obj);
     void handleJournalContentCreated(Object& obj);
+
+    void updateHeaderModifiedTime(const Id& pageId);
 
     ObjectManager& mOm;
 };

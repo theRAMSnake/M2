@@ -126,6 +126,18 @@ void set(const std::string& id, const int value, materia::ICore3& core)
    }
 }
 
+void createConnection(materia::ICore3& core, const std::string& a, const std::string& b, const std::string& connectionType)
+{
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "connection");
+      create.put("params.A", a);
+      create.put("params.B", b);
+      create.put("params.type", connectionType);
+
+      core.executeCommandJson(writeJson(create));
+}
+
 void putArray(boost::property_tree::ptree& ptree, const std::string& fname, const std::vector<std::string>& values)
 {
     boost::property_tree::ptree subTree;
