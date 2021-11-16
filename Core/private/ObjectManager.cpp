@@ -24,43 +24,6 @@ void ObjectManager::initialize()
     {
         mHandlers[t.name] = std::make_shared<TypeHandler>(t, mDb);
     }
-
-    //Migrate Journal Headers
-    for(auto o : getAll("journal_header"))
-    {
-        if(!o.contains("version"))
-        {
-            o["version"] = 2;
-
-            auto parent = o["parentFolderId"].get<Type::String>();
-            if(!parent.empty())
-            {
-                getConnections().create(parent, o.getId(), ConnectionType::Hierarchy);
-            }
-            o.clear("parentFolderId");
-            o.clear("isPage");
-            
-            modify(o);
-        }
-    }
-
-    //Migrate Journal Content
-    for(auto o : getAll("journal_content"))
-    {
-        if(!o.contains("version"))
-        {
-            o["version"] = 2;
-
-            auto headerId = o["headerId"].get<Type::String>();
-            if(!headerId.empty())
-            {
-                getConnections().create(headerId, o.getId(), ConnectionType::Extension);
-            }
-            o.clear("headerId");
-            
-            modify(o);
-        }
-    }
 }
 
 Connections& ObjectManager::getConnections()
