@@ -225,11 +225,12 @@ function JournalView(props)
 
     function onClearDialogOk()
     {
-        return ;
         setInClearDialog(false);
         setUpdating(true);
 
-        var items = headers.filter(x => {return x.parentFolderId === selectedId;});
+        var childrenIds = conns.filter(x => x.A === selectedId && x.type === "Hierarchy").map(x => x.B);
+        var items = headers.filter(x => {return childrenIds.findIndex(y => y === x.id) != -1;})
+
         items.forEach(element => {
             Materia.postDelete(element.id);
         });
@@ -259,15 +260,12 @@ function JournalView(props)
 
     function onAddDialogOk(newtitle, isPage)
     {
-        return ;
         setInAddDialog(false);
         setUpdating(true);
 
         {
             var obj = {
-                title: newtitle,
-                isPage: false,
-                parentFolderId: selectedItemIsPage ? "" : selectedId
+                title: newtitle
             }
     
             var req = {
@@ -280,7 +278,7 @@ function JournalView(props)
                 if(isPage)
                 {
                     var sobj = {
-                        headerId: x.result_id
+                        content: ""
                     }
             
                     var sreq = {
@@ -288,8 +286,36 @@ function JournalView(props)
                         typename: "journal_content",
                         params: sobj
                     }
-            
-                    Materia.post(sreq);
+
+                    Materia.exec(sreq, (y) => {
+
+                        var conReq = {
+                            operation: "create",
+                            typename: "connection",
+                            params: {
+                                A: x.result_id,
+                                B: y.result_id,
+                                type: "Extension"
+                            }
+                        }
+
+                        Materia.exec(conReq, (x) => {});
+
+                    });
+                }
+
+                if(!selectedItemIsPage)
+                {
+                    var conReq2 = {
+                        operation: "create",
+                        typename: "connection",
+                        params: {
+                            A: selectedId,
+                            B: x.result_id,
+                            type: "Hierarchy"
+                        }
+                    }
+                    Materia.exec(conReq2, (x) => {});
                 }
 
                 updateHeaders();
