@@ -1,6 +1,7 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 #include <Core/ICore3.hpp>
+#include <chrono>
 #include "../Core/private/JsonSerializer.hpp"
 #include "Utils.hpp"
 
@@ -209,7 +210,10 @@ BOOST_FIXTURE_TEST_CASE( TestGen100Chests, ChestAndItemsTest )
            //Expect to see a mod
            auto mod = queryFirst("reward_modifier", *mCore);
            BOOST_CHECK_EQUAL("mod", mod.get<std::string>("desc"));
-           BOOST_CHECK_EQUAL(7, mod.get<int>("duration"));
+
+           auto atLeastTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now() + std::chrono::days(7));
+
+           BOOST_CHECK(atLeastTime <= mod.get<int>("validUntil"));
            BOOST_CHECK_EQUAL(1, mod.get<int>("value"));
        }
        else if(chestType == "token")
