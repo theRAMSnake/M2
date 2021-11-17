@@ -182,10 +182,10 @@ void createMod(ObjectManager& om, const std::string& name, const double value, c
     auto valueProvider = FunctionToValueProviderAdapter([&name, value, duration](auto& obj)
     {
     	auto validUntil = std::chrono::system_clock::now() + std::chrono::days(duration);
-	obj["desc"] = name;
+        obj["desc"] = name;
         obj["value"] = value;
-        obj["validUntil"] = std::chrono::system_clock::to_time_t(validUntil);
-	obj["expirable"] = true;
+        obj["validUntil"] = Time{std::chrono::system_clock::to_time_t(validUntil)};
+        obj["expirable"] = true;
     });
 
     om.create({}, "reward_modifier", valueProvider);
