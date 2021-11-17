@@ -11,9 +11,9 @@ import java.util.*
 @Serializable
 data class JournalIndexItem(
         var id: String,
-        var parentFolderId: String,
         var title: String,
-        val isPage: Boolean,
+        var isPage: Boolean = false,
+        var parentFolderId: String = "",
         var modified: Long,
         var typename: String
 )
