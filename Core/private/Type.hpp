@@ -17,6 +17,7 @@ enum class Type
     StringArray,
     Timestamp,
     Money,
+    Money_v2,
     Reference,
     Choice
 };
@@ -24,6 +25,13 @@ enum class Type
 struct Time
 {
     std::time_t value;
+};
+
+struct Money
+{
+    char currency[3];
+    int base;
+    int coins;
 };
 
 template<Type>
@@ -77,6 +85,12 @@ template<>
 struct TypeTraits<Type::Money>
 {
    using Class = std::int64_t;
+};
+
+template<>
+struct TypeTraits<Type::Money_v2>
+{
+   using Class = Money;
 };
 
 template<>

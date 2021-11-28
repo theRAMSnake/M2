@@ -16,6 +16,7 @@ namespace std
 const std::string& to_string(const std::string& src);
 std::string to_string(const materia::Time& src);
 std::string to_string(const std::vector<std::string>& src);
+std::string to_string(const materia::Money& src);
 
 }
 
@@ -76,6 +77,7 @@ private:
         double,
         bool,
         Time,
+        Money,
         std::string,
         std::vector<std::string>
         >;
@@ -110,6 +112,11 @@ private:
                     
                 }
             }
+            break;
+
+        case Type::Money_v2:
+            if constexpr (std::is_same<T, Money>::value)
+                return val;
             break;
 
         case Type::Double:

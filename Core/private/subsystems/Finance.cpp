@@ -186,6 +186,17 @@ std::vector<TypeDef> FinanceSS::getTypes()
     std::vector<TypeDef> result;
 
     result.push_back({"finance_category", "finance_categories", {{"name", Type::String}}});
+    result.push_back({"currency", "currencies", {{"name", Type::String}}});
+    result.push_back({"finance_stock", "stocks", {
+        {"ticker", Type::String},
+        {"domain", Type::String},
+        {"amount", Type::Int},
+        {"lastKnownPrice", Type::Money_v2}
+        }});
+    result.push_back({"finance_dataPoint", "finance_dataPoints", {
+        {"timestamp", Type::Timestamp},
+        {"totalPortfolioValue", Type::Money_v2}
+        }});
     result.push_back({"finance_event", "finance_events", {
         {"categoryId", Type::Reference, {}, "finance_category"},
         {"typeChoice", Type::Choice, {"Spending", "Earning"}},

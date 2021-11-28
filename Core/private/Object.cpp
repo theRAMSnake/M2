@@ -12,6 +12,11 @@ const std::string& to_string(const std::string& src)
     return src;
 }
 
+std::string to_string(const materia::Money& src)
+{
+    return fmt::format("{}.{:0>2} {}", src.base, src.coins, src.currency);
+}
+
 std::string to_string(const materia::Time& src)
 {
     return to_string(src.value);
@@ -58,6 +63,10 @@ void Object::init()
 
             case Type::Double: 
                 mFields.push_back({f, false, 0.0}); 
+                break;
+
+            case Type::Money_v2: 
+                mFields.push_back({f, false, Money{"N", 0, 0}}); 
                 break;
 
             case Type::Bool: 
@@ -225,6 +234,7 @@ void Object::fillObject(boost::property_tree::ptree& p, const Object& o)
         {
             case Type::Int: p.put(f.getName(), f.get<Type::Int>());break;
             case Type::Money: p.put(f.getName(), f.get<Type::Money>());break;
+            case Type::Money_v2: p.put(f.getName(), std::to_string(f.get<Type::Money_v2>()));break;
             case Type::Timestamp: p.put(f.getName(), f.get<Type::Timestamp>().value);break;
             case Type::Double: p.put(f.getName(), f.get<Type::Double>());break;
             case Type::Bool: p.put(f.getName(), f.get<Type::Bool>());break;

@@ -162,6 +162,8 @@ public:
             {
                 case Type::Int: return object[mIdentifier].get<Type::Int>();
                 case Type::Money: return object[mIdentifier].get<Type::Money>();
+                case Type::Money_v2: 
+                    throw std::runtime_error("Using money v2 in expressions is not supported");
                 case Type::Timestamp: return object[mIdentifier].get<Type::Timestamp>().value;
                 case Type::Choice: return object[mIdentifier].get<Type::Choice>();
                 case Type::Double: return object[mIdentifier].get<Type::Double>();

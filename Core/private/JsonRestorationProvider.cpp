@@ -45,6 +45,7 @@ void JsonRestorationProvider::populate(Object& obj) const
             {
                 case Type::Int: f = c.second.get_value<int>();break;
                 case Type::Money: f = c.second.get_value<int>();break;
+                case Type::Money_v2: f = parseMoney(c.second.get_value<std::string>());break;
                 case Type::Timestamp: f = Time{c.second.get_value<std::time_t>()};break;
                 case Type::Double: f = c.second.get_value<double>();break;
                 case Type::Bool: f = c.second.get_value<bool>();break;
