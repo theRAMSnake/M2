@@ -61,7 +61,19 @@ void complete(const Id id, ObjectManager& om, RewardSS& reward, StrategySS& stra
     }
     else if(eType == "StrategyNodeReference")
     {
-        strategy.onCalendarReferenceCompleted(object["nodeReference"].toId());
+        auto cons = om.getConnections().get(id);
+        auto pos = std::find_if(cons.begin(), cons.end(), [&](auto x){
+            return x.a == id && x.type == ConnectionType::Reference;
+            });
+
+        if(pos != cons.end())
+        {
+            strategy.onCalendarReferenceCompleted(pos->b);
+        }
+        else
+        {
+            throw std::runtime_error("No reference found for strategy node reference: " + id.getGuid());
+        }
     }
 
     if(recType != "None")
@@ -129,7 +141,7 @@ void UserSS::awardInbox()
    types::SimpleList inbox(mOm, Id("inbox"));
    if(inbox.size() == 0)
    {
-       mReward.setMod(Id("mod.inbox"), "Clean inbox", 0.1);
+       mReward.setMod(Id("mod.inbox"), "Clean inbox", 0.05);
    }
    else
    {
