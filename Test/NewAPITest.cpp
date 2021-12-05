@@ -490,3 +490,25 @@ BOOST_FIXTURE_TEST_CASE( TestQueryWithConnections, NewAPITest )
         }
     }
 }
+
+BOOST_FIXTURE_TEST_CASE( TestMoney2, NewAPITest ) 
+{ 
+    boost::property_tree::ptree create;
+    create.put("operation", "create");
+    create.put("typename", "finance_dataPoint");
+    create.put("params.totalPortfolioValue", "sadhlfsdhfjksad");
+    
+    expectError(mCore->executeCommandJson(writeJson(create)));
+
+    create.put("params.totalPortfolioValue", "555");
+
+    expectError(mCore->executeCommandJson(writeJson(create)));
+
+    create.put("params.totalPortfolioValue", "555.55");
+
+    expectError(mCore->executeCommandJson(writeJson(create)));
+
+    create.put("params.totalPortfolioValue", "555.55EUR");
+
+    expectId(mCore->executeCommandJson(writeJson(create)));
+}

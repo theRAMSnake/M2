@@ -86,7 +86,7 @@ BOOST_FIXTURE_TEST_CASE( TestNewDayCompleted, ContractsTest )
 
    auto c = queryFirst("reward_contract", *mCore);
 
-   auto expectedReward = c.get<int>("reward") * 130; //130 because of modifiers
+   auto expectedReward = c.get<int>("reward") * 125; //125 because of modifiers
    auto id = c.get<std::string>("id");
    auto configId = c.get<std::string>("config_id");
    

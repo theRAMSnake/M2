@@ -15,6 +15,44 @@ JsonRestorationProvider::JsonRestorationProvider(const boost::property_tree::ptr
 
 }
 
+Money parseMoney(const std::string& src)
+{
+    std::istringstream str(src);
+    Money result;
+
+    str >> result.base;
+    if(!str)
+    {
+        throw std::runtime_error("Cannot parse money: " + src);
+    }
+
+    char dummy;
+    str >> dummy;
+
+    if(!str)
+    {
+        throw std::runtime_error("Cannot parse money: " + src);
+    }
+
+    str >> std::setw(2) >> result.coins;
+    if(!str)
+    {
+        throw std::runtime_error("Cannot parse money: " + src);
+    }
+
+    for(int i = 0; i < 3; ++i)
+    {
+        str >> result.currency[i];
+
+        if(!str)
+        {
+            throw std::runtime_error("Cannot parse money: " + src);
+        }
+    }
+
+    return result;
+}
+
 std::vector<std::string> extractArray(const boost::property_tree::ptree& ptree)
 {
     std::vector<std::string> result;
