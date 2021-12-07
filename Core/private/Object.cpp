@@ -14,7 +14,7 @@ const std::string& to_string(const std::string& src)
 
 std::string to_string(const materia::Money& src)
 {
-    return fmt::format("{}.{:0>2} {}", src.base, src.coins, src.currency);
+    return fmt::format("{}.{:0>2}{}", src.base, src.coins, src.currency);
 }
 
 std::string to_string(const materia::Time& src)
