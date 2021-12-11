@@ -3,6 +3,7 @@ import JSONInput from 'react-json-editor-ajrm';
 import locale    from 'react-json-editor-ajrm/locale/en';
 import m3proxy from '../modules/m3proxy'
 import DateTimeCtrl from './DateTimeCtrl.jsx'
+import MoneyCtrl from './MoneyCtrl.jsx'
 import Switch from '@material-ui/core/Switch';
 
 import {
@@ -25,8 +26,6 @@ function buildPropertiesTemplate(typename)
 {
     var result = [];
 
-    console.log(typename);
-
     const type = m3proxy.getType(typename);
     if(type.fields)
     {
@@ -36,8 +35,6 @@ function buildPropertiesTemplate(typename)
             result.push(type.fields[j]);
         }
     }
-
-    console.log(result);
 
     return result;
 }
@@ -114,6 +111,14 @@ export default function ObjectProperties(props)
         props.onChange(newObj);
     }
 
+    function handleMoney2Change(id, val)
+    {
+        let newObj = JSON.parse(JSON.stringify(props.object));
+        newObj[id] = val;
+
+        props.onChange(newObj);
+    }
+
     function handleReferenceChange(e)
     {
         let newObj = JSON.parse(JSON.stringify(props.object));
@@ -124,7 +129,6 @@ export default function ObjectProperties(props)
 
     function createPropCtrl(req)
     {
-        console.log(req);
         if(req.type === 'string') 
             return <TextField inputProps={{onChange: handleFieldChange}} value={props.object[req.name]} fullWidth id={req.name} label={req.name} />;
         if(req.type === 'bool') 
@@ -155,6 +159,10 @@ export default function ObjectProperties(props)
         if(req.type === 'timestamp')
         {
             return <DateTimeCtrl onChange={handleDTChange} value={props.object[req.name]} id={req.name}/>
+        }
+        if(req.type === 'money_v2')
+        {
+            return <MoneyCtrl onChange={handleMoney2Change} value={props.object[req.name]} id={req.name}/>
         }
         if(req.type === 'money')
         {
