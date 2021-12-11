@@ -5,6 +5,7 @@ var workBurden = 0;
 var primaryFocus = "";
 var rewardModifiers = null;
 var calendarItems = null;
+var currencies = null;
 var tod = "";
 var onUpdateCallback = () => {}
 
@@ -60,6 +61,19 @@ class materiaModel
         {
             const req = {
                 operation: "query",
+                filter: "IS(currency)"
+            };
+
+            Materia.exec(req, (r) => 
+            {
+                currencies = r.object_list;
+
+                onUpdateCallback();
+            });
+        }
+        {
+            const req = {
+                operation: "query",
                 ids: ["tip_of_the_day"]
             };
     
@@ -96,6 +110,11 @@ class materiaModel
     static getRewardModifiers()
     {
         return rewardModifiers;
+    }
+
+    static getCurrencies()
+    {
+        return currencies;
     }
 
     static setWorkBurden(newValue)

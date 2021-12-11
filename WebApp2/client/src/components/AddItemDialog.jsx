@@ -49,6 +49,7 @@ function createDefault(f)
     if(type === 'double') return 0.0;
     if(type === 'choice') return f.options[0];
     if(type === 'money') return 0;
+    if(type === 'money_v2') return "0.00EUR";
     if(type === 'reference') return "";
     if(type === 'timestamp') return Math.floor(toUTC(new Date()) / 1000);
 }
