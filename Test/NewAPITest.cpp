@@ -511,4 +511,12 @@ BOOST_FIXTURE_TEST_CASE( TestMoney2, NewAPITest )
     create.put("params.totalPortfolioValue", "555.55EUR");
 
     expectId(mCore->executeCommandJson(writeJson(create)));
+
+    create.put("defined_id", "id");
+    create.put("params.totalPortfolioValue", "-555.55EUR");
+
+    expectId(mCore->executeCommandJson(writeJson(create)));
+
+    auto result = query("id", *mCore);
+    BOOST_CHECK_EQUAL(result->get<std::string>("totalPortfolioValue"), "-555.55EUR");
 }
