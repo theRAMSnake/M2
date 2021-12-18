@@ -197,6 +197,10 @@ std::vector<TypeDef> FinanceSS::getTypes()
         {"timestamp", Type::Timestamp},
         {"totalPortfolioValue", Type::Money_v2}
         }});
+    result.push_back({"finance_investmentAction", "finance_investmentAction", {
+        {"timestamp", Type::Timestamp},
+        {"value", Type::Money_v2}
+        }});
     result.push_back({"finance_event", "finance_events", {
         {"categoryId", Type::Reference, {}, "finance_category"},
         {"typeChoice", Type::Choice, {"Spending", "Earning"}},
