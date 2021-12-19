@@ -29,7 +29,7 @@ struct Time
 
 struct Money
 {
-    char currency[3];
+    std::string currency;
     int base;
     int coins;
 };

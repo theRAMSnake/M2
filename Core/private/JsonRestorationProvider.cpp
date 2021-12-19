@@ -40,14 +40,11 @@ Money parseMoney(const std::string& src)
         throw std::runtime_error("Cannot parse money: " + src);
     }
 
-    for(int i = 0; i < 3; ++i)
-    {
-        str >> result.currency[i];
+    str >> std::setw(0) >> result.currency;
 
-        if(!str)
-        {
-            throw std::runtime_error("Cannot parse money: " + src);
-        }
+    if(!str)
+    {
+        throw std::runtime_error("Cannot parse money: " + src);
     }
 
     return result;
