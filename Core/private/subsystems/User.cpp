@@ -61,7 +61,8 @@ void complete(const Id id, ObjectManager& om, RewardSS& reward, StrategySS& stra
     }
     else if(eType == "StrategyNodeReference")
     {
-        auto cons = om.getConnections().get(id);
+        strategy.onCalendarReferenceCompleted(object["nodeReference"].toId());
+        /*auto cons = om.getConnections().get(id);
         auto pos = std::find_if(cons.begin(), cons.end(), [&](auto x){
             return x.a == id && x.type == ConnectionType::Reference;
             });
@@ -73,7 +74,7 @@ void complete(const Id id, ObjectManager& om, RewardSS& reward, StrategySS& stra
         else
         {
             throw std::runtime_error("No reference found for strategy node reference: " + id.getGuid());
-        }
+        }*/
     }
 
     if(recType != "None")
