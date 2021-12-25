@@ -129,7 +129,7 @@ export default function ObjectProperties(props)
 
     function createPropCtrl(req)
     {
-        if(req.type === 'string') 
+        if(req.type === 'string' || req.type === 'period') 
             return <TextField inputProps={{onChange: handleFieldChange}} value={props.object[req.name]} fullWidth id={req.name} label={req.name} />;
         if(req.type === 'bool') 
             return <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: handleCbChange}} id={req.name} checked={props.object[req.name].toString() === "true"} />} label={req.name} />

@@ -50,6 +50,49 @@ Money parseMoney(const std::string& src)
     return result;
 }
 
+Period parsePeriod(const std::string& src)
+{
+    using namespace boost::gregorian;
+    Period result;
+
+    std::istringstream str(src);
+    while(!str.eof())
+    {
+        int value = 0;
+        str >> value;
+
+        if(!str)
+        {
+            throw std::runtime_error("Cannot parse period: " + src);
+        }
+
+        char symbol = ' ';
+        str >> symbol;
+
+        if(!str)
+        {
+            throw std::runtime_error("Cannot parse period: " + src);
+        }
+        
+        switch(symbol)
+        {
+            case 'd':
+                result.days = boost::gregorian::days(value);
+                break;
+            case 'm':
+                result.months = boost::gregorian::months(value);
+                break;
+            case 'y':
+                result.years = boost::gregorian::years(value);
+                break;
+            default:
+                throw std::runtime_error("Cannot parse period: " + src);
+        }
+    }
+
+    return result;
+}
+
 std::vector<std::string> extractArray(const boost::property_tree::ptree& ptree)
 {
     std::vector<std::string> result;
@@ -81,6 +124,7 @@ void JsonRestorationProvider::populate(Object& obj) const
                 case Type::Int: f = c.second.get_value<int>();break;
                 case Type::Money: f = c.second.get_value<int>();break;
                 case Type::Money_v2: f = parseMoney(c.second.get_value<std::string>());break;
+                case Type::Period: f = parsePeriod(c.second.get_value<std::string>());break;
                 case Type::Timestamp: f = Time{c.second.get_value<std::time_t>()};break;
                 case Type::Double: f = c.second.get_value<double>();break;
                 case Type::Bool: f = c.second.get_value<bool>();break;

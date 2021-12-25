@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <boost/date_time/gregorian/gregorian.hpp>
 
 namespace materia
 {
@@ -16,6 +17,7 @@ enum class Type
     Bool,
     StringArray,
     Timestamp,
+    Period,
     Money,
     Money_v2,
     Reference,
@@ -32,6 +34,20 @@ struct Money
     std::string currency;
     int base;
     int coins;
+};
+
+struct Period
+{
+    Period()
+        : days(0)
+        , months(0)
+        , years(0)
+    {
+    }
+
+    boost::gregorian::date_duration days;
+    boost::gregorian::months months;
+    boost::gregorian::years years;
 };
 
 template<Type>
@@ -73,6 +89,12 @@ template<>
 struct TypeTraits<Type::Timestamp>
 {
    using Class = Time;
+};
+
+template<>
+struct TypeTraits<Type::Period>
+{
+   using Class = Period;
 };
 
 template<>

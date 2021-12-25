@@ -17,6 +17,7 @@ std::string to_string(const Type t)
         case Type::Reference: return "reference";
         case Type::StringArray: return "array";
         case Type::Timestamp: return "timestamp";
+        case Type::Period: return "period";
         case Type::Choice: return "choice";
     }
 

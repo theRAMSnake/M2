@@ -17,6 +17,26 @@ std::string to_string(const materia::Money& src)
     return fmt::format("{}.{:0>2}{}", src.base, src.coins, src.currency);
 }
 
+std::string to_string(const materia::Period& src)
+{
+    std::string result;
+
+    if(src.years.number_of_years() > 0)
+    {
+        result += std::to_string(src.years.number_of_years().as_number()) + "y";
+    }
+    if(src.months.number_of_months() > 0)
+    {
+        result += std::to_string(src.months.number_of_months().as_number()) + "m";
+    }
+    if(src.days.days() > 0)
+    {
+        result += std::to_string(src.days.days()) + "d";
+    }
+
+    return result;
+}
+
 std::string to_string(const materia::Time& src)
 {
     return to_string(src.value);
@@ -49,6 +69,7 @@ Object::Object(const TypeDef& type, const Id id)
 
 void Object::init()
 {
+    using namespace boost::gregorian;
     mFields.push_back({"id", true, {mId.getGuid()}});
     mFields.push_back({"typename", true, {mTypeDef.name}});
 
@@ -67,6 +88,10 @@ void Object::init()
 
             case Type::Money_v2: 
                 mFields.push_back({f, false, Money{"N", 0, 0}}); 
+                break;
+
+            case Type::Period: 
+                mFields.push_back({f, false, Period()}); 
                 break;
 
             case Type::Bool: 
@@ -236,6 +261,7 @@ void Object::fillObject(boost::property_tree::ptree& p, const Object& o)
             case Type::Money: p.put(f.getName(), f.get<Type::Money>());break;
             case Type::Money_v2: p.put(f.getName(), std::to_string(f.get<Type::Money_v2>()));break;
             case Type::Timestamp: p.put(f.getName(), f.get<Type::Timestamp>().value);break;
+            case Type::Period: p.put(f.getName(), std::to_string(f.get<Type::Period>()));break;
             case Type::Double: p.put(f.getName(), f.get<Type::Double>());break;
             case Type::Bool: p.put(f.getName(), f.get<Type::Bool>());break;
             case Type::String: p.put(f.getName(), f.get<Type::String>());break;
