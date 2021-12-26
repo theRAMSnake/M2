@@ -62,7 +62,7 @@ Period parsePeriod(const std::string& src)
         return result;
     }
 
-    regex r("[0-9]+y)*([0-9]+m)*([0-9]+d)*");
+    regex r("[0-9]+y)*([0-9]+m)*([0-9]+d)*", regex::extended);
     smatch sm;
     if(regex_search(src, sm, r))
     {
