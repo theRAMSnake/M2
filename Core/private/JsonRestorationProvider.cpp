@@ -1,5 +1,6 @@
 #include "JsonRestorationProvider.hpp"
 #include "JsonSerializer.hpp"
+#include <regex>
 
 namespace materia
 {
@@ -53,6 +54,7 @@ Money parseMoney(const std::string& src)
 Period parsePeriod(const std::string& src)
 {
     using namespace boost::gregorian;
+    using namespace std;
     Period result;
 
     if(src.empty())
@@ -60,41 +62,28 @@ Period parsePeriod(const std::string& src)
         return result;
     }
 
-    std::istringstream str(src);
-    while(!str.eof())
+    regex r("[0-9]+y)*([0-9]+m)*([0-9]+d)*");
+    smatch sm;
+    if(regex_search(src, sm, r))
     {
-        int value = 0;
-        str >> value;
-
-        if(!str)
+        if(sm[0].matched)
         {
-            throw std::runtime_error("Cannot parse period: " + src);
+            result.years = boost::gregorian::years(stoi(sm[0]));
         }
-
-        char symbol = ' ';
-        str >> symbol;
-
-        if(!str)
+        if(sm[1].matched)
         {
-            throw std::runtime_error("Cannot parse period: " + src);
+            result.months = boost::gregorian::months(stoi(sm[1]));
         }
-        
-        switch(symbol)
+        if(sm[2].matched)
         {
-            case 'd':
-                result.days = boost::gregorian::days(value);
-                break;
-            case 'm':
-                result.months = boost::gregorian::months(value);
-                break;
-            case 'y':
-                result.years = boost::gregorian::years(value);
-                break;
-            default:
-                throw std::runtime_error("Cannot parse period: " + src);
+            result.days = boost::gregorian::days(stoi(sm[2]));
         }
     }
-
+    else
+    {
+        throw std::runtime_error("Cannot parse period: " + src);
+    }
+        
     return result;
 }
 
