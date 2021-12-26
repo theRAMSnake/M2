@@ -24,6 +24,7 @@ def format_exception(e):
 def materiaReq(r):
     p = subprocess.Popen(["/home/snake/m4tools", json.dumps(r)], stdout=subprocess.PIPE)
     res = p.stdout.read()
+    print(".")
     return json.loads(res)
 
 def first(predicate, seq):
@@ -184,6 +185,8 @@ def proposeTrades(currencyList):
     stocksToSell = []
     for i, (ticker, stock) in enumerate(stocksHave.items()):
         stockCurrentAmount = int(stock["amount"])
+        if stockCurrentAmount == 0:
+            continue
         if not ticker in stocksGoal:
             stocksToSell.append((ticker, stockCurrentAmount))
         else:
@@ -217,7 +220,10 @@ def proposeTrades(currencyList):
         resp = materiaReq(req)
         obj = resp["object_list"][0]
         obj["discrepancy"] = count
-        obj["snp_priority"] = stocksGoal[ticker]["priority"]
+        if ticker in stocksGoal:
+            obj["snp_priority"] = stocksGoal[ticker]["priority"]
+        else:
+            obj["snp_priority"] = ""
         upd = {
             "operation": "modify",
             "id": obj["id"],
@@ -241,7 +247,6 @@ def proposeTrades(currencyList):
     for (ticker,count,priority) in stocksToBuy:
         for i in range (count):
             itemsToBuy.append((ticker, Money(stocksHave[ticker]["lastKnownPrice"], currencyList)))
-
 
     posBuy = -1
     posSell = -1
@@ -282,6 +287,16 @@ def proposeTrades(currencyList):
                 }
         }
         creResp = materiaReq(cre)
+
+    # Clean up stocks not in snp and for which there are no holdings
+    for i, (ticker, stock) in enumerate(stocksHave.items()):
+        if not ticker in stocksGoal:
+            if int(stock["amount"]) == 0:
+                delete = {
+                    "operation": "destroy",
+                    "id": stock["id"]
+                }
+                delResp = materiaReq(delete)
 
 def main():
     req = {
