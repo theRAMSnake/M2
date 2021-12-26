@@ -23,9 +23,9 @@ TypeHandler::TypeHandler(
 
             mPool.insert({Id(id), newObj});
         }
-        catch(...)
+        catch(std::exception& ex)
         {
-            throw std::runtime_error("Type handler initialization failed: Failed to restore object: " + json);
+            throw std::runtime_error("Type handler initialization failed: Failed to restore object: " + json + " reason: " + ex.what());
         }
     });
 }

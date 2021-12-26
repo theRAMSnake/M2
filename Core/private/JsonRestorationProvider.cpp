@@ -55,6 +55,11 @@ Period parsePeriod(const std::string& src)
     using namespace boost::gregorian;
     Period result;
 
+    if(src.empty())
+    {
+        return result;
+    }
+
     std::istringstream str(src);
     while(!str.eof())
     {
