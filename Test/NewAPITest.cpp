@@ -210,7 +210,7 @@ BOOST_FIXTURE_TEST_CASE( TestCompletable, NewAPITest )
     create.put("defined_id", "id");
     create.put("params.text", "a");
     create.put("params.timestamp", 10);
-    create.put("params.reccurencyTypeChoice", "Weekly");
+    create.put("params.recurrency", "7d");
 
     auto tr = readJson<boost::property_tree::ptree>(mCore->executeCommandJson(writeJson(create)));
 
@@ -246,7 +246,7 @@ BOOST_FIXTURE_TEST_CASE( TestCompletable2, NewAPITest )
     create.put("defined_id", "id");
     create.put("params.text", "a");
     create.put("params.timestamp", 10);
-    create.put("params.reccurencyTypeChoice", "None");
+    create.put("params.recurrency", "None");
 
     auto tr = readJson<boost::property_tree::ptree>(mCore->executeCommandJson(writeJson(create)));
 
@@ -270,6 +270,114 @@ BOOST_FIXTURE_TEST_CASE( TestCompletable2, NewAPITest )
         counter++;
     }
     BOOST_CHECK_EQUAL(0, counter);
+}
+
+BOOST_FIXTURE_TEST_CASE( TestCompletable3, NewAPITest ) 
+{
+    boost::property_tree::ptree create;
+    create.put("operation", "create");
+    create.put("typename", "calendar_item");
+    create.put("defined_id", "id");
+    create.put("params.text", "a");
+    create.put("params.timestamp", 10);
+    create.put("params.recurrency", "7m");
+
+    auto tr = readJson<boost::property_tree::ptree>(mCore->executeCommandJson(writeJson(create)));
+
+    boost::property_tree::ptree complete;
+    complete.put("operation", "complete");
+    complete.put("id", tr.get<std::string>("result_id"));
+
+    mCore->executeCommandJson(writeJson(complete));
+
+    boost::property_tree::ptree query;
+    query.put("operation", "query");
+    query.put("filter", "IS(calendar_item)");
+    auto result = mCore->executeCommandJson(writeJson(query));
+
+    auto ol = readJson<boost::property_tree::ptree>(result);
+    
+    int counter = 0;
+    for(auto& v : ol.get_child("object_list"))
+    {
+       auto ts = v.second.get<std::time_t>("timestamp");
+       BOOST_CHECK_EQUAL(18316810, ts);
+       counter++;
+    }
+
+    BOOST_CHECK_EQUAL(1, counter);
+}
+
+BOOST_FIXTURE_TEST_CASE( TestCompletable4, NewAPITest ) 
+{
+    boost::property_tree::ptree create;
+    create.put("operation", "create");
+    create.put("typename", "calendar_item");
+    create.put("defined_id", "id");
+    create.put("params.text", "a");
+    create.put("params.timestamp", 10);
+    create.put("params.recurrency", "7y");
+
+    auto tr = readJson<boost::property_tree::ptree>(mCore->executeCommandJson(writeJson(create)));
+
+    boost::property_tree::ptree complete;
+    complete.put("operation", "complete");
+    complete.put("id", tr.get<std::string>("result_id"));
+
+    mCore->executeCommandJson(writeJson(complete));
+
+    boost::property_tree::ptree query;
+    query.put("operation", "query");
+    query.put("filter", "IS(calendar_item)");
+    auto result = mCore->executeCommandJson(writeJson(query));
+
+    auto ol = readJson<boost::property_tree::ptree>(result);
+    
+    int counter = 0;
+    for(auto& v : ol.get_child("object_list"))
+    {
+       auto ts = v.second.get<std::time_t>("timestamp");
+       BOOST_CHECK_EQUAL(220924810, ts);
+       counter++;
+    }
+
+    BOOST_CHECK_EQUAL(1, counter);
+}
+
+BOOST_FIXTURE_TEST_CASE( TestCompletable5, NewAPITest ) 
+{
+    boost::property_tree::ptree create;
+    create.put("operation", "create");
+    create.put("typename", "calendar_item");
+    create.put("defined_id", "id");
+    create.put("params.text", "a");
+    create.put("params.timestamp", 10);
+    create.put("params.recurrency", "1m7d");
+
+    auto tr = readJson<boost::property_tree::ptree>(mCore->executeCommandJson(writeJson(create)));
+
+    boost::property_tree::ptree complete;
+    complete.put("operation", "complete");
+    complete.put("id", tr.get<std::string>("result_id"));
+
+    mCore->executeCommandJson(writeJson(complete));
+
+    boost::property_tree::ptree query;
+    query.put("operation", "query");
+    query.put("filter", "IS(calendar_item)");
+    auto result = mCore->executeCommandJson(writeJson(query));
+
+    auto ol = readJson<boost::property_tree::ptree>(result);
+    
+    int counter = 0;
+    for(auto& v : ol.get_child("object_list"))
+    {
+       auto ts = v.second.get<std::time_t>("timestamp");
+       BOOST_CHECK_EQUAL(3283210, ts);
+       counter++;
+    }
+
+    BOOST_CHECK_EQUAL(1, counter);
 }
 
 BOOST_FIXTURE_TEST_CASE( TestJournalIndexUpdate, NewAPITest ) 

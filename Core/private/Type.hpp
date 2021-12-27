@@ -45,6 +45,16 @@ struct Period
     {
     }
 
+    static Period Empty()
+    {
+        return Period();
+    }
+    
+    bool operator == (const Period& other) const
+    {
+        return days == other.days && months == other.months && years == other.years;
+    }
+
     boost::gregorian::date_duration days;
     boost::gregorian::months months;
     boost::gregorian::years years;
