@@ -66,17 +66,17 @@ Period parsePeriod(const std::string& src)
     smatch sm;
     if(regex_search(src, sm, r))
     {
-        if(sm[0].matched)
-        {
-            result.years = boost::gregorian::years(stoi(sm[0]));
-        }
         if(sm[1].matched)
         {
-            result.months = boost::gregorian::months(stoi(sm[1]));
+            result.years = boost::gregorian::years(stoi(sm[1]));
         }
         if(sm[2].matched)
         {
-            result.days = boost::gregorian::days(stoi(sm[2]));
+            result.months = boost::gregorian::months(stoi(sm[2]));
+        }
+        if(sm[3].matched)
+        {
+            result.days = boost::gregorian::days(stoi(sm[3]));
         }
     }
     else

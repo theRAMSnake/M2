@@ -12,34 +12,19 @@
 namespace materia
 {
 
-Time advance(const Time src, const std::string recType)
+Time advance(const Time src, const Period& period)
 {
     Time result = src;
 
-    if(recType == "Weekly")
-    {
-        result.value += 604800;
-    }
-    else if(recType == "Monthly")
-    {
-        result.value = boost::posix_time::to_time_t(boost::posix_time::from_time_t(result.value) + boost::gregorian::months(1));
-    }
-    else if(recType == "Quarterly")
-    {
-        result.value = boost::posix_time::to_time_t(boost::posix_time::from_time_t(result.value) + boost::gregorian::months(3));
-    }
-    else if(recType == "Yearly")
-    {
-        result.value = boost::posix_time::to_time_t(boost::posix_time::from_time_t(result.value) + boost::gregorian::months(12));
-    }
-    else if(recType == "Bi-daily")
-    {    
-        result.value += 172800;
-    }
-    else if(recType == "Daily")
-    {    
-        result.value += 86400;
-    }
+    auto bdt = boost::posix_time::from_time_t(src.value);
+    
+    std::cout << std::to_string(period);
+
+    bdt += period.years;
+    bdt += period.months;
+    bdt += period.days;
+
+    result.value = boost::posix_time::to_time_t(bdt);
 
     return result;
 }
@@ -54,7 +39,7 @@ void complete(const Id id, ObjectManager& om, RewardSS& reward, StrategySS& stra
     }
 
     auto eType = object["entityTypeChoice"].get<Type::Choice>();
-    auto recType = object["reccurencyTypeChoice"].get<Type::Choice>();
+    auto recPeriod = object["recurrency"].get<Type::Period>();
     if(eType == "Task")
     {
         reward.addPoints(1);
@@ -62,6 +47,7 @@ void complete(const Id id, ObjectManager& om, RewardSS& reward, StrategySS& stra
     else if(eType == "StrategyNodeReference")
     {
         strategy.onCalendarReferenceCompleted(object["nodeReference"].toId());
+        //Disabled implementation for connectionness strategy
         /*auto cons = om.getConnections().get(id);
         auto pos = std::find_if(cons.begin(), cons.end(), [&](auto x){
             return x.a == id && x.type == ConnectionType::Reference;
@@ -77,9 +63,9 @@ void complete(const Id id, ObjectManager& om, RewardSS& reward, StrategySS& stra
         }*/
     }
 
-    if(recType != "None")
+    if(!(recPeriod == Period::Empty()))
     {
-        object["timestamp"] = advance(object["timestamp"].get<Type::Timestamp>(), recType);
+        object["timestamp"] = advance(object["timestamp"].get<Type::Timestamp>(), recPeriod);
         om.modify(object);
     }
     else
