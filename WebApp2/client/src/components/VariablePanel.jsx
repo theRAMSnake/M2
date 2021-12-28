@@ -28,7 +28,10 @@ export default function VariablePanel(props)
 
     function prepareEditDialog()
     {
-        setInEditDialog(true);
+        if(!("readonly" in props))
+        {
+            setInEditDialog(true);
+        }
     }
 
     function handleDialogCanceled()

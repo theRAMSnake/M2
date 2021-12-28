@@ -263,6 +263,7 @@ function MainPage(props) {
                     <SearchBar onSubmit={searchBarSubmit}/>
                     <div className={classes.grow} />
                     <VariablePanel value={materiaModel.getPrimaryFocus()} commit={materiaModel.setPrimaryFocus} length={250}/>
+                    <VariablePanel value={parseInt((materiaModel.getInvestToSalaryRatio() * 100).toString()).toString() + "%"} readonly length={60}/>
                     <RewardModifierView value={materiaModel.getRewardModifiers()}/>
                     <VariableBurndown var={materiaModel.getWorkBurden()} commit={materiaModel.setWorkBurden}/>
                     <BadgetList id='inbox' icon={MailIcon}/>

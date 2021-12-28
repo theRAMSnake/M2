@@ -2,6 +2,7 @@ import Materia from '../modules/materia_request'
 
 var init = false;
 var workBurden = 0;
+var investToSalaryRatio = 0.0;
 var primaryFocus = "";
 var rewardModifiers = null;
 var calendarItems = null;
@@ -30,6 +31,18 @@ class materiaModel
             Materia.exec(req, (r) => 
             {
                 workBurden = Number(r.object_list[0].value);
+                onUpdateCallback();
+            });
+        }
+        {
+            const req = {
+                operation: "query",
+                ids: ["invest.cb"]
+            };
+            
+            Materia.exec(req, (r) => 
+            {
+                investToSalaryRatio = parseFloat(r.object_list[0].percentOfSalary);
                 onUpdateCallback();
             });
         }
@@ -298,6 +311,11 @@ class materiaModel
         Materia.exec(req, (r) => {
             cb(r.object_list);
         });
+    }
+
+    static getInvestToSalaryRatio()
+    {
+        return investToSalaryRatio;
     }
 
     static createIdea(title, htgs, content)
