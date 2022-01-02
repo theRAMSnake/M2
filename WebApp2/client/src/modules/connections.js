@@ -5,6 +5,11 @@ class MateriaConnections
         this.src = src;
     }
 
+    All(type)
+    {
+        return this.src.filter(x => x.type === type);
+    }
+
     Has(A, type, B)
     {
         return this.src.filter(x => {

@@ -5,6 +5,7 @@ import PathCtrl from './PathCtrl.jsx'
 import m3proxy from '../modules/m3proxy'
 import QueryChain from '../modules/QueryChain'
 
+import MateriaConnections from '../modules/connections'
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ClearAllIcon from '@material-ui/icons/ClearAll';
@@ -290,6 +291,7 @@ function StrategyView(props)
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [showCompleted, setShowCompleted] = useState(true);
     const [showLocked, setShowLocked] = useState(true);
+    const [graphId, setGraphId] = useState("");
 
     if(graphData == null)
     {
@@ -379,7 +381,7 @@ function StrategyView(props)
                 n.opacity = 0.1;
             }
         }
-        else if(n.childrenCount > 0)
+        else if(n.hasChildren)
         {
             n.color = "#FF4500";
         }
@@ -390,17 +392,34 @@ function StrategyView(props)
         }
     }
 
+    function buildLinks(conns)
+    {
+        return conns.All("Requirement").map(r => {
+            return {source: r.A, target: r.B, id: r.id};
+        });
+    }
+
     function loadGraph(parentId, successCb)
     {
+        var filterStr = "";
+        if(parentId.length == 0)
+        {
+            filterStr = "IS(strategy_node) AND RootElement(x)"
+        }
+        else
+        {
+            filterStr = "IS(strategy_node) AND ChildOf(" + parentId + ')'
+        }
         const req = {
             operation: "query",
-            filter: "IS(strategy_node) AND .parentNodeId = \"" + parentId + '\"'
+            filter: filterStr
         };
 
         Materia.exec(req, (r) => 
         {
             if(r.object_list != "")
             {
+                console.log("got objects");
                 const newNodes = r.object_list.map(x => {
                     var n = x;
                     if(x.x)
@@ -416,58 +435,27 @@ function StrategyView(props)
 
                     return n;
                 });
+                console.log(newNodes);
 
-                var newGraphData = {nodes: newNodes, links: []};
+                var conns = new MateriaConnections(r.connection_list);
+                var newGraphData = {nodes: newNodes, links: buildLinks(conns)};
 
-                var reqs = [];
+                console.log(newGraphData);
+
                 newNodes.forEach(x => {
-
-                    const linkReq = {
-                        operation: "query",
-                        filter: "IS(strategy_link) AND .idFrom = \"" + x.id + "\""
-                    }
-
-                    const step = (rsp) => {
-                        if(rsp.object_list != "")
-                        {
-                            const newLinks = rsp.object_list.map(y => {
-                                return {source: y.idFrom, target: y.idTo, id: y.id};
-                            });
-            
-                            newGraphData.links = newGraphData.links.concat(newLinks);
-                        }
-                    }
-
-                    reqs.push({req: linkReq, step: step});
-
-                    const childrenReq = {
-                        operation: "query",
-                        filter: "IS(strategy_node) AND .parentNodeId = \"" + x.id + '\"'
-                    }
-
-                    const childrenStep = (rsp) => {
-                        if(rsp.object_list != "")
-                        {
-                            x.childrenCount = rsp.object_list.length;
-                        }
-                        else
-                        {
-                            x.childrenCount = 0;
-                        }
-                    }
-
-                    reqs.push({req: childrenReq, step: childrenStep});
+                    x.hasChildren = conns.Has(x.id, "ParentOf", "*");
                 });
 
-                var done = () => {
-                    successCb();
-                    newGraphData.nodes.forEach(x => setNodeStyle(x, !showCompleted, !showLocked));
-                    updateLinkStyling(newGraphData);
-                    setGraphData(newGraphData);
-                    setUpdating(false);
-                }
-
-                QueryChain(reqs, done);
+                console.log("exec scb");
+                successCb();
+                console.log("setting node styles");
+                newGraphData.nodes.forEach(x => setNodeStyle(x, !showCompleted, !showLocked));
+                console.log("setting link styles");
+                updateLinkStyling(newGraphData);
+                console.log("setting graph data");
+                setGraphData(newGraphData);
+                setGraphId(parentId);
+                setUpdating(false);
             }
             else
             {
@@ -537,13 +525,14 @@ function StrategyView(props)
             setSelectNodeActive(false);
             setUpdating(true);
             var obj = {
-                idFrom: selectedNode.id,
-                idTo: nodeId
+                A: selectedNode.id,
+                B: nodeId,
+                type: "Requirement"
             }
     
             var req = {
                 operation: "create",
-                typename: "strategy_link",
+                typename: "connection",
                 params: obj
             }
     
@@ -617,11 +606,14 @@ function StrategyView(props)
             var n1 = gd.nodes.find(x => x.id === l.source);
             var n2 = gd.nodes.find(x => x.id === l.target);
 
-            l.opacity = Math.min(n1.opacity, n2.opacity);
+            if(n1 && n2)
+            {
+                l.opacity = Math.min(n1.opacity, n2.opacity);
+            }
         });
     }
 
-    function onAddDialogOk(title, type, target, timestamp)
+    function onAddDialogOk(title, type, target, timestamp, sameParent)
     {
         setShowAddDialog(false);
         setUpdating(true);
@@ -630,7 +622,6 @@ function StrategyView(props)
             var obj = {
                 title: title,
                 typeChoice: type,
-                parentNodeId: parentIdToAdd,
                 target: target,
                 reward: (type === "Goal" || type === "Task" || type === "Counter") ? 1 : 0,
                 x: Math.random() * 500,
@@ -650,7 +641,18 @@ function StrategyView(props)
     
             Materia.exec(req, (x) => {
 
-                if(graphData.nodes[0].parentNodeId == parentIdToAdd)
+                if(parentIdToAdd.length > 0)
+                {
+                    var link = {A: parentIdToAdd, B: x.result_id, type: "Hierarchy"}
+                    var linkReq = {
+                        operation: "create",
+                        typename: "connection",
+                        params: link
+                    }
+                    Materia.exec(linkReq, (u) => {});
+                }
+
+                if(graphId == parentIdToAdd)
                 {
                     var sreq = {
                         operation: "query",
@@ -669,7 +671,7 @@ function StrategyView(props)
                 }
                 else
                 {
-                    selectedNode.childrenCount++;
+                    selectedNode.hasChildren = true;
                     onNodeChanged(selectedNode);
                     setUpdating(false);
                 }
@@ -680,7 +682,7 @@ function StrategyView(props)
     function onAddClicked()
     {
         setShowAddDialog(true);
-        setParentIdToAdd(graphData.nodes[0].parentNodeId);
+        setParentIdToAdd(graphId);
     }
 
     function onClearClicked()
@@ -777,14 +779,13 @@ function StrategyView(props)
 
     function createLinks(links)
     {
-        console.log(links);
         var pos = 0;
         for(; pos < links.length; ++pos)
         {
             var req = {
                 operation: "create",
-                typename: "strategy_link",
-                params: links[pos]
+                typename: "connection",
+                params: {A: links[pos].A, B: links[pos].B, type: "Requirement"}
             }
 
             Materia.post(req);
@@ -812,7 +813,7 @@ function StrategyView(props)
             //Connect to new node
             //Connect new node with removed links
             var links = graphData.links.filter(x => x.source === selectedNode.id).map(y => {return {idFrom: newId, idTo: y.target}});
-            links.push({idFrom: selectedNode.id, idTo: newId});
+            links.push({A: selectedNode.id, B: newId});
 
             var toRemove = graphData.links.filter(x => x.source === selectedNode.id);
             toRemove.forEach(x => Materia.postDelete(x.id));
@@ -837,8 +838,8 @@ function StrategyView(props)
 
             var newId = res.result_id;
             //Make same set of links for new node
-            var inLinks = graphData.links.filter(x => x.target === selectedNode.id).map(y => {return {idTo: newId, idFrom: y.source}});
-            var outLinks = graphData.links.filter(x => x.source === selectedNode.id).map(y => {return {idTo: y.target, idFrom: newId}});
+            var inLinks = graphData.links.filter(x => x.target === selectedNode.id).map(y => {return {B: newId, A: y.source}});
+            var outLinks = graphData.links.filter(x => x.source === selectedNode.id).map(y => {return {B: y.target, A: newId}});
             var links = inLinks.concat(outLinks); 
 
             createLinks(links);
