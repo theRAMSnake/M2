@@ -9,9 +9,10 @@ def materiaReq(r):
     return json.loads(res)
 
 class Migration:
-    def __init__(s, query, ftor):
+    def __init__(s, query, ftor, isCreate):
         s._query = query
         s._ftor = ftor
+        s._isCreate = isCreate
         pass
 
     def prepare(s):
@@ -31,35 +32,34 @@ class Migration:
 
     def apply(s):
         for x in s._resultItems:
-            upd = {
-                "operation": "modify",
-                "id": x["id"],
-                "params": x
-            }
-            updateResp = materiaReq(upd)
-            print(updateResp)
+            if not s._isCreate:
+                upd = {
+                    "operation": "modify",
+                    "id": x["id"],
+                    "params": x
+                }
+                updateResp = materiaReq(upd)
+                print(updateResp)
+            else:
+                crt = {
+                    "operation": "create",
+                    "typename": x["typename"],
+                    "params": x
+                }
+                createResp = materiaReq(crt)
+                print(createResp)
 
-def calendarUpgrade(obj):
-    s = obj["reccurencyTypeChoice"] 
-    r = ""
-    if s == "Weekly":
-        r = "7d"
-    if s == "Monthly":
-        r = "1m"
-    if s == "Quarterly":
-        r = "3m"
-    if s == "Yearly":
-        r = "1y"
-    if s == "Bi-daily":
-        r = "2d"
-    if s == "Daily":
-        r = "1d"
-    
-    obj["recurrency"] = r
-    return obj
+
+def slUpgrade(obj):
+    newObj = {}
+    newObj["typename"] = "connection"
+    newObj["A"] = obj["parentNodeId"]
+    newObj["B"] = obj["id"]
+    newObj["type"] = "Hierarchy"
+    return newObj
 
 def main():
-    m = Migration("IS(calendar_item)", calendarUpgrade)
+    m = Migration("IS(strategy_node) AND .parentNodeId contains \"-\"", slUpgrade, True)
     m.prepare()
     m.print()
     result = input('Apply changes? y/n: ')

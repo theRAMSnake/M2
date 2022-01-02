@@ -12,15 +12,6 @@ public:
    {
       system("rm Test.db");
       mCore = materia::createCore({"Test.db"});
-
-      {
-         //Add inbox to prevent spontaneoues points
-         std::string inboxFill = "{\"operation\":\"create\","
-            "\"typename\":\"simple_list\","
-            "\"defined_id\":\"inbox\","
-            "\"params\":{\"objects\":[\"ddd\"]}}";
-         expectId(mCore->executeCommandJson(inboxFill));
-      }
    }
 
 protected:
@@ -74,23 +65,31 @@ BOOST_FIXTURE_TEST_CASE( CleanupDeletedNode, StrategyTest )
     for(int i = 0; i < 3; ++i)
     {
         create.put("defined_id", "child" + std::to_string(i));
-        create.put("params.parentNodeId", "subject");
         expectId(mCore->executeCommandJson(writeJson(create)));
+
+        boost::property_tree::ptree createLink;
+        createLink.put("operation", "create");
+        createLink.put("typename", "connection");
+        createLink.put("params.A", "subject");
+        createLink.put("params.B", "child" + std::to_string(i));
+        createLink.put("params.type", "Hierarchy");
+        expectId(mCore->executeCommandJson(writeJson(createLink)));
     }
 
     boost::property_tree::ptree createLink;
     createLink.put("operation", "create");
-    createLink.put("typename", "strategy_link");
-    createLink.put("params.idFrom", "n1");
-    createLink.put("params.idTo", "n2");
+    createLink.put("typename", "connection");
+    createLink.put("params.A", "n1");
+    createLink.put("params.B", "n2");
+    createLink.put("params.type", "Requirement");
     expectId(mCore->executeCommandJson(writeJson(createLink)));
 
-    createLink.put("params.idFrom", "n1");
-    createLink.put("params.idTo", "subject");
+    createLink.put("params.A", "n1");
+    createLink.put("params.B", "subject");
     expectId(mCore->executeCommandJson(writeJson(createLink)));
 
-    createLink.put("params.idFrom", "subject");
-    createLink.put("params.idTo", "n2");
+    createLink.put("params.A", "subject");
+    createLink.put("params.B", "n2");
     expectId(mCore->executeCommandJson(writeJson(createLink)));
 
     boost::property_tree::ptree destroy;
@@ -100,14 +99,9 @@ BOOST_FIXTURE_TEST_CASE( CleanupDeletedNode, StrategyTest )
     mCore->executeCommandJson(writeJson(destroy));
 
     BOOST_CHECK_EQUAL(2, count(queryAll("strategy_node", *mCore)));
-    BOOST_CHECK_EQUAL(1, count(queryAll("strategy_link", *mCore)));
 
     BOOST_CHECK(query("n1", *mCore));
     BOOST_CHECK(query("n2", *mCore));
-
-    auto l = queryFirst("strategy_link", *mCore);
-    BOOST_CHECK_EQUAL("n1", l.get<std::string>("idFrom"));
-    BOOST_CHECK_EQUAL("n2", l.get<std::string>("idTo"));
 }
 
 BOOST_FIXTURE_TEST_CASE( CounterIsAchievedCalculation, StrategyTest ) 
@@ -205,57 +199,3 @@ BOOST_FIXTURE_TEST_CASE( CreateInvalidNode, StrategyTest )
     }
 }
 
-BOOST_FIXTURE_TEST_CASE( CreateInvalidLink, StrategyTest ) 
-{
-    boost::property_tree::ptree create;
-    create.put("operation", "create");
-    create.put("typename", "strategy_node");
-    create.put("params.type", 4);
-    create.put("defined_id", "n1");
-    expectId(mCore->executeCommandJson(writeJson(create)));
-
-    create.put("defined_id", "n2");
-    expectId(mCore->executeCommandJson(writeJson(create)));
-
-    create.put("defined_id", "n3");
-    expectId(mCore->executeCommandJson(writeJson(create)));
-
-    {
-        boost::property_tree::ptree createLink;
-        createLink.put("operation", "create");
-        createLink.put("typename", "strategy_link");
-        createLink.put("params.idFrom", "n1");
-        createLink.put("params.idTo", "n2");
-
-        expectId(mCore->executeCommandJson(writeJson(createLink)));
-
-        expectError(mCore->executeCommandJson(writeJson(createLink)));
-
-        createLink.put("params.idTo", "n1");
-
-        expectError(mCore->executeCommandJson(writeJson(createLink)));
-    }
-    {
-        boost::property_tree::ptree createLink;
-        createLink.put("operation", "create");
-        createLink.put("typename", "strategy_link");
-        createLink.put("params.idFrom", "fsdfsd");
-        createLink.put("params.idTo", "sdfsdf");
-
-        expectError(mCore->executeCommandJson(writeJson(createLink)));
-    }
-    {
-        boost::property_tree::ptree createLink;
-        createLink.put("operation", "create");
-        createLink.put("typename", "strategy_link");
-        createLink.put("params.idFrom", "n2");
-        createLink.put("params.idTo", "n3");
-
-        expectId(mCore->executeCommandJson(writeJson(createLink)));
-
-        createLink.put("params.idFrom", "n3");
-        createLink.put("params.idTo", "n1");
-
-        expectError(mCore->executeCommandJson(writeJson(createLink)));
-    }
-}

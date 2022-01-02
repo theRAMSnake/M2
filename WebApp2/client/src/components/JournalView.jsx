@@ -14,6 +14,7 @@ tinymce.init({
 
 import React, { useState } from 'react';
 import Materia from '../modules/materia_request'
+import MateriaConnections from '../modules/connections'
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
 
@@ -43,8 +44,8 @@ function sortHeaders(items, conns)
 {
     //1 - x is greated
     return items.sort((x, y) => { 
-        const xIsPage = conns.filter(i => i.A === x.id && i.type === "Extension").length != 0;
-        const yIsPage = conns.filter(i => i.A === y.id && i.type === "Extension").length != 0;
+        const xIsPage = conns.Has(x.id, "ExtendedBy", "*");
+        const yIsPage = conns.Has(y.id, "ExtendedBy", "*");
         if(xIsPage == yIsPage)
         {
             if(x.title > y.title)
@@ -89,8 +90,9 @@ function JournalView(props)
         };
 
         Materia.exec(req, (r) => {
-            setConns(r.connection_list);
-            setHeaders(sortHeaders(r.object_list, r.connection_list));
+            var cons = new MateriaConnections(r.connection_list);
+            setConns(cons);
+            setHeaders(sortHeaders(r.object_list, cons));
             setUpdating(false);
         });
     }
@@ -105,12 +107,11 @@ function JournalView(props)
         var items = []
         if(id === "")
         {
-            items = headers.filter(x => {return conns.findIndex(y => y.B === x.id && y.type === "Hierarchy") == -1;});
+            items = headers.filter(x => !conns.Has("*", "ParentOf", x.id));
         }
         else
         {
-            var childrenIds = conns.filter(x => x.A === id && x.type === "Hierarchy").map(x => x.B);
-            items = headers.filter(x => {return childrenIds.findIndex(y => y === x.id) != -1;})
+            items = headers.filter(x => conns.Has(id, "ParentOf", x.id));
         }
 
         if(items.length == 0)
@@ -119,7 +120,7 @@ function JournalView(props)
         }
 
         return items.map((obj) => {
-            const isPage = conns.filter(i => i.A === obj.id && i.type === "Extension").length != 0;
+            const isPage = conns.Has(obj.id, "ExtendedBy", "*");
 
             return <TreeItem key={obj.id} 
             nodeId={obj.id} 
@@ -135,7 +136,7 @@ function JournalView(props)
     function afterSelect(id)
     {
         setSelectedId(id);
-        const isPage = conns.filter(i => i.A === id && i.type === "Extension").length != 0;
+        const isPage = conns.Has(id, "ExtendedBy", "*");
         if(isPage)
         {
             setSelectedItemIsPage(true);
@@ -228,8 +229,7 @@ function JournalView(props)
         setInClearDialog(false);
         setUpdating(true);
 
-        var childrenIds = conns.filter(x => x.A === selectedId && x.type === "Hierarchy").map(x => x.B);
-        var items = headers.filter(x => {return childrenIds.findIndex(y => y === x.id) != -1;})
+        var items = headers.filter(x => conns.Has(selectedId, "ParentOf", x.id));
 
         items.forEach(element => {
             Materia.postDelete(element.id);

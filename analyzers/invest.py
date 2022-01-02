@@ -24,7 +24,6 @@ def format_exception(e):
 def materiaReq(r):
     p = subprocess.Popen(["/home/snake/m4tools", json.dumps(r)], stdout=subprocess.PIPE)
     res = p.stdout.read()
-    print(".")
     return json.loads(res)
 
 def first(predicate, seq):
@@ -166,6 +165,12 @@ def proposeTrades(currencyList):
     for x in stocksHaveTmp:
         stocksHave[x["ticker"]] = x
 
+    for i, (ticker, stock) in enumerate(stocksHave.items()):
+        if(int(stock["amount"]) != 0):
+            print("{}: {}".format(ticker, stock["amount"]))
+
+    print("---")
+
     req = {
         "operation": "query",
         "ids": ["portfolio_goal"]
@@ -180,6 +185,9 @@ def proposeTrades(currencyList):
 
         stocksGoal[x["ticker"]] = x
         stocksGoal[x["ticker"]]["priority"] = int(x["id"])
+
+    for i, (ticker, stock) in enumerate(stocksGoal.items()):
+        print("{}: {}".format(ticker, stock["amount"]))
 
     # Determine stocks to sell
     stocksToSell = []
@@ -197,7 +205,9 @@ def proposeTrades(currencyList):
     # Determine stocks to buy
     stocksToBuy = []
     for i, (ticker, stock) in enumerate(stocksGoal.items()):
-        stockTargetAmount = int(float(stock["amount"])) + 1
+        stockTargetAmount = int(float(stock["amount"]))
+        if (stockTargetAmount < 1):
+            stockTargetAmount = 1
         if not ticker in stocksHave:
             stocksToBuy.append((ticker, stockTargetAmount, stock["priority"]))
         else:
@@ -306,8 +316,8 @@ def main():
     currencyResp = materiaReq(req)
     currencyList = currencyResp["object_list"]
 
-    calculatePEandAddDataPoint(currencyList)
-    updateTargets(currencyList)
+    #calculatePEandAddDataPoint(currencyList)
+    #updateTargets(currencyList)
     proposeTrades(currencyList)
 
 if __name__ == "__main__":

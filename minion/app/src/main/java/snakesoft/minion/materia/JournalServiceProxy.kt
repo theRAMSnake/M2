@@ -17,7 +17,7 @@ data class JournalContentItem(
 )
 
 @Serializable
-data class JournalContent(val id: String, val typename: String, val object_list: List<JournalContentItem>, val connections: List<Connection>)
+data class JournalContent(val id: String, val typename: String, val object_list: List<JournalContentItem>, val connection_list: List<Connection>)
 
 class JournalServiceProxy(private val mMateriaConnection: MateriaConnection) {
 
@@ -44,7 +44,7 @@ class JournalServiceProxy(private val mMateriaConnection: MateriaConnection) {
     @Throws(MateriaUnreachableException::class)
     fun loadPage(id: String): String
     {
-        val jsonData = "{\"operation\": \"query\", \"filter\": \"IS(journal_content) AND .headerId = \\\"${id}\\\"\"}"
+        val jsonData = "{\"operation\": \"query\", \"filter\": \"IS(journal_content) AND Extends(${id})\"}"
         val resp = mMateriaConnection.sendMessage(jsonData)
         if (resp.contains("object_list\":\"\""))
         {

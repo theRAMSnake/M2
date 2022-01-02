@@ -19,11 +19,9 @@ public:
     void onCalendarReferenceCompleted(const Id& id);
 
 private:
-    void handleNodeBeforeDelete(Object& obj);
     void handleNodeChanging(const Object& before, Object& after);
 
     void validateNode(Object& obj);
-    void validateLink(Object& obj);
 
     ObjectManager& mOm;
     RewardSS& mReward;

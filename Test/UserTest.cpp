@@ -18,8 +18,7 @@ protected:
    std::shared_ptr<materia::ICore3> mCore;
 };
 
-//Disabled until strategy migration to connections is finished
-/*BOOST_FIXTURE_TEST_CASE(CompleteGoalNode, UserTest) 
+BOOST_FIXTURE_TEST_CASE(CompleteGoalNode, UserTest) 
 {
    //Create goal node
    {
@@ -163,7 +162,7 @@ BOOST_FIXTURE_TEST_CASE(CompleteCounterFull, UserTest)
 
    //Check points
    BOOST_CHECK_EQUAL(100, queryVar("reward.points", *mCore));
-}*/
+}
 
 BOOST_FIXTURE_TEST_CASE(AdvanceCalendar, UserTest) 
 {
