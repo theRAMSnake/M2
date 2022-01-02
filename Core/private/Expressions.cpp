@@ -200,6 +200,18 @@ Value evaluateFunctor(const std::string& name, const std::string& arg, const Obj
     {
         return object.getType().name == arg;
     }
+    else if(name == "RootElement")
+    {
+        auto objCons = cons.get(object.getId());
+        for(auto& c : objCons)
+        {
+            if(c.b == object.getId() && c.type == ConnectionType::Hierarchy)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
     else if(name == "ParentOf")
     {
         return evaluateConnectionsFunctor(object.getId(), arg, ConnectionType::Hierarchy, cons);
