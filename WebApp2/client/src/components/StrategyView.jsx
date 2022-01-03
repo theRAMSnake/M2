@@ -788,7 +788,7 @@ function StrategyView(props)
                 params: {A: links[pos].A, B: links[pos].B, type: "Requirement"}
             }
 
-            Materia.post(req);
+            Materia.exec(req, (u) => {});
         }
         
         loadGraph(path[path.length - 1].id, () => {});
@@ -809,10 +809,22 @@ function StrategyView(props)
         Materia.exec(req, (res) => {
 
             var newId = res.result_id;
+
+            if(graphId.length > 0)
+            {
+                var link = {A: graphId, B: res.result_id, type: "Hierarchy"}
+                var linkReq = {
+                    operation: "create",
+                    typename: "connection",
+                    params: link
+                }
+                Materia.exec(linkReq, (u) => {});
+            }
+
             //Remove all outgoing links
             //Connect to new node
             //Connect new node with removed links
-            var links = graphData.links.filter(x => x.source === selectedNode.id).map(y => {return {idFrom: newId, idTo: y.target}});
+            var links = graphData.links.filter(x => x.source === selectedNode.id).map(y => {return {A: newId, B: y.target}});
             links.push({A: selectedNode.id, B: newId});
 
             var toRemove = graphData.links.filter(x => x.source === selectedNode.id);
@@ -836,6 +848,16 @@ function StrategyView(props)
 
         Materia.exec(req, (res) => {
 
+            if(graphId.length > 0)
+            {
+                var link = {A: graphId, B: res.result_id, type: "Hierarchy"}
+                var linkReq = {
+                    operation: "create",
+                    typename: "connection",
+                    params: link
+                }
+                Materia.exec(linkReq, (u) => {});
+            }
             var newId = res.result_id;
             //Make same set of links for new node
             var inLinks = graphData.links.filter(x => x.target === selectedNode.id).map(y => {return {B: newId, A: y.source}});
