@@ -128,6 +128,10 @@ function AddItemDialog(props)
             var result = rsp;
             if(result.result_id)
             {
+                if(props.onCreated)
+                {
+                    props.onCreated(result.result_id);
+                }
                 props.onClose(e);
             }
             else

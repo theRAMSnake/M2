@@ -899,6 +899,17 @@ function StrategyView(props)
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+    function onCalendarReferenceCreated(id)
+    {
+        var link = {A: id, B: selectedNode.id, type: "Reference"}
+        var linkReq = {
+            operation: "create",
+            typename: "connection",
+            params: link
+        }
+        Materia.exec(linkReq, (u) => {});
+    }
+
     function onClearDialogOk()
     {
         setShowClearDialog(false);
@@ -916,7 +927,7 @@ function StrategyView(props)
         <div>
         <Backdrop open={updating}><CircularProgress color="inherit"/></Backdrop>
         {showAddDialog && <AddNodeDialog onClose={onAddDialogClosed} onOk={onAddDialogOk}/>}
-        {showAddReferenceDialog && <AddItemDialog onClose={onAddDialogClosed} selectedType="calendar_item" init={{entityTypeChoice: "StrategyNodeReference", text: selectedNode.title, nodeReference: selectedNode.id}}/>}
+        {showAddReferenceDialog && <AddItemDialog onClose={onAddDialogClosed} onCreated={onCalendarReferenceCreated} selectedType="calendar_item" init={{entityTypeChoice: "StrategyNodeReference", text: selectedNode.title}}/>}
         <ConfirmationDialog open={inDeleteDialog} question="delete object" caption="confirm deletion" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
         <ConfirmationDialog open={showClearDialog} question="clear it" caption="confirm clear" onNo={onClearDialogCancel} onYes={onClearDialogOk} />
         <Grid container direction="row" justify="space-around" alignItems="flex-start">
