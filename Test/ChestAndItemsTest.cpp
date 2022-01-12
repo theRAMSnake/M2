@@ -242,3 +242,41 @@ BOOST_FIXTURE_TEST_CASE( TestGen100Chests, ChestAndItemsTest )
        deleteAll("reward_modifier", *mCore); 
    }
 }
+
+BOOST_FIXTURE_TEST_CASE( TestNegativeTokens, ChestAndItemsTest ) 
+{
+   for(int i = 0; i < 100000; ++i)
+   {
+       boost::property_tree::ptree create;
+       create.put("operation", "create");
+       create.put("typename", "reward_item");
+       create.put("params.amount", -500);
+       create.put("params.name", "A Token");
+
+       mCore->executeCommandJson(writeJson(create));
+
+       grantChest(); 
+       auto result = openChest();
+
+       BOOST_CHECK(result);
+
+       auto chestType = result->get<std::string>("chestType");
+
+       if(chestType == "token")
+       {
+           //Expect exactly one stacked item
+           BOOST_CHECK_EQUAL(1, count(queryAll("reward_item", *mCore)));
+           auto item = queryFirst("reward_item", *mCore);
+
+           BOOST_CHECK_EQUAL("A Token", item.get<std::string>("name"));
+           BOOST_CHECK_EQUAL(-500 + 25*2, item.get<int>("amount"));
+
+           return;
+       }
+
+       deleteAll("reward_item", *mCore); 
+       deleteAll("reward_modifier", *mCore); 
+   }
+
+   BOOST_CHECK(false);
+}

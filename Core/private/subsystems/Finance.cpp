@@ -173,7 +173,7 @@ FinanceSS::FinanceSS(ObjectManager& om, RewardSS& reward, CommonSS& common)
 
 void FinanceSS::onNewDay(const boost::gregorian::date& date)
 {
-   performFinancialAnalisys(date);
+   //performFinancialAnalisys(date);
 }
 
 void FinanceSS::onNewWeek()
@@ -205,7 +205,8 @@ std::vector<TypeDef> FinanceSS::getTypes()
         {"categoryId", Type::Reference, {}, "finance_category"},
         {"typeChoice", Type::Choice, {"Spending", "Earning"}},
         {"details", Type::String},
-        {"amountEuroCents", Type::Money},
+        //{"amountEuroCents", Type::Money},
+        {"value", Type::Money_v2},
         {"timestamp", Type::Timestamp}
         }});
 
