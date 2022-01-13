@@ -423,6 +423,7 @@ BOOST_FIXTURE_TEST_CASE( TestJournalIndexUpdate, NewAPITest )
     tr = readJson<boost::property_tree::ptree>(r);
     for(auto& v : tr.get_child("object_list"))
     {
+        std::cout << v.second.get<int>("modified");
         BOOST_CHECK(oldTs != v.second.get<int>("modified"));
         oldTs = v.second.get<int>("modified");
     }

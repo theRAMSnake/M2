@@ -15,11 +15,6 @@ public:
     std::vector<CommandDef> getCommandDefs() override;
 
 private:
-    void handleJournalContentItemChange(Object& obj);
-    void handleJournalContentDeleted(Object& obj);
-    void handleJournalContentCreated(Object& obj);
-
-    void updateHeaderModifiedTime(const Id& pageId);
 
     ObjectManager& mOm;
 };

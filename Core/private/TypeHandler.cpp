@@ -120,6 +120,8 @@ void TypeHandler::modify(const Id id, const IValueProvider& provider)
 
     mType.handlers.onChanging(obj, newObj);
 
+    newObj["modified"] = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())};
+
     mStorage->store(id, newObj.toJson());
     mPool.find(id)->second = newObj;
 
@@ -132,6 +134,8 @@ void TypeHandler::modify(const Object& obj)
     Object newObj(obj);
 
     mType.handlers.onChanging(oldObj, newObj);
+
+    newObj["modified"] = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())};
 
     mStorage->store(obj.getId(), obj.toJson());    
     mPool.find(obj.getId())->second = newObj;

@@ -128,6 +128,18 @@ void ObjectManager::modify(const Id id, const IValueProvider& provider)
         if(h.second->contains(id))
         {
             h.second->modify(id, provider);
+
+            //Backpropagade extensions
+            auto connections = mConnections.get(id);
+
+            for(auto c : connections)
+            {
+                if(c.b == id && c.type == ConnectionType::Extension)
+                {
+                    modify(get(c.a));
+                    break; //One extension only expected
+                }
+            }
             break;
         }
     }
@@ -140,6 +152,17 @@ void ObjectManager::modify(const Object& obj)
         if(h.second->contains(obj.getId()))
         {
             h.second->modify(obj);
+            //Backpropagade extensions
+            auto connections = mConnections.get(obj.getId());
+
+            for(auto c : connections)
+            {
+                if(c.b == obj.getId() && c.type == ConnectionType::Extension)
+                {
+                    modify(get(c.a));
+                    break; //One extension only expected
+                }
+            }
             break;
         }
     }

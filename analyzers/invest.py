@@ -123,13 +123,12 @@ def updateTargets(currencyList, totalValue):
     avgPerDay = (fullYearlyPE - invPerYear) / 365
 
     #2. Calculate percentage of salary
-    #Note: salary is stored in money_v1, i.e. amount of euro cents
     req = {
         "operation": "query",
         "ids": ["financial_report"]
     }
     resp = materiaReq(req)
-    salaryPerDay = Money("{}EUR".format(float(resp["object_list"][0]["Salary"]["total"]) / 100), currencyList) / 365
+    salaryPerDay = Money(resp["object_list"][0]["Salary"]["total"], currencyList) / 365
 
     #3. Update total invested value of all time
     req = {
