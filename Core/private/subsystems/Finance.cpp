@@ -41,13 +41,36 @@ std::string getDateStr(const boost::gregorian::date src)
    return os.str();
 }
 
+Money toEur(const Money& src, const std::vector<Object>& currencies)
+{
+    Money result = src;
+
+    if(result.currency != "EUR")
+    {
+        auto pos = std::find_if(currencies.begin(), currencies.end(), [&src](const Object& x){
+                auto str = x["name"].get<Type::String>();
+                return str == src.currency;
+            });
+
+        if(pos == currencies.end())
+        {
+            throw std::runtime_error("Unknown currency: " + src.currency);
+        }
+
+        auto mod = (*pos)["conversionRateToEur"].get<Type::Double>();
+        result /= mod;
+    }
+
+    return result;
+}
+
 void FinanceSS::performFinancialAnalisys(const boost::gregorian::date& newDate)
 {
-   int grandTotal = 0;
-   unsigned int totalEarnings = 0;
-   unsigned int totalSpendings = 1;
-   std::map<Id, std::map<boost::gregorian::date, int>> amountByCategory;
-   std::map<boost::gregorian::date, int> total_per_month;
+   Money grandTotal;
+   Money totalEarnings;
+   Money totalSpendings;
+   std::map<Id, std::map<boost::gregorian::date, Money>> amountByCategory;
+   std::map<boost::gregorian::date, Money> total_per_month;
    std::map<boost::gregorian::date, int> months;
 
    auto date = alignToStartOfMonth(newDate);
@@ -60,13 +83,14 @@ void FinanceSS::performFinancialAnalisys(const boost::gregorian::date& newDate)
 
    auto categories = mOm.getAll("finance_category");
    auto events = mOm.getAll("finance_event");
+   auto currencies = mOm.getAll("currency");
 
    for(auto& ev : events)
    {
       if(isWithinLastYear(ev))
       {
          auto month = getMonthAlignment(ev);
-         auto amount = ev["amountEuroCents"].get<Type::Money>();
+         auto amount = toEur(ev["value"].get<Type::Money_v2>(), currencies);
          auto catId = ev["categoryId"].toId();
          if(ev["typeChoice"].get<Type::Choice>() == "Spending")
          {
@@ -94,8 +118,8 @@ void FinanceSS::performFinancialAnalisys(const boost::gregorian::date& newDate)
       return;
    }
 
-   auto balance = static_cast<int>(totalEarnings) - static_cast<int>(totalSpendings);
-   auto ratio = static_cast<double>(totalEarnings) / totalSpendings;
+   auto balance = totalEarnings - totalSpendings;
+   auto ratio = totalEarnings / totalSpendings;
    std::string status;
 
    if(ratio > 1.5)
@@ -121,7 +145,7 @@ void FinanceSS::performFinancialAnalisys(const boost::gregorian::date& newDate)
    else
    {
       status = "Critical";
-      auto p = balance / 1000000.0; // 1% per 100 EUR
+      auto p = balance.base / 10000.0; // 1% per 100 EUR
       mReward.setMod(Id("mod.finance"), "Bad finance", p);
    }
 
@@ -139,14 +163,14 @@ void FinanceSS::performFinancialAnalisys(const boost::gregorian::date& newDate)
 
       curCatBreakdown["name"] = catName;
       
-      unsigned int total = 0;
+      Money total;
       for(auto m : d.second)
       {
          total += m.second;
          curCatBreakdown[getDateStr(m.first)] = m.second;
       }
 
-      curCatBreakdown["total"] = static_cast<int>(total);
+      curCatBreakdown["total"] = total;
 
       obj.setChild(catName, curCatBreakdown);
    }
@@ -173,7 +197,7 @@ FinanceSS::FinanceSS(ObjectManager& om, RewardSS& reward, CommonSS& common)
 
 void FinanceSS::onNewDay(const boost::gregorian::date& date)
 {
-   //performFinancialAnalisys(date);
+   performFinancialAnalisys(date);
 }
 
 void FinanceSS::onNewWeek()

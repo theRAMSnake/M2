@@ -31,9 +31,75 @@ struct Time
 
 struct Money
 {
-    std::string currency;
-    int base;
-    int coins;
+    std::string currency = "EUR";
+    int base = 0;
+    int coins = 0;
+
+    template<class T>
+    Money& operator /=(const T& modifier)
+    {
+        fromFullValue(toFullValue() / modifier);
+
+        return *this;
+    }
+
+    Money& operator -=(const Money& other)
+    {
+        if(currency != other.currency)
+        {
+            throw std::runtime_error("Cannot perform operation on money of different currency");
+        }
+
+        fromFullValue(toFullValue() - other.toFullValue());
+
+        return *this;
+    }
+
+    Money operator -(const Money& other)
+    {
+        if(currency != other.currency)
+        {
+            throw std::runtime_error("Cannot perform operation on money of different currency");
+        }
+
+        Money result;
+        result.fromFullValue(toFullValue() - other.toFullValue());
+        return result;
+    }
+
+    double operator /(const Money& other)
+    {
+        if(currency != other.currency)
+        {
+            throw std::runtime_error("Cannot perform operation on money of different currency");
+        }
+
+        return static_cast<double>(toFullValue()) / other.toFullValue();
+    }
+
+    Money& operator +=(const Money& other)
+    {
+        if(currency != other.currency)
+        {
+            throw std::runtime_error("Cannot perform operation on money of different currency");
+        }
+
+        fromFullValue(toFullValue() + other.toFullValue());
+
+        return *this;
+    }
+
+private:
+    int toFullValue() const
+    {
+        return base * 100 + coins;
+    }
+
+    void fromFullValue(const int fv)
+    {
+        base = fv / 100;
+        coins = std::abs(fv % 100);
+    }
 };
 
 struct Period
