@@ -42,13 +42,13 @@ function getCell(field, obj)
     }
 
     return <TableCell>
-        {obj[field] && obj[field] / 100}
+        {obj[field] && parseFloat(obj[field])}
     </TableCell>
 }
 
 function getCategoryRow(field, value, keys)
 {
-    if(field === 'id' || field === 'status' || field === 'typename' || field === 'balance' || field === 'totalPerMonth')
+    if(field === 'id' || field === 'status' || field === 'typename' || field === 'balance' || field === 'totalPerMonth' || field === 'modified')
     {
         return (<div/>);
     }
@@ -56,7 +56,7 @@ function getCategoryRow(field, value, keys)
     return <TableRow hover>
         <TableCell>{field}</TableCell>
         {keys.map((obj) => getCell(obj, value))}
-        {!(field === "Total") && <TableCell>{value.total / 100}</TableCell>}
+        {!(field === "Total") && <TableCell>{parseFloat(value.total)}</TableCell>}
     </TableRow>
 }
 
@@ -95,7 +95,7 @@ function FinanceView(props)
         <div>{report && ( 
             <Grid  style={{paddingTop:'5px'}} container direction="column" justify="center" alignItems="center">
                 <Typography variant="h6" color={report.status === "Critical" ? "red" : "primary"}>
-                    Status: {report.status}, Balance: {report.balance / 100}€
+                    Status: {report.status}, Balance: {parseFloat(report.balance)}€
                 </Typography>
             </Grid>)}
             {report && getReportTable(report)}
