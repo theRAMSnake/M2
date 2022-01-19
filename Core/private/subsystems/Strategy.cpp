@@ -54,7 +54,6 @@ std::vector<TypeDef> StrategySS::getTypes()
         {"reward", Type::Int}
         }});
     result.back().handlers.onChanging = std::bind(&StrategySS::handleNodeChanging, this, std::placeholders::_1, std::placeholders::_2);
-    result.back().handlers.onValidation = std::bind(&StrategySS::validateNode, this, std::placeholders::_1);
 
     return result;
 }
@@ -73,6 +72,17 @@ std::vector<CommandDef> StrategySS::getCommandDefs()
 
 void StrategySS::handleNodeChanging(const Object& before, Object& after)
 {
+    /*
+     * Triggers:
+     *    0: 
+     *       Type: always
+     *       Condition: .typeChoice = "Counter" AND .value >= .target
+     *       Effect: set {isAchieved, true}  
+     *    1:
+     *       Type: once
+     *       Condition: .isAchieved = True
+     *       Effect: call {}
+     * */
     if(after["typeChoice"].get<Type::Choice>() == "Counter" && after["value"].get<Type::Int>() >= 
         after["target"].get<Type::Int>())
     {
@@ -83,16 +93,6 @@ void StrategySS::handleNodeChanging(const Object& before, Object& after)
         after["isAchieved"].get<Type::Bool>() == true)
     {
         mReward.addPoints(after["reward"].get<Type::Int>());
-    }
-}
-
-void StrategySS::validateNode(Object& obj)
-{
-    //Check type is in the range
-    auto opt = obj["typeChoice"].get<Type::Choice>();
-    if(std::find(allowedTypes.begin(), allowedTypes.end(), opt) == allowedTypes.end())
-    {
-        throw std::runtime_error("Node validation failed: unsupported type");
     }
 }
 

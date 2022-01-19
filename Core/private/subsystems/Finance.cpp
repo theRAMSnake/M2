@@ -59,6 +59,7 @@ Money toEur(const Money& src, const std::vector<Object>& currencies)
 
         auto mod = (*pos)["conversionRateToEur"].get<Type::Double>();
         result /= mod;
+        result.currency = "EUR";
     }
 
     return result;

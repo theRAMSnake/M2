@@ -99,7 +99,6 @@ private:
             break;
 
         case Type::Int:
-        case Type::Money:
             //Any integral type
             if constexpr (std::is_integral<T>::value)
                 return static_cast<std::int64_t>(val);

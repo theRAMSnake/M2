@@ -161,7 +161,6 @@ public:
             switch(t)
             {
                 case Type::Int: return object[mIdentifier].get<Type::Int>();
-                case Type::Money: return object[mIdentifier].get<Type::Money>();
                 case Type::Money_v2: 
                     throw std::runtime_error("Using money v2 in expressions is not supported");
                 case Type::Period: 

@@ -184,9 +184,10 @@ def proposeTrades(currencyList):
     }
     resp = materiaReq(req)
     stocksGoal = list(resp["object_list"][0].values())
+    print(stocksGoal)
     for x in stocksGoal:
         #Skip incompatible fields
-        if x == "object" or x == "portfolio_goal":
+        if not x is dict:
             continue
 
         tick = x["ticker"]
@@ -253,7 +254,7 @@ def proposeTrades(currencyList):
         sellCount = stock["amount"] > stock["goal"]
         if sellCount > 0:
             totalSell = totalSell + stock["price"] * (sellCount)
-            transactionString.append(str(sellCount) + "x" + stock["ticker"] + " ")
+            transactionString += (str(sellCount) + "x" + stock["ticker"] + " ")
 
     # Find what we can buy on those money
     allTickers = filter(lambda x: allstocks[x]["priority"] >= 0, allstocks.keys())
@@ -267,8 +268,8 @@ def proposeTrades(currencyList):
             if (totalBuy + stock["price"]) < totalSell:
                 if anyBuys == False:
                     anyBuys = True
-                    transactionString.append(" BUY: ")
-                transactionString.append(t)
+                    transactionString += " BUY: "
+                transactionString += t
                 discrepancy -= 1
                 totalBuy = totalBuy + stock["price"]
             else:

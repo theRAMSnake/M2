@@ -5,6 +5,7 @@
 namespace materia
 {
 
+Money parseMoney(const std::string& src);
 class JsonRestorationProvider : public IValueProvider
 {
 public:

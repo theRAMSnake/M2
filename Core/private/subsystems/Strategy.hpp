@@ -21,8 +21,6 @@ public:
 private:
     void handleNodeChanging(const Object& before, Object& after);
 
-    void validateNode(Object& obj);
-
     ObjectManager& mOm;
     RewardSS& mReward;
 };

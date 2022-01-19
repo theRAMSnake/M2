@@ -18,7 +18,6 @@ enum class Type
     StringArray,
     Timestamp,
     Period,
-    Money,
     Money_v2,
     Reference,
     Choice
@@ -177,12 +176,6 @@ template<>
 struct TypeTraits<Type::Choice>
 {
    using Class = std::string;
-};
-
-template<>
-struct TypeTraits<Type::Money>
-{
-   using Class = std::int64_t;
 };
 
 template<>

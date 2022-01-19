@@ -78,7 +78,6 @@ void Object::init()
         switch(f.type)
         {   
             case Type::Int: 
-            case Type::Money: 
                 mFields.push_back({f, false, std::int64_t(0)}); 
                 break;
 
@@ -258,7 +257,6 @@ void Object::fillObject(boost::property_tree::ptree& p, const Object& o)
         switch(f.getType())
         {
             case Type::Int: p.put(f.getName(), f.get<Type::Int>());break;
-            case Type::Money: p.put(f.getName(), f.get<Type::Money>());break;
             case Type::Money_v2: p.put(f.getName(), std::to_string(f.get<Type::Money_v2>()));break;
             case Type::Timestamp: p.put(f.getName(), f.get<Type::Timestamp>().value);break;
             case Type::Period: p.put(f.getName(), std::to_string(f.get<Type::Period>()));break;

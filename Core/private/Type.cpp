@@ -9,7 +9,6 @@ std::string to_string(const Type t)
     switch(t)
     {   
         case Type::Int: return "int";
-        case Type::Money: return "money";
         case Type::Money_v2: return "money_v2";
         case Type::Double: return "double";
         case Type::Bool: return "bool";
