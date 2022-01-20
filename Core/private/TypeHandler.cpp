@@ -38,6 +38,8 @@ Object TypeHandler::create(const std::optional<Id> id, const IValueProvider& pro
     provider.populate(newObj);
     mType.handlers.onValidation(newObj);
 
+    newObj["modified"] = Time{std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())};
+
     mStorage->store(newId, newObj.toJson());
     mPool.insert({newId, newObj});
 

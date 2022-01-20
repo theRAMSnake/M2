@@ -386,7 +386,6 @@ BOOST_FIXTURE_TEST_CASE( TestJournalIndexUpdate, NewAPITest )
     create.put("operation", "create");
     create.put("typename", "journal_header");
     create.put("defined_id", "id");
-    create.put("params.modified", 555);
 
     mCore->executeCommandJson(writeJson(create));
 
@@ -394,11 +393,6 @@ BOOST_FIXTURE_TEST_CASE( TestJournalIndexUpdate, NewAPITest )
     query.put("operation", "query");
     query.put("filter", "IS(journal_header)");
     auto tr = readJson<boost::property_tree::ptree>(mCore->executeCommandJson(writeJson(query)));
-
-    for(auto& v : tr.get_child("object_list"))
-    {
-        BOOST_CHECK_EQUAL(555, v.second.get<int>("modified"));
-    }
 
     boost::property_tree::ptree createPage;
     createPage.put("operation", "create");

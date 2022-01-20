@@ -2,6 +2,7 @@
 
 import subprocess
 import json
+import time
 
 def materiaReq(r):
     p = subprocess.Popen(["/home/snake/m4tools", json.dumps(r)], stdout=subprocess.PIPE)
@@ -24,7 +25,9 @@ class Migration:
         objects = resp["object_list"]
         s._resultItems = []
         for x in objects:
-            s._resultItems.append(s._ftor(x))
+            o = s._ftor(x)
+            if o:
+                s._resultItems.append(o)
 
     def print(s):
         for x in s._resultItems:
@@ -51,15 +54,15 @@ class Migration:
 
 
 def slUpgrade(obj):
-    newObj = {}
-    newObj["typename"] = "connection"
-    newObj["A"] = obj["parentNodeId"]
-    newObj["B"] = obj["id"]
-    newObj["type"] = "Hierarchy"
-    return newObj
+    newObj = obj
+    if not "modified" in newObj:
+        newObj["modified"] = int(time.time())
+        return newObj
+    else:
+        return None
 
 def main():
-    m = Migration("IS(strategy_node) AND .parentNodeId contains \"-\"", slUpgrade, True)
+    m = Migration("IS(journal_header)", slUpgrade, False)
     m.prepare()
     m.print()
     result = input('Apply changes? y/n: ')
