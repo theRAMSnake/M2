@@ -4,6 +4,7 @@
 #include <vector>
 #include <functional>
 #include "Type.hpp"
+#include "ConnectionType.hpp"
 
 namespace materia
 {
@@ -29,12 +30,20 @@ struct EventHandlers
     std::function<void(const Object&, Object&)> onChanging = doNothing2;
 };
 
+struct ConnectionPin
+{
+    std::string typeNameOther;
+    ConnectionType type;
+    std::string description;
+};
+
 struct TypeDef
 {
     std::string name;
     std::string tableName;
     std::vector<FieldDef> fields;
     EventHandlers handlers;
+    std::vector<ConnectionPin> pins;
 };
 
 class TypeSystem

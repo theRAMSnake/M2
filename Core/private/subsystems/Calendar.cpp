@@ -28,10 +28,11 @@ std::vector<TypeDef> CalendarSS::getTypes()
         {"text", Type::String},
         {"timestamp", Type::Timestamp},
         {"recurrency", Type::Period},
-        //{"reccurencyTypeChoice", Type::Choice, {"None", "Weekly", "Monthly", "Quarterly", "Yearly", "Bi-daily", "Daily"}},
         {"entityTypeChoice", Type::Choice, {"Event", "Task", "StrategyNodeReference"}},
-        {"urgencyChoice", Type::Choice, {"Not urgent", "Urgent"}}
-        }});
+        {"urgencyChoice", Type::Choice, {"Not urgent", "Urgent"}}},
+        {},
+        {{"core_value", ConnectionType::Reference, "Core Value"}}
+        });
 
     return result;
 }

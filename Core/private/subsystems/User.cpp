@@ -222,7 +222,14 @@ void UserSS::updatePortfolio()
 
 std::vector<TypeDef> UserSS::getTypes()
 {
-   return {};
+    std::vector<TypeDef> result;
+
+    result.push_back({"core_value", "core_values", {
+        {"name", Type::String},
+        {"color", Type::String}
+        }});
+
+    return result;
 }
 
 std::vector<CommandDef> UserSS::getCommandDefs()

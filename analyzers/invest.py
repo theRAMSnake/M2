@@ -184,11 +184,12 @@ def proposeTrades(currencyList):
     }
     resp = materiaReq(req)
     stocksGoal = list(resp["object_list"][0].values())
-    print(stocksGoal)
     for x in stocksGoal:
         #Skip incompatible fields
-        if not x is dict:
+        print(x)
+        if not "id" in x:
             continue
+        print("+")
 
         tick = x["ticker"]
         goal = int(float(x["amount"]))
@@ -264,6 +265,7 @@ def proposeTrades(currencyList):
     for t in allTickers:
         stock = allstocks[t]
         discrepancy = stock["goal"] - stock["amount"]
+        print("Discrepancy of " + t + " = " + str(discrepancy))
         while discrepancy > 0:
             if (totalBuy + stock["price"]) < totalSell:
                 if anyBuys == False:

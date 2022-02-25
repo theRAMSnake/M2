@@ -114,7 +114,7 @@ struct Period
     {
         return Period();
     }
-    
+
     bool operator == (const Period& other) const
     {
         return days == other.days && months == other.months && years == other.years;

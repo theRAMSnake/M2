@@ -34,7 +34,6 @@ void StrategySS::onNewDay(const boost::gregorian::date& date)
 
 void StrategySS::onNewWeek()
 {
-    
 }
 
 std::vector<std::string> allowedTypes = {"Goal", "Task", "Counter", "Watch", "Wait"};
@@ -52,7 +51,9 @@ std::vector<TypeDef> StrategySS::getTypes()
         {"value", Type::Int},
         {"target", Type::Int},
         {"reward", Type::Int}
-        }});
+        }, {},
+        {{"core_value", ConnectionType::Reference, "Core Value"}}
+        });
     result.back().handlers.onChanging = std::bind(&StrategySS::handleNodeChanging, this, std::placeholders::_1, std::placeholders::_2);
 
     return result;
@@ -72,18 +73,7 @@ std::vector<CommandDef> StrategySS::getCommandDefs()
 
 void StrategySS::handleNodeChanging(const Object& before, Object& after)
 {
-    /*
-     * Triggers:
-     *    0: 
-     *       Type: always
-     *       Condition: .typeChoice = "Counter" AND .value >= .target
-     *       Effect: set {isAchieved, true}  
-     *    1:
-     *       Type: once
-     *       Condition: .isAchieved = True
-     *       Effect: call {}
-     * */
-    if(after["typeChoice"].get<Type::Choice>() == "Counter" && after["value"].get<Type::Int>() >= 
+    if(after["typeChoice"].get<Type::Choice>() == "Counter" && after["value"].get<Type::Int>() >=
         after["target"].get<Type::Int>())
     {
         after["isAchieved"] = true;

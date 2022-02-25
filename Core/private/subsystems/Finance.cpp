@@ -230,7 +230,6 @@ std::vector<TypeDef> FinanceSS::getTypes()
         {"categoryId", Type::Reference, {}, "finance_category"},
         {"typeChoice", Type::Choice, {"Spending", "Earning"}},
         {"details", Type::String},
-        //{"amountEuroCents", Type::Money},
         {"value", Type::Money_v2},
         {"timestamp", Type::Timestamp}
         }});

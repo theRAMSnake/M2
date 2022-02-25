@@ -364,7 +364,7 @@ std::shared_ptr<Expression> createValueExpression(const Token t)
             return std::make_shared<FunctorExpression>(t);
 
         default:
-            throw std::runtime_error(fmt::format("Expression of type {} is not supported", t.type));
+            throw std::runtime_error(fmt::format("Expression of type {} is not supported", static_cast<int>(t.type)));
     }
 }
 
@@ -416,7 +416,7 @@ std::shared_ptr<Expression> createBinaryExpression(std::shared_ptr<Expression> a
             return std::make_shared<BinaryExpression>(arg1, arg2, [](auto a1, auto a2) { return std::get<bool>(a1) || std::get<bool>(a2);});
 
         default:
-            throw std::runtime_error(fmt::format("Binary expression of type {} is not supported", t));
+            throw std::runtime_error(fmt::format("Binary expression of type {} is not supported", static_cast<int>(t)));
     }
 }
 

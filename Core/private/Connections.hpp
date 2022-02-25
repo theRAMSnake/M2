@@ -1,24 +1,10 @@
 #pragma once
 #include "Database.hpp"
 #include "Object.hpp"
+#include "ConnectionType.hpp"
 
 namespace materia
 {
-
-enum class ConnectionType
-{
-    //A is parent, B is child. Recursive hierarchy is not allowed. B is owned by A.
-    Hierarchy,
-
-    //B extends A. There can be only one extension of A. Non recursive. B is owned by A.
-    Extension,
-
-    //B refered by A. No restrictions.
-    Reference,
-
-    //B requires A. No loops allowed. A and B are both independent of each other.
-    Requirement
-};
 
 struct Connection
 {
@@ -32,6 +18,7 @@ bool operator < (const Connection& a, const Connection& b);
 
 Connection jsonToConnection(const Id& id, const std::string& json);
 Object connectionToObject(const Connection& src);
+std::string toString(const ConnectionType& ct);
 
 class Connections
 {
