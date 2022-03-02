@@ -44,19 +44,24 @@ Connection jsonToConnection(const Id& id, const std::string& json)
 Connections::Connections(Database& db)
 : mStorage(db.getTable("connections"))
 {
-    mStorage->foreach([&](std::string id, std::string json) 
+    mStorage->foreach([&](std::string id, std::string json)
     {
-        mConnections.push_back(jsonToConnection(id, json));
+        auto newConn = jsonToConnection(id, json);
+        mConnections[newConn.a].push_back(newConn);
+        mConnections[newConn.b].push_back(newConn);
     });
 }
 
 void Connections::remove(const Id& id)
 {
-    auto pos = find_by_id(mConnections, id);
-    if(pos != mConnections.end())
+    for(auto& cmap : mConnections)
     {
-        mConnections.erase(pos);
-        mStorage->erase(id);
+        auto pos = find_by_id(cmap.second, id);
+        if(pos != cmap.second.end())
+        {
+            cmap.second.erase(pos);
+            mStorage->erase(id);
+        }
     }
 }
 
@@ -67,11 +72,12 @@ void Connections::validate(const Id& a, const Id& b, const ConnectionType type) 
         throw std::runtime_error("Cannot create connection with a == b");
     }
 
-    auto pos = std::find_if(mConnections.begin(), mConnections.end(), [&](auto x){
-            return x.a == a && x.b == b && x.type == type;
+    auto subset = get(a);
+    auto pos = std::find_if(subset.begin(), subset.end(), [&](auto x){
+            return x.b == b && x.type == type;
         });
 
-    if(pos != mConnections.end())
+    if(pos != subset.end())
     {
         throw std::runtime_error(fmt::format("Connection already exists: {} to {} of type {}", a.getGuid(), b.getGuid(), static_cast<int>(type)));
     }
@@ -93,10 +99,10 @@ void Connections::validate(const Id& a, const Id& b, const ConnectionType type) 
     if(type == ConnectionType::Extension)
     {
         //Make sure a does not already have an extension
-        auto ext = std::find_if(mConnections.begin(), mConnections.end(), [&](auto x){
+        auto ext = std::find_if(subset.begin(), subset.end(), [&](auto x){
                 return x.a == a && x.type == ConnectionType::Extension;
             });
-        if(ext != mConnections.end())
+        if(ext != subset.end())
         {
             throw std::runtime_error(fmt::format("Cannot create connection: {} already extended", a.getGuid()));
         }
@@ -172,27 +178,27 @@ Id Connections::create(const Id& a, const Id& b, const ConnectionType type)
     validate(a, b, type);
 
     auto id = Id::generate();
-    mConnections.push_back({id, a, b, type});
+    auto newConn = Connection{id, a, b, type};
+    mConnections[a].push_back(newConn);
+    mConnections[b].push_back(newConn);
 
-    mStorage->store(id, connectionToObject(mConnections.back()).toJson());
+    mStorage->store(id, connectionToObject(newConn).toJson());
     return id;
 }
 
 std::vector<Connection> Connections::get(const Id& a) const
 {
-    std::vector<Connection> subset;
-
-    std::copy_if(mConnections.begin(), mConnections.end(), std::back_inserter(subset), [&](auto x)
+    auto pos = mConnections.find(a);
+    if(pos != mConnections.end())
     {
-        return x.a == a || x.b == a;
-    });
-
-    return subset;
+        return pos->second;
+    }
+    return {};
 }
 
 std::optional<Id> Connections::getPredecessorOf(const Id& id, const ConnectionType type) const
 {
-    for(const auto& i : mConnections)
+    for(const auto& i : get(id))
     {
         if(i.b == id && i.type == type)
         {
