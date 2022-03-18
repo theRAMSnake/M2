@@ -17,6 +17,18 @@ public:
    }
 
 protected:
+   int getTotalCoinAmount()
+   {
+       auto coins = query("reward.coins", *mCore);
+       int result = 0;
+       result += coins->get<int>("Red");
+       result += coins->get<int>("Blue");
+       result += coins->get<int>("Yellow");
+       result += coins->get<int>("Green");
+       result += coins->get<int>("Purple");
+
+       return result;
+   }
 
    std::shared_ptr<materia::ICore3> mCore;
 };
@@ -362,4 +374,167 @@ BOOST_FIXTURE_TEST_CASE( AddPointsDebtTest, RewardTest )
       BOOST_CHECK_EQUAL(400, queryVar("reward.points", *mCore));
       BOOST_CHECK_EQUAL(0, query("reward.debt", *mCore)->get<double>("value"));
    }
+}
+
+BOOST_FIXTURE_TEST_CASE( GeneratorsTestRandom, RewardTest )
+{
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "object");
+      create.put("defined_id", "reward.coins");
+      create.put("params.Red", 0);
+      create.put("params.Blue", 0);
+      create.put("params.Yellow", 0);
+      create.put("params.Purple", 0);
+      create.put("params.Green", 0);
+
+      expectId(mCore->executeCommandJson(writeJson(create)));
+   }
+
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "reward_generator");
+      create.put("params.value", 1);
+      create.put("params.type", "Random");
+
+      expectId(mCore->executeCommandJson(writeJson(create)));
+   }
+
+   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 1));
+
+   BOOST_CHECK_EQUAL(1, getTotalCoinAmount());
+
+   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 2));
+
+   BOOST_CHECK_EQUAL(2, getTotalCoinAmount());
+
+   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 3));
+
+   BOOST_CHECK_EQUAL(3, getTotalCoinAmount());
+
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "reward_generator");
+      create.put("params.value", 1);
+      create.put("params.type", "Random");
+
+      expectId(mCore->executeCommandJson(writeJson(create)));
+   }
+
+   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 4));
+
+   BOOST_CHECK_EQUAL(5, getTotalCoinAmount());
+
+   deleteAll("reward_generator", *mCore);
+
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "reward_generator");
+      create.put("params.value", -100);
+      create.put("params.type", "Random");
+
+      expectId(mCore->executeCommandJson(writeJson(create)));
+   }
+
+   //Statistically in 100 days there will be no coins anymore
+   for(int i = 0; i < 100; ++i)
+   {
+       mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 4));
+   }
+
+   BOOST_CHECK_EQUAL(0, getTotalCoinAmount());
+}
+
+BOOST_FIXTURE_TEST_CASE( GeneratorsTestSpecific, RewardTest )
+{
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "object");
+      create.put("defined_id", "reward.coins");
+      create.put("params.Red", 0);
+      create.put("params.Blue", 0);
+      create.put("params.Yellow", 0);
+      create.put("params.Purple", 0);
+      create.put("params.Green", 0);
+
+      expectId(mCore->executeCommandJson(writeJson(create)));
+   }
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "reward_generator");
+      create.put("params.value", 1);
+      create.put("params.type", "Specific");
+      create.put("params.color", "Red");
+
+      expectId(mCore->executeCommandJson(writeJson(create)));
+   }
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "reward_generator");
+      create.put("params.value", 2);
+      create.put("params.type", "Specific");
+      create.put("params.color", "Blue");
+
+      expectId(mCore->executeCommandJson(writeJson(create)));
+   }
+
+   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 4));
+   auto coins = query("reward.coins", *mCore);
+   BOOST_CHECK_EQUAL(1, coins->get<int>("Red"));
+   BOOST_CHECK_EQUAL(2, coins->get<int>("Blue"));
+   BOOST_CHECK_EQUAL(0, coins->get<int>("Green"));
+   BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));
+   BOOST_CHECK_EQUAL(0, coins->get<int>("Yellow"));
+
+   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 4));
+   coins = query("reward.coins", *mCore);
+   BOOST_CHECK_EQUAL(2, coins->get<int>("Red"));
+   BOOST_CHECK_EQUAL(4, coins->get<int>("Blue"));
+   BOOST_CHECK_EQUAL(0, coins->get<int>("Green"));
+   BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));
+   BOOST_CHECK_EQUAL(0, coins->get<int>("Yellow"));
+
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "reward_generator");
+      create.put("params.value", -5);
+      create.put("params.type", "Specific");
+      create.put("params.color", "Blue");
+
+      expectId(mCore->executeCommandJson(writeJson(create)));
+   }
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "reward_generator");
+      create.put("params.value", -5);
+      create.put("params.type", "Specific");
+      create.put("params.color", "Green");
+
+      expectId(mCore->executeCommandJson(writeJson(create)));
+   }
+
+   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 4));
+   coins = query("reward.coins", *mCore);
+   BOOST_CHECK_EQUAL(3, coins->get<int>("Red"));
+   BOOST_CHECK(coins->get<int>("Blue") < 2);
+   BOOST_CHECK_EQUAL(0, coins->get<int>("Green"));
+   BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));
+   BOOST_CHECK_EQUAL(0, coins->get<int>("Yellow"));
+
+   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 4));
+   coins = query("reward.coins", *mCore);
+   BOOST_CHECK_EQUAL(4, coins->get<int>("Red"));
+   BOOST_CHECK(coins->get<int>("Blue") < 2);
+   BOOST_CHECK_EQUAL(0, coins->get<int>("Green"));
+   BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));
+   BOOST_CHECK_EQUAL(0, coins->get<int>("Yellow"));
 }

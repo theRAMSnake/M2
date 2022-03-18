@@ -14,6 +14,8 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/cxx11/any_of.hpp>
 
+#include <algorithm>
+
 namespace materia
 {
 
@@ -66,6 +68,13 @@ std::vector<TypeDef> RewardSS::getTypes()
         {"value", Type::Double},
         {"validUntil", Type::Timestamp},
         {"expirable", Type::Bool}
+        }});
+
+    result.push_back({"reward_generator", "reward_generators", {
+        {"desc", Type::String},
+        {"value", Type::Int},
+        {"color", Type::String},
+        {"type", Type::Choice, {"Random", "Specific"}},
         }});
 
     return result;
@@ -400,6 +409,31 @@ void RewardSS::onNewDay(const boost::gregorian::date& date)
           removeMod(o.getId());
        }
     }
+
+    auto coins = mOm.getOrCreate(Id("reward.coins"), "object");
+    for(auto o : mOm.getAll("reward_generator"))
+    {
+        std::string color;
+        if(o["type"].get<Type::Choice>() == "Random")
+        {
+            std::vector<std::string> colors = {"Red", "Green", "Purple", "Yellow", "Blue"};
+            color = colors[Rng::genChoise(colors.size())];
+        }
+        else if(o["type"].get<Type::Choice>() == "Specific")
+        {
+            color = o["color"].get<Type::String>();
+        }
+
+        if(coins.contains(color))
+        {
+            coins[color] = std::max(0, static_cast<int>(coins[color].get<Type::Int>() + o["value"].get<Type::Int>()));
+        }
+        else
+        {
+            //Error
+        }
+    }
+    mOm.modify(coins);
 }
 
 

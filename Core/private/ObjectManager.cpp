@@ -197,7 +197,7 @@ std::vector<Object> ObjectManager::describe() const
         {
             Object pin(*objType, Id::Invalid);
             pin["typeNameOther"] = f.typeNameOther;
-            pin["typte"] = toString(f.type);
+            pin["type"] = toString(f.type);
             pin["description"] = f.description;
 
             pins.push_back(pin);

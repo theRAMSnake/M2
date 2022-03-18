@@ -6,25 +6,17 @@
 #include <string>
 #include <map>
 
+using namespace std;
+
 int main(int argc,  char** argv)
 {
-   std::map<std::string, std::vector<int>> result;
-   std::ifstream stream("/home/snake/Work/cache_dump.txt");
-   std::string feat;
-   int order;
-   int frame;
-   while(stream >> frame >> feat >> order)
-   {
-      result[feat].push_back(order);
-   }
+    auto core = materia::createCore({"/home/snake/materia.totest"});
 
-   for(auto x : result)
-   {
-      std::cout << x.first << ": ";
-      for(auto y : x.second)
-      {
-         std::cout << y << " ";
-      }
-      std::cout << std::endl;
-   }
+    auto start = chrono::steady_clock::now();
+
+    auto responce = core->executeCommandJson("{\"operation\":\"query\",\"filter\":\"IS(strategy_node) AND ChildOf(8735f22a-1bf2-4a43-9cbf-26f9fee35b8b)\"}");
+
+    auto end = chrono::steady_clock::now();
+
+    cout << chrono::duration_cast<chrono::milliseconds>(end-start).count() << " milliseconds" << endl;
 }
