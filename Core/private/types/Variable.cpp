@@ -50,6 +50,10 @@ void Variable::inc(const int value)
 
 int Variable::asInt() const
 {
+    if(mObject["value"].get<Type::String>() == "")
+    {
+        return 0;
+    }
     return mObject["value"].get<Type::Int>();
 }
 

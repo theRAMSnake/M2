@@ -370,14 +370,14 @@ void RewardSS::onNewDay(const boost::gregorian::date& date)
 
     if(wb > 0)
     {
-        setMod(Id("mod.workburden"), "Bad work", -0.2);
+        setModAndGenerator(Id("mod.workburden"), "Bad work", -0.2, -2, "Purple");
     }
     else
     {
-        setMod(Id("mod.workburden"), "Good work", 0.1);
+        setModAndGenerator(Id("mod.workburden"), "Good work", 0.1, 1, "Purple");
     }
 
-    if(date.day_of_week() != boost::gregorian::Sunday && 
+    if(date.day_of_week() != boost::gregorian::Sunday &&
         date.day_of_week() != boost::gregorian::Saturday)
     {
         auto cfg = mOm.getOrCreate(Id("config.reward"), "object");
@@ -391,22 +391,12 @@ void RewardSS::onNewDay(const boost::gregorian::date& date)
         }
     }
 
-    types::Variable points(mOm, Id("reward.points"));
-    if(points < 0)
-    {
-        setMod(Id("mod.punisher"), "Punisher", -0.15);
-    }
-    else
-    {
-        removeMod(Id("mod.punisher"));
-    }
-
     auto curTime = to_time_t(date);
     for(auto o : mOm.getAll("reward_modifier"))
     {
        if(o["expirable"].get<Type::Bool>() && o["validUntil"].get<Type::Timestamp>().value < curTime)
        {
-          removeMod(o.getId());
+           removeModAndGenerator(o.getId());
        }
     }
 
@@ -587,22 +577,43 @@ void RewardSS::addPoints(const int points)
     }
 }
 
-void RewardSS::setMod(const Id& id, const std::string& desc, const double value)
+void RewardSS::setModAndGenerator(const Id& id, const std::string& desc, const double value, const int valueInt, const std::optional<std::string>& color)
 {
-    removeMod(id);
+    removeModAndGenerator(id);
 
-    auto valueProvider = FunctionToValueProviderAdapter([&desc, value](auto& obj)
     {
-        obj["desc"] = desc;
-        obj["value"] = value;
-    });
+        auto valueProvider = FunctionToValueProviderAdapter([&desc, value](auto& obj)
+        {
+            obj["desc"] = desc;
+            obj["value"] = value;
+        });
 
-    mOm.create(id, "reward_modifier", valueProvider);
+        mOm.create(id, "reward_modifier", valueProvider);
+    }
+    {
+        auto valueProvider = FunctionToValueProviderAdapter([&desc, &valueInt, &color](auto& obj)
+        {
+            obj["desc"] = desc;
+            obj["value"] = valueInt;
+            if(color)
+            {
+                obj["type"] = "Specific";
+                obj["color"] = *color;
+            }
+            else
+            {
+                obj["type"] = "Random";
+            }
+        });
+
+        mOm.create(Id("Generator" + id.getGuid()), "reward_generator", valueProvider);
+    }
 }
 
-void RewardSS::removeMod(const Id& id)
+void RewardSS::removeModAndGenerator(const Id& id)
 {
     mOm.destroy(id);
+    mOm.destroy(Id("Generator" + id.getGuid()));
 }
-    
+
 }

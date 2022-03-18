@@ -17,8 +17,8 @@ public:
     std::vector<CommandDef> getCommandDefs() override;
 
     void addPoints(const int points);
-    void setMod(const Id& id, const std::string& desc, const double value);
-    void removeMod(const Id& id);
+    void setModAndGenerator(const Id& id, const std::string& desc, const double value, const int valueInt, const std::optional<std::string>& color);
+    void removeModAndGenerator(const Id& id);
     Object useChest();
 
 private:

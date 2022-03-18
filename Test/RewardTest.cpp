@@ -254,9 +254,6 @@ BOOST_FIXTURE_TEST_CASE( PresetModifiersTest, RewardTest )
 
    BOOST_CHECK(query("mod.workburden", *mCore));
    BOOST_CHECK_EQUAL(-0.2, query("mod.workburden", *mCore)->get<double>("value"));
-
-   BOOST_CHECK(query("mod.punisher", *mCore));
-   BOOST_CHECK_EQUAL(-0.15, query("mod.punisher", *mCore)->get<double>("value"));
 }
 
 BOOST_FIXTURE_TEST_CASE( TestBigCounterRewardWithModsAndChestAssigned, RewardTest ) 
@@ -342,42 +339,21 @@ BOOST_FIXTURE_TEST_CASE( ModifierExpiration, RewardTest )
    BOOST_CHECK(query("non_expirable", *mCore));
 }
 
-BOOST_FIXTURE_TEST_CASE( AddPointsDebtTest, RewardTest ) 
-{
-   set("reward.debt", 5, *mCore);
-
-   {
-      boost::property_tree::ptree rwd;
-      rwd.put("operation", "reward");
-      rwd.put("points", 3);
-      mCore->executeCommandJson(writeJson(rwd));
-
-      BOOST_CHECK_EQUAL(-200, queryVar("reward.points", *mCore));
-
-      BOOST_CHECK_EQUAL(0, query("reward.debt", *mCore)->get<double>("value"));
-   }
-   {
-      boost::property_tree::ptree rwd;
-      rwd.put("operation", "reward");
-      rwd.put("points", 3);
-      mCore->executeCommandJson(writeJson(rwd));
-
-      BOOST_CHECK_EQUAL(100, queryVar("reward.points", *mCore));
-      BOOST_CHECK_EQUAL(0, query("reward.debt", *mCore)->get<double>("value"));
-   }
-   {
-      boost::property_tree::ptree rwd;
-      rwd.put("operation", "reward");
-      rwd.put("points", 3);
-      mCore->executeCommandJson(writeJson(rwd));
-
-      BOOST_CHECK_EQUAL(400, queryVar("reward.points", *mCore));
-      BOOST_CHECK_EQUAL(0, query("reward.debt", *mCore)->get<double>("value"));
-   }
-}
-
 BOOST_FIXTURE_TEST_CASE( GeneratorsTestRandom, RewardTest )
 {
+   boost::property_tree::ptree push;
+   push.put("operation", "push");
+   push.put("listId", "inbox");
+   push.put("value", "val");
+   mCore->executeCommandJson(writeJson(push));
+
+   boost::property_tree::ptree create;
+   create.put("operation", "create");
+   create.put("typename", "calendar_item");
+   create.put("params.timestamp", 25);
+   create.put("params.entityTypeChoice", "Task");
+   mCore->executeCommandJson(writeJson(create));
+
    {
       boost::property_tree::ptree create;
       create.put("operation", "create");
@@ -404,15 +380,15 @@ BOOST_FIXTURE_TEST_CASE( GeneratorsTestRandom, RewardTest )
 
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 1));
 
-   BOOST_CHECK_EQUAL(1, getTotalCoinAmount());
+   BOOST_CHECK_EQUAL(1 + 1, getTotalCoinAmount());
 
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 2));
 
-   BOOST_CHECK_EQUAL(2, getTotalCoinAmount());
+   BOOST_CHECK_EQUAL(2 + 2, getTotalCoinAmount());
 
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 3));
 
-   BOOST_CHECK_EQUAL(3, getTotalCoinAmount());
+   BOOST_CHECK_EQUAL(3 + 3, getTotalCoinAmount());
 
    {
       boost::property_tree::ptree create;
@@ -426,7 +402,7 @@ BOOST_FIXTURE_TEST_CASE( GeneratorsTestRandom, RewardTest )
 
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 4));
 
-   BOOST_CHECK_EQUAL(5, getTotalCoinAmount());
+   BOOST_CHECK_EQUAL(5 + 4, getTotalCoinAmount());
 
    deleteAll("reward_generator", *mCore);
 
@@ -439,18 +415,25 @@ BOOST_FIXTURE_TEST_CASE( GeneratorsTestRandom, RewardTest )
 
       expectId(mCore->executeCommandJson(writeJson(create)));
    }
+   set("work.burden", 500, *mCore);
 
-   //Statistically in 100 days there will be no coins anymore
-   for(int i = 0; i < 100; ++i)
-   {
-       mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 4));
-   }
-
-   BOOST_CHECK_EQUAL(0, getTotalCoinAmount());
 }
 
 BOOST_FIXTURE_TEST_CASE( GeneratorsTestSpecific, RewardTest )
 {
+   boost::property_tree::ptree push;
+   push.put("operation", "push");
+   push.put("listId", "inbox");
+   push.put("value", "val");
+   mCore->executeCommandJson(writeJson(push));
+
+   boost::property_tree::ptree create;
+   create.put("operation", "create");
+   create.put("typename", "calendar_item");
+   create.put("params.timestamp", 25);
+   create.put("params.entityTypeChoice", "Task");
+   mCore->executeCommandJson(writeJson(create));
+   set("work.burden", 500, *mCore);
    {
       boost::property_tree::ptree create;
       create.put("operation", "create");
@@ -493,7 +476,7 @@ BOOST_FIXTURE_TEST_CASE( GeneratorsTestSpecific, RewardTest )
    BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));
    BOOST_CHECK_EQUAL(0, coins->get<int>("Yellow"));
 
-   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 4));
+   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 5));
    coins = query("reward.coins", *mCore);
    BOOST_CHECK_EQUAL(2, coins->get<int>("Red"));
    BOOST_CHECK_EQUAL(4, coins->get<int>("Blue"));
@@ -522,7 +505,7 @@ BOOST_FIXTURE_TEST_CASE( GeneratorsTestSpecific, RewardTest )
       expectId(mCore->executeCommandJson(writeJson(create)));
    }
 
-   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 4));
+   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 6));
    coins = query("reward.coins", *mCore);
    BOOST_CHECK_EQUAL(3, coins->get<int>("Red"));
    BOOST_CHECK(coins->get<int>("Blue") < 2);
@@ -530,7 +513,7 @@ BOOST_FIXTURE_TEST_CASE( GeneratorsTestSpecific, RewardTest )
    BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));
    BOOST_CHECK_EQUAL(0, coins->get<int>("Yellow"));
 
-   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 4));
+   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 7));
    coins = query("reward.coins", *mCore);
    BOOST_CHECK_EQUAL(4, coins->get<int>("Red"));
    BOOST_CHECK(coins->get<int>("Blue") < 2);

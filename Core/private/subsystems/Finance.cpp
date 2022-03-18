@@ -125,29 +125,29 @@ void FinanceSS::performFinancialAnalisys(const boost::gregorian::date& newDate)
 
    if(ratio > 1.5)
    {
-      mReward.setMod(Id("mod.finance"), "Excellent finance", 0.15);
+      mReward.setModAndGenerator(Id("mod.finance"), "Excellent finance", 0.15, 3, "Blue");
       status = "Excellent";
    }
    else if(ratio > 1.2)
    {
-      mReward.setMod(Id("mod.finance"), "Great finance", 0.1);
+      mReward.setModAndGenerator(Id("mod.finance"), "Great finance", 0.1, 2, "Blue");
       status = "Great";
    }
    else if(ratio > 1.1)
    {
-      mReward.setMod(Id("mod.finance"), "Good finance", 0.05);
+      mReward.setModAndGenerator(Id("mod.finance"), "Good finance", 0.05, 1, "Blue");
       status = "Good";
    }
    else if(ratio > 1)
    {
-      mReward.removeMod(Id("mod.finance"));
+      mReward.removeModAndGenerator(Id("mod.finance"));
       status = "Ok";
    }
    else
    {
       status = "Critical";
       auto p = balance.base / 10000.0; // 1% per 100 EUR
-      mReward.setMod(Id("mod.finance"), "Bad finance", p);
+      mReward.setModAndGenerator(Id("mod.finance"), "Bad finance", p, static_cast<int>(-(p * 10 + 1)), "Blue");
    }
 
    //Compile report
@@ -163,7 +163,7 @@ void FinanceSS::performFinancialAnalisys(const boost::gregorian::date& newDate)
       auto catName = catPos == categories.end() ? d.first.getGuid() : (*catPos)["name"].get<Type::String>();
 
       curCatBreakdown["name"] = catName;
-      
+
       Money total;
       for(auto m : d.second)
       {
