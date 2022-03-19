@@ -10,7 +10,7 @@ class MateriaConnections
         return this.src.filter(x => x.type === type);
     }
 
-    Has(A, type, B)
+    AllOf(A, type, B)
     {
         return this.src.filter(x => {
             let isAQualified = A === "*" || x.A === A;
@@ -19,14 +19,29 @@ class MateriaConnections
             {
                 return (type === "ParentOf" && x.type === "Hierarchy") ||
                     (type === "ExtendedBy" && x.type === "Extension") ||
-                    (type === "ReferedBy" && x.type === "Reference") ||
+                    (type === "Refers" && x.type === "Reference") ||
                     (type === "RequiredBy" && x.type === "Requirement");
             }
             else
             {
                 return false;
             }
-        }).length != 0;
+        });
+    }
+
+    Has(A, type, B)
+    {
+        return this.AllOf(A, type, B).length != 0;
+    }
+
+    Remove(id)
+    {
+        this.src = this.src.filter(x => x.id !== id);
+    }
+
+    Add(newConn)
+    {
+        this.src.push(newConn);
     }
 }
 

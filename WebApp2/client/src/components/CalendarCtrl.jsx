@@ -1,4 +1,5 @@
 import Materia from '../modules/materia_request'
+import {buildPinsTemplate, getPinOptions, applyPins, makePins} from '../modules/pins.js'
 import React from 'react';
 import '../../css/Calendar.css';
 import { Calendar, utils } from "react-modern-calendar-datepicker";
@@ -77,13 +78,15 @@ export default function CalendarCtrl(props)
     const [inCompleteDialog, setInCompleteDialog] = React.useState(false);
     const [focusedItemIndex, setFocusedItemIndex] = React.useState(-1);
     const [objectInEdit, setObjectInEdit] = React.useState(null);
+    const [pinsOriginal, setPinsOriginal] = React.useState(null);
+    const [pinsInEdit, setPinsInEdit] = React.useState(null);
 
     function onDateSelected(newDate)
     {
         setSelectedDate(newDate);
         var date = new Date();
         date.setFullYear(newDate.year, newDate.month - 1, newDate.day);
-        var newItems = extractItems(items, date); 
+        var newItems = extractItems(items, date);
         setTodayItems(newItems);
     }
 
@@ -122,8 +125,12 @@ export default function CalendarCtrl(props)
 
     function prepareEdit(index)
     {
-        setInEditDialog(true);
-        setObjectInEdit(todayItems[index]);
+        makePins(todayItems[index], (pins) => {
+            setInEditDialog(true);
+            setObjectInEdit(todayItems[index]);
+            setPinsOriginal(pins);
+            setPinsInEdit(pins);
+        });
     }
 
     function onDeleteDialogCancel()
@@ -153,7 +160,15 @@ export default function CalendarCtrl(props)
     {
         setInDeleteDialog(false);
         Materia.sendEdit(objectInEdit.id, JSON.stringify(objectInEdit), (resp) => {props.onChanged()});
+        applyPins(objectInEdit.id, pinsInEdit, pinsOriginal);
+        setPinsInEdit(null);
+        setPinsOriginal(null);
         setObjectInEdit(null);
+    }
+
+    function onPinChanged(newPin)
+    {
+        setPinsInEdit(newPin);
     }
 
     function onDeleteDialogOk()
@@ -174,7 +189,7 @@ export default function CalendarCtrl(props)
             {showAddDlg && <AddItemDialog onClose={onAddDialogClosed} selectedType="calendar_item" init={{timestamp: getInitTs()}}/>}
             <ConfirmationDialog open={inDeleteDialog} question="delete object" caption="confirm deletion" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
             <ConfirmationDialog open={inCompleteDialog} question="complete" caption="confirm completion" onNo={onCompleteDialogCancel} onYes={onCompleteDialogOk} />
-            {objectInEdit && <GenericObjectDialog open={inEditDialog} onCancel={onEditDialogCancel} onOk={onEditDialogOk} onChange={onObjectChanged} object={objectInEdit} />}
+            {objectInEdit && <GenericObjectDialog open={inEditDialog} onCancel={onEditDialogCancel} onOk={onEditDialogOk} onChange={onObjectChanged} object={objectInEdit} pins={pinsInEdit} onPinsChange={onPinChanged} />}
             <Grid container direction="column" justify="space-around" alignItems="center">
                 <Calendar value={selectedDate} onChange={onDateSelected}/>
                 <IconButton edge="end" aria-label="complete" onClick={onAddClicked}>
@@ -189,12 +204,12 @@ export default function CalendarCtrl(props)
 
                 return (<ListItem button key={obj.id} onClick={() => prepareEdit(index)}>
                         <ListItemIcon>
-                            {obj.entityTypeChoice === "Event" ? <EventIcon/> : <AssignmentTurnedInIcon/>} 
+                            {obj.entityTypeChoice === "Event" ? <EventIcon/> : <AssignmentTurnedInIcon/>}
                         </ListItemIcon>
                         <ListItemText disableTypography primary={
                             <Typography variant="body1" style={{ color: obj.urgencyChoice === "Urgent" ? '#ff2929' : '#FFFFFF'}}>
                                 {dt.getHours() + ":" + dt.getMinutes().toString().padStart(2, "0") +" - " + obj.text + obj.suffix}
-                            </Typography>}/>    
+                            </Typography>}/>
                         <ListItemSecondaryAction>
                             <IconButton edge="end" size='small' aria-label="complete" onClick={() => prepareComplete(index)}>
                                 <DoneIcon fontSize='small'/>

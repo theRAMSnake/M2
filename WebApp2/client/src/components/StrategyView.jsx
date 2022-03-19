@@ -51,8 +51,10 @@ function NodeInfoView(props)
     const isAchieved = props.node.isAchieved === 'true';
     const [value, setValue] = useState(props.node.value);
     const [target, setTarget] = useState(props.node.target);
+    const [coreValue, setCoreValue] = useState(props.coreValue);
     const [date, setDate] = useState(props.node.date);
 
+    console.log(props.coreValue);
     if(props.node != node)
     {
         setDetails(props.node.details);
@@ -62,6 +64,7 @@ function NodeInfoView(props)
         setTarget(props.node.target);
         setDate(props.node.date);
         setNode(props.node);
+        setCoreValue(props.coreValue);
     }
 
     function onSaveClicked()
@@ -73,7 +76,8 @@ function NodeInfoView(props)
         props.node.value = value;
         props.node.target = target;
         props.node.date = date;
-        props.onChanged(props.node);
+        props.coreValue = coreValue;
+        props.onChanged(props.node, props.coreValue);
     }
 
     function handleTitleChange(e)
@@ -103,6 +107,12 @@ function NodeInfoView(props)
     function handleTargetChange(e)
     {
         setTarget(parseInt(e.target.value));
+        setChanged(true);
+    }
+
+    function handleCoreValueChange(e)
+    {
+        setCoreValue(e.target.value);
         setChanged(true);
     }
 
@@ -160,6 +170,20 @@ function NodeInfoView(props)
                 <Typography color={isAchieved ? "primary" : "white"} variant="h6">{isAchieved ? "Achieved" : "In Progress"}</Typography>
             </Grid>
             <TextField inputProps={{onChange: handleTitleChange}} value={title} fullWidth id="title" label="Title" />
+            <FormControl fullWidth style={{marginTop: '10px'}}>
+                <InputLabel htmlFor="CoreValue">Core Value</InputLabel>
+                    <Select
+                        native
+                        value={coreValue}
+                        onChange={handleCoreValueChange}
+                        inputProps={{
+                            name: "Type",
+                            id: "Type",
+                        }}
+                        >
+                        {GetCoreValueTypes().map((obj, index) => <option aria-label="None" value={obj} key={index} >{obj}</option>)}
+                    </Select>
+            </FormControl>
             {!isAchieved && node.typeChoice !== "Watch" && node.type != "Wait" && <TextField inputProps={{onChange: handleRewardChange, type: 'number'}} value={reward} fullWidth id="reward" label="Reward" />}
             {!isAchieved && node.typeChoice === "Counter" && <Grid container direction="row" justify="space-around" alignItems="center">
                     <TextField inputProps={{onChange: handleValueChange, type: 'number', style: { width: "150px" }}} value={value} id="value" label="Value" />
@@ -176,10 +200,25 @@ function GetNodeTypes()
     return m3proxy.getType("strategy_node").fields.find(x => x.name === "typeChoice").options;
 }
 
+function GetCoreValueTypesWithParent()
+{
+    var types = GetCoreValueTypes();
+    types.unshift("Parent");
+    return types;
+}
+
+function GetCoreValueTypes()
+{
+    var objects = m3proxy.getType("core_value").objects.map((x) => x.name);
+    objects.unshift("None");
+    return objects;
+}
+
 function AddNodeDialog(props)
 {
     const [title, setTitle] = useState("");
     const [type, setType] = useState("Task");
+    const [coreValue, setCoreValue] = useState("Parent");
     const [target, setTarget] = useState(0);
     const [date, setDate] = useState(Math.floor(new Date() / 1000));
 
@@ -191,6 +230,11 @@ function AddNodeDialog(props)
     function typeChange(e)
     {
         setType(e.target.value);
+    }
+
+    function coreValueChange(e)
+    {
+        setCoreValue(e.target.value);
     }
 
     function handleTargetChange(e)
@@ -224,12 +268,26 @@ function AddNodeDialog(props)
                 </FormControl>
                 {type === "Counter" && <TextField inputProps={{onChange: handleTargetChange, type: 'number'}} value={target} fullWidth id="target" label="Target" />}
                 {type === "Wait" && <DateTimeCtrl onChange={handleDTChange} value={date} id="date"/>}
+                <FormControl fullWidth style={{marginTop: '10px'}}>
+                    <InputLabel htmlFor="CoreValue">Core Value</InputLabel>
+                        <Select
+                            native
+                            value={coreValue}
+                            onChange={coreValueChange}
+                            inputProps={{
+                                name: "Type",
+                                id: "Type",
+                            }}
+                            >
+                            {GetCoreValueTypesWithParent().map((obj, index) => <option aria-label="None" value={obj} key={index} >{obj}</option>)}
+                        </Select>
+                </FormControl>
             </DialogContent>
             <DialogActions>
                 <Button onClick={props.onClose} variant="contained" color="primary">
                     Cancel
                 </Button>
-                <Button onClick={() => props.onOk(title, type, target, date)} variant="contained" color="primary" autoFocus>
+                <Button onClick={() => props.onOk(title, type, target, date, coreValue)} variant="contained" color="primary" autoFocus>
                     Ok
                 </Button>
             </DialogActions>
@@ -276,12 +334,13 @@ function WatchPanel(props)
     </Grid>);
 }
 
-function StrategyView(props) 
+function StrategyView(props)
 {
     const [updating, setUpdating] = useState(true);
     const [graphData, setGraphData] = useState(null);
     const [path, setPath] = useState([]);
     const [selectedNode, setSelectedNode] = useState(null);
+    const [selectedNodeCoreValueId, setSelectedNodeCoreValueId] = useState(null);
     const [showAddDialog, setShowAddDialog] = useState(false);
     const [showClearDialog, setShowClearDialog] = useState(false);
     const [showAddReferenceDialog, setShowAddReferenceDialog] = useState(false);
@@ -292,6 +351,7 @@ function StrategyView(props)
     const [showCompleted, setShowCompleted] = useState(true);
     const [showLocked, setShowLocked] = useState(true);
     const [graphId, setGraphId] = useState("");
+    const [allConns, setAllConns] = useState(null);
 
     if(graphData == null)
     {
@@ -415,7 +475,7 @@ function StrategyView(props)
             filter: filterStr
         };
 
-        Materia.exec(req, (r) => 
+        Materia.exec(req, (r) =>
         {
             if(r.object_list != "")
             {
@@ -446,14 +506,11 @@ function StrategyView(props)
                     x.hasChildren = conns.Has(x.id, "ParentOf", "*");
                 });
 
-                console.log("exec scb");
                 successCb();
-                console.log("setting node styles");
                 newGraphData.nodes.forEach(x => setNodeStyle(x, !showCompleted, !showLocked));
-                console.log("setting link styles");
                 updateLinkStyling(newGraphData);
-                console.log("setting graph data");
                 setGraphData(newGraphData);
+                setAllConns(conns);
                 setGraphId(parentId);
                 setUpdating(false);
             }
@@ -518,7 +575,7 @@ function StrategyView(props)
         }
     };
 
-    const onClickNode = function(nodeId) 
+    const onClickNode = function(nodeId)
     {
         if(selectNodeActive)
         {
@@ -547,7 +604,36 @@ function StrategyView(props)
         }
         else
         {
-            setSelectedNode(graphData.nodes.find(x => x.id === nodeId));
+            var allRefs = allConns.AllOf(nodeId, "Refers", "*");
+
+            if(allRefs.length > 0)
+            {
+                //Load all objects
+                var loadAllRefs = {
+                    operation: "query",
+                    ids: allRefs.map(x => x.B)
+                }
+
+                Materia.exec(loadAllRefs, (result) => {
+                    //Find a reference to core_value among them
+                    var cvlist = result.object_list.filter(x => x.typename === "core_value");
+                    if(cvlist.length > 0)
+                    {
+                        setSelectedNodeCoreValueId(cvlist[0].id);
+                        setSelectedNode(graphData.nodes.find(x => x.id === nodeId));
+                    }
+                    else
+                    {
+                        setSelectedNodeCoreValueId(null);
+                        setSelectedNode(graphData.nodes.find(x => x.id === nodeId));
+                    }
+                });
+            }
+            else
+            {
+                setSelectedNodeCoreValueId(null);
+                setSelectedNode(graphData.nodes.find(x => x.id === nodeId));
+            }
         }
     };
 
@@ -560,7 +646,7 @@ function StrategyView(props)
         return graphData.nodes.find(x => x.id === nodeId).title;
     }
 
-    const onDoubleClickNode = function(nodeId) 
+    const onDoubleClickNode = function(nodeId)
     {
         setUpdating(true);
         setSelectedNode(null);
@@ -585,7 +671,7 @@ function StrategyView(props)
         }
     }
 
-    const onNodePositionChange = function(nodeId, x, y) 
+    const onNodePositionChange = function(nodeId, x, y)
     {
        var n = graphData.nodes.find(x => x.id === nodeId);
        n.x = x;
@@ -613,7 +699,7 @@ function StrategyView(props)
         });
     }
 
-    function onAddDialogOk(title, type, target, timestamp, sameParent)
+    function onAddDialogOk(title, type, target, timestamp, coreValue)
     {
         setShowAddDialog(false);
         setUpdating(true);
@@ -650,6 +736,50 @@ function StrategyView(props)
                         params: link
                     }
                     Materia.exec(linkReq, (u) => {});
+                }
+
+                if(coreValue !== "None")
+                {
+                    if(coreValue === "Parent")
+                    {
+                        if(parentIdToAdd.length > 0)
+                        {
+                            //Resolve parent case
+                            var allRefs = allConns.AllOf(parentIdToAdd, "Refers", "*");
+
+                            //Load all objects
+                            var loadAllRefs = {
+                                operation: "query",
+                                ids: allRefs.map(x => x.B)
+                            }
+
+                            Materia.exec(loadAllRefs, (result) => {
+                                //Find a reference to core_value among them
+                                console.log(result);
+                                var cv = result.object_list.filter(x => x.typename === "core_value")[0];
+                                var link = {A: x.result_id, B: cv.id, type: "Reference"}
+                                var linkReq = {
+                                    operation: "create",
+                                    typename: "connection",
+                                    params: link
+                                }
+                                Materia.exec(linkReq, (u) => {});
+
+                            });
+                        }
+                    }
+                    else
+                    {
+                        //Resolve core value case
+                        var cv = m3proxy.getType("core_value").objects.filter((x) => x.name === coreValue)[0];
+                        var link = {A: x.result_id, B: cv.id, type: "Reference"}
+                        var linkReq = {
+                            operation: "create",
+                            typename: "connection",
+                            params: link
+                        }
+                        Materia.exec(linkReq, (u) => {});
+                    }
                 }
 
                 if(graphId == parentIdToAdd)
@@ -739,17 +869,38 @@ function StrategyView(props)
         setSelectNodeActive(false);
     }
 
-    const onClickLink = function(source, target) 
+    const onClickLink = function(source, target)
     {
         var l = graphData.links.find(x => x.source === source && x.target === target);
         setDeleteTarget(l);
         setInDeleteDialog(true);
     };
 
-    function onNodeChanged(n)
+    function onNodeChanged(n, newCoreValue)
     {
         graphData.nodes[graphData.nodes.indexOf(graphData.nodes.find(x => x.id === n.id))] = n;
         Materia.postEdit(n.id, JSON.stringify(n));
+
+        if(newCoreValue !== resolveCoreValueId(selectedNodeCoreValueId))
+        {
+            if(selectedNodeCoreValueId)
+            {
+                //Remove previous connection
+                var ref = allConns.AllOf(n.id, "Refers", selectedNodeCoreValueId)[0];
+                allConns.Remove(ref.id);
+
+                Materia.postDelete(ref.id);
+            }
+            if(newCoreValue !== "None")
+            {
+                //Connect new connection
+                var cv = m3proxy.getType("core_value").objects.filter((x) => x.name === newCoreValue)[0];
+
+                Materia.createConnection(n.id, cv.id, "Reference", result_id => {
+                    allConns.Add({id: result_id, A: n.id, B: cv.id, type: "Reference"});
+                });
+            }
+        }
 
         setNodeStyle(n, !showCompleted, !showLocked);
         updateLinkStyling(graphData);
@@ -862,7 +1013,7 @@ function StrategyView(props)
             //Make same set of links for new node
             var inLinks = graphData.links.filter(x => x.target === selectedNode.id).map(y => {return {B: newId, A: y.source}});
             var outLinks = graphData.links.filter(x => x.source === selectedNode.id).map(y => {return {B: y.target, A: newId}});
-            var links = inLinks.concat(outLinks); 
+            var links = inLinks.concat(outLinks);
 
             createLinks(links);
         });
@@ -923,6 +1074,18 @@ function StrategyView(props)
         loadGraph(path[path.length - 1].id, () => {});
     }
 
+    function resolveCoreValueId(id)
+    {
+        if(!id)
+        {
+            return "None";
+        }
+        else
+        {
+            return m3proxy.getType("core_value").objects.filter((x) => x.id === id)[0].name;
+        }
+    }
+
     return (
         <div>
         <Backdrop open={updating}><CircularProgress color="inherit"/></Backdrop>
@@ -958,9 +1121,10 @@ function StrategyView(props)
                     <Typography variant="h4">Select node to link</Typography>
                     <Button variant="contained" color="primary" onClick={onCancelClicked}>Cancel</Button>
                 </Grid>}
-                {!selectNodeActive && selectedNode && <NodeInfoView 
-                    node={selectedNode} 
-                    deleteClicked={onNodeDelete} 
+                {!selectNodeActive && selectedNode && <NodeInfoView
+                    node={selectedNode}
+                    coreValue={resolveCoreValueId(selectedNodeCoreValueId)}
+                    deleteClicked={onNodeDelete}
                     addClicked={onNodeAddClicked}
                     addLinkClicked={onAddLinkClicked}
                     addCalendarClicked={onAddCalendarClicked}

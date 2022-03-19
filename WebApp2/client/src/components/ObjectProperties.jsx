@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import JSONInput from 'react-json-editor-ajrm'; 
+import JSONInput from 'react-json-editor-ajrm';
 import locale    from 'react-json-editor-ajrm/locale/en';
 import m3proxy from '../modules/m3proxy'
 import DateTimeCtrl from './DateTimeCtrl.jsx'
 import MoneyCtrl from './MoneyCtrl.jsx'
 import Switch from '@material-ui/core/Switch';
+import {buildPinsTemplate, getPinOptions, applyPins, makePins} from '../modules/pins.js'
 
 import {
     FormControlLabel,
@@ -17,6 +18,7 @@ import {
     InputAdornment
 } from '@material-ui/core'
 
+//DEPRECATED
 function getRefOptions(refType)
 {
     return m3proxy.getType(refType).objects;
@@ -42,6 +44,7 @@ function buildPropertiesTemplate(typename)
 export default function ObjectProperties(props)
 {
     const propertiesTemplate = props.object ? buildPropertiesTemplate(props.object.typename) : [];
+    const pins = props.pins ? props.pins : (props.object ? buildPinsTemplate(props.object.typename) : []);
 
     const [jsonView, setJsonView] = useState(false);
 
@@ -121,21 +124,38 @@ export default function ObjectProperties(props)
 
     function handleReferenceChange(e)
     {
+        //DEPRECATED
         let newObj = JSON.parse(JSON.stringify(props.object));
         newObj[e.target.id] = e.target.value;
 
         props.onChange(newObj);
     }
 
+    function handlePinChange(e)
+    {
+        var newPins = JSON.parse(JSON.stringify(pins));
+
+        for(var i = 0; i < newPins.length; ++i)
+        {
+            if(newPins[i].description === e.target.id)
+            {
+                newPins[i].value = e.target.value;
+                break;
+            }
+        }
+
+        props.onPinChanged(newPins);
+    }
+
     function createPropCtrl(req)
     {
-        if(req.type === 'string' || req.type === 'period') 
+        if(req.type === 'string' || req.type === 'period')
             return <TextField inputProps={{onChange: handleFieldChange}} value={props.object[req.name]} fullWidth id={req.name} label={req.name} />;
-        if(req.type === 'bool') 
+        if(req.type === 'bool')
             return <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: handleCbChange}} id={req.name} checked={props.object[req.name].toString() === "true"} />} label={req.name} />
-        if(req.type === 'int') 
+        if(req.type === 'int')
             return <TextField inputProps={{onChange: handleIntFieldChange, type: 'number'}} value={props.object[req.name]} id={req.name} fullWidth label={req.name} />;
-        if(req.type === 'double') 
+        if(req.type === 'double')
             return <TextField inputProps={{onChange: handleDoubleFieldChange, type: 'number', step:'any'}} value={props.object[req.name]} id={req.name} fullWidth label={req.name} />;
         if(req.type === 'option')
             return <div/>;
@@ -164,22 +184,9 @@ export default function ObjectProperties(props)
         {
             return <MoneyCtrl onChange={handleMoney2Change} value={props.object[req.name]} id={req.name}/>
         }
-        if(req.type === 'money')
-        {
-            return <FormControl fullWidth>
-                <InputLabel htmlFor="amount">Amount</InputLabel>
-                <Input
-                    id={req.name}
-                    value={props.object[req.name] / 100.0}
-                    onChange={handleMoneyChange}
-                    type='number'
-                    step='any'
-                    startAdornment={<InputAdornment position="start">€</InputAdornment>}
-                />
-            </FormControl>
-        }
         if(req.type === 'reference')
         {
+            //Deprecated
             const val = props.object[req.name];
             if(val === "")
             {
@@ -205,6 +212,24 @@ export default function ObjectProperties(props)
         }
     }
 
+    function createPinCtrl(pin)
+    {
+        return <FormControl fullWidth style={{marginTop: '10px'}}>
+                    <InputLabel htmlFor={pin.description}>{pin.description}</InputLabel>
+                        <Select
+                            native
+                            value={ pin.value }
+                            onChange={handlePinChange}
+                            inputProps={{
+                                name: pin.description,
+                                id: pin.description,
+                            }}
+                            >
+                            {getPinOptions(pin.typeNameOther).map((obj, index) => <option aria-label="None" value={obj.id} key={index} >{obj.name || obj.id}</option>)}
+                        </Select>
+                </FormControl>
+    }
+
     return (
         <div>
             <div style={{
@@ -221,12 +246,13 @@ export default function ObjectProperties(props)
                     inputProps={{ 'aria-label': 'primary checkbox' }}
                 />
             </div>
-            {(jsonView || propertiesTemplate.length == 0) && <JSONInput locale = { locale } 
-                height = {props.height} 
-                width = {props.width} 
+            {(jsonView || propertiesTemplate.length == 0) && <JSONInput locale = { locale }
+                height = {props.height}
+                width = {props.width}
                 onChange = {handleJsonChange}
                 placeholder = {props.object}/>}
             {!jsonView && propertiesTemplate.length != 0 && propertiesTemplate.map((obj, index) => createPropCtrl(obj))}
+            {!jsonView && pins.length != 0 && pins.map((pin, index) => createPinCtrl(pin))}
         </div>
     );
 }

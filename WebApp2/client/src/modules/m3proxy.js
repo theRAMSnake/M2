@@ -24,7 +24,7 @@ class m3Proxy
             const req = {
                 operation: "describe"
             };
-        
+
             Materia.exec(req, (r) => {
                 types = r.object_list;
 
@@ -32,6 +32,7 @@ class m3Proxy
                 var i = 0;
                 for(i = 0; i < types.length; ++i)
                 {
+                    //Deprecated
                     var j = 0;
                     for (j = 0; j < types[i].fields.length; j++)
                     {
@@ -47,13 +48,28 @@ class m3Proxy
                             });
                         }
                     }
+                    //End deprecated
+                    console.log(types[i].pins);
+                    if(types[i].pins)
+                    {
+                        j = 0;
+                        for (j = 0; j < types[i].pins.length; j++)
+                        {
+                            const query = {
+                                operation: "query",
+                                filter: "IS(" + types[i].pins[j].typeNameOther + ")"
+                            };
+
+                            Materia.exec(query, (r) => {
+                                acceptObjects(r.object_list);
+                            });
+                        }
+                    }
                 }
 
                 successCb();
             });
         }
-
-        console.log("m3proxy init started");
 
         init = true;
     }

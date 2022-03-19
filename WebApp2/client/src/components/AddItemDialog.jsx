@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import m3proxy from '../modules/m3proxy'
 import Materia from '../modules/materia_request'
 import ObjectProperties from './ObjectProperties.jsx'
+import {buildPinsTemplate, getPinOptions, applyPins, makePins} from '../modules/pins.js'
 
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 
@@ -31,11 +32,6 @@ const useStyles = makeStyles((theme) =>
 function toUTC(date)
 {
     return new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-}
-
-function fromUTC(date)
-{
-
 }
 
 function createDefault(f)
@@ -102,6 +98,7 @@ function AddItemDialog(props)
     const [selectedId, setSelectedId] = useState("")
     const [objectBody, setObjectBody] = useState(props.init ? initObjectBody(props.selectedType, props.init) : null)
     const [requesting, setRequesting] = useState(false)
+    const [pins, setPins] = useState(null);
     const classes = useStyles();
 
     function handleClose(e)
@@ -128,6 +125,10 @@ function AddItemDialog(props)
             var result = rsp;
             if(result.result_id)
             {
+                if(pins)
+                {
+                    applyPins(result.result_id, pins, null);
+                }
                 if(props.onCreated)
                 {
                     props.onCreated(result.result_id);
@@ -157,6 +158,11 @@ function AddItemDialog(props)
         setObjectBody(e);
     }
 
+    function onPinChanged(pins)
+    {
+        setPins(pins);
+    }
+
     return (
         <Dialog open={true} onClose={handleClose} aria-labelledby="dialog-title">
             <DialogTitle id="dialog-title">Create new object</DialogTitle>
@@ -177,7 +183,7 @@ function AddItemDialog(props)
                     </Select>
                 </FormControl>
                 <TextField margin="dense" id="id_name" label="Id" fullWidth  inputProps={{onChange: onIdChanged}}/>
-                <ObjectProperties height = '30vh' width='100%' onChange={onObjectChanged} type={selectedType} object={objectBody}/>
+                <ObjectProperties height = '30vh' width='100%' onChange={onObjectChanged} onPinChanged={onPinChanged} type={selectedType} object={objectBody} pins={pins}/>
             </DialogContent>
             {!requesting && <DialogActions>
                 <Button onClick={handleClose} variant="contained" color="primary">

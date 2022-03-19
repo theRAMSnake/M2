@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import Materia from '../modules/materia_request'
+import MateriaConnections from '../modules/connections.js'
 import m3proxy from '../modules/m3proxy'
+import {buildPinsTemplate, getPinOptions, applyPins, makePins} from '../modules/pins.js'
 
 import ListObjectView from './ListObjectView.jsx'
 import ConfirmationDialog from './dialogs/ConfirmationDialog.jsx'
@@ -35,16 +37,6 @@ function getObjectThumbnail(obj)
         return (<ListThumbnail value={obj}/>);
     }
 
-    if(type.name === 'challenge_item')
-    {
-        return (<ChItemThumbnail object={obj}/>);
-    }
-
-    if(type.name === 'reward_pool')
-    {
-        return (<RewardPoolThumbnail object={obj}/>);
-    }
-
     if(type.fields && type.fields.length == 1)
     {
         return (<SimpleThumbnail value={obj[type.fields[0].name]}/>);
@@ -53,7 +45,7 @@ function getObjectThumbnail(obj)
     return (<DefaultThumbnail value={obj}/>);
 }
 
-function ObjectView(props) 
+function ObjectView(props)
 {
     const obj = props.value;
 
@@ -62,7 +54,14 @@ function ObjectView(props)
     const [visible, setVisible] = useState(true);
     const [object, setObject] = useState(obj);
     const [objectInEdit, setObjectInEdit] = useState(obj);
+    const [pins, setPins] = useState(null);
+    const [pinsInEdit, setPinsInEdit] = useState(null);
     const [changed, setChanged] = useState(false);
+
+    if(!pins)
+    {
+        makePins(obj, (newPins) => setPins(newPins));
+    }
 
     function deleteClicked(e){
         setinDeleteDialog(true);
@@ -72,6 +71,7 @@ function ObjectView(props)
         setinEditDialog(true);
         setChanged(false);
         setObjectInEdit(object);
+        setPinsInEdit(pins);
     }
 
     function onDeleteDialogCancel(e){
@@ -94,12 +94,17 @@ function ObjectView(props)
         setObjectInEdit(JSON.parse(JSON.stringify(obj)));
     }
 
+    function onPinsChanged(pins)
+    {
+        setPinsInEdit(JSON.parse(JSON.stringify(pins)));
+    }
+
     function onObjectChangedAndCommit(obj)
     {
         Materia.postEdit(obj.id, JSON.stringify(obj));
         setObject(JSON.parse(JSON.stringify(obj)));
     }
-    
+
     function onEditDialogOk(e)
     {
         setinEditDialog(false);
@@ -109,6 +114,10 @@ function ObjectView(props)
             setObject(objectInEdit);
             Materia.postEdit(obj.id, JSON.stringify(objectInEdit));
         }
+
+        applyPins(obj.id, pinsInEdit, pins);
+
+        setPins(pinsInEdit);
     }
 
     function getObjectDialog()
@@ -118,13 +127,13 @@ function ObjectView(props)
             return <ListObjectView open={inEditDialog} object={object} onChange={onObjectChangedAndCommit} onClose={onEditDialogCancel}/>
         }
 
-        return (<GenericObjectDialog open={inEditDialog} onCancel={onEditDialogCancel} onOk={onEditDialogOk} onChange={onObjectChanged} object={objectInEdit} />);
+        return (<GenericObjectDialog open={inEditDialog} onCancel={onEditDialogCancel} onOk={onEditDialogOk} onChange={onObjectChanged} object={objectInEdit} pins={pinsInEdit} onPinsChange={onPinsChanged} />);
     }
 
     return (
         visible && <div>
         <Card style={{ width: '25vw', height: '24vh', margin: '5px'}}>
-            <CardHeader 
+            <CardHeader
                 avatar={<Avatar><SettingsIcon /></Avatar>}
                 title={<Typography variant="body1" color='secondary'>{obj.name ? obj.name : obj.id}</Typography>}
                 subheader={obj.type}

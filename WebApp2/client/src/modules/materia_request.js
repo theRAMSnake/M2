@@ -103,6 +103,17 @@ class Materia
 
         Materia.exec(rq, cb);
     }
+
+    static createConnection(a, b, type, cb)
+    {
+        var req = {
+            operation: "create",
+            typename: "connection",
+            params: {A: a, B: b, type: type}
+        }
+
+        Materia.exec(req, (u) => {cb(u.result_id);});
+    }
 }
 
 export default Materia;

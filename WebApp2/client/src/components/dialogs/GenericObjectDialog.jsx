@@ -12,7 +12,7 @@ export default function GenericObjectDialog(props)
 {
     return (<Dialog open={props.open} onClose={props.onCancel} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
             <DialogContent>
-                <ObjectProperties height = '70vh' width='50vh' object={props.object} onChange={props.onChange} type={props.object.type}/>
+                <ObjectProperties height = '70vh' width='50vh' pins={props.pins} object={props.object} onPinChanged={props.onPinsChange} onChange={props.onChange}/>
             </DialogContent>
             <DialogActions>
                 <Button variant="contained" onClick={props.onCancel} color="primary">
