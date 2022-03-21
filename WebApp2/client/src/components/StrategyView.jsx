@@ -744,27 +744,19 @@ function StrategyView(props)
                     {
                         if(parentIdToAdd.length > 0)
                         {
-                            //Resolve parent case
-                            var allRefs = allConns.AllOf(parentIdToAdd, "Refers", "*");
-
                             //Load all objects
                             var loadAllRefs = {
                                 operation: "query",
-                                ids: allRefs.map(x => x.B)
+                                filter: "ReferedBy(" + parentIdToAdd + ")"
                             }
 
                             Materia.exec(loadAllRefs, (result) => {
                                 //Find a reference to core_value among them
-                                console.log(result);
                                 var cv = result.object_list.filter(x => x.typename === "core_value")[0];
-                                var link = {A: x.result_id, B: cv.id, type: "Reference"}
-                                var linkReq = {
-                                    operation: "create",
-                                    typename: "connection",
-                                    params: link
-                                }
-                                Materia.exec(linkReq, (u) => {});
 
+                                Materia.createConnection(x.result_id, cv.id, "Reference", result_id => {
+                                    allConns.Add({id: result_id, A: x.result_id, B: cv.id, type: "Reference"});
+                                });
                             });
                         }
                     }
@@ -772,13 +764,10 @@ function StrategyView(props)
                     {
                         //Resolve core value case
                         var cv = m3proxy.getType("core_value").objects.filter((x) => x.name === coreValue)[0];
-                        var link = {A: x.result_id, B: cv.id, type: "Reference"}
-                        var linkReq = {
-                            operation: "create",
-                            typename: "connection",
-                            params: link
-                        }
-                        Materia.exec(linkReq, (u) => {});
+
+                        Materia.createConnection(x.result_id, cv.id, "Reference", result_id => {
+                            allConns.Add({id: result_id, A: x.result_id, B: cv.id, type: "Reference"});
+                        });
                     }
                 }
 
