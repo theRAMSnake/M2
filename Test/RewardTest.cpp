@@ -124,173 +124,6 @@ BOOST_FIXTURE_TEST_CASE( AddWorkburden, RewardTest )
    BOOST_CHECK_EQUAL("600", v.get<std::string>("value"));
 }
 
-BOOST_FIXTURE_TEST_CASE( AddPointsModifiedPosPosTest, RewardTest ) 
-{
-   {
-      boost::property_tree::ptree create;
-      create.put("operation", "create");
-      create.put("typename", "reward_modifier");
-      create.put("params.value", 0.1);
-
-      mCore->executeCommandJson(writeJson(create));
-
-      create.put("params.value", 0.25);
-
-      mCore->executeCommandJson(writeJson(create));
-
-      create.put("params.value", -0.1);
-
-      mCore->executeCommandJson(writeJson(create));
-   }
-
-   boost::property_tree::ptree rwd;
-   rwd.put("operation", "reward");
-   rwd.put("points", 10);
-   mCore->executeCommandJson(writeJson(rwd));
-
-   BOOST_CHECK_EQUAL(1250, queryVar("reward.points", *mCore));
-
-   mCore->executeCommandJson(writeJson(rwd));
-
-   //Go consumed
-   BOOST_CHECK_EQUAL(0, queryVar("reward.points", *mCore));
-}
-
-BOOST_FIXTURE_TEST_CASE( AddPointsModifiedPosNegTest, RewardTest ) 
-{
-   {
-      boost::property_tree::ptree create;
-      create.put("operation", "create");
-      create.put("typename", "reward_modifier");
-      create.put("params.value", 0.1);
-
-      mCore->executeCommandJson(writeJson(create));
-
-      create.put("params.value", -0.25);
-
-      mCore->executeCommandJson(writeJson(create));
-
-      create.put("params.value", -0.1);
-
-      mCore->executeCommandJson(writeJson(create));
-   }
-
-   boost::property_tree::ptree rwd;
-   rwd.put("operation", "reward");
-   rwd.put("points", 10);
-   mCore->executeCommandJson(writeJson(rwd));
-
-   BOOST_CHECK_EQUAL(750, queryVar("reward.points", *mCore));
-
-   mCore->executeCommandJson(writeJson(rwd));
-
-   BOOST_CHECK_EQUAL(1500, queryVar("reward.points", *mCore));
-}
-
-BOOST_FIXTURE_TEST_CASE( AddPointsModifiedNegTest, RewardTest ) 
-{
-   {
-      boost::property_tree::ptree create;
-      create.put("operation", "create");
-      create.put("typename", "reward_modifier");
-      create.put("params.value", 0.1);
-
-      mCore->executeCommandJson(writeJson(create));
-
-      create.put("params.value", 0.25);
-
-      mCore->executeCommandJson(writeJson(create));
-
-      create.put("params.value", -0.1);
-
-      mCore->executeCommandJson(writeJson(create));
-   }
-
-   boost::property_tree::ptree rwd;
-   rwd.put("operation", "reward");
-   rwd.put("points", -10);
-   mCore->executeCommandJson(writeJson(rwd));
-
-   BOOST_CHECK_EQUAL(-750, queryVar("reward.points", *mCore));
-
-   mCore->executeCommandJson(writeJson(rwd));
-
-   BOOST_CHECK_EQUAL(-1500, queryVar("reward.points", *mCore));
-}
-
-BOOST_FIXTURE_TEST_CASE( PresetModifiersTest, RewardTest ) 
-{
-   //Inbox, calendar, workburden - all active
-   set("work.burden", 0, *mCore);
-
-   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 2));
-
-   BOOST_CHECK(query("mod.inbox", *mCore));
-   BOOST_CHECK(query("mod.calendar", *mCore));
-   BOOST_CHECK(query("mod.workburden", *mCore));
-   BOOST_CHECK_EQUAL(0.1, query("mod.workburden", *mCore)->get<double>("value"));
-
-   //Inbox, calendar, workburden - all disabled
-   boost::property_tree::ptree push;
-   push.put("operation", "push");
-   push.put("listId", "inbox");
-   push.put("value", "val");
-   mCore->executeCommandJson(writeJson(push));
-
-   boost::property_tree::ptree create;
-   create.put("operation", "create");
-   create.put("typename", "calendar_item");
-   create.put("params.timestamp", 25);
-   create.put("params.entityTypeChoice", "Task");
-   mCore->executeCommandJson(writeJson(create));
-
-   set("work.burden", 500, *mCore);
-   set("reward.points", -5, *mCore);
-
-   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 2));
-
-   BOOST_CHECK(!query("mod.inbox", *mCore));
-   BOOST_CHECK(!query("mod.calendar", *mCore));
-
-   BOOST_CHECK(query("mod.workburden", *mCore));
-   BOOST_CHECK_EQUAL(-0.2, query("mod.workburden", *mCore)->get<double>("value"));
-}
-
-BOOST_FIXTURE_TEST_CASE( TestBigCounterRewardWithModsAndChestAssigned, RewardTest ) 
-{
-   {
-      boost::property_tree::ptree create;
-      create.put("operation", "create");
-      create.put("typename", "reward_modifier");
-      create.put("params.value", -0.2);
-
-      mCore->executeCommandJson(writeJson(create));
-   }
-   {
-      boost::property_tree::ptree create;
-      create.put("operation", "create");
-      create.put("typename", "strategy_node");
-      create.put("defined_id", "counter");
-      create.put("params.typeChoice", "Counter");
-      create.put("params.target", 10);
-      create.put("params.reward", 100);
-
-      expectId(mCore->executeCommandJson(writeJson(create)));
-   }
-   {
-      boost::property_tree::ptree modify;
-      modify.put("operation", "modify");
-      modify.put("params.value", 10);
-      modify.put("id", "counter");
-
-      mCore->executeCommandJson(writeJson(modify));
-   }
-
-   BOOST_CHECK_EQUAL(500, queryVar("reward.points", *mCore));
-
-   BOOST_CHECK_EQUAL(3, count(queryAll("reward_item", *mCore)));
-}
-
 static std::time_t to_time_t(const boost::gregorian::date& date )
 {
 	using namespace boost::posix_time;
@@ -508,7 +341,7 @@ BOOST_FIXTURE_TEST_CASE( GeneratorsTestSpecific, RewardTest )
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 6));
    coins = query("reward.coins", *mCore);
    BOOST_CHECK_EQUAL(3, coins->get<int>("Red"));
-   BOOST_CHECK(coins->get<int>("Blue") < 2);
+   BOOST_CHECK(coins->get<int>("Blue") < 3);
    BOOST_CHECK_EQUAL(0, coins->get<int>("Green"));
    BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));
    BOOST_CHECK_EQUAL(0, coins->get<int>("Yellow"));
@@ -516,7 +349,7 @@ BOOST_FIXTURE_TEST_CASE( GeneratorsTestSpecific, RewardTest )
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 7));
    coins = query("reward.coins", *mCore);
    BOOST_CHECK_EQUAL(4, coins->get<int>("Red"));
-   BOOST_CHECK(coins->get<int>("Blue") < 2);
+   BOOST_CHECK(coins->get<int>("Blue") < 3);
    BOOST_CHECK_EQUAL(0, coins->get<int>("Green"));
    BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));
    BOOST_CHECK_EQUAL(0, coins->get<int>("Yellow"));

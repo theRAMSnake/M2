@@ -203,7 +203,7 @@ BOOST_FIXTURE_TEST_CASE( TestCreateCommandPositive, ConnectionsTest )
     BOOST_CHECK_EQUAL(1, mConnections->get(Id("id1")).size());
 }
 
-BOOST_FIXTURE_TEST_CASE( TestCreateCommandNegative, ConnectionsTest ) 
+BOOST_FIXTURE_TEST_CASE( TestCreateCommandNegative, ConnectionsTest )
 {
     BOOST_CHECK_THROW(CreateCommand(Id::generate(), "connection", "{'A':'id1', 'B':'id2', 'type':'Extension'}").execute(*mOm), std::runtime_error);
     BOOST_CHECK_THROW(CreateCommand({}, "connection", "'id1', B:'id2'}").execute(*mOm), std::runtime_error);
@@ -211,7 +211,7 @@ BOOST_FIXTURE_TEST_CASE( TestCreateCommandNegative, ConnectionsTest )
     BOOST_CHECK_EQUAL(0, mConnections->get(Id("id1")).size());
 }
 
-BOOST_FIXTURE_TEST_CASE( TestDestroyCommand, ConnectionsTest ) 
+BOOST_FIXTURE_TEST_CASE( TestDestroyCommand, ConnectionsTest )
 {
     materia::Id parent = materia::Id::generate();
     materia::Id ex = materia::Id::generate();
@@ -219,7 +219,7 @@ BOOST_FIXTURE_TEST_CASE( TestDestroyCommand, ConnectionsTest )
 
     BOOST_CHECK_EQUAL(1, mConnections->get(parent).size());
     BOOST_CHECK_EQUAL(1, mConnections->get(ex).size());
-    
+
     DestroyCommand cmd(id);
     cmd.execute(*mOm);
 

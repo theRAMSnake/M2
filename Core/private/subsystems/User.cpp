@@ -42,7 +42,18 @@ void complete(const Id id, ObjectManager& om, RewardSS& reward, StrategySS& stra
     auto recPeriod = object["recurrency"].get<Type::Period>();
     if(eType == "Task")
     {
-        reward.addPoints(1);
+        auto cons = om.getConnections().get(id);
+        for(auto& c : cons)
+        {
+            if(c.a == id && c.type == ConnectionType::Reference)
+            {
+                auto ref = om.get(c.b);
+                if(ref.getType().name == "core_value")
+                {
+                    reward.addCoins(1, ref["color"].get<Type::String>());
+                }
+            }
+        }
     }
     else if(eType == "StrategyNodeReference")
     {

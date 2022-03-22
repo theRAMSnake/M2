@@ -8,10 +8,23 @@
 class StrategyTest
 {
 public:
-   StrategyTest() 
+   StrategyTest()
    {
-      system("rm Test.db");
-      mCore = materia::createCore({"Test.db"});
+       system("rm Test.db");
+       mCore = materia::createCore({"Test.db"});
+       {
+          boost::property_tree::ptree create;
+          create.put("operation", "create");
+          create.put("typename", "object");
+          create.put("defined_id", "reward.coins");
+          create.put("params.Red", 0);
+          create.put("params.Blue", 0);
+          create.put("params.Yellow", 0);
+          create.put("params.Purple", 0);
+          create.put("params.Green", 0);
+
+          expectId(mCore->executeCommandJson(writeJson(create)));
+       }
    }
 
 protected:
@@ -129,7 +142,7 @@ BOOST_FIXTURE_TEST_CASE( CounterIsAchievedCalculation, StrategyTest )
     BOOST_CHECK(c->get<bool>("isAchieved"));
 }
 
-BOOST_FIXTURE_TEST_CASE( Rewarding, StrategyTest ) 
+BOOST_FIXTURE_TEST_CASE( RewardingNoCoreRef, StrategyTest )
 {
     {
         boost::property_tree::ptree create;
@@ -149,7 +162,59 @@ BOOST_FIXTURE_TEST_CASE( Rewarding, StrategyTest )
 
     mCore->executeCommandJson(writeJson(modify));
 
-    BOOST_CHECK_EQUAL(1000, queryVar("reward.points", *mCore));
+    auto coins = query("reward.coins", *mCore);
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Red"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Blue"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Green"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Yellow"));
+}
+
+BOOST_FIXTURE_TEST_CASE( RewardingWithCoreRef, StrategyTest )
+{
+    {
+        boost::property_tree::ptree create;
+        create.put("operation", "create");
+        create.put("typename", "strategy_node");
+        create.put("defined_id", "g");
+        create.put("params.type", 0);
+        create.put("params.reward", 10);
+
+        expectId(mCore->executeCommandJson(writeJson(create)));
+    }
+    {
+        boost::property_tree::ptree create;
+        create.put("operation", "create");
+        create.put("typename", "core_value");
+        create.put("defined_id", "cv");
+        create.put("params.color", "Yellow");
+
+        expectId(mCore->executeCommandJson(writeJson(create)));
+    }
+    {
+        boost::property_tree::ptree create;
+        create.put("operation", "create");
+        create.put("typename", "connection");
+        create.put("params.A", "g");
+        create.put("params.B", "cv");
+        create.put("params.type", "Reference");
+
+        expectId(mCore->executeCommandJson(writeJson(create)));
+    }
+
+    boost::property_tree::ptree modify;
+    modify.put("operation", "modify");
+    modify.put("params.isAchieved", true);
+    modify.put("id", "g");
+
+    mCore->executeCommandJson(writeJson(modify));
+
+    auto coins = query("reward.coins", *mCore);
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Red"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Blue"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Green"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));
+    BOOST_CHECK_EQUAL(10, coins->get<int>("Yellow"));
 }
 
 BOOST_FIXTURE_TEST_CASE( CreateInvalidNode, StrategyTest ) 

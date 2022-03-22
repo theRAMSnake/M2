@@ -13,10 +13,10 @@ RewardTest.cpp
 NewAPITest.cpp
 ExpressionsTest.cpp
 ObjectTest.cpp
-ChestAndItemsTest.cpp
 CoreTest.cpp
 DatabaseTest.cpp
-ContractsTest.cpp
+#Disable until contracts are updated
+#ContractsTest.cpp
 Strategy3Test.cpp
 Utils.cpp
 UserTest.cpp

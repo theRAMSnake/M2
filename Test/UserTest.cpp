@@ -11,6 +11,21 @@ public:
    {
       system("rm Test.db");
       mCore = materia::createCore({"Test.db"});
+
+       mCore = materia::createCore({"Test.db"});
+       {
+          boost::property_tree::ptree create;
+          create.put("operation", "create");
+          create.put("typename", "object");
+          create.put("defined_id", "reward.coins");
+          create.put("params.Red", 0);
+          create.put("params.Blue", 0);
+          create.put("params.Yellow", 0);
+          create.put("params.Purple", 0);
+          create.put("params.Green", 0);
+
+          expectId(mCore->executeCommandJson(writeJson(create)));
+       }
    }
 
 protected:
@@ -18,7 +33,7 @@ protected:
    std::shared_ptr<materia::ICore3> mCore;
 };
 
-BOOST_FIXTURE_TEST_CASE(CompleteGoalNode, UserTest) 
+BOOST_FIXTURE_TEST_CASE(CompleteGoalNode, UserTest)
 {
    //Create goal node
    {
@@ -31,6 +46,25 @@ BOOST_FIXTURE_TEST_CASE(CompleteGoalNode, UserTest)
 
       expectId(mCore->executeCommandJson(writeJson(create)));
    }
+    {
+        boost::property_tree::ptree create;
+        create.put("operation", "create");
+        create.put("typename", "core_value");
+        create.put("defined_id", "cv");
+        create.put("params.color", "Yellow");
+
+        expectId(mCore->executeCommandJson(writeJson(create)));
+    }
+    {
+        boost::property_tree::ptree create;
+        create.put("operation", "create");
+        create.put("typename", "connection");
+        create.put("params.A", "g");
+        create.put("params.B", "cv");
+        create.put("params.type", "Reference");
+
+        expectId(mCore->executeCommandJson(writeJson(create)));
+    }
    //Create reference
    {
       boost::property_tree::ptree create;
@@ -61,11 +95,15 @@ BOOST_FIXTURE_TEST_CASE(CompleteGoalNode, UserTest)
    auto g = queryFirst("strategy_node", *mCore);
    BOOST_CHECK(g.get<bool>("isAchieved"));
 
-   //Check points
-   BOOST_CHECK_EQUAL(100, queryVar("reward.points", *mCore));
+    auto coins = query("reward.coins", *mCore);
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Red"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Blue"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Green"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));
+    BOOST_CHECK_EQUAL(1, coins->get<int>("Yellow"));
 }
 
-BOOST_FIXTURE_TEST_CASE(CompleteCounterStep, UserTest) 
+BOOST_FIXTURE_TEST_CASE(CompleteCounterStep, UserTest)
 {
    set("reward.points", 0, *mCore);
    //Create counter node
@@ -80,6 +118,25 @@ BOOST_FIXTURE_TEST_CASE(CompleteCounterStep, UserTest)
 
       expectId(mCore->executeCommandJson(writeJson(create)));
    }
+    {
+        boost::property_tree::ptree create;
+        create.put("operation", "create");
+        create.put("typename", "core_value");
+        create.put("defined_id", "cv");
+        create.put("params.color", "Yellow");
+
+        expectId(mCore->executeCommandJson(writeJson(create)));
+    }
+    {
+        boost::property_tree::ptree create;
+        create.put("operation", "create");
+        create.put("typename", "connection");
+        create.put("params.A", "g");
+        create.put("params.B", "cv");
+        create.put("params.type", "Reference");
+
+        expectId(mCore->executeCommandJson(writeJson(create)));
+    }
    //Create reference
    {
       boost::property_tree::ptree create;
@@ -111,11 +168,15 @@ BOOST_FIXTURE_TEST_CASE(CompleteCounterStep, UserTest)
    BOOST_CHECK(!g.get<bool>("isAchieved"));
    BOOST_CHECK_EQUAL(1, g.get<int>("value"));
 
-   //Check points
-   BOOST_CHECK_EQUAL(0, queryVar("reward.points", *mCore));
+    auto coins = query("reward.coins", *mCore);
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Red"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Blue"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Green"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Yellow"));
 }
 
-BOOST_FIXTURE_TEST_CASE(CompleteCounterFull, UserTest) 
+BOOST_FIXTURE_TEST_CASE(CompleteCounterFull, UserTest)
 {
    //Create counter node
    {
@@ -125,10 +186,29 @@ BOOST_FIXTURE_TEST_CASE(CompleteCounterFull, UserTest)
       create.put("defined_id", "g");
       create.put("params.typeChoice", "Counter");
       create.put("params.target", 1);
-      create.put("params.reward", 1);
+      create.put("params.reward", 30);
 
       expectId(mCore->executeCommandJson(writeJson(create)));
    }
+    {
+        boost::property_tree::ptree create;
+        create.put("operation", "create");
+        create.put("typename", "core_value");
+        create.put("defined_id", "cv");
+        create.put("params.color", "Yellow");
+
+        expectId(mCore->executeCommandJson(writeJson(create)));
+    }
+    {
+        boost::property_tree::ptree create;
+        create.put("operation", "create");
+        create.put("typename", "connection");
+        create.put("params.A", "g");
+        create.put("params.B", "cv");
+        create.put("params.type", "Reference");
+
+        expectId(mCore->executeCommandJson(writeJson(create)));
+    }
    //Create reference
    {
       boost::property_tree::ptree create;
@@ -160,11 +240,15 @@ BOOST_FIXTURE_TEST_CASE(CompleteCounterFull, UserTest)
    BOOST_CHECK(g.get<bool>("isAchieved"));
    BOOST_CHECK_EQUAL(1, g.get<int>("value"));
 
-   //Check points
-   BOOST_CHECK_EQUAL(100, queryVar("reward.points", *mCore));
+    auto coins = query("reward.coins", *mCore);
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Red"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Blue"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Green"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));
+    BOOST_CHECK_EQUAL(30, coins->get<int>("Yellow"));
 }
 
-BOOST_FIXTURE_TEST_CASE(AdvanceCalendar, UserTest) 
+BOOST_FIXTURE_TEST_CASE(AdvanceCalendar, UserTest)
 {
    boost::property_tree::ptree create;
    create.put("operation", "create");

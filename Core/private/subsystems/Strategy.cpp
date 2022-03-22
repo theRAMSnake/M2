@@ -82,7 +82,18 @@ void StrategySS::handleNodeChanging(const Object& before, Object& after)
     if(before["isAchieved"].get<Type::Bool>() == false &&
         after["isAchieved"].get<Type::Bool>() == true)
     {
-        mReward.addPoints(after["reward"].get<Type::Int>());
+        auto cons = mOm.getConnections().get(before.getId());
+        for(auto& c : cons)
+        {
+            if(c.a == before.getId() && c.type == ConnectionType::Reference)
+            {
+                auto ref = mOm.get(c.b);
+                if(ref.getType().name == "core_value")
+                {
+                    mReward.addCoins(after["reward"].get<Type::Int>(), ref["color"].get<Type::String>());
+                }
+            }
+        }
     }
 }
 

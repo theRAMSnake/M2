@@ -38,6 +38,7 @@ private:
     F mF;
 };
 
+const std::vector<std::string> COIN_COLORS = {"Red", "Green", "Purple", "Yellow", "Blue"};
 RewardSS::RewardSS(ObjectManager& objMan)
 : mOm(objMan)
 {
@@ -363,7 +364,8 @@ void RewardSS::onNewDay(const boost::gregorian::date& date)
 
     if(totalBonus != 0)
     {
-        addPoints(totalBonus);
+        //Disabled until contracts support new system
+        //addPoints(totalBonus);
     }
 
     types::Variable wb(mOm, Id("work.burden"));
@@ -406,8 +408,7 @@ void RewardSS::onNewDay(const boost::gregorian::date& date)
         std::string color;
         if(o["type"].get<Type::Choice>() == "Random")
         {
-            std::vector<std::string> colors = {"Red", "Green", "Purple", "Yellow", "Blue"};
-            color = colors[Rng::genChoise(colors.size())];
+            color = COIN_COLORS[Rng::genChoise(COIN_COLORS.size())];
         }
         else if(o["type"].get<Type::Choice>() == "Specific")
         {
@@ -473,15 +474,15 @@ void RewardSS::onNewWeek()
 
 std::vector<CommandDef> RewardSS::getCommandDefs()
 {
-    return {{"reward", std::bind(&RewardSS::parseRewardCommand, this, std::placeholders::_1)}, 
-    {"useChest", std::bind(&RewardSS::parseUseChestCommand, this, std::placeholders::_1)}};
+    return {{"reward", std::bind(&RewardSS::parseRewardCommand, this, std::placeholders::_1)}};
 }
 
 class RewardCommand : public Command
 {
 public:
-   RewardCommand(const int pts, RewardSS& reward)
-   : mPts(pts)
+   RewardCommand(const int coins, const std::string& color, RewardSS& reward)
+   : mCoins(coins)
+   , mColor(color)
    , mReward(reward)
    {
 
@@ -489,12 +490,13 @@ public:
 
    ExecutionResult execute(ObjectManager& objManager) override
    {
-      mReward.addPoints(mPts);
+      mReward.addCoins(mCoins, mColor);
       return Success{};
    }
 
 private:
-    const int mPts;
+    const int mCoins;
+    const std::string mColor;
     RewardSS& mReward;
 };
 
@@ -530,9 +532,10 @@ Command* RewardSS::parseUseChestCommand(const boost::property_tree::ptree& src)
 
 Command* RewardSS::parseRewardCommand(const boost::property_tree::ptree& src)
 {
-   auto pts = getOrThrow<int>(src, "points", "Points is not specified");
+   auto coins = getOrThrow<int>(src, "coins", "Coins is not specified");
+   auto color = getOrThrow<std::string>(src, "color", "Color is not specified");
 
-   return new RewardCommand(pts, *this);
+   return new RewardCommand(coins, color, *this);
 }
 
 double RewardSS::calculateTotalModifier()
@@ -547,34 +550,22 @@ double RewardSS::calculateTotalModifier()
     return result;
 }
 
-void RewardSS::addPoints(const int points)
+void RewardSS::addCoins(const int coins, const std::string& color)
 {
-    types::Variable debt(mOm, Id("reward.debt"));
-    types::Variable pool(mOm, Id("reward.points"));
-
-    if(debt > 0)
+    std::string colorToUse = color;
+    if(color == "Random")
     {
-        pool.dec(debt.asInt() * 100);
-        debt = 0;
+        colorToUse = COIN_COLORS[Rng::genChoise(COIN_COLORS.size())];
     }
 
-    bool isPlus = points > 0;
-    auto mod = calculateTotalModifier();
-    auto pointsToAssign = static_cast<double>(points) * 100 * (isPlus ? 1.0 + mod : 1.0 - mod);
-
-    pool.inc(pointsToAssign);
-
-    while(pool.asInt() >= 2500)
+    if(std::find(COIN_COLORS.begin(), COIN_COLORS.end(), colorToUse) == COIN_COLORS.end())
     {
-        pool.dec(2500);
-
-        auto vp = FunctionToValueProviderAdapter([](auto& obj)
-        {
-            obj["name"] = "chest";
-        });
-
-        mOm.create({}, "reward_item", vp);
+        throw std::runtime_error("Unsupported coin color in addCoins: " + colorToUse);
     }
+
+    auto coinsStash = mOm.getOrCreate(Id("reward.coins"), "object");
+    coinsStash[color] = static_cast<int>(coinsStash[color].get<Type::Int>() + coins);
+    mOm.modify(coinsStash);
 }
 
 void RewardSS::setModAndGenerator(const Id& id, const std::string& desc, const double value, const int valueInt, const std::optional<std::string>& color)
