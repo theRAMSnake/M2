@@ -126,10 +126,10 @@ export default function CalendarCtrl(props)
     function prepareEdit(index)
     {
         makePins(todayItems[index], (pins) => {
-            setInEditDialog(true);
-            setObjectInEdit(todayItems[index]);
             setPinsOriginal(pins);
             setPinsInEdit(pins);
+            setInEditDialog(true);
+            setObjectInEdit(todayItems[index]);
         });
     }
 
