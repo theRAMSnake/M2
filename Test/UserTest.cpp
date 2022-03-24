@@ -11,8 +11,6 @@ public:
    {
       system("rm Test.db");
       mCore = materia::createCore({"Test.db"});
-
-       mCore = materia::createCore({"Test.db"});
        {
           boost::property_tree::ptree create;
           create.put("operation", "create");

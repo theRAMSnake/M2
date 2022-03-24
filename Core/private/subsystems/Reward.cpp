@@ -54,6 +54,25 @@ std::vector<TypeDef> RewardSS::getTypes()
         {"amount", Type::Int},
         }});
 
+    result.push_back({"reward_shop_item", "reward_shop_items", {
+        {"name", Type::String},
+        {"amount", Type::Int},
+        {"costRed", Type::Int},
+        {"costBlue", Type::Int},
+        {"costYellow", Type::Int},
+        {"costPurple", Type::Int},
+        {"costGreen", Type::Int},
+        }});
+
+    result.push_back({"reward_shop_spawner", "reward_shop_spawners", {
+        {"name", Type::String},
+        {"amount", Type::Int},
+        {"weight", Type::Double},
+        {"cost_base", Type::String},
+        {"type", Type::Choice, {"Assign", "FetchFromList"}},
+        {"listId", Type::String}
+        }});
+
     result.push_back({"reward_contract", "contracts", {
         {"caption", Type::String},
         {"config_id", Type::String},
