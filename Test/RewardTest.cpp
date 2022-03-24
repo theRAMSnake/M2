@@ -124,54 +124,6 @@ BOOST_FIXTURE_TEST_CASE( AddWorkburden, RewardTest )
    BOOST_CHECK_EQUAL("600", v.get<std::string>("value"));
 }
 
-static std::time_t to_time_t(const boost::gregorian::date& date )
-{
-	using namespace boost::posix_time;
-	static ptime epoch(boost::gregorian::date(1970, 1, 1));
-	time_duration::sec_type secs = (ptime(date,seconds(0)) - epoch).total_seconds();
-	return std::time_t(secs);
-}
-
-BOOST_FIXTURE_TEST_CASE( ModifierExpiration, RewardTest ) 
-{
-   auto expirationDate = boost::gregorian::date(2021, boost::gregorian::Jan, 7);
-
-   {
-      boost::property_tree::ptree create;
-      create.put("operation", "create");
-      create.put("typename", "reward_modifier");
-      create.put("params.value", 0.1);
-      create.put("params.validUntil", to_time_t(expirationDate));
-      create.put("params.expirable", true);
-      create.put("defined_id", "expirable");
-
-      expectId(mCore->executeCommandJson(writeJson(create)));
-   }
-   {
-      boost::property_tree::ptree create;
-      create.put("operation", "create");
-      create.put("typename", "reward_modifier");
-      create.put("params.value", 0.1);
-      create.put("params.expirable", false);
-      create.put("params.validUntil", to_time_t(expirationDate));
-      create.put("defined_id", "non_expirable");
-
-      expectId(mCore->executeCommandJson(writeJson(create)));
-   }
-
-   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 1));
-   BOOST_CHECK(query("expirable", *mCore));
-   BOOST_CHECK(query("non_expirable", *mCore));
-
-   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 2));
-   BOOST_CHECK(query("expirable", *mCore));
-   BOOST_CHECK(query("non_expirable", *mCore));
-
-   mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 9));
-   BOOST_CHECK(!query("expirable", *mCore));
-   BOOST_CHECK(query("non_expirable", *mCore));
-}
-
 BOOST_FIXTURE_TEST_CASE( GeneratorsTestRandom, RewardTest )
 {
    boost::property_tree::ptree push;

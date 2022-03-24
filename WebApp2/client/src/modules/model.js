@@ -4,7 +4,6 @@ var init = false;
 var workBurden = 0;
 var investToSalaryRatio = 0.0;
 var primaryFocus = "";
-var rewardModifiers = null;
 var calendarItems = null;
 var currencies = null;
 var tod = "";
@@ -61,19 +60,6 @@ class materiaModel
         {
             const req = {
                 operation: "query",
-                filter: "IS(reward_modifier)"
-            };
-
-            Materia.exec(req, (r) => 
-            {
-                rewardModifiers = r.object_list;
-
-                onUpdateCallback();
-            });
-        }
-        {
-            const req = {
-                operation: "query",
                 filter: "IS(currency)"
             };
 
@@ -89,7 +75,7 @@ class materiaModel
                 operation: "query",
                 ids: ["tip_of_the_day"]
             };
-    
+
             Materia.exec(req, (r) => {
                 var c = r;
                 tod = c.object_list[0].value;
@@ -118,11 +104,6 @@ class materiaModel
     static getCalendarItems()
     {
         return calendarItems;
-    }
-
-    static getRewardModifiers()
-    {
-        return rewardModifiers;
     }
 
     static getCurrencies()
@@ -226,18 +207,6 @@ class materiaModel
 
         Materia.exec(req, (r) => {
             cb(r.object_list[0]);
-        });
-    }
-
-    static getRewardPoints(cb)
-    {
-        const req = {
-            operation: "query",
-            ids: ["reward.points"]
-        };
-
-        Materia.exec(req, (r) => {
-            cb(Number(r.object_list[0].value));
         });
     }
 

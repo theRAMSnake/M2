@@ -149,7 +149,6 @@ export default function ContractsCtrl(props)
     return <div>
                 {createContractItem(ctr[0], 10)}
                 {createContractItem(ctr[1], -10)}
-                {createContractItem(ctr[2], -10)}
                 {inEditDialog && <TextQueryDialog text="" onFinished={handleEditDialogFinished} onCanceled={handleDialogCanceled}/>}
                 <ConfirmationDialog open={inDeleteDialog} question="delete object" caption="confirm deletion" onNo={handleDialogCanceled} onYes={handleDeleteDialogFinished} />
             </div>;

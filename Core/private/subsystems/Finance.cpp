@@ -125,29 +125,29 @@ void FinanceSS::performFinancialAnalisys(const boost::gregorian::date& newDate)
 
    if(ratio > 1.5)
    {
-      mReward.setModAndGenerator(Id("mod.finance"), "Excellent finance", 0.15, 3, "Blue");
+      mReward.setGenerator(Id("mod.finance"), "Excellent finance", 3, "Blue");
       status = "Excellent";
    }
    else if(ratio > 1.2)
    {
-      mReward.setModAndGenerator(Id("mod.finance"), "Great finance", 0.1, 2, "Blue");
+      mReward.setGenerator(Id("mod.finance"), "Great finance", 2, "Blue");
       status = "Great";
    }
    else if(ratio > 1.1)
    {
-      mReward.setModAndGenerator(Id("mod.finance"), "Good finance", 0.05, 1, "Blue");
+      mReward.setGenerator(Id("mod.finance"), "Good finance", 1, "Blue");
       status = "Good";
    }
    else if(ratio > 1)
    {
-      mReward.removeModAndGenerator(Id("mod.finance"));
+      mReward.removeGenerator(Id("mod.finance"));
       status = "Ok";
    }
    else
    {
       status = "Critical";
       auto p = balance.base / 10000.0; // 1% per 100 EUR
-      mReward.setModAndGenerator(Id("mod.finance"), "Bad finance", p, static_cast<int>(p * 10 - 1), "Blue");
+      mReward.setGenerator(Id("mod.finance"), "Bad finance", static_cast<int>(p * 10 - 1), "Blue");
    }
 
    //Compile report

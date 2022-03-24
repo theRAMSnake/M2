@@ -15,8 +15,7 @@ ExpressionsTest.cpp
 ObjectTest.cpp
 CoreTest.cpp
 DatabaseTest.cpp
-#Disable until contracts are updated
-#ContractsTest.cpp
+ContractsTest.cpp
 Strategy3Test.cpp
 Utils.cpp
 UserTest.cpp

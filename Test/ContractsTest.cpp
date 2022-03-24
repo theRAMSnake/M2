@@ -11,6 +11,7 @@ public:
    {
       system("rm Test.db");
       mCore = materia::createCore({"Test.db"});
+      set("work.burden", 500, *mCore);
 
       {
          boost::property_tree::ptree create;
@@ -28,7 +29,8 @@ public:
          create.put("params.contracts.0.timeGrowth", 1);
          create.put("params.contracts.0.rewardBase", 1);
          create.put("params.contracts.0.rewardPerLevel", 0.5);
-         create.put("params.contracts.0.reward_mod_id", "");
+         create.put("params.contracts.0.reward_variable", "");
+         create.put("params.contracts.0.reward_color", "Green");
          create.put("params.contracts.1.id", "id1");
          create.put("params.contracts.1.typename", "object");
          create.put("params.contracts.1.caption", "fff");
@@ -38,19 +40,38 @@ public:
          create.put("params.contracts.1.timeGrowth", 0);
          create.put("params.contracts.1.rewardBase", 1);
          create.put("params.contracts.1.rewardPerLevel", 3);
-         create.put("params.contracts.1.reward_mod_id", "");
+         create.put("params.contracts.1.reward_variable", "");
+         create.put("params.contracts.1.reward_color", "Blue");
 
          expectId(mCore->executeCommandJson(writeJson(create)));
       }
-      {
-         boost::property_tree::ptree create;
-         create.put("operation", "create");
-         create.put("typename", "reward_modifier");
-         create.put("defined_id", "test_mod");
-         create.put("params.value", 0);
+       {
+          boost::property_tree::ptree create;
+          create.put("operation", "create");
+          create.put("typename", "object");
+          create.put("defined_id", "reward.coins");
+          create.put("params.Red", 0);
+          create.put("params.Blue", 0);
+          create.put("params.Yellow", 0);
+          create.put("params.Purple", 0);
+          create.put("params.Green", 0);
 
-         expectId(mCore->executeCommandJson(writeJson(create)));
-      }
+          expectId(mCore->executeCommandJson(writeJson(create)));
+       }
+       {
+           boost::property_tree::ptree push;
+           push.put("operation", "push");
+           push.put("listId", "inbox");
+           push.put("value", "val");
+           mCore->executeCommandJson(writeJson(push));
+
+           boost::property_tree::ptree create;
+           create.put("operation", "create");
+           create.put("typename", "calendar_item");
+           create.put("params.timestamp", 25);
+           create.put("params.entityTypeChoice", "Task");
+           mCore->executeCommandJson(writeJson(create));
+       }
    }
 
 protected:
@@ -65,7 +86,7 @@ BOOST_FIXTURE_TEST_CASE( TestNewDayEmpty, ContractsTest )
    BOOST_CHECK_EQUAL(1, count(queryAll("reward_contract", *mCore)));
 }
 
-BOOST_FIXTURE_TEST_CASE( TestNewDayFull, ContractsTest ) 
+BOOST_FIXTURE_TEST_CASE( TestNewDayFull, ContractsTest )
 {
    mCore->onNewDay(boost::gregorian::day_clock::local_day());
 
@@ -80,16 +101,15 @@ BOOST_FIXTURE_TEST_CASE( TestNewDayFull, ContractsTest )
    BOOST_CHECK_EQUAL(2, count(queryAll("reward_contract", *mCore)));
 }
 
-BOOST_FIXTURE_TEST_CASE( TestNewDayCompleted, ContractsTest ) 
+BOOST_FIXTURE_TEST_CASE( TestNewDayCompleted, ContractsTest )
 {
    mCore->onNewDay(boost::gregorian::day_clock::local_day());
 
    auto c = queryFirst("reward_contract", *mCore);
 
-   auto expectedReward = c.get<int>("reward") * 125; //125 because of modifiers
    auto id = c.get<std::string>("id");
    auto configId = c.get<std::string>("config_id");
-   
+
    boost::property_tree::ptree modify;
    modify.put("operation", "modify");
    modify.put("params.score", 10000);
@@ -103,8 +123,12 @@ BOOST_FIXTURE_TEST_CASE( TestNewDayCompleted, ContractsTest )
    auto cont = query(id, *mCore);
    BOOST_CHECK(!cont);
 
-   //Expect points added
-   BOOST_CHECK_EQUAL(expectedReward, queryVar("reward.points", *mCore));
+   //Expect coins added
+   auto coins = query("reward.coins", *mCore);
+   BOOST_CHECK_EQUAL(0, coins->get<int>("Red"));
+   BOOST_CHECK(1 == coins->get<int>("Blue") || 1 == coins->get<int>("Green"));
+   BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));
+   BOOST_CHECK_EQUAL(0, coins->get<int>("Yellow"));
 
    //Expect level raised
    auto conf = query("reward.cb", *mCore);
@@ -209,7 +233,7 @@ BOOST_FIXTURE_TEST_CASE( TestExpiration, ContractsTest )
    BOOST_CHECK_EQUAL(2, count(queryAll("reward_contract", *mCore)));
 }
 
-BOOST_FIXTURE_TEST_CASE( Test40Days, ContractsTest ) 
+BOOST_FIXTURE_TEST_CASE( Test40Days, ContractsTest )
 {
    for(int i = 0; i < 40; ++i)
    {
@@ -217,7 +241,7 @@ BOOST_FIXTURE_TEST_CASE( Test40Days, ContractsTest )
    }
 }
 
-BOOST_FIXTURE_TEST_CASE( TestModContract, ContractsTest ) 
+BOOST_FIXTURE_TEST_CASE( TestVarContract, ContractsTest )
 {
    {
       auto config = query("config.reward", *mCore);
@@ -235,7 +259,8 @@ BOOST_FIXTURE_TEST_CASE( TestModContract, ContractsTest )
       c.put("contracts.2.timeGrowth", 0);
       c.put("contracts.2.rewardBase", 1);
       c.put("contracts.2.rewardPerLevel", 0);
-      c.put("contracts.2.reward_mod_id", "test_mod");
+      c.put("contracts.2.reward_color", "");
+      c.put("contracts.2.reward_variable", "testvar");
 
       boost::property_tree::ptree modify;
       modify.put("operation", "modify");
@@ -243,7 +268,9 @@ BOOST_FIXTURE_TEST_CASE( TestModContract, ContractsTest )
       modify.put("id", "config.reward");
    }
 
-   double boostAmount = 0;
+   set("testvar", 0, *mCore);
+
+   int boostAmount = 0;
    for(int i = 0; i < 200; ++i)
    {
       mCore->onNewDay(boost::gregorian::day_clock::local_day());
@@ -254,9 +281,9 @@ BOOST_FIXTURE_TEST_CASE( TestModContract, ContractsTest )
          auto& c = *contrt;
 
          auto id = c.get<std::string>("id");
-         auto mod_id = c.get<std::string>("reward_mod_id");
+         auto var_id = c.get<std::string>("reward_variable");
 
-         if(mod_id != "test_mod")
+         if(var_id != "testvar")
          {
             boost::property_tree::ptree destroy;
             destroy.put("operation", "destroy");
@@ -272,13 +299,13 @@ BOOST_FIXTURE_TEST_CASE( TestModContract, ContractsTest )
 
             mCore->executeCommandJson(writeJson(modify));
 
-            boostAmount += 1.0 / 100;
+            boostAmount += 1;
          }
       }
    }
 
-   auto mod = query("test_mod", *mCore);
+   auto var = query("testvar", *mCore);
 
-   BOOST_CHECK(mod);
-   BOOST_CHECK_EQUAL(boostAmount, mod->get<double>("value"));
+   BOOST_CHECK(var);
+   BOOST_CHECK_EQUAL(boostAmount, var->get<int>("value"));
 }

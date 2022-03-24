@@ -137,15 +137,15 @@ void UserSS::awardInbox()
    types::SimpleList inbox(mOm, Id("inbox"));
    if(inbox.size() == 0)
    {
-       mReward.setModAndGenerator(Id("mod.inbox"), "Clean inbox", 0.05, 1, {});
+       mReward.setGenerator(Id("mod.inbox"), "Clean inbox", 1, {});
    }
    else
    {
-       mReward.removeModAndGenerator(Id("mod.inbox"));
+       mReward.removeGenerator(Id("mod.inbox"));
    }
 
    types::Variable hl(mOm, Id("health.level"));
-   mReward.setModAndGenerator(Id("mod.health"), "Health bonus", 0.01, hl.asInt() / 10, "Green");
+   mReward.setGenerator(Id("mod.health"), "Health bonus", hl.asInt() / 10, "Green");
 }
 
 static std::time_t to_time_t(const boost::gregorian::date& date )
@@ -173,11 +173,11 @@ void UserSS::advanceExpiredCalendarItems(const boost::gregorian::date& date)
 
    if(hasExpiredItems)
    {
-       mReward.removeModAndGenerator(Id("mod.calendar"));
+       mReward.removeGenerator(Id("mod.calendar"));
    }
    else
    {
-       mReward.setModAndGenerator(Id("mod.calendar"), "Clean calendar", 0.1, 2, {});
+       mReward.setGenerator(Id("mod.calendar"), "Clean calendar", 2, {});
    }
 }
 

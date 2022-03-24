@@ -43,52 +43,33 @@ const useStyles = makeStyles((theme) =>
   }),
 );
 
-function RewardView(props) 
+function RewardView(props)
 {
     const PTS_PER_CHEST = 2500;
     const classes = useStyles();
 
-    const [points, setPoints] = useState(null);
     const [items, setItems] = useState(null);
     const [snackOpen, setSnackOpen] = useState(false);
     const [snackText, setSnackText] = useState("");
     const [currentToken, setCurrentToken] = useState("");
     const [inDeleteDialog, setInDeleteDialog] = React.useState(false);
     const [focusedItemId, setFocusedItemId] = React.useState(-1);
-    
-    if(points == null)
+
+    if(items == null)
     {
-        materiaModel.getRewardPoints((pts) => { setPoints(pts); });
         materiaModel.getRewardItems((items) => { setItems(items); });
-    }
-    
-    function getNumChests()
-    {
-        return items.filter(x => x.name === "chest").length;
     }
 
     function getOtherItems()
     {
-        return items.filter(x => !(x.name === "chest" || x.name.includes("Token")));
+        return items.filter(x => !(x.name.includes("Token")));
     }
 
     function getNumTokens(tok)
     {
         return items.find(x => x.name === tok + " Token").amount;
     }
-    
-    function useChest()
-    {
-        if(getNumChests() != 0)
-        {
-            materiaModel.useChest(result => {
-                materiaModel.getRewardItems((items) => { setItems(items); });
-                setSnackText(result.chestType);
-                setSnackOpen(true);
-            });
-        }
-    }
-    
+
     function handleSnackClose()
     {
         setSnackOpen(false);
@@ -144,25 +125,8 @@ function RewardView(props)
             <ConfirmationDialog open={inDeleteDialog} question="delete item" caption="confirm deletion" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
             {currentToken.length > 0 && <TextQueryDialog text={getNumTokens(currentToken)} onFinished={handleEditDialogFinished} onCanceled={handleDialogCanceled}/>}
             <Grid container direction="column" justify="flex-start" alignItems="center">
-                <div style={{width: '80vw', paddingTop:'5px'}}>
-                    {points && <Bar
-                        labels={[0, Math.floor(PTS_PER_CHEST * 0.25), Math.floor(PTS_PER_CHEST * 0.5), Math.floor(PTS_PER_CHEST * 0.75), PTS_PER_CHEST]}
-                        labelColor="primary"
-                        progress={points / PTS_PER_CHEST * 100}
-                        barColor="secondary"
-                        seperatorColor="hotpink"
-                    />}
-                </div>
-                {items && 
+                {items &&
                     <Grid container direction="row" justify="space-around" alignItems="flex-start">
-                        <Box>
-                            <WorkIcon style={{marginLeft:"18px"}}/>
-                            <Paper elevation={3}>
-                                <Box width={60} onClick={useChest}>
-                                    <Typography variant="h6" align="center" className={classes.unselectable}>{getNumChests()}</Typography>
-                                </Box>
-                            </Paper>
-                        </Box>
                         <Box>
                             <BuildIcon style={{marginLeft:"18px"}}/>
                             <Paper elevation={3}>

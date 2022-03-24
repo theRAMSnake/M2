@@ -17,16 +17,13 @@ public:
     std::vector<CommandDef> getCommandDefs() override;
 
     void addCoins(const int coins, const std::string& color);
-    void setModAndGenerator(const Id& id, const std::string& desc, const double value, const int valueInt, const std::optional<std::string>& color);
-    void removeModAndGenerator(const Id& id);
-    Object useChest();
+    void setGenerator(const Id& id, const std::string& desc, const int valueInt, const std::optional<std::string>& color);
+    void removeGenerator(const Id& id);
 
 private:
-    Command* parseUseChestCommand(const boost::property_tree::ptree& src);
     Command* parseRewardCommand(const boost::property_tree::ptree& src);
     void genContract();
     void levelUpContract(const Id id);
-    double calculateTotalModifier();
 
     ObjectManager& mOm;
 };
