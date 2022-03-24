@@ -17,7 +17,6 @@ import CalendarCtrl from './CalendarCtrl.jsx'
 import ContractsCtrl from './ContractsCtrl.jsx'
 import VariableBurndown from './VariableBurndown.jsx'
 import VariablePanel from './VariablePanel.jsx'
-import RewardModifierView from './RewardModifierView.jsx'
 
 import {
     AppBar,

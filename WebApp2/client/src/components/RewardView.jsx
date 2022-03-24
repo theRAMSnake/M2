@@ -18,18 +18,13 @@ import {
     Typography,
     Box,
     Paper,
-    Snackbar,
-    MuiAlert
+    Snackbar
 } from "@material-ui/core";
 import WorkIcon from '@material-ui/icons/Work';
 import DeleteIcon from '@material-ui/icons/Delete';
 import BuildIcon from '@material-ui/icons/Build';
 import AccessibilityIcon from '@material-ui/icons/Accessibility';
 import ImportantDevicesIcon from '@material-ui/icons/ImportantDevices';
-
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -48,6 +43,7 @@ function RewardView(props)
     const PTS_PER_CHEST = 2500;
     const classes = useStyles();
 
+    const [coins, setCoins] = useState(null);
     const [items, setItems] = useState(null);
     const [snackOpen, setSnackOpen] = useState(false);
     const [snackText, setSnackText] = useState("");
@@ -55,8 +51,9 @@ function RewardView(props)
     const [inDeleteDialog, setInDeleteDialog] = React.useState(false);
     const [focusedItemId, setFocusedItemId] = React.useState(-1);
 
-    if(items == null)
+    if(coins == null)
     {
+        materiaModel.getRewardCoins((coins) => { setCoins(coins); });
         materiaModel.getRewardItems((items) => { setItems(items); });
     }
 
@@ -115,15 +112,30 @@ function RewardView(props)
         setFocusedItemId(-1);
     }
 
+    function CoinsView(props)
+    {
+        return <Paper elevation={3} style={{marginTop: '10px', marginBottom: '10px'}}>
+                    <Box width={60}>
+                        <Typography variant="h6" align="center" style={{color: props.color}} className={classes.unselectable}>{props.value}</Typography>
+                    </Box>
+               </Paper>;
+    }
+
     return (
         <div>
-            <Snackbar open={snackOpen} autoHideDuration={6000} onClose={handleSnackClose}>
-                <Alert onClose={handleSnackClose} severity="success" sx={{ width: '100%' }}>
-                    {snackText}
-                </Alert>
-            </Snackbar>
             <ConfirmationDialog open={inDeleteDialog} question="delete item" caption="confirm deletion" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
             {currentToken.length > 0 && <TextQueryDialog text={getNumTokens(currentToken)} onFinished={handleEditDialogFinished} onCanceled={handleDialogCanceled}/>}
+            <Grid container direction="column" justify="flex-start" alignItems="center">
+                {coins &&
+                    <Grid container direction="row" justify="space-around" alignItems="flex-start">
+                        <CoinsView value={coins.Red} color="red"/>
+                        <CoinsView value={coins.Blue} color="blue"/>
+                        <CoinsView value={coins.Purple} color="purple"/>
+                        <CoinsView value={coins.Yellow} color="yellow"/>
+                        <CoinsView value={coins.Green} color="green"/>
+                    </Grid>
+                }
+            </Grid>
             <Grid container direction="column" justify="flex-start" alignItems="center">
                 {items &&
                     <Grid container direction="row" justify="space-around" alignItems="flex-start">

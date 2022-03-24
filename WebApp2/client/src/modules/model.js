@@ -222,10 +222,11 @@ class materiaModel
         });
     }
 
-    static useChest(cb)
+    static getRewardCoins(cb)
     {
         const req = {
-            operation: "useChest"
+            operation: "query",
+            ids: ["reward.coins"]
         };
 
         Materia.exec(req, (r) => {
