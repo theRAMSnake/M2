@@ -88,20 +88,21 @@ Core3::Core3(const CoreConfig& config)
 {
    auto rewardSS = std::make_shared<RewardSS>(mObjManager);
    mSubsystems.push_back(rewardSS);
+   mRewardSS = rewardSS.get();
 
    auto commonSS = std::make_shared<CommonSS>(mObjManager);
    mSubsystems.push_back(commonSS);
    mCommonSS = commonSS.get();
 
-   auto strategySS = std::make_shared<StrategySS>(mObjManager, *rewardSS);
+   auto strategySS = std::make_shared<StrategySS>(mObjManager, *mRewardSS);
    mSubsystems.push_back(strategySS);
 
-   mSubsystems.push_back(std::make_shared<FinanceSS>(mObjManager, *rewardSS, *commonSS));
-   mSubsystems.push_back(std::make_shared<UserSS>(mObjManager, *rewardSS, *strategySS));
+   mSubsystems.push_back(std::make_shared<FinanceSS>(mObjManager, *mRewardSS, *commonSS));
+   mSubsystems.push_back(std::make_shared<UserSS>(mObjManager, *mRewardSS, *strategySS));
    mSubsystems.push_back(std::make_shared<JournalSS>(mObjManager));
    mSubsystems.push_back(std::make_shared<CalendarSS>(mObjManager));
    mSubsystems.push_back(std::make_shared<IdeasSS>(mObjManager));
-  
+
    for(auto s : mSubsystems)
    {
       for(auto t : s->getTypes())
@@ -125,6 +126,13 @@ Core3::Core3(const CoreConfig& config)
    mCommandDefs.push_back({"backup", std::bind(parseBackup, std::placeholders::_1, config.dbFileName)});
 
    mObjManager.initialize();
+
+   mRewardSS->spawnShopItems();
+}
+
+void Core3::TEST_reinitReward()
+{
+    mRewardSS->spawnShopItems();
 }
 
 void Core3::onNewDay(const boost::gregorian::date& date)

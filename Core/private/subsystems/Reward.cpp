@@ -42,7 +42,70 @@ const std::vector<std::string> COIN_COLORS = {"Red", "Green", "Purple", "Yellow"
 RewardSS::RewardSS(ObjectManager& objMan)
 : mOm(objMan)
 {
+}
 
+Object weightedRandom(const std::vector<Object>& srcs)
+{
+    for(int i = 0; i < 5000; ++i)
+    {
+        auto& randomItem = srcs[Rng::gen32() % srcs.size()];
+        auto weight = randomItem["weight"].get<Type::Double>();
+
+        if(Rng::genProbability(weight))
+        {
+            return randomItem;
+        }
+    }
+
+    throw std::logic_error("Unable to generate weightedRandom after 5000 attempts");
+}
+
+void populateCoinCost(Object& o, const std::string& costBase)
+{
+    std::vector<std::string> amount;
+    boost::split(amount, costBase, boost::is_any_of(" "));
+
+    for(auto& c : amount)
+    {
+        auto color = COIN_COLORS[Rng::genChoise(COIN_COLORS.size())];
+
+        o["cost" + color] = static_cast<int>(o["cost" + color].get<Type::Int>() + std::stoi(c));
+    }
+}
+
+void RewardSS::spawnShopItems()
+{
+    auto allSpawners = mOm.getAll("reward_shop_spawner");
+    if(allSpawners.empty())
+    {
+        return;
+    }
+
+    auto cfg = mOm.getOrCreate(Id("config.reward"), "object");
+    const std::size_t MAX_ITEMS = cfg["shopSize"].get<Type::Int>();
+    auto currentCount = mOm.getAll("reward_shop_item").size();
+
+    for(std::size_t i = currentCount; i < MAX_ITEMS; ++i)
+    {
+        auto item = weightedRandom(allSpawners);
+        auto vp = FunctionToValueProviderAdapter([&item, this](auto& obj)
+        {
+            if(item["type"].get<Type::Choice>() == "Assign")
+            {
+                obj["name"] = item["name"];
+                obj["amount"] = item["amount"];
+            }
+            else
+            {
+                types::SimpleList lst(mOm, Id(item["listId"].get<Type::String>()));
+                obj["name"] = lst.at(Rng::gen32() % lst.size());
+                obj["amount"] = 1;
+            }
+            populateCoinCost(obj, item["cost_base"].get<Type::String>());
+        });
+
+        mOm.create({}, "reward_shop_item", vp);
+    }
 }
 
 std::vector<TypeDef> RewardSS::getTypes()
@@ -115,163 +178,10 @@ int getCurrentDayOfWeek()
     return timeinfo->tm_wday;
 }
 
-Object weightedRandom(const std::vector<Object>& srcs)
-{
-    for(int i = 0; i < 5000; ++i)
-    {
-        auto& randomItem = srcs[Rng::gen32() % srcs.size()];
-        auto weight = randomItem["weight"].get<Type::Double>();
-
-        if(Rng::genProbability(weight))
-        {
-            return randomItem;
-        }
-    }
-
-    throw std::logic_error("Unable to generate weightedRandom after 5000 attempts");
-}
-
-// Object pickItem(const std::vector<Object>& cfg, const std::string& category)
-// {
-    // std::vector<Object> options;
-    // for(const auto& item : cfg)
-    // {
-        // if(item["category"].get<Type::String>() == category)
-        // {
-            // options.push_back(item);
-        // } 
-    // }
-    // if(options.empty())
-    // {
-        // throw std::logic_error("Broken reward config, cannot generate item of category: " + category);
-    // }
-    // return options[Rng::gen32() % options.size()];
-// }
-// 
-// Object pickItem(const std::vector<Object>& cfg, const std::vector<std::string>& categories, const int value)
-// {
-    // std::vector<Object> options;
-    // for(const auto& item : cfg)
-    // {
-        // auto category = item["category"].get<Type::String>();
-        // if(std::find(categories.begin(), categories.end(), category) != categories.end() && item["value"].get<Type::Int>() <= value)
-        // {
-            // options.push_back(item);
-        // } 
-    // }
-    // if(options.empty())
-    // {
-        // throw std::logic_error("Broken reward config, cannot generate item of categories and value: " + std::to_string(value));
-    // }
-    // return options[Rng::gen32() % options.size()];
-// }
-
 bool isStackable(const std::string& name)
 {
     return name.find("Token") != std::string::npos;
 }
-
-// void applyItem(ObjectManager& om, const Object& item)
-// {
-    // auto name = item["name"].get<Type::String>();
-    // if(item.contains("behavior"))
-    // {
-        // auto behavior = item.getChild("behavior");
-        // auto type = behavior["type"].get<Type::String>();
-        // if(type == "add_mod")
-        // {
-            // createMod(om, behavior["name"].get<Type::String>(), behavior["value"].get<Type::Double>(), behavior["duration"].get<Type::Int>());
-        // }
-        // else if(type == "fetch_from_list")
-        // {
-            // types::SimpleList lst(om, Id(behavior["source"].get<Type::String>()));
-            // auto vp = FunctionToValueProviderAdapter([&lst](auto& obj)
-            // {
-                // obj["name"] = lst.at(Rng::gen32() % lst.size());
-            // });
-// 
-            // om.create({}, "reward_item", vp);
-        // }
-        // else
-        // {
-            // throw std::logic_error("Unknown item behavior type: " + type);
-        // }
-    // }
-    // else
-    // {
-        // if(isStackable(name))
-        // {
-            // auto items = om.getAll("reward_item");
-            // bool found = false;
-            // for(auto& x : items)
-            // {
-                // if(x["name"].get<Type::String>() == name) 
-                // {
-                    // x["amount"] = x["amount"].get<Type::Int>() + (item.contains("amount") ? item["amount"].get<Type::Int>() : 1);
-                    // om.modify(x);
-                    // found = true;
-                // }
-            // }
-// 
-            // if(!found)
-            // {
-                // auto vp = FunctionToValueProviderAdapter([name](auto& obj)
-                // {
-                    // obj["name"] = name;
-                    // obj["amount"] = 1;
-                // });
-// 
-                // om.create({}, "reward_item", vp);
-            // }
-        // }
-        // else
-        // {
-            // auto vp = FunctionToValueProviderAdapter([name](auto& obj)
-            // {
-                // obj["name"] = name;
-            // });
-// 
-            // om.create({}, "reward_item", vp);
-        // }
-    // }
-// }
-// 
-// Object applyChest(ObjectManager& om, const Object& chestType)
-// {
-    // Object report({"object"}, Id("report"));
-    // std::vector<std::string> gainedItems;
-    // report["chestType"] = chestType["name"].get<Type::String>();
-// 
-    // auto cfg = om.getOrCreate(Id("config.reward"), "object");
-    // auto itemsCfg = cfg.getChild(Id("items")).getChildren();
-    // auto chestValuesLeft = cfg["chestValues"].get<Type::Int>();
-    // 
-    // if(chestType.contains("premium"))
-    // {
-        // auto premium = chestType["premium"].get<Type::String>();
-        // auto newItemCfg = pickItem(itemsCfg, premium);
-        // gainedItems.push_back(newItemCfg["name"].get<Type::String>());
-        // chestValuesLeft -= newItemCfg["value"].get<Type::Int>();
-        // applyItem(om, newItemCfg);
-    // }
-// 
-    // if(chestType.contains("fillwith"))
-    // {
-        // std::vector<std::string> fillwith;
-        // boost::split(fillwith, chestType["fillwith"].get<Type::String>(), boost::is_any_of(";"));
-        // while(chestValuesLeft > 0)
-        // {
-            // auto newItemCfg = pickItem(itemsCfg, fillwith, chestValuesLeft);
-            // gainedItems.push_back(newItemCfg["name"].get<Type::String>());
-            // chestValuesLeft -= newItemCfg["value"].get<Type::Int>();
-            // applyItem(om, newItemCfg);
-        // }
-    // }
-// 
-    // report["gainedItems"] = gainedItems;
-// 
-    // return report;
-// }
 
 void RewardSS::onNewDay(const boost::gregorian::date& date)
 {
@@ -417,7 +327,9 @@ void RewardSS::onNewWeek()
 
 std::vector<CommandDef> RewardSS::getCommandDefs()
 {
-    return {{"reward", std::bind(&RewardSS::parseRewardCommand, this, std::placeholders::_1)}};
+    return {{"reward", std::bind(&RewardSS::parseRewardCommand, this, std::placeholders::_1)},
+        {"buyRewardItem", std::bind(&RewardSS::parseBuyCommand, this, std::placeholders::_1)}
+    };
 }
 
 class RewardCommand : public Command
@@ -449,6 +361,106 @@ Command* RewardSS::parseRewardCommand(const boost::property_tree::ptree& src)
    auto color = getOrThrow<std::string>(src, "color", "Color is not specified");
 
    return new RewardCommand(coins, color, *this);
+}
+
+class BuyCommand : public Command
+{
+public:
+   BuyCommand(const Id id, RewardSS& reward)
+   : mId(id)
+   , mReward(reward)
+   {
+
+   }
+
+   ExecutionResult execute(ObjectManager& objManager) override
+   {
+      mReward.buyRewardItem(mId);
+      return Success{};
+   }
+
+private:
+    const Id mId;
+    RewardSS& mReward;
+};
+
+bool checkCost(const Object& target, const Object& coins)
+{
+    return target["costRed"].get<Type::Int>() <= coins["Red"].get<Type::Int>()
+        && target["costBlue"].get<Type::Int>() <= coins["Blue"].get<Type::Int>()
+        && target["costPurple"].get<Type::Int>() <= coins["Purple"].get<Type::Int>()
+        && target["costGreen"].get<Type::Int>() <= coins["Green"].get<Type::Int>()
+        && target["costYellow"].get<Type::Int>() <= coins["Yellow"].get<Type::Int>();
+}
+
+void subtractCost(const Object& target, Object& coins)
+{
+    coins["Red"] = coins["Red"].get<Type::Int>() - target["costRed"].get<Type::Int>();
+    coins["Blue"] = coins["Blue"].get<Type::Int>() - target["costBlue"].get<Type::Int>();
+    coins["Purple"] = coins["Purple"].get<Type::Int>() - target["costPurple"].get<Type::Int>();
+    coins["Green"] = coins["Green"].get<Type::Int>() - target["costGreen"].get<Type::Int>();
+    coins["Yellow"] = coins["Yellow"].get<Type::Int>() - target["costYellow"].get<Type::Int>();
+}
+
+void RewardSS::buyRewardItem(const Id id)
+{
+    auto target = mOm.get(id);
+    auto coins = mOm.get(Id("reward.coins"));
+
+    if(!checkCost(target, coins))
+    {
+        throw std::runtime_error("Not enough coins");
+    }
+
+    const auto name = target["name"].get<Type::String>();
+    if(isStackable(name))
+    {
+        auto items = mOm.getAll("reward_item");
+        bool found = false;
+        for(auto& x : items)
+        {
+            if(x["name"].get<Type::String>() == name)
+            {
+                x["amount"] = x["amount"].get<Type::Int>() + target["amount"].get<Type::Int>();
+                mOm.modify(x);
+                found = true;
+            }
+        }
+
+        if(!found)
+        {
+            auto vp = FunctionToValueProviderAdapter([name, target](auto& obj)
+            {
+                obj["name"] = name;
+                obj["amount"] = target["amount"].get<Type::Int>();
+            });
+
+            mOm.create({}, "reward_item", vp);
+        }
+    }
+    else
+    {
+        auto vp = FunctionToValueProviderAdapter([name, target](auto& obj)
+        {
+            obj["name"] = name;
+            obj["amount"] = target["amount"].get<Type::Int>();
+        });
+
+        mOm.create({}, "reward_item", vp);
+    }
+
+    subtractCost(target, coins);
+    mOm.modify(coins);
+    mOm.destroy(target.getId());
+
+    spawnShopItems();
+}
+
+Command* RewardSS::parseBuyCommand(const boost::property_tree::ptree& src)
+{
+   auto id = getOrThrow<std::string>(src, "targetId", "Target id is not specified");
+
+   return new BuyCommand(id, *this);
 }
 
 void RewardSS::addCoins(const int coins, const std::string& color)

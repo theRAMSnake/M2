@@ -11,6 +11,7 @@ namespace materia
 {
 
 class CommonSS;
+class RewardSS;
 class Core3 : public ICore3
 {
 public:
@@ -20,6 +21,8 @@ public:
     void onNewWeek() override;
 
     std::string executeCommandJson(const std::string& json) override;
+
+    void TEST_reinitReward() override;
 
 private:
     std::string formatResponce(const ExecutionResult& result);
@@ -33,6 +36,7 @@ private:
     Connections mConnections;
     ObjectManager mObjManager;
     CommonSS* mCommonSS;
+    RewardSS* mRewardSS;
     std::vector<CommandDef> mCommandDefs;
     std::vector<std::shared_ptr<ISubsystem>> mSubsystems;
 };
