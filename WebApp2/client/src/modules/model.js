@@ -222,6 +222,30 @@ class materiaModel
         });
     }
 
+    static buyShopItem(id, cb)
+    {
+        const req = {
+            operation: "buyRewardItem",
+            targetId: id
+        };
+
+        Materia.exec(req, (r) => {
+            cb();
+        });
+    }
+
+    static getRewardShopItems(cb)
+    {
+        const req = {
+            operation: "query",
+            filter: "IS(reward_shop_item)"
+        };
+
+        Materia.exec(req, (r) => {
+            cb(r.object_list);
+        });
+    }
+
     static getRewardCoins(cb)
     {
         const req = {
