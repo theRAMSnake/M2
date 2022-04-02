@@ -3,6 +3,7 @@ import MateriaConnections from '../modules/connections'
 
 var init = false;
 var workBurden = 0;
+var yearlyIncome = 0;
 var investToSalaryRatio = 0.0;
 var primaryFocus = "";
 var calendarItems = null;
@@ -27,8 +28,8 @@ class materiaModel
                 operation: "query",
                 ids: ["work.burden"]
             };
-            
-            Materia.exec(req, (r) => 
+
+            Materia.exec(req, (r) =>
             {
                 workBurden = Number(r.object_list[0].value);
                 onUpdateCallback();
@@ -39,8 +40,8 @@ class materiaModel
                 operation: "query",
                 ids: ["invest.cb"]
             };
-            
-            Materia.exec(req, (r) => 
+
+            Materia.exec(req, (r) =>
             {
                 investToSalaryRatio = parseFloat(r.object_list[0].percentOfSalary);
                 onUpdateCallback();
@@ -49,10 +50,22 @@ class materiaModel
         {
             const req = {
                 operation: "query",
+                ids: ["financial_report"]
+            };
+
+            Materia.exec(req, (r) =>
+            {
+                yearlyIncome = parseInt(r.object_list[0].balance);
+                onUpdateCallback();
+            });
+        }
+        {
+            const req = {
+                operation: "query",
                 ids: ["primary_focus"]
             };
-            
-            Materia.exec(req, (r) => 
+
+            Materia.exec(req, (r) =>
             {
                 primaryFocus = r.object_list[0].value;
                 onUpdateCallback();
@@ -64,7 +77,7 @@ class materiaModel
                 filter: "IS(currency)"
             };
 
-            Materia.exec(req, (r) => 
+            Materia.exec(req, (r) =>
             {
                 currencies = r.object_list;
 
@@ -110,6 +123,11 @@ class materiaModel
     static getCurrencies()
     {
         return currencies;
+    }
+
+    static getYearlyIncome()
+    {
+        return yearlyIncome;
     }
 
     static setWorkBurden(newValue)

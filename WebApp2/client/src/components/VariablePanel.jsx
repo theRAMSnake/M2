@@ -45,10 +45,22 @@ export default function VariablePanel(props)
         props.commit(text);
     }
 
+    function getColor()
+    {
+        if(props.color)
+        {
+            return props.color;
+        }
+        else
+        {
+            return "inherit";
+        }
+    }
+
     return  <Paper elevation={3}>
                 {inEditDialog && <TextQueryDialog text="" onFinished={handleEditDialogFinished} onCanceled={handleDialogCanceled}/>}
                 <Box width={props.length} onClick={() => prepareEditDialog()}>
-                    <Typography variant="h6" align="center" className={classes.unselectable}>
+                    <Typography style={{color: getColor()}} variant="h6" align="center" className={classes.unselectable}>
                         {props.value}
                     </Typography>
                 </Box>
