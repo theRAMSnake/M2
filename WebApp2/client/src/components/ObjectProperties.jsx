@@ -149,6 +149,10 @@ export default function ObjectProperties(props)
 
     function createPropCtrl(req)
     {
+        if(props.blockedFields && props.blockedFields.includes(req.name))
+        {
+            return <div/>;
+        }
         if(req.type === 'string' || req.type === 'period')
             return <TextField inputProps={{onChange: handleFieldChange}} value={props.object[req.name]} fullWidth id={req.name} label={req.name} />;
         if(req.type === 'bool')
@@ -214,6 +218,10 @@ export default function ObjectProperties(props)
 
     function createPinCtrl(pin)
     {
+        if(props.blockedFields && props.blockedFields.includes(pin.description))
+        {
+            return <div/>;
+        }
         return <FormControl fullWidth style={{marginTop: '10px'}}>
                     <InputLabel htmlFor={pin.description}>{pin.description}</InputLabel>
                         <Select

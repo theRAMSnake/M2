@@ -1,4 +1,5 @@
 import Materia from '../modules/materia_request'
+import MateriaConnections from '../modules/connections'
 
 var init = false;
 var workBurden = 0;
@@ -149,14 +150,15 @@ class materiaModel
             Materia.exec(req, (r) => {
                 var c = r;
                 calendarItems = c.object_list;
+                var calendarItemsConnections = new MateriaConnections(c.connection_list);
 
                 var ids = [];
 
-                calendarItems.forEach(x => 
+                calendarItems.forEach(x =>
                 {
                     if(x.entityTypeChoice === "StrategyNodeReference")
                     {
-                        ids.push(x.nodeReference);
+                        ids = ids.concat(calendarItemsConnections.AllOf(x.id, "Refers", "*").map(x => x.B));
                     }
 
                     x.suffix = ""
@@ -164,22 +166,23 @@ class materiaModel
 
                 if(ids.length > 0)
                 {
-                    const loadStrategyNodes = {
+                    const allRefs = {
                         operation: "query",
                         ids: ids
                     };
-            
-                    Materia.exec(loadStrategyNodes, (r) => 
-                    {
-                        var nodes = r.object_list;
 
-                        calendarItems.forEach(x => 
+                    Materia.exec(allRefs, (r) =>
+                    {
+                        var refs = r.object_list;
+                        var refConnections = new MateriaConnections(r.connection_list);
+
+                        calendarItems.forEach(x =>
                         {
                             x.suffix = ""
                             if(x.entityTypeChoice === "StrategyNodeReference")
                             {
-                                var n = nodes.find(y => {
-                                    return y.id === x.nodeReference
+                                var n = refs.find(y => {
+                                    return y.typename === "strategy_node" && refConnections.Has(x.id, "Refers", y.id)
                                 });
 
                                 if(n && n.typeChoice === "Counter")

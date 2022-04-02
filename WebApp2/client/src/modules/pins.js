@@ -102,27 +102,38 @@ export function makePins(obj, cb)
                 {
                     //For simplicty this code is implemented for pins of size 1 only
                     var refs = conns.All("Reference")
-                    for(var i = 0; i < refs.length; ++i)
-                    {
-                        const ref_req = {
-                            operation: "query",
-                            ids: [refs[i].B]
-                        };
 
-                        function changeRef(id, pins, cb)
-                        {
-                            return (r) => {
-                                if(pins[0].typeNameOther === r.object_list[0].typename)
+                    if(refs.length == 0)
+                    {
+                        cb(pins);
+                    }
+
+                    const ref_req = {
+                        operation: "query",
+                        ids: refs.map(x => x.B)
+                    };
+
+                    function applyRefs(conns, pins, id, cb)
+                    {
+                        return x => {
+                            console.log(conns);
+                            for(var i = 0; i < x.object_list.length; ++i)
+                            {
+                                if(pins[0].typeNameOther === x.object_list[i].typename)
                                 {
-                                   pins[0].value = r.object_list[0].id;
-                                   pins[0].connectionId = id;
+                                   var reflist = conns.AllOf(id, "Refers", x.object_list[i].id);
+                                   pins[0].value = x.object_list[i].id;
+                                   pins[0].connectionId = reflist[0].id;
                                    cb(pins);
+                                   return;
                                 }
                             }
-                        }
 
-                        Materia.exec(ref_req, changeRef(refs[i].id, pins, cb));
+                            cb(pins);
+                        };
                     }
+
+                    Materia.exec(ref_req, applyRefs(conns, pins, obj.id, cb));
                 }
                 else
                 {

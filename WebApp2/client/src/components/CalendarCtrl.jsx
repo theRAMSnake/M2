@@ -185,11 +185,23 @@ export default function CalendarCtrl(props)
         setFocusedItemIndex(-1);
     }
 
+    function getBlockedFields(obj)
+    {
+        if(obj.entityTypeChoice === "StrategyNodeReference")
+        {
+            return ["Core Value"];
+        }
+        else
+        {
+            return null;
+        }
+    }
+
     return <div>
             {showAddDlg && <AddItemDialog onClose={onAddDialogClosed} selectedType="calendar_item" init={{timestamp: getInitTs()}}/>}
             <ConfirmationDialog open={inDeleteDialog} question="delete object" caption="confirm deletion" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
             <ConfirmationDialog open={inCompleteDialog} question="complete" caption="confirm completion" onNo={onCompleteDialogCancel} onYes={onCompleteDialogOk} />
-            {objectInEdit && <GenericObjectDialog open={inEditDialog} onCancel={onEditDialogCancel} onOk={onEditDialogOk} onChange={onObjectChanged} object={objectInEdit} pins={pinsInEdit} onPinsChange={onPinChanged} />}
+            {objectInEdit && <GenericObjectDialog open={inEditDialog} onCancel={onEditDialogCancel} onOk={onEditDialogOk} onChange={onObjectChanged} object={objectInEdit} pins={pinsInEdit} onPinsChange={onPinChanged} blockedFields={getBlockedFields(objectInEdit)} />}
             <Grid container direction="column" justify="space-around" alignItems="center">
                 <Calendar value={selectedDate} onChange={onDateSelected}/>
                 <IconButton edge="end" aria-label="complete" onClick={onAddClicked}>
