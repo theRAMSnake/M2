@@ -21,6 +21,8 @@ import TreeItem from '@material-ui/lab/TreeItem';
 import DescriptionIcon from '@material-ui/icons/Description';
 import FolderIcon from '@material-ui/icons/Folder';
 import FolderOpenIcon from '@material-ui/icons/FolderOpen';
+import TrendingFlatIcon from '@material-ui/icons/TrendingFlat';
+import DoneIcon from '@material-ui/icons/Done';
 
 import { Editor } from '@tinymce/tinymce-react';
 
@@ -78,8 +80,10 @@ function JournalView(props)
     const [inDeleteDialog, setInDeleteDialog] = useState(false);
     const [inClearDialog, setInClearDialog] = useState(false);
     const [inEditDialog, setInEditDialog] = useState(false);
+    const [inMoveMode, setInMoveMode] = useState(false);
     const [inAddDialog, setInAddDialog] = useState(false);
     const [selectedId, setSelectedId] = useState("");
+    const [moveSubjectId, setMoveSubjectId] = useState("");
     const [selectedItemIsPage, setSelectedItemIsPage] = useState(true);
 
     function updateHeaders()
@@ -146,7 +150,7 @@ function JournalView(props)
                 operation: "query",
                 filter: 'IS(journal_content) AND Extends(' + id + ')'
             };
-    
+
             Materia.exec(req, (r) => {
                 var o = r.object_list[0];
                 setCurPage(o);
@@ -267,20 +271,20 @@ function JournalView(props)
             var obj = {
                 title: newtitle
             }
-    
+
             var req = {
                 operation: "create",
                 typename: "journal_header",
                 params: obj
             }
-    
+
             Materia.exec(req, (x) => {
                 if(isPage)
                 {
                     var sobj = {
                         content: ""
                     }
-            
+
                     var sreq = {
                         operation: "create",
                         typename: "journal_content",
@@ -299,26 +303,42 @@ function JournalView(props)
                             }
                         }
 
-                        Materia.exec(conReq, (x) => {});
+                        Materia.exec(conReq, (x) => {updateHeaders();});
 
                     });
                 }
 
+                var parentId = null;
                 if(!selectedItemIsPage)
+                {
+                    parentId = selectedId;
+                }
+                else
+                {
+                    //Use parent of selectedItem as a parent
+                    if(conns.Has("*", "ParentOf", selectedId))
+                    {
+                        parentId = conns.AllOf("*", "ParentOf", selectedId)[0].A;
+                    }
+                }
+
+                if(parentId)
                 {
                     var conReq2 = {
                         operation: "create",
                         typename: "connection",
                         params: {
-                            A: selectedId,
+                            A: parentId,
                             B: x.result_id,
                             type: "Hierarchy"
                         }
                     }
-                    Materia.exec(conReq2, (x) => {});
+                    Materia.exec(conReq2, (x) => {updateHeaders();});
                 }
-
-                updateHeaders();
+                else
+                {
+                    updateHeaders();
+                }
             });
         }
     }
@@ -347,6 +367,53 @@ function JournalView(props)
         setInEditDialog(false);
     }
 
+    function onMoveClicked()
+    {
+        setInMoveMode(true);
+        setMoveSubjectId(selectedId);
+    }
+
+    function onMoveDoneClicked()
+    {
+        setInMoveMode(false);
+        if(selectedId !== moveSubjectId)
+        {
+            var newParentId = null;
+            if(!selectedItemIsPage)
+            {
+                newParentId = selectedId;
+            }
+            else
+            {
+                //Use parent of selectedItem as a parent
+                if(conns.Has("*", "ParentOf", selectedId))
+                {
+                    newParentId = conns.AllOf("*", "ParentOf", selectedId)[0].A;
+                }
+            }
+
+            var oldParentId = null;
+            if(conns.Has("*", "ParentOf", moveSubjectId))
+            {
+                oldParentId = conns.AllOf("*", "ParentOf", moveSubjectId)[0].A;
+            }
+
+            if(oldParentId !== newParentId)
+            {
+                if(oldParentId)
+                {
+                    var oldConnId = conns.AllOf("*", "ParentOf", moveSubjectId)[0].id;
+                    Materia.sendDelete(oldConnId, x => {updateHeaders();});
+                }
+
+                if(newParentId)
+                {
+                    Materia.createConnection(newParentId, moveSubjectId, "Hierarchy", result_id => {updateHeaders();});
+                }
+            }
+        }
+    }
+
     return (<div>
         <Backdrop open={updating}><CircularProgress color="inherit"/></Backdrop>
         <AddJournalItemDialog open={inAddDialog} onCancel={onAddDialogCancel} onOk={onAddDialogOk}/>
@@ -357,18 +424,32 @@ function JournalView(props)
         {headers &&
         <Grid container direction="row" justify="space-around" alignItems="flex-start">
             <div>
-            <IconButton edge="start" onClick={onAddClicked}>
-                <AddCircleOutlineIcon/>
-            </IconButton>
-            <IconButton edge="start" onClick={onDeleteClicked}>
-                <DeleteForeverIcon/>
-            </IconButton>
-            <IconButton edge="start" onClick={onEditClicked}>
-                <EditIcon/>
-            </IconButton>
-            <IconButton edge="start" onClick={onClearClicked} disabled={selectedItemIsPage}>
-                <ClearAllIcon/>
-            </IconButton>
+            {
+                inMoveMode &&
+                    <IconButton edge="start" onClick={onMoveDoneClicked}>
+                        <DoneIcon/>
+                    </IconButton>
+            }
+            {
+                !inMoveMode &&
+                    <div>
+                    <IconButton edge="start" onClick={onAddClicked}>
+                        <AddCircleOutlineIcon/>
+                    </IconButton>
+                    <IconButton edge="start" onClick={onDeleteClicked}>
+                        <DeleteForeverIcon/>
+                    </IconButton>
+                    <IconButton edge="start" onClick={onEditClicked}>
+                        <EditIcon/>
+                    </IconButton>
+                    <IconButton edge="start" onClick={onClearClicked} disabled={selectedItemIsPage}>
+                        <ClearAllIcon/>
+                    </IconButton>
+                    <IconButton edge="start" onClick={onMoveClicked} disabled={!selectedId}>
+                        <TrendingFlatIcon/>
+                    </IconButton>
+                    </div>
+            }
             <TreeView style={{width: '20vw'}} onNodeSelect={onNodeSelect}>
                 {fetchChildren("")}
             </TreeView>

@@ -339,6 +339,7 @@ function StrategyView(props)
     const [updating, setUpdating] = useState(true);
     const [graphData, setGraphData] = useState(null);
     const [path, setPath] = useState([]);
+    const [initpath, setInitpath] = useState("");
     const [selectedNode, setSelectedNode] = useState(null);
     const [selectedNodeCoreValueId, setSelectedNodeCoreValueId] = useState(null);
     const [showAddDialog, setShowAddDialog] = useState(false);
@@ -353,20 +354,30 @@ function StrategyView(props)
     const [graphId, setGraphId] = useState("");
     const [allConns, setAllConns] = useState(null);
 
-    if(graphData == null)
+    if(initpath != props.initPath)
     {
+        setInitpath(props.initPath);
         if(props.initPath === "/")
         {
-            loadGraph("", () => {path.push({id: "", name: "Root"});});
+            loadGraph("", () => {
+                var newPath = [];
+                newPath.push({id: "", name: "Root"});
+                setPath(newPath);
+            });
+
         }
         else
         {
             resolvePath(props.initPath, result => {
-                loadGraph(result[result.length - 1].id, () => {path.push(...result);});
+                loadGraph(result[result.length - 1].id, () => {
+                    var newPath = [];
+                    newPath.push(...result);
+                    setPath(newPath);
+                });
             });
         }
     }
-    
+
     function resolvePath(path, cb)
     {
         const splitted = path.split("/");
@@ -406,7 +417,7 @@ function StrategyView(props)
             }
 
             cb(resultPath);
-        }); 
+        });
     }
 
     function isNodeLocked(n)
@@ -414,7 +425,7 @@ function StrategyView(props)
         var locked = false;
         //Node is locked if at least one predecessor is not completed
         var predecessors = graphData.links.filter(x => x.target === n.id).map(x =>  {return x.source});
-        
+
         predecessors.forEach(x =>
         {
             var p = graphData.nodes.find(y => x === y.id);
@@ -461,6 +472,7 @@ function StrategyView(props)
 
     function loadGraph(parentId, successCb)
     {
+        console.log("Loading graph for " + parentId);
         var filterStr = "";
         if(parentId.length == 0)
         {
@@ -479,7 +491,6 @@ function StrategyView(props)
         {
             if(r.object_list != "")
             {
-                console.log("got objects");
                 const newNodes = r.object_list.map(x => {
                     var n = x;
                     if(x.x)
@@ -592,7 +603,7 @@ function StrategyView(props)
                 typename: "connection",
                 params: obj
             }
-    
+
             Materia.exec(req, (x) => {
                 if(x.result_id)
                 {
