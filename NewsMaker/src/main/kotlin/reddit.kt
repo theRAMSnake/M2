@@ -46,7 +46,7 @@ fun genContentForSubreddit(name: String, reddit: RedditClient): String
 }
 
 @kotlinx.serialization.Serializable
-data class NewsConfig(val id: String, val typename: String, val reddit: String)
+data class NewsConfig(val id: String, val typename: String, val reddit: String, val modified: String)
 
 @kotlinx.serialization.Serializable
 data class ObjectList(val id: String, val typename: String, val object_list: List<NewsConfig>, val connection_list: String)

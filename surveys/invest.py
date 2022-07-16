@@ -84,7 +84,9 @@ def main():
         tickers.append(c["ticker"])
 
     for t in set(tickers):
+        print(t)
         alphaResp = alphaReq("function=TIME_SERIES_DAILY&symbol={}".format(t), args.api_key)
+        print(alphaResp)
         lastDate = alphaResp["Meta Data"]["3. Last Refreshed"]
         value = alphaResp["Time Series (Daily)"][lastDate]["4. close"]
         req = {

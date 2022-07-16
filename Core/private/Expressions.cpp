@@ -3,8 +3,14 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 #include <fmt/format.h>
+#include <functional>
 #include <iostream>
 #include <regex>
+#include <boost/spirit/include/qi.hpp>
+#include <boost/phoenix.hpp>
+
+using namespace boost::spirit;
+namespace phx = boost::phoenix;
 
 namespace materia
 {
@@ -332,6 +338,11 @@ public:
 
     }
 
+    BoolExpression(const bool t)
+    : mVal(t)
+    {
+    }
+
     Value evaluate(const Object& object, const Connections& cons) const
     {
         return mVal;
@@ -463,6 +474,138 @@ std::shared_ptr<Expression> parseExpression(const std::string& src)
 {
     auto tokens = tokenize(src);
     return parseExpression(tokens);
+}
+
+namespace v2
+{
+
+template<Type T>
+class ConstantExpression : public Expression
+{
+public:
+    ConstantExpression(const typename TypeTraits<T>::Class t)
+    : mVal(t)
+    {
+
+    }
+
+    Value evaluate(const InterpreterContext& context) const
+    {
+        return mVal;
+    }
+
+private:
+    const typename TypeTraits<T>::Class mVal;
+};
+
+template<class Func>
+class BinaryExpression : public Expression
+{
+public:
+    BinaryExpression(std::shared_ptr<Expression> arg1, std::shared_ptr<Expression> arg2)
+    : mArg1(arg1)
+    , mArg2(arg2)
+    {
+
+    }
+
+    Value evaluate(const InterpreterContext& ctx) const
+    {
+        auto a1 = mArg1->evaluate(ctx);
+        auto a2 = mArg2->evaluate(ctx);
+
+        Func f;
+        return f(a1, a2);
+    }
+
+private:
+    std::shared_ptr<Expression> mArg1;
+    std::shared_ptr<Expression> mArg2;
+};
+
+class NotExpression : public Expression
+{
+public:
+    NotExpression(const std::shared_ptr<Expression> val)
+    : mVal(val)
+    {
+
+    }
+
+    Value evaluate(const InterpreterContext& ctx) const
+    {
+        auto eval = mVal->evaluate(ctx);
+        if(std::holds_alternative<bool>(eval))
+        {
+            return !std::get<bool>(eval);
+        }
+        else
+        {
+            throw std::runtime_error("Unable to negate expression of non boolean type");
+        }
+    }
+
+private:
+    std::shared_ptr<Expression> mVal;
+};
+
+template <typename ExprType>
+struct ExprFactory
+{
+    template<typename... T> struct result { typedef std::shared_ptr<Expression> type; };
+
+    template<typename... T>
+        std::shared_ptr<Expression> operator()(T&&... a) const
+        {
+            std::cout << "exec create" << std::endl;
+            return std::make_shared<ExprType>(std::forward<T>(a)...);
+        }
+};
+
+template<typename ConcreteExpr, typename... T>
+std::shared_ptr<Expression> createExpression(T&... a)
+{
+    return std::make_shared<ConcreteExpr>(std::forward<T>(a)...);
+}
+
+class Grammar : public qi::grammar<std::string::const_iterator, std::shared_ptr<Expression>(), ascii::space_type>
+{
+public:
+    Grammar() : Grammar::base_type(anyExpr)
+    {
+        constantBool = qi::bool_[qi::_val = phx::bind(&createExpression<ConstantExpression<Type::Bool>, bool>, qi::_1)];
+        operatorEq = (anyExpr >> '=' >> anyExpr)[qi::_val = phx::bind(&createExpression<BinaryExpression<std::equal_to<Value>>, std::shared_ptr<Expression>, std::shared_ptr<Expression>>, qi::_1, qi::_2)];
+        operatorNot = '!' >> anyExpr[qi::_val = phx::bind(&createExpression<NotExpression, std::shared_ptr<Expression>>, qi::_1)];
+
+        anyExpr = operatorEq | operatorNot | constantBool;
+    }
+
+private:
+    using Rule = qi::rule<std::string::const_iterator, std::shared_ptr<Expression>(), ascii::space_type>;
+    Rule operatorEq;
+    Rule operatorNot;
+    Rule constantBool;
+    Rule anyExpr;
+};
+
+std::shared_ptr<Expression> parseExpression(const std::string& src)
+{
+    std::shared_ptr<Expression> result;
+    Grammar grammar;
+    auto begin = src.begin();
+    auto end = src.end();
+    boost::spirit::qi::phrase_parse(
+        begin, end, grammar, ascii::space, result);
+
+    if (begin != end) {
+        std::cout << "Unparseable: "
+                  << std::quoted(std::string(begin, end)) << std::endl;
+        throw std::runtime_error("Parse error");
+    }
+
+    return result;
+}
+
 }
 
 }

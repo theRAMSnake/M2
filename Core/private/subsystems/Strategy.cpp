@@ -112,7 +112,7 @@ void StrategySS::onCalendarReferenceCompleted(const Id& id)
         obj["value"] = obj["value"].get<Type::Int>() + 1;
     }
 
-    mOm.modify(obj);   
+    mOm.modify(obj);
 }
 
 }

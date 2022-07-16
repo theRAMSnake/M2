@@ -109,6 +109,7 @@ def updateTargets(currencyList, totalValue):
     resp = materiaReq(req)
     dataPoints = resp["object_list"] 
     dataPoints.sort(reverse=False, key=sortByTimestamp)
+
     fullYearlyPE = Money(dataPoints[-1]["totalPortfolioValue"], currencyList) - Money(dataPoints[0]["totalPortfolioValue"], currencyList)
 
     req = {
@@ -252,7 +253,7 @@ def proposeTrades(currencyList):
     for i, (ticker, stock) in enumerate(allstocks.items()):
         if stock["new"]:
             continue
-        sellCount = stock["amount"] > stock["goal"]
+        sellCount = stock["amount"] - stock["goal"]
         if sellCount > 0:
             totalSell = totalSell + stock["price"] * (sellCount)
             transactionString += (str(sellCount) + "x" + stock["ticker"] + " ")
