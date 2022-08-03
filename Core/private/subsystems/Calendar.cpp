@@ -28,6 +28,7 @@ std::vector<TypeDef> CalendarSS::getTypes()
         {"text", Type::String},
         {"timestamp", Type::Timestamp},
         {"recurrency", Type::Period},
+        {"isShared", Type::Bool},
         {"entityTypeChoice", Type::Choice, {"Event", "Task", "StrategyNodeReference"}},
         {"urgencyChoice", Type::Choice, {"Not urgent", "Urgent"}}},
         {},
