@@ -34,12 +34,44 @@ struct Money
     int base = 0;
     int coins = 0;
 
+    bool operator==(const Money& other) const = default;
+
     template<class T>
     Money& operator /=(const T& modifier)
     {
         fromFullValue(toFullValue() / modifier);
 
         return *this;
+    }
+
+    bool operator <(const Money& other) const
+    {
+        if(currency != other.currency)
+        {
+            throw std::runtime_error("Cannot perform operation on money of different currency");
+        }
+
+        if(base == other.base)
+        {
+            return coins < other.coins;
+        }
+
+        return base < other.base;
+    }
+
+    bool operator >(const Money& other) const
+    {
+        if(currency != other.currency)
+        {
+            throw std::runtime_error("Cannot perform operation on money of different currency");
+        }
+
+        if(base == other.base)
+        {
+            return coins > other.coins;
+        }
+
+        return base > other.base;
     }
 
     Money& operator -=(const Money& other)
@@ -110,6 +142,12 @@ struct Period
     {
     }
 
+    Period(const int days_, const int months_, const int years_)
+        : days(days_)
+        , months(months_)
+        , years(years_)
+    {
+    }
     static Period Empty()
     {
         return Period();
@@ -118,6 +156,36 @@ struct Period
     bool operator == (const Period& other) const
     {
         return days == other.days && months == other.months && years == other.years;
+    }
+
+    bool operator < (const Period& other) const
+    {
+        if(years == other.years)
+        {
+            if(months == other.months)
+            {
+                return days < other.days;
+            }
+
+            return months.number_of_months() < other.months.number_of_months();
+        }
+
+        return years.number_of_years() < other.years.number_of_years();
+    }
+
+    bool operator > (const Period& other) const
+    {
+        if(years == other.years)
+        {
+            if(months == other.months)
+            {
+                return days > other.days;
+            }
+
+            return months.number_of_months() > other.months.number_of_months();
+        }
+
+        return years.number_of_years() > other.years.number_of_years();
     }
 
     boost::gregorian::date_duration days;

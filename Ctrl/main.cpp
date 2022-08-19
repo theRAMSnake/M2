@@ -1,4 +1,3 @@
-#include <zmq.hpp>
 #include <iostream>
 #include <thread>
 #include <chrono>
