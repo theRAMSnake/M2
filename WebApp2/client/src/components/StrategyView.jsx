@@ -162,7 +162,7 @@ function NodeInfoView(props)
             <IconButton edge="start" onClick={props.onSplitHorizClicked}>
                 <SwapHorizIcon/>
             </IconButton>
-            {(node.typeChoice === "Goal" || node.typeChoice === "Task") && !isAchieved && <IconButton edge="end" aria-label="complete" onClick={completeClicked}>
+            {(node.typeChoice === "Goal" || node.typeChoice === "Task" || (node.typeChoice == "Counter" && node.value >= node.target)) && !isAchieved && <IconButton edge="end" aria-label="complete" onClick={completeClicked}>
                 <DoneIcon/>
             </IconButton>}
             <Divider/>
@@ -476,7 +476,7 @@ function StrategyView(props)
         var filterStr = "";
         if(parentId.length == 0)
         {
-            filterStr = "IS(strategy_node) AND RootElement(x)"
+            filterStr = "IS(strategy_node) AND RootElement()"
         }
         else
         {
@@ -909,13 +909,12 @@ function StrategyView(props)
 
     function onNodeCompleted()
     {
-        selectedNode.isAchieved = true;
-        Materia.postEdit(selectedNode.id, JSON.stringify(selectedNode));
+        Materia.sendComplete(selectedNode.id, (resp) => {
+            setSelectedNode(null);
 
-        setSelectedNode(null);
-
-        setUpdating(true);
-        loadGraph(path[path.length - 1].id, () => {});
+            setUpdating(true);
+            loadGraph(path[path.length - 1].id, () => {});
+        });
     }
 
     function onWatchCompleted(id)

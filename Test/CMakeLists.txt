@@ -8,20 +8,19 @@ include_directories("../build/Common")
 include_directories("..")
 
 add_executable(Test
-#EncDecTest.cpp
-#RewardTest.cpp
-#NewAPITest.cpp
-#ExpressionsTest.cpp
+EncDecTest.cpp
+RewardTest.cpp
+NewAPITest.cpp
 ExpressionsTest2.cpp
-#ObjectTest.cpp
+ObjectTest.cpp
 CoreTest.cpp
-#DatabaseTest.cpp
-#ContractsTest.cpp
-#Strategy3Test.cpp
-#Utils.cpp
-#UserTest.cpp
-#IdeasTest.cpp
-#ConnectionsTest.cpp
+DatabaseTest.cpp
+ContractsTest.cpp
+Strategy3Test.cpp
+Utils.cpp
+UserTest.cpp
+IdeasTest.cpp
+ConnectionsTest.cpp
 )
 
 find_package(Boost COMPONENTS system unit_test_framework filesystem REQUIRED)
