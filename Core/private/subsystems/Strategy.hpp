@@ -16,11 +16,7 @@ public:
     std::vector<TypeDef> getTypes() override;
     std::vector<CommandDef> getCommandDefs() override;
 
-    void onCalendarReferenceCompleted(const Id& id);
-
 private:
-    void handleNodeChanging(const Object& before, Object& after);
-
     ObjectManager& mOm;
     RewardSS& mReward;
 };

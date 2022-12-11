@@ -276,3 +276,189 @@ BOOST_FIXTURE_TEST_CASE(AdvanceCalendar, UserTest)
    BOOST_CHECK_EQUAL(1, count(queryCondition("calendar_item", ".timestamp < " + std::to_string(time(0)), *mCore)));
 }
 
+BOOST_FIXTURE_TEST_CASE(CompleteSNGoal, UserTest)
+{
+    {
+        boost::property_tree::ptree create;
+        create.put("operation", "create");
+        create.put("typename", "strategy_node");
+        create.put("defined_id", "g");
+        create.put("params.typeChoice", "Goal");
+        create.put("params.reward", 10);
+
+        expectId(mCore->executeCommandJson(writeJson(create)));
+    }
+    {
+        boost::property_tree::ptree create;
+        create.put("operation", "create");
+        create.put("typename", "core_value");
+        create.put("defined_id", "cv");
+        create.put("params.color", "Yellow");
+
+        expectId(mCore->executeCommandJson(writeJson(create)));
+    }
+    {
+        boost::property_tree::ptree create;
+        create.put("operation", "create");
+        create.put("typename", "connection");
+        create.put("params.A", "g");
+        create.put("params.B", "cv");
+        create.put("params.type", "Reference");
+
+        expectId(mCore->executeCommandJson(writeJson(create)));
+    }
+    boost::property_tree::ptree complete;
+    complete.put("operation", "complete");
+    complete.put("id", "g");
+
+    mCore->executeCommandJson(writeJson(complete));
+    mCore->executeCommandJson(writeJson(complete));
+
+    auto coins = query("reward.coins", *mCore);
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Red"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Blue"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Green"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));
+    BOOST_CHECK_EQUAL(10, coins->get<int>("Yellow"));
+}
+BOOST_FIXTURE_TEST_CASE(CompleteSNTask, UserTest)
+{
+    {
+        boost::property_tree::ptree create;
+        create.put("operation", "create");
+        create.put("typename", "strategy_node");
+        create.put("defined_id", "g");
+        create.put("params.typeChoice", "Task");
+        create.put("params.reward", 10);
+
+        expectId(mCore->executeCommandJson(writeJson(create)));
+    }
+    {
+        boost::property_tree::ptree create;
+        create.put("operation", "create");
+        create.put("typename", "core_value");
+        create.put("defined_id", "cv");
+        create.put("params.color", "Yellow");
+
+        expectId(mCore->executeCommandJson(writeJson(create)));
+    }
+    {
+        boost::property_tree::ptree create;
+        create.put("operation", "create");
+        create.put("typename", "connection");
+        create.put("params.A", "g");
+        create.put("params.B", "cv");
+        create.put("params.type", "Reference");
+
+        expectId(mCore->executeCommandJson(writeJson(create)));
+    }
+    boost::property_tree::ptree complete;
+    complete.put("operation", "complete");
+    complete.put("id", "g");
+
+    mCore->executeCommandJson(writeJson(complete));
+    mCore->executeCommandJson(writeJson(complete));
+
+    auto coins = query("reward.coins", *mCore);
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Red"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Blue"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Green"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));
+    BOOST_CHECK_EQUAL(10, coins->get<int>("Yellow"));
+}
+BOOST_FIXTURE_TEST_CASE(CompleteSNCounter, UserTest)
+{
+    boost::property_tree::ptree create;
+    create.put("operation", "create");
+    create.put("typename", "strategy_node");
+    create.put("defined_id", "g");
+    create.put("params.typeChoice", "Counter");
+    create.put("params.target", 10);
+    create.put("params.reward", 10);
+
+    expectId(mCore->executeCommandJson(writeJson(create)));
+    {
+        boost::property_tree::ptree create;
+        create.put("operation", "create");
+        create.put("typename", "core_value");
+        create.put("defined_id", "cv");
+        create.put("params.color", "Yellow");
+
+        expectId(mCore->executeCommandJson(writeJson(create)));
+    }
+    {
+        boost::property_tree::ptree create;
+        create.put("operation", "create");
+        create.put("typename", "connection");
+        create.put("params.A", "g");
+        create.put("params.B", "cv");
+        create.put("params.type", "Reference");
+
+        expectId(mCore->executeCommandJson(writeJson(create)));
+    }
+
+    boost::property_tree::ptree modify;
+    modify.put("operation", "modify");
+    modify.put("params.value", 10);
+    modify.put("id", "g");
+
+    mCore->executeCommandJson(writeJson(modify));
+
+    boost::property_tree::ptree complete;
+    complete.put("operation", "complete");
+    complete.put("id", "g");
+
+    mCore->executeCommandJson(writeJson(complete));
+    mCore->executeCommandJson(writeJson(complete));
+
+    auto coins = query("reward.coins", *mCore);
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Red"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Blue"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Green"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));
+    BOOST_CHECK_EQUAL(10, coins->get<int>("Yellow"));
+}
+BOOST_FIXTURE_TEST_CASE(CompleteSNNegative, UserTest)
+{
+    boost::property_tree::ptree create;
+    create.put("operation", "create");
+    create.put("typename", "strategy_node");
+    create.put("defined_id", "g");
+    create.put("params.typeChoice", "Counter");
+    create.put("params.target", 10);
+    create.put("params.reward", 10);
+
+    expectId(mCore->executeCommandJson(writeJson(create)));
+    {
+        boost::property_tree::ptree create;
+        create.put("operation", "create");
+        create.put("typename", "core_value");
+        create.put("defined_id", "cv");
+        create.put("params.color", "Yellow");
+
+        expectId(mCore->executeCommandJson(writeJson(create)));
+    }
+    {
+        boost::property_tree::ptree create;
+        create.put("operation", "create");
+        create.put("typename", "connection");
+        create.put("params.A", "g");
+        create.put("params.B", "cv");
+        create.put("params.type", "Reference");
+
+        expectId(mCore->executeCommandJson(writeJson(create)));
+    }
+
+    boost::property_tree::ptree complete;
+    complete.put("operation", "complete");
+    complete.put("id", "g");
+
+    mCore->executeCommandJson(writeJson(complete));
+
+    auto coins = query("reward.coins", *mCore);
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Red"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Blue"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Green"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));
+    BOOST_CHECK_EQUAL(0, coins->get<int>("Yellow"));
+}

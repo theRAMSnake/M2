@@ -2,6 +2,8 @@
 #include <boost/spirit/include/qi.hpp>
 #include <boost/phoenix.hpp>
 #include <boost/spirit/include/qi_no_skip.hpp>
+#include <boost/date_time/gregorian/greg_date.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 using namespace boost::spirit;
 namespace phx = boost::phoenix;
@@ -197,6 +199,14 @@ bool evaluateConnectionsFunctor(const Id& A, const Id& B, const ConnectionType& 
     return pos != objCons.end();
 }
 
+static std::time_t to_time_t(const boost::gregorian::date& date )
+{
+	using namespace boost::posix_time;
+	static ptime epoch(boost::gregorian::date(1970, 1, 1));
+	time_duration::sec_type secs = (ptime(date,seconds(0)) - epoch).total_seconds();
+	return std::time_t(secs);
+}
+
 class FunctionCall : public Expression
 {
 public:
@@ -240,6 +250,11 @@ public:
         if(name == "IS")
         {
             return ctx.getObject().getType().name == firstParam;
+        }
+        else if(name == "DATE")
+        {
+            boost::gregorian::date d = boost::gregorian::from_string(firstParam);
+            return to_time_t(d);
         }
         else if(name == "RootElement")
         {
@@ -367,7 +382,7 @@ public:
         groupExpr = ('(' >> anyExpr >> ')')[qi::_val = qi::_1];
         functionCall = (constantSymbol >> '(' >> *primaryExpr >> ')')[qi::_val = phx::bind(&createExpression<FunctionCall, std::shared_ptr<Expression>, std::vector<std::shared_ptr<Expression>>>, qi::_1, qi::_2)];
 
-        primaryExpr = functionCall | groupExpr | constantStr | constantPeriod | constantBool | constantCurrency | constantDouble | constantInt | constantSymbol | fieldExpr;
+        primaryExpr = functionCall | groupExpr | constantStr | constantPeriod | constantBool | constantCurrency | constantDouble | constantInt | fieldExpr | constantSymbol;
         binaryExpr = operatorOr | operatorAnd | operatorEq | operatorGt | operatorLe | operatorContains;
         anyExpr = binaryExpr | operatorNot | primaryExpr;
     }
