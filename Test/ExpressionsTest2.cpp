@@ -243,11 +243,11 @@ BOOST_FIXTURE_TEST_CASE( TestCons, Expressions2Test )
    materia::Object p(gType, materia::Id("id1"));
    materia::Object p2(gType, materia::Id("id2"));
    materia::Object p3(gType, materia::Id("id3"));
-   materia::Object p4(gType, materia::Id("id3-4544-gff"));
+   materia::Object p4(gType, materia::Id("3-4544-gff"));
 
    mConnections->create(materia::Id("id1"), materia::Id("id2"), materia::ConnectionType::Hierarchy);
    mConnections->create(materia::Id("id1"), materia::Id("id2"), materia::ConnectionType::Reference);
-   mConnections->create(materia::Id("id1"), materia::Id("id3-4544-gff"), materia::ConnectionType::Reference);
+   mConnections->create(materia::Id("id1"), materia::Id("3-4544-gff"), materia::ConnectionType::Reference);
    mConnections->create(materia::Id("id1"), materia::Id("id2"), materia::ConnectionType::Extension);
    mConnections->create(materia::Id("id1"), materia::Id("id2"), materia::ConnectionType::Requirement);
 
@@ -255,7 +255,7 @@ BOOST_FIXTURE_TEST_CASE( TestCons, Expressions2Test )
    BOOST_CHECK_EQUAL(true, std::get<bool>(materia::v2::parseExpression("ParentOf(id2)")->evaluate(*mCtx)));
    BOOST_CHECK_EQUAL(false, std::get<bool>(materia::v2::parseExpression("ChildOf(id2)")->evaluate(*mCtx)));
    BOOST_CHECK_EQUAL(true, std::get<bool>(materia::v2::parseExpression("Refers(id2)")->evaluate(*mCtx)));
-   BOOST_CHECK_EQUAL(true, std::get<bool>(materia::v2::parseExpression("Refers(id3-4544-gff)")->evaluate(*mCtx)));
+   BOOST_CHECK_EQUAL(true, std::get<bool>(materia::v2::parseExpression("Refers(\"3-4544-gff\")")->evaluate(*mCtx)));
    BOOST_CHECK_EQUAL(false, std::get<bool>(materia::v2::parseExpression("ReferedBy(id2)")->evaluate(*mCtx)));
    BOOST_CHECK_EQUAL(true, std::get<bool>(materia::v2::parseExpression("ExtendedBy(id2)")->evaluate(*mCtx)));
    BOOST_CHECK_EQUAL(false, std::get<bool>(materia::v2::parseExpression("Extends(id2)")->evaluate(*mCtx)));

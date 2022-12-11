@@ -480,7 +480,7 @@ function StrategyView(props)
         }
         else
         {
-            filterStr = "IS(strategy_node) AND ChildOf(" + parentId + ')'
+            filterStr = 'IS(strategy_node) AND ChildOf("' + parentId + '")'
         }
         const req = {
             operation: "query",
@@ -758,7 +758,7 @@ function StrategyView(props)
                             //Load all objects
                             var loadAllRefs = {
                                 operation: "query",
-                                filter: "ReferedBy(" + parentIdToAdd + ")"
+                                filter: 'ReferedBy("' + parentIdToAdd + '")'
                             }
 
                             Materia.exec(loadAllRefs, (result) => {
