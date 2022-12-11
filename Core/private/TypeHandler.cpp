@@ -68,11 +68,13 @@ std::vector<Object> TypeHandler::query(const Filter& f, const Connections& cons)
 {
     std::vector<Object> result;
 
-    for(auto kv : mPool) 
-    {   
+    v2::InterpreterContext ctx(cons);
+    for(auto kv : mPool)
+    {
         try
         {
-            if(std::get<bool>(f.evaluate(kv.second, cons)))
+            ctx.setObject(kv.second);
+            if(std::get<bool>(f.evaluate(ctx)))
             {
                 result.push_back(kv.second);
             }

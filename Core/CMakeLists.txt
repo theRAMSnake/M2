@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.6)
 project(m3core)
 
 LIST(APPEND CMAKE_MODULE_PATH "..")
@@ -6,11 +6,11 @@ LIST(APPEND CMAKE_MODULE_PATH "..")
 include_directories("..")
 include_directories("/usr/include/python3.8")
 
-add_library(m3core 
+add_library(m3core
 private/Core3.cpp
 private/TypeSystem.cpp
 private/CommandParser.cpp
-private/Expressions.cpp
+private/Expressions2.cpp
 private/Commands.cpp
 private/ObjectManager.cpp
 private/Impl.cpp

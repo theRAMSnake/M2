@@ -1,7 +1,6 @@
 #pragma once
 #include "TypeSystem.hpp"
 #include "Database.hpp"
-#include "Expressions.hpp"
 #include "TypeHandler.hpp"
 
 namespace materia

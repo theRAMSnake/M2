@@ -2,6 +2,7 @@
 #include "ExceptionsUtil.hpp"
 #include "JsonSerializer.hpp"
 #include <fmt/format.h>
+#include "Expressions2.hpp"
 
 namespace materia
 {
@@ -37,7 +38,7 @@ std::shared_ptr<Filter> parseFilter(const boost::property_tree::ptree& src)
     auto filter = src.get_optional<std::string>("filter");
     if(filter)
     {
-        return parseExpression(*filter);
+        return v2::parseExpression(*filter);
     }
     else
     {
