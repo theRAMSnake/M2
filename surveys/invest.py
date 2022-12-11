@@ -42,7 +42,8 @@ def composeMateriaMoney(value, domain):
     if domain == "EUR":
         currency = "EUR"
 
-    return value[:-2] + currency
+    fl = float(value)
+    return "%.2f%s" % (fl, currency)
 
 def main():
     parser = argparse.ArgumentParser()
@@ -56,8 +57,9 @@ def main():
     currencyResp = materiaReq(req);
     for c in currencyResp["object_list"]:
         if c["name"] != "EUR":
-            alphaResp = alphaReq("function=CURRENCY_EXCHANGE_RATE&from_currency=EUR&to_currency={}".format(c["name"]), args.api_key)
-            c["conversionRateToEur"] = alphaResp["Realtime Currency Exchange Rate"]["5. Exchange Rate"]
+            alphaResp = alphaReq("function=FX_DAILY&from_symbol=EUR&to_symbol={}".format(c["name"]), args.api_key)
+            daily = alphaResp["Time Series FX (Daily)"]
+            c["conversionRateToEur"] = daily[list(daily.keys())[0]]["1. open"]
             upd = {
                 "operation": "modify",
                 "id": c["id"],
@@ -85,8 +87,8 @@ def main():
 
     for t in set(tickers):
         print(t)
-        alphaResp = alphaReq("function=TIME_SERIES_DAILY&symbol={}".format(t), args.api_key)
-        print(alphaResp)
+        alphaResp = alphaReq("function=TIME_SERIES_DAILY_ADJUSTED&symbol={}".format(t), args.api_key)
+        #print(alphaResp)
         lastDate = alphaResp["Meta Data"]["3. Last Refreshed"]
         value = alphaResp["Time Series (Daily)"][lastDate]["4. close"]
         req = {
@@ -103,6 +105,7 @@ def main():
                 "params": obj
             }
             updateResp = materiaReq(upd)
+            print(updateResp)
         else:
             # If there is no stock it means a snp record
             cre = {
