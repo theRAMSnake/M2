@@ -148,7 +148,7 @@ function JournalView(props)
             
             const req = {
                 operation: "query",
-                filter: 'IS(journal_content) AND Extends(' + id + ')'
+                filter: 'IS(journal_content) AND Extends("' + id + '")'
             };
 
             Materia.exec(req, (r) => {
