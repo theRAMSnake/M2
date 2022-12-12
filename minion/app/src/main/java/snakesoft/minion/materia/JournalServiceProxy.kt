@@ -44,7 +44,7 @@ class JournalServiceProxy(private val mMateriaConnection: MateriaConnection) {
     @Throws(MateriaUnreachableException::class)
     fun loadPage(id: String): String
     {
-        val jsonData = "{\"operation\": \"query\", \"filter\": \"IS(journal_content) AND Extends(${id})\"}"
+        val jsonData = "{\"operation\": \"query\", \"filter\": \"IS(journal_content) AND Extends(\\\"${id}\\\")\"}"
         val resp = mMateriaConnection.sendMessage(jsonData)
         if (resp.contains("object_list\":\"\""))
         {
