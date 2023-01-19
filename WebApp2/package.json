@@ -34,7 +34,7 @@
     "jsoneditor-react": "^3.1.2",
     "jsonwebtoken": "^9.0.0",
     "mui-rte": "^1.29.0",
-    "passport": "^0.4.1",
+    "passport": "^0.6.0",
     "passport-local": "^1.0.0",
     "passport-local-token": "^1.0.1",
     "react": "^16.14.0",
