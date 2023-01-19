@@ -1,4 +1,4 @@
 {
     "jwtSecret": "War. War never changes",
-    "UseHttps": false
+    "UseHttps": true
 }

@@ -1,5 +1,6 @@
 #include "Codec.hpp"
 #include <iomanip>
+#include <memory>
 
 using EVP_CIPHER_CTX_free_ptr = std::unique_ptr<EVP_CIPHER_CTX, decltype(&::EVP_CIPHER_CTX_free)>;
 

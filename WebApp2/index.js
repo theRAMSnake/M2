@@ -29,7 +29,7 @@ if(config.UseHttps)
     var certificate = fs.readFileSync('/etc/letsencrypt/live/ramsnake.net-0002/fullchain.pem', 'utf8');
     var credentials = {key: privateKey, cert: certificate};
     var httpsServer = https.createServer(credentials, app);
-    httpsServer.listen(5758);
+    httpsServer.listen(443);
 }
 else
 {

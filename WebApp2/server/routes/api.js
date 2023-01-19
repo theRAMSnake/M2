@@ -13,6 +13,7 @@ function m4req(op, cb, errCb)
       host: 'ramsnake.net',
       port: 5754,
       path: '/api',
+      agent: http.Agent({keepAlive:true}),
       method: 'POST',
       headers: {
         'Content-Type': 'text/html',
