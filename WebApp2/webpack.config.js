@@ -34,12 +34,17 @@ module.exports = {
       test: /\.jsx?$/,
       include: path.join(__dirname, '/client/src'),
       loader: 'babel-loader',
-      query: {
+      options: {
         presets: ['@babel/preset-env', '@babel/preset-react']
       }},
       {
         test: /\.css?$/,
         include: path.join(__dirname, '/client/css'),
+        use: ['style-loader', 'css-loader']
+      },
+      {
+        test: /\.css?$/,
+        include: path.join(__dirname, './node_modules/reactflow/dist/'),
         use: ['style-loader', 'css-loader']
       },
       {

@@ -179,7 +179,9 @@ function JournalView(props)
 
     function handleEditorChange(content, editor)
     {
+	console.log(content)
         curPage.content = content;
+	setContent(content);
         setChanged(true);
     }
 
