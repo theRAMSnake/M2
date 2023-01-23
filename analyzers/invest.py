@@ -244,19 +244,19 @@ def proposeTrades(currencyList):
                 "params": obj
             }
             updateResp = materiaReq(upd)
-            
+
     transactionString = "SELL: "
 
     # Calculate total amount of money if we sell
     totalSell = Money("0.00USD", currencyList)
     totalBuy = Money("0.00USD", currencyList)
     for i, (ticker, stock) in enumerate(allstocks.items()):
-        if stock["new"]:
+        if stock["new"] or stock.get("isTradeRestricted", False):
             continue
         sellCount = stock["amount"] - stock["goal"]
         if sellCount > 0:
             totalSell = totalSell + stock["price"] * (sellCount)
-            transactionString += (str(sellCount) + "x" + stock["ticker"] + " ")
+            transactionString += " " + (str(sellCount) + " x" + stock["ticker"] + " ")
 
     # Find what we can buy on those money
     allTickers = filter(lambda x: allstocks[x]["priority"] >= 0, allstocks.keys())
@@ -265,8 +265,9 @@ def proposeTrades(currencyList):
     anyBuys = False
     for t in allTickers:
         stock = allstocks[t]
+        if stock.get("isTradeRestricted", False):
+            continue
         discrepancy = stock["goal"] - stock["amount"]
-        print("Discrepancy of " + t + " = " + str(discrepancy))
         while discrepancy > 0:
             if (totalBuy + stock["price"]) < totalSell:
                 if anyBuys == False:
