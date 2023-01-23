@@ -73,7 +73,6 @@ public:
     StringConstantExpression(const std::vector<char>& t)
     : mVal(t.data(), t.size())
     {
-
     }
 
     Value evaluate(const InterpreterContext& context) const
@@ -369,7 +368,7 @@ public:
         constantDouble = strict_double[qi::_val = phx::bind(&createExpression<ConstantExpression<Type::Double>, double>, qi::_1)];
         constantCurrency = (qi::double_ >> +qi::char_("A-Z"))[qi::_val = phx::bind(&createExpression<CurrencyConstantExpression, double, std::vector<char>>, qi::_1, qi::_2)];
         constantPeriod = (qi::int_ >> qi::char_("mdy"))[qi::_val = phx::bind(&createExpression<PeriodConstantExpression, int, char>, qi::_1, qi::_2)];
-        constantStr = ('"' >> +~qi::char_('"') >> '"')[qi::_val = phx::bind(&createExpression<StringConstantExpression, std::vector<char>>, qi::_1)];
+        constantStr = ('"' >> qi::no_skip[+~qi::char_('"')] >> '"')[qi::_val = phx::bind(&createExpression<StringConstantExpression, std::vector<char>>, qi::_1)];
         constantSymbol = (+qi::char_("a-zA-Z0-9_-"))[qi::_val = phx::bind(&createExpression<SymbolConstantExpression, std::vector<char>>, qi::_1)];
         fieldExpr = ('.' >> qi::no_skip[+qi::char_("a-zA-Z0-9_-")])[qi::_val = phx::bind(&createExpression<FieldAccessExpression, std::vector<char>>, qi::_1)];
         operatorEq = (primaryExpr >> '=' >> anyExpr)[qi::_val = phx::bind(&createExpression<BinaryExpression<std::equal_to<Value>>, std::shared_ptr<Expression>, std::shared_ptr<Expression>>, qi::_1, qi::_2)];

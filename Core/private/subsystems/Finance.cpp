@@ -216,7 +216,8 @@ std::vector<TypeDef> FinanceSS::getTypes()
         {"ticker", Type::String},
         {"domain", Type::String},
         {"amount", Type::Int},
-        {"lastKnownPrice", Type::Money_v2}
+        {"lastKnownPrice", Type::Money_v2},
+        {"isTradeRestricted", Type::Bool}
         }});
     result.push_back({"finance_dataPoint", "finance_dataPoints", {
         {"timestamp", Type::Timestamp},

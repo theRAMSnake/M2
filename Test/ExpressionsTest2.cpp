@@ -107,6 +107,7 @@ BOOST_FIXTURE_TEST_CASE( TestConstants, Expressions2Test )
    BOOST_CHECK_EQUAL(false, eval<bool>("\"str1\" = \"str2\""));
    BOOST_CHECK_EQUAL(true, eval<bool>("\"str1\" = \"str1\""));
    BOOST_CHECK_EQUAL(true, eval<bool>("\"str1 str\" = \"str1 str\""));
+   BOOST_CHECK_EQUAL(false, eval<bool>("\"str1 str\" = \"str1 str2\""));
 
    BOOST_CHECK_EQUAL(false, eval<bool>("5d = 6d"));
    BOOST_CHECK_EQUAL(false, eval<bool>("7d = 1m"));
@@ -143,16 +144,17 @@ BOOST_FIXTURE_TEST_CASE( TestFields, Expressions2Test )
     materia::Object obj({"object", "tbl", {{"val1", materia::Type::Int}, {"val3", materia::Type::Int}, {"vb1", materia::Type::Bool}, {"vb2", materia::Type::Bool}}}, materia::Id::generate());
     obj["val1"] = 5;
     obj["val3"] = 2;
-    obj["val2"] = "str";
+    obj["val2"] = "word1 word2";
     obj["vb1"] = true;
     obj["vb2"] = true;
 
    BOOST_CHECK_EQUAL(5, eval<std::int64_t>(".val1", obj));
-   BOOST_CHECK_EQUAL("str", eval<std::string>(".val2", obj));
+   BOOST_CHECK_EQUAL("word1 word2", eval<std::string>(".val2", obj));
    BOOST_CHECK_THROW(eval<std::string>(".wrongfield", obj), std::runtime_error);
 
    BOOST_CHECK_EQUAL(true, eval<bool>(".val1 < 6"));
    BOOST_CHECK_EQUAL(false, eval<bool>(".val2 = \"yyy\""));
+   BOOST_CHECK_EQUAL(true, eval<bool>(".val2 = \"word1 word2\""));
 
    BOOST_CHECK_EQUAL(false, eval<bool>(".val1 = .val2", obj));
 
