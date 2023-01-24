@@ -1,5 +1,9 @@
 
-> webapp2@1.0.0 start /root/M2/WebApp2
+> webapp2@1.0.0 bundle
+> webpack
+
+
+> webapp2@1.0.0 start
 > nodemon --use_strict index.js
 
 [33m[nodemon] 2.0.3[39m
@@ -7,34 +11,41 @@
 [33m[nodemon] watching path(s): *.*[39m
 [33m[nodemon] watching extensions: js,mjs,json[39m
 [32m[nodemon] starting `node --use_strict index.js`[39m
-events.js:292
-      throw er; // Unhandled 'error' event
-      ^
 
-Error: EBADF: bad file descriptor, read
-Emitted 'error' event on ReadStream instance at:
-    at internal/fs/streams.js:217:14
-    at FSReqCallback.wrapper [as oncomplete] (fs.js:524:5) {
-  errno: -9,
-  code: 'EBADF',
-  syscall: 'read'
+webpack is watching the files…
+
+node:internal/crypto/hash:71
+  this[kHandle] = new _Hash(algorithm, xofLen);
+                  ^
+
+Error: error:0308010C:digital envelope routines::unsupported
+    at new Hash (node:internal/crypto/hash:71:19)
+    at Object.createHash (node:crypto:140:10)
+    at module.exports (/root/M2/WebApp2/node_modules/webpack/lib/util/createHash.js:135:53)
+    at NormalModule._initBuildHash (/root/M2/WebApp2/node_modules/webpack/lib/NormalModule.js:417:16)
+    at handleParseError (/root/M2/WebApp2/node_modules/webpack/lib/NormalModule.js:471:10)
+    at /root/M2/WebApp2/node_modules/webpack/lib/NormalModule.js:503:5
+    at /root/M2/WebApp2/node_modules/webpack/lib/NormalModule.js:358:12
+    at /root/M2/WebApp2/node_modules/loader-runner/lib/LoaderRunner.js:373:3
+    at iterateNormalLoaders (/root/M2/WebApp2/node_modules/loader-runner/lib/LoaderRunner.js:214:10)
+    at iterateNormalLoaders (/root/M2/WebApp2/node_modules/loader-runner/lib/LoaderRunner.js:221:10)
+    at /root/M2/WebApp2/node_modules/loader-runner/lib/LoaderRunner.js:236:3
+    at context.callback (/root/M2/WebApp2/node_modules/loader-runner/lib/LoaderRunner.js:111:13)
+    at /root/M2/WebApp2/node_modules/babel-loader/lib/index.js:59:71 {
+  opensslErrorStack: [ 'error:03000086:digital envelope routines::initialization error' ],
+  library: 'digital envelope routines',
+  reason: 'unsupported',
+  code: 'ERR_OSSL_EVP_UNSUPPORTED'
 }
-npm ERR! code ELIFECYCLE
-npm ERR! errno 1
-npm ERR! webapp2@1.0.0 start: `nodemon --use_strict index.js`
-npm ERR! Exit status 1
-npm ERR! 
-npm ERR! Failed at the webapp2@1.0.0 start script.
-npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
 
-npm ERR! A complete log of this run can be found in:
-npm ERR!     /root/.npm/_logs/2020-05-28T19_40_33_250Z-debug.log
+Node.js v19.2.0
+problem with request: socket hang up
 
-> webapp2@1.0.0 start /root/M2/WebApp2
+> webapp2@1.0.0 start
 > nodemon --use_strict index.js
 
 
-> webapp2@1.0.0 bundle /root/M2/WebApp2
+> webapp2@1.0.0 bundle
 > webpack
 
 [33m[nodemon] 2.0.3[39m
@@ -42,109 +53,33 @@ npm ERR!     /root/.npm/_logs/2020-05-28T19_40_33_250Z-debug.log
 [33m[nodemon] watching path(s): *.*[39m
 [33m[nodemon] watching extensions: js,mjs,json[39m
 [32m[nodemon] starting `node --use_strict index.js`[39m
-events.js:292
-      throw er; // Unhandled 'error' event
-      ^
-
-Error: listen EADDRINUSE: address already in use :::5758
-    at Server.setupListenHandle [as _listen2] (net.js:1314:16)
-    at listenInCluster (net.js:1362:12)
-    at Server.listen (net.js:1448:7)
-    at Object.<anonymous> (/root/M2/WebApp2/index.js:33:13)
-    at Module._compile (internal/modules/cjs/loader.js:1176:30)
-    at Object.Module._extensions..js (internal/modules/cjs/loader.js:1196:10)
-    at Module.load (internal/modules/cjs/loader.js:1040:32)
-    at Function.Module._load (internal/modules/cjs/loader.js:929:14)
-    at Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:71:12)
-    at internal/main/run_main_module.js:17:47
-Emitted 'error' event on Server instance at:
-    at emitErrorNT (net.js:1341:8)
-    at processTicksAndRejections (internal/process/task_queues.js:84:21) {
-  code: 'EADDRINUSE',
-  errno: -98,
-  syscall: 'listen',
-  address: '::',
-  port: 5758
-}
-[31m[nodemon] app crashed - waiting for file changes before starting...[39m
 
 webpack is watching the files…
 
-[32m[nodemon] restarting due to changes...[39m
+problem with request: socket hang up
+
+> webapp2@1.0.0 bundle
+> webpack
+
+
+> webapp2@1.0.0 start
+> nodemon --use_strict index.js
+
+[33m[nodemon] 2.0.3[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: js,mjs,json[39m
 [32m[nodemon] starting `node --use_strict index.js`[39m
-Hash: 6a7580b488eead1e7042
-Version: webpack 4.42.1
-Time: 6325ms
-Built at: 05/28/2020 9:53:24 PM
- Asset     Size  Chunks                    Chunk Names
-app.js  388 KiB       0  [emitted]  [big]  main
-Entrypoint main [big] = app.js
-  [4] ./node_modules/@material-ui/core/esm/styles/withStyles.js + 1 modules 4.7 KiB {0} [built]
-      |    2 modules
- [15] ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js + 2 modules 772 bytes {0} [built]
-      |    3 modules
- [23] ./node_modules/@babel/runtime/helpers/esm/slicedToArray.js + 1 modules 991 bytes {0} [built]
-      |    2 modules
- [62] ./node_modules/@material-ui/core/esm/styles/createMuiTheme.js + 15 modules 26.4 KiB {0} [built]
-      |    16 modules
- [80] ./client/src/app.jsx + 133 modules 594 KiB {0} [built]
-      | ./client/src/app.jsx 4.27 KiB [built]
-      | ./client/src/modules/Auth.js 1.9 KiB [built]
-      | ./client/src/modules/m3proxy.js 1.63 KiB [built]
-      | ./client/src/modules/materia_request.js 1.89 KiB [built]
-      |     + 130 hidden modules
-[105] ./node_modules/@material-ui/styles/esm/makeStyles/makeStyles.js + 19 modules 107 KiB {0} [built]
-      |    20 modules
-[106] ./node_modules/@material-ui/system/esm/spacing.js + 1 modules 4.21 KiB {0} [built]
-      |    2 modules
-[335] (webpack)/buildin/global.js 472 bytes [built]
-    + 328 hidden modules
 
-WARNING in asset size limit: The following asset(s) exceed the recommended size limit (244 KiB).
-This can impact web performance.
-Assets: 
-  app.js (388 KiB)
+webpack is watching the files…
 
-WARNING in entrypoint size limit: The following entrypoint(s) combined asset size exceeds the recommended limit (244 KiB). This can impact web performance.
-Entrypoints:
-  main (388 KiB)
-      app.js
+problem with request: socket hang up
 
-
-WARNING in webpack performance recommendations: 
-You can limit the size of your bundles by using import() or require.ensure to lazy load some parts of your application.
-For more info visit https://webpack.js.org/guides/code-splitting/
-events.js:292
-      throw er; // Unhandled 'error' event
-      ^
-
-Error: listen EADDRINUSE: address already in use :::5758
-    at Server.setupListenHandle [as _listen2] (net.js:1314:16)
-    at listenInCluster (net.js:1362:12)
-    at Server.listen (net.js:1448:7)
-    at Object.<anonymous> (/root/M2/WebApp2/index.js:33:13)
-    at Module._compile (internal/modules/cjs/loader.js:1176:30)
-    at Object.Module._extensions..js (internal/modules/cjs/loader.js:1196:10)
-    at Module.load (internal/modules/cjs/loader.js:1040:32)
-    at Function.Module._load (internal/modules/cjs/loader.js:929:14)
-    at Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:71:12)
-    at internal/main/run_main_module.js:17:47
-Emitted 'error' event on Server instance at:
-    at emitErrorNT (net.js:1341:8)
-    at processTicksAndRejections (internal/process/task_queues.js:84:21) {
-  code: 'EADDRINUSE',
-  errno: -98,
-  syscall: 'listen',
-  address: '::',
-  port: 5758
-}
-[31m[nodemon] app crashed - waiting for file changes before starting...[39m
-
-> webapp2@1.0.0 start /root/M2/WebApp2
+> webapp2@1.0.0 start
 > nodemon --use_strict index.js
 
 
-> webapp2@1.0.0 bundle /root/M2/WebApp2
+> webapp2@1.0.0 bundle
 > webpack
 
 [33m[nodemon] 2.0.3[39m
@@ -152,52 +87,31 @@ Emitted 'error' event on Server instance at:
 [33m[nodemon] watching path(s): *.*[39m
 [33m[nodemon] watching extensions: js,mjs,json[39m
 [32m[nodemon] starting `node --use_strict index.js`[39m
-Server is running on http://localhost:5758 or http://127.0.0.1:5758
 
 webpack is watching the files…
 
-[32m[nodemon] restarting due to changes...[39m
-[32m[nodemon] starting `node --use_strict index.js`[39m
-Hash: 6a7580b488eead1e7042
-Version: webpack 4.42.1
-Time: 6151ms
-Built at: 05/28/2020 9:54:36 PM
- Asset     Size  Chunks                    Chunk Names
-app.js  388 KiB       0  [emitted]  [big]  main
-Entrypoint main [big] = app.js
-  [4] ./node_modules/@material-ui/core/esm/styles/withStyles.js + 1 modules 4.7 KiB {0} [built]
-      |    2 modules
- [15] ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js + 2 modules 772 bytes {0} [built]
-      |    3 modules
- [23] ./node_modules/@babel/runtime/helpers/esm/slicedToArray.js + 1 modules 991 bytes {0} [built]
-      |    2 modules
- [62] ./node_modules/@material-ui/core/esm/styles/createMuiTheme.js + 15 modules 26.4 KiB {0} [built]
-      |    16 modules
- [80] ./client/src/app.jsx + 133 modules 594 KiB {0} [built]
-      | ./client/src/app.jsx 4.27 KiB [built]
-      | ./client/src/modules/Auth.js 1.9 KiB [built]
-      | ./client/src/modules/m3proxy.js 1.63 KiB [built]
-      | ./client/src/modules/materia_request.js 1.89 KiB [built]
-      |     + 130 hidden modules
-[105] ./node_modules/@material-ui/styles/esm/makeStyles/makeStyles.js + 19 modules 107 KiB {0} [built]
-      |    20 modules
-[106] ./node_modules/@material-ui/system/esm/spacing.js + 1 modules 4.21 KiB {0} [built]
-      |    2 modules
-[335] (webpack)/buildin/global.js 472 bytes [built]
-    + 328 hidden modules
+node:internal/crypto/hash:71
+  this[kHandle] = new _Hash(algorithm, xofLen);
+                  ^
 
-WARNING in asset size limit: The following asset(s) exceed the recommended size limit (244 KiB).
-This can impact web performance.
-Assets: 
-  app.js (388 KiB)
+Error: error:0308010C:digital envelope routines::unsupported
+    at new Hash (node:internal/crypto/hash:71:19)
+    at Object.createHash (node:crypto:140:10)
+    at module.exports (/root/M2/WebApp2/node_modules/webpack/lib/util/createHash.js:135:53)
+    at NormalModule._initBuildHash (/root/M2/WebApp2/node_modules/webpack/lib/NormalModule.js:417:16)
+    at handleParseError (/root/M2/WebApp2/node_modules/webpack/lib/NormalModule.js:471:10)
+    at /root/M2/WebApp2/node_modules/webpack/lib/NormalModule.js:503:5
+    at /root/M2/WebApp2/node_modules/webpack/lib/NormalModule.js:358:12
+    at /root/M2/WebApp2/node_modules/loader-runner/lib/LoaderRunner.js:373:3
+    at iterateNormalLoaders (/root/M2/WebApp2/node_modules/loader-runner/lib/LoaderRunner.js:214:10)
+    at iterateNormalLoaders (/root/M2/WebApp2/node_modules/loader-runner/lib/LoaderRunner.js:221:10)
+    at /root/M2/WebApp2/node_modules/loader-runner/lib/LoaderRunner.js:236:3
+    at context.callback (/root/M2/WebApp2/node_modules/loader-runner/lib/LoaderRunner.js:111:13)
+    at /root/M2/WebApp2/node_modules/babel-loader/lib/index.js:59:71 {
+  opensslErrorStack: [ 'error:03000086:digital envelope routines::initialization error' ],
+  library: 'digital envelope routines',
+  reason: 'unsupported',
+  code: 'ERR_OSSL_EVP_UNSUPPORTED'
+}
 
-WARNING in entrypoint size limit: The following entrypoint(s) combined asset size exceeds the recommended limit (244 KiB). This can impact web performance.
-Entrypoints:
-  main (388 KiB)
-      app.js
-
-
-WARNING in webpack performance recommendations: 
-You can limit the size of your bundles by using import() or require.ensure to lazy load some parts of your application.
-For more info visit https://webpack.js.org/guides/code-splitting/
-Server is running on http://localhost:5758 or http://127.0.0.1:5758
+Node.js v19.2.0

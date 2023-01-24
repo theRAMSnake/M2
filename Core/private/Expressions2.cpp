@@ -364,7 +364,7 @@ public:
     {
         qi::real_parser<double, qi::strict_real_policies<double>> strict_double;
         constantBool = qi::bool_[qi::_val = phx::bind(&createExpression<ConstantExpression<Type::Bool>, bool>, qi::_1)];
-        constantInt = qi::long_long[qi::_val = phx::bind(&createExpression<ConstantExpression<Type::Int>, std::int64_t>, qi::_1)];
+        constantInt = qi::long_[qi::_val = phx::bind(&createExpression<ConstantExpression<Type::Int>, std::int64_t>, qi::_1)];
         constantDouble = strict_double[qi::_val = phx::bind(&createExpression<ConstantExpression<Type::Double>, double>, qi::_1)];
         constantCurrency = (qi::double_ >> +qi::char_("A-Z"))[qi::_val = phx::bind(&createExpression<CurrencyConstantExpression, double, std::vector<char>>, qi::_1, qi::_2)];
         constantPeriod = (qi::int_ >> qi::char_("mdy"))[qi::_val = phx::bind(&createExpression<PeriodConstantExpression, int, char>, qi::_1, qi::_2)];

@@ -965,10 +965,6 @@ function StrategyView(props)
         setShowClearDialog(false);
     }
 
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
     function onCalendarReferenceCreated(id)
     {
         var link = {A: id, B: selectedNode.id, type: "Reference"}
@@ -986,11 +982,20 @@ function StrategyView(props)
 
         setUpdating(true);
 
-        graphData.nodes.filter(x => x.orig.isAchieved === 'true').forEach(x => Materia.postDelete(x.id));
+        var toDelete = graphData.nodes.filter(x => x.orig.isAchieved === 'true');
+	
+	const chainDelete = (arr) => {
+            if (arr.length > 0)
+	    {
+	        Materia.sendDelete(arr[0].id, x => {chainDelete(arr.slice(1))});
+	    }
+	    else
+	    {
+		loadGraph(path[path.length - 1].id, () => {});
+            }
+	};
 
-        sleep(2000);
-
-        loadGraph(path[path.length - 1].id, () => {});
+        chainDelete(toDelete);
     }
 
     function resolveCoreValueId(id)

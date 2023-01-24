@@ -122,9 +122,10 @@ function RewardView(props)
     function onDeleteDialogOk()
     {
         setInDeleteDialog(false);
-        Materia.sendDelete(focusedItemId);
-        materiaModel.getRewardItems((items) => { setItems(items); });
-        setFocusedItemId(-1);
+        Materia.sendDelete(focusedItemId, (x) => {
+	    materiaModel.getRewardItems((items) => { setItems(items); });
+	    setFocusedItemId(-1);
+	});
     }
 
     function onCompleteDialogOk()
