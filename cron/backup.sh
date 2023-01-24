@@ -2,7 +2,7 @@
 touch 2.txt
 
 ./m4tools "{\"operation\":\"backup\", \"params\":{}}"
-sshpass -p "hailtothekingbaby" scp -r snake@ramsnake.net:/materia/materia.back ./materia.bu$(date +%s)
+sshpass -p "" scp -r snake@ramsnake.net:/materia/materia.back ./materia.bu$(date +%s)
 
 #news
 java -jar NewsMaker.jar
