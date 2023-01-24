@@ -2,6 +2,7 @@
 #include <Common/Id.hpp>
 #include <fmt/format.h>
 #include "JsonRestorationProvider.hpp"
+#include <set>
 
 namespace materia
 {
@@ -37,7 +38,7 @@ Connection jsonToConnection(const Id& id, const std::string& json)
     p.populate(newObj);
 
     const Object expected = newObj;
-    
+
     return {Id(id), expected["A"].toId(), expected["B"].toId(), toConnectionType(expected["type"].get<Type::String>())};
 }
 

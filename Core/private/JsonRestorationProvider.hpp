@@ -1,6 +1,6 @@
 #pragma once
-#include "TypeHandler.hpp"
 #include <boost/property_tree/ptree.hpp>
+#include "ObjectManager.hpp"
 
 namespace materia
 {

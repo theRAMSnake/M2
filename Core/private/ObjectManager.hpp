@@ -1,10 +1,20 @@
 #pragma once
 #include "TypeSystem.hpp"
 #include "Database.hpp"
-#include "TypeHandler.hpp"
+#include "Object.hpp"
+#include "Expressions2.hpp"
+#include <unordered_map>
 
 namespace materia
 {
+
+using Filter = v2::Expression;
+class IValueProvider
+{
+public:
+    virtual void populate(Object& obj) const = 0;
+    virtual ~IValueProvider(){}
+};
 
 class Connections;
 class ObjectManager
@@ -23,15 +33,15 @@ public:
     Object getOrCreate(const Id id, const std::string& type);
     std::vector<Object> getAll(const std::string& type);
 
-    void initialize();
+    void initialize(Database& db);
 
     Connections& getConnections();
 
 private:
-    TypeHandler& getHandler(const std::string& typeName);
 
-    std::map<std::string, std::shared_ptr<TypeHandler>> mHandlers;
-    Database& mDb;
+    std::map<std::string, std::unique_ptr<DatabaseTable>> mStorages;
+    std::unordered_map<Id, Object> mPool;
+
     Connections& mConnections;
     TypeSystem& mTypes;
 };

@@ -17,7 +17,7 @@ public:
    bool operator == (const Id& other) const;
    bool operator != (const Id& other) const;
    bool operator < (const Id& other) const;
-   
+
    const std::string& getGuid() const;
    operator std::string() const;
 
@@ -52,5 +52,14 @@ namespace std
 std::ostream& operator << (std::ostream& str, const materia::Id& id);
 std::istream& operator >> (std::istream& str, materia::Id& id);
 std::string to_string(const materia::Id id);
+
+template <>
+struct hash<materia::Id>
+{
+    std::size_t operator()(const materia::Id& k) const
+    {
+      return std::hash<std::string>()(k.getGuid());
+    }
+};
 
 }

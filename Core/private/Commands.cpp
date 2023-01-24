@@ -2,6 +2,7 @@
 #include "Connections.hpp"
 #include "JsonRestorationProvider.hpp"
 #include "rng.hpp"
+#include <set>
 
 namespace materia
 {

@@ -186,7 +186,9 @@ bool isStackable(const std::string& name)
 void RewardSS::onNewDay(const boost::gregorian::date& date)
 {
     const std::size_t MAX_CONTRACTS = 2;
+    std::cout << "RewardSS::onNewDay" << std::endl;
     auto ctrs = mOm.getAll("reward_contract");
+    std::cout << "RewardSS::onNewDay_1" << std::endl;
 
     for(auto& obj : ctrs)
     {

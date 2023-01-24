@@ -18,7 +18,7 @@ public:
       mDb.reset(new materia::Database("Test.db"));
       mConnections = std::make_unique<materia::Connections>(*mDb);
       mOm = std::make_unique<materia::ObjectManager>(*mDb, mTypeSystem, *mConnections);
-      mOm->initialize();
+      mOm->initialize(*mDb);
    }
 
 protected:

@@ -20,7 +20,6 @@ private/JsonSerializer.cpp
 private/JsonRestorationProvider.cpp
 private/EmptyValueProvider.cpp
 private/Object.cpp
-private/TypeHandler.cpp
 private/types/SimpleList.cpp
 private/types/Variable.cpp
 private/Type.cpp
