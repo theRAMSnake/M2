@@ -79,7 +79,8 @@ std::vector<Object> ObjectManager::query(const std::vector<Id>& ids)
         auto pos = mPool.find(id);
         if(pos == mPool.end())
         {
-            throw std::runtime_error(fmt::format("Object with id {} does not exist", id.getGuid()));
+            //It is not good to silently return nothing, but keeping it for compatibility
+            //throw std::runtime_error(fmt::format("Object with id {} does not exist", id.getGuid()));
         }
         else
         {
@@ -125,10 +126,12 @@ std::vector<Object> ObjectManager::query(const Filter& filter)
 
 void ObjectManager::destroy(const Id id)
 {
+    mConnections.remove(id);
+
     auto pos = mPool.find(id);
     if(pos == mPool.end())
     {
-        throw std::runtime_error(fmt::format("Object with id {} does not exist", id.getGuid()));
+        return;
     }
 
     auto connections = mConnections.get(id);
@@ -152,7 +155,6 @@ void ObjectManager::destroy(const Id id)
 
     mPool.erase(id);
     mStorages[pos->second.getType().name]->erase(id);
-    mConnections.remove(id);
 }
 
 void ObjectManager::modify(const Id id, const IValueProvider& provider)
@@ -271,8 +273,7 @@ Object ObjectManager::getOrCreate(const Id id, const std::string& type)
     if(pos == mPool.end())
     {
         EmptyValueProvider provider;
-        create(id, type, provider);
-        getOrCreate(id, type);
+        return create(id, type, provider);
     }
 
     return pos->second;
