@@ -1,5 +1,7 @@
 build
+*.swp
 bin
+ext_infra/__pycache__
 Desktop/build-Desktop-Desktop-Debug
 WebApp2/node_modules
 WebApp2/client/dist

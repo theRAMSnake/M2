@@ -21,11 +21,6 @@ def format_exception(e):
     exception_str = exception_str[:-1]
     return exception_str
 
-def materiaReq(r):
-    p = subprocess.Popen(["/home/snake/m4tools", json.dumps(r)], stdout=subprocess.PIPE)
-    res = p.stdout.read()
-    return json.loads(res)
-
 def first(predicate, seq):
     for i in seq:
         if predicate(i): return i
@@ -70,14 +65,14 @@ class Money:
     def __str__(s):
         return "%.2f%s" % ((s.valueInEUR * s.valueMod), s.currency)
 
-def calculatePEandAddDataPoint(currencyList):
+def calculatePEandAddDataPoint(m2, currencyList):
     totalValue = Money("0.00EUR", currencyList)
 
     req = {
         "operation": "query",
         "filter": "IS(finance_stock)"
     }
-    resp = materiaReq(req)
+    resp = m2.requestJson(req)
     for c in resp["object_list"]:
         if c["amount"] != "0":
             curValue = Money(c["lastKnownPrice"], currencyList);
@@ -91,13 +86,13 @@ def calculatePEandAddDataPoint(currencyList):
             "totalPortfolioValue": str(totalValue)
             }
     }
-    creResp = materiaReq(cre)
+    creResp = m2.requestJson(cre)
     return totalValue
 
 def sortByTimestamp(x):
     return x["timestamp"]
 
-def updateTargets(currencyList, totalValue):
+def updateTargets(m2, currencyList, totalValue):
     #1. Calculate average daily PE
     secondsInYear = 31557600
     currentTime = int(time.time())
@@ -106,7 +101,7 @@ def updateTargets(currencyList, totalValue):
         "operation": "query",
         "filter": "IS(finance_dataPoint) AND .timestamp > {}".format(oneYearAgo)
     }
-    resp = materiaReq(req)
+    resp = m2.requestJson(req)
     dataPoints = resp["object_list"] 
     dataPoints.sort(reverse=False, key=sortByTimestamp)
 
@@ -116,7 +111,7 @@ def updateTargets(currencyList, totalValue):
         "operation": "query",
         "filter": "IS(finance_investmentAction) AND .timestamp > {}".format(oneYearAgo)
     }
-    resp = materiaReq(req)
+    resp = m2.requestJson(req)
     invPerYear = Money("0.00EUR", currencyList)
     for c in resp["object_list"]:
         invPerYear = invPerYear + Money(c["value"], currencyList)
@@ -128,7 +123,7 @@ def updateTargets(currencyList, totalValue):
         "operation": "query",
         "ids": ["financial_report"]
     }
-    resp = materiaReq(req)
+    resp = m2.requestJson(req)
     salaryPerDay = Money(resp["object_list"][0]["Salary"]["total"], currencyList) / 365
 
     #3. Update total invested value of all time
@@ -136,7 +131,7 @@ def updateTargets(currencyList, totalValue):
         "operation": "query",
         "filter": "IS(finance_investmentAction)"
     }
-    resp = materiaReq(req)
+    resp = m2.requestJson(req)
     invTotal = Money("0.00EUR", currencyList)
     for c in resp["object_list"]:
         invTotal = invTotal + Money(c["value"], currencyList)
@@ -145,7 +140,7 @@ def updateTargets(currencyList, totalValue):
         "operation": "query",
         "ids": ["invest.cb"]
     }
-    resp = materiaReq(req)
+    resp = m2.requestJson(req)
     cb = resp["object_list"][0]
     cb["percentOfSalary"] = avgPerDay / salaryPerDay
     cb["avgPEperDay"] = str(avgPerDay)
@@ -157,14 +152,14 @@ def updateTargets(currencyList, totalValue):
         "id": "invest.cb",
         "params": cb
     }
-    updateResp = materiaReq(upd)
+    updateResp = m2.requestJson(upd)
 
-def proposeTrades(currencyList):
+def proposeTrades(m2, currencyList):
     req = {
         "operation": "query",
         "filter": "IS(finance_stock) AND .domain = \"US\""
     }
-    resp = materiaReq(req)
+    resp = m2.requestJson(req)
     
     allstocks = {}
 
@@ -183,7 +178,7 @@ def proposeTrades(currencyList):
         "operation": "query",
         "ids": ["portfolio_goal"]
     }
-    resp = materiaReq(req)
+    resp = m2.requestJson(req)
     stocksGoal = list(resp["object_list"][0].values())
     for x in stocksGoal:
         #Skip incompatible fields
@@ -220,7 +215,7 @@ def proposeTrades(currencyList):
                 "operation": "destroy",
                 "id": stock["id"]
             }
-            delResp = materiaReq(delete)
+            delResp = m2.requestJson(delete)
 
     # Update stock infos
     for i, (ticker, stock) in enumerate(allstocks.items()):
@@ -231,7 +226,7 @@ def proposeTrades(currencyList):
                 "operation": "query",
                 "filter": "IS(finance_stock) AND .ticker = \"{}\"".format(ticker)
             }
-            resp = materiaReq(req)
+            resp = m2.requestJson(req)
             obj = resp["object_list"][0]
             obj["goal"] = stock["goal"]
             if stock["goal"] > 0:
@@ -243,7 +238,7 @@ def proposeTrades(currencyList):
                 "id": obj["id"],
                 "params": obj
             }
-            updateResp = materiaReq(upd)
+            updateResp = m2.requestJson(upd)
 
     transactionString = "SELL: "
 
@@ -291,28 +286,17 @@ def proposeTrades(currencyList):
                 "urgencyChoice": "Urgent"
                 }
         }
-        creResp = materiaReq(cre)
+        creResp = m2.requestJson(cre)
 
-def main():
+def do(m2):
     req = {
         "operation": "query",
         "filter": "IS(currency)"
     }
-    currencyResp = materiaReq(req)
+    currencyResp = m2.requestJson(req)
     currencyList = currencyResp["object_list"]
 
-    total = calculatePEandAddDataPoint(currencyList)
-    updateTargets(currencyList, total)
-    proposeTrades(currencyList)
+    total = calculatePEandAddDataPoint(m2, currencyList)
+    updateTargets(m2, currencyList, total)
+    proposeTrades(m2, currencyList)
 
-if __name__ == "__main__":
-    try:
-        main()
-    except Exception as error:
-        req = {
-            "operation": "push",
-            "listId": "inbox",
-            "value": "An error occured during analisys of 'invest': {}".format(format_exception(error))
-        }
-        materiaReq(req)
-        raise

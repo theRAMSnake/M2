@@ -31,11 +31,6 @@ def alphaReq(r, key):
             pass
     raise Exception("alpha req is unavailable")
 
-def materiaReq(r):
-    p = subprocess.Popen(["/home/snake/m4tools", json.dumps(r)], stdout=subprocess.PIPE)
-    res = p.stdout.read()
-    return json.loads(res)
-
 def composeMateriaMoney(value, domain):
     if domain == "US":
         currency = "USD"
@@ -45,7 +40,7 @@ def composeMateriaMoney(value, domain):
     fl = float(value)
     return "%.2f%s" % (fl, currency)
 
-def main():
+def do(m2):
     parser = argparse.ArgumentParser()
     parser.add_argument("api_key", type=str)
     args = parser.parse_args()
@@ -54,7 +49,7 @@ def main():
         "operation": "query",
         "filter": "IS(currency)"
     }
-    currencyResp = materiaReq(req);
+    currencyResp = m2.requestJson(req);
     for c in currencyResp["object_list"]:
         if c["name"] != "EUR":
             alphaResp = alphaReq("function=FX_DAILY&from_symbol=EUR&to_symbol={}".format(c["name"]), args.api_key)
@@ -65,14 +60,14 @@ def main():
                 "id": c["id"],
                 "params": c
             }
-            updateResp = materiaReq(upd)
+            updateResp = m2.requestJson(upd)
 
     tickers = []
     req = {
         "operation": "query",
         "filter": "IS(finance_stock)"
     }
-    resp = materiaReq(req);
+    resp = m2.requestJson(req);
     for c in resp["object_list"]:
         tickers.append(c["ticker"])
 
@@ -80,7 +75,7 @@ def main():
         "operation": "query",
         "ids": ["data.snp"]
     }
-    resp = materiaReq(req);
+    resp = m2.requestJson(req);
     for i in range(20):
         c = resp["object_list"][0][str(i)]
         tickers.append(c["ticker"])
@@ -95,7 +90,7 @@ def main():
             "operation": "query",
             "filter": "IS(finance_stock) AND .ticker = \"{}\"".format(t)
         }
-        resp = materiaReq(req);
+        resp = m2.requestJson(req);
         if "object_list" in resp and len(resp["object_list"]) > 0:
             obj = resp["object_list"][0]
             obj["lastKnownPrice"] = composeMateriaMoney(value, obj["domain"])
@@ -104,7 +99,7 @@ def main():
                 "id": obj["id"],
                 "params": obj
             }
-            updateResp = materiaReq(upd)
+            updateResp = m2.requestJson(upd)
             print(updateResp)
         else:
             # If there is no stock it means a snp record
@@ -118,17 +113,4 @@ def main():
                     "domain": "US"
                     }
             }
-            creResp = materiaReq(cre)
-
-if __name__ == "__main__":
-    try:
-        main()
-    except Exception as error:
-        req = {
-            "operation": "push",
-            "listId": "inbox",
-            "value": "An error occured during surveying 'invest': {}".format(format_exception(error))
-        }
-        materiaReq(req)
-        raise
-
+            creResp = m2.requestJson(cre)
