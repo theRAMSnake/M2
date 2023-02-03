@@ -125,7 +125,7 @@ Core3::Core3(const CoreConfig& config)
    mCommandDefs.push_back({"count", parseCount});
    mCommandDefs.push_back({"backup", std::bind(parseBackup, std::placeholders::_1, config.dbFileName)});
 
-   mObjManager.initialize();
+   mObjManager.initialize(mDb);
 
    mRewardSS->spawnShopItems();
 }

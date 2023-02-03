@@ -113,10 +113,13 @@ BOOST_FIXTURE_TEST_CASE( AddWorkburden, RewardTest )
    create.put("defined_id", "config.reward");
    create.put("params.workburdenPerDay", 200);
 
-   mCore->executeCommandJson(writeJson(create));
+   std::cout << mCore->executeCommandJson(writeJson(create));
 
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 1)); //Friday
+                                                                            //
+   std::cout << "++" << std::endl;
    auto v = *query("work.burden", *mCore);
+   std::cout << "++";
    BOOST_CHECK_EQUAL("200", v.get<std::string>("value"));
 
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 2));
