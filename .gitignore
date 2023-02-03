@@ -2,3 +2,4 @@ build
 Desktop/build-Desktop-Desktop-Debug
 WebApp2/node_modules
 WebApp2/client/dist
+CMakeLists.txt
