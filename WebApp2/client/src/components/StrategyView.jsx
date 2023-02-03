@@ -347,7 +347,6 @@ function WatchPanel(props)
 function StrategyView(props)
 {
     const [updating, setUpdating] = useState(true);
-    const [graphData, setGraphData] = useState(null);
     const [nodes, setNodes, onNodesChange] = useNodesState(null);
     const [edges, setEdges, onEdgesChange] = useEdgesState(null);
     const [path, setPath] = useState([]);
@@ -401,7 +400,6 @@ function StrategyView(props)
             filter += ".title = \"" + splitted[i] + "\"";
         }
 
-        console.log("Requesting: " + filter);
         const req = {
             operation: "query",
             filter: filter
@@ -411,7 +409,6 @@ function StrategyView(props)
             var resultPath = [{id: "", name: "Root"}]
             if(r.object_list != "")
             {
-                console.log("Got " + JSON.stringify(r));
                 for(var j = 1; j < splitted.length; ++j)
                 {
                     const val = r.object_list.find(x => x.title === splitted[j]);
@@ -421,7 +418,6 @@ function StrategyView(props)
                         break;
                     }
 
-                    console.log("Found " + splitted[j]);
                     resultPath.push({id: val.id, name: val.title});
                 }
             }
@@ -447,13 +443,6 @@ function StrategyView(props)
         return conns.All("Requirement").map(r => {
             return {source: r.A, target: r.B, id: r.id, type: "straight", markerEnd: { type: MarkerType.ArrowClosed}};
         });
-    }
-
-    function applyGraphData(graphData)
-    {
-	setNodes(graphData.nodes);
-	setEdges(graphData.links);
-	setGraphData(graphData);
     }
 
     function loadGraph(parentId, successCb)
@@ -495,16 +484,14 @@ function StrategyView(props)
                 });
 
                 var conns = new MateriaConnections(r.connection_list);
-                var newGraphData = {nodes: newNodes, links: buildLinks(conns)
-			};
-
                 newNodes.forEach(x => {
                     x.orig.hasChildren = conns.Has(x.id, "ParentOf", "*");
                 });
 
                 successCb();
-                newGraphData.nodes.forEach(x => setNodeStyle(x));
-		applyGraphData(newGraphData);
+                newNodes.forEach(x => setNodeStyle(x));
+		setNodes(newNodes);
+		setEdges(buildLinks(conns));
                 setAllConns(conns);
                 setGraphId(parentId);
                 setUpdating(false);
@@ -538,8 +525,7 @@ function StrategyView(props)
             Materia.exec(req, (x) => {
                 if(x.result_id)
                 {
-                    graphData.links.push({source: selectedNode.id, target: nodeId, id: x.result_id});
-		    applyGraphData(JSON.parse(JSON.stringify(graphData)));
+	            setEdges([...edges, {source: selectedNode.id, target: nodeId, id: x.result_id}]);
                 }
 
                 setUpdating(false);
@@ -563,19 +549,19 @@ function StrategyView(props)
                     if(cvlist.length > 0)
                     {
                         setSelectedNodeCoreValueId(cvlist[0].id);
-                        setSelectedNode(graphData.nodes.find(x => x.id === nodeId).orig);
+                        setSelectedNode(nodes.find(x => x.id === nodeId).orig);
                     }
                     else
                     {
                         setSelectedNodeCoreValueId(null);
-                        setSelectedNode(graphData.nodes.find(x => x.id === nodeId).orig);
+                        setSelectedNode(nodes.find(x => x.id === nodeId).orig);
                     }
                 });
             }
             else
             {
                 setSelectedNodeCoreValueId(null);
-                setSelectedNode(graphData.nodes.find(x => x.id === nodeId).orig);
+                setSelectedNode(nodes.find(x => x.id === nodeId).orig);
             }
         }
     };
@@ -586,7 +572,7 @@ function StrategyView(props)
         {
             return "Root";
         }
-        return graphData.nodes.find(x => x.id === nodeId).orig.title;
+        return nodes.find(x => x.id === nodeId).orig.title;
     }
 
     const onDoubleClickNode = function(ev, node)
@@ -726,8 +712,7 @@ function StrategyView(props)
 				orig: x
 			    };
 			setNodeStyle(n);
-			graphData.nodes.add(n);
-			applyGraphData(JSON.parse(JSON.stringify(graphData)));
+			setNodes([...nodes, n]);
     
                         setUpdating(false);
                     });
@@ -804,15 +789,15 @@ function StrategyView(props)
 
     const onClickLink = function(ev, edge)
     {
-        var l = graphData.links.find(x => x.source === edge.source && x.target === edge.target);
+        var l = edges.find(x => x.source === edge.source && x.target === edge.target);
         setDeleteTarget(l);
         setInDeleteDialog(true);
     };
 
     function onNodeChanged(n, newCoreValue)
     {
-	var graphNode = graphData.nodes[graphData.nodes.indexOf(graphData.nodes.find(x => x.id === n.id))];
-	graphNode.orig = n;
+	var graphNode = nodes.find(x => x.id === n.id);
+	graphNode.orig = {...n};
         Materia.postEdit(n.id, JSON.stringify(n));
 
         if(newCoreValue !== resolveCoreValueId(selectedNodeCoreValueId))
@@ -836,9 +821,15 @@ function StrategyView(props)
             }
         }
 
-        setNodeStyle(graphNode, !showCompleted, !showLocked);
-        updateLinkStyling(graphData);
-        applyGraphData(JSON.parse(JSON.stringify(graphData)));
+	setNodes(nodes.map(x => {
+	   if(x.id === n.id)
+	   {
+	       var newNode = {...x};
+	       newNode.data = {label: n.title};
+	       return newNode;
+	   }
+	   return x;
+	}));
     }
 
     function onNodeCompleted()
@@ -853,7 +844,7 @@ function StrategyView(props)
 
     function onWatchCompleted(id)
     {
-        var n = graphData.nodes.find(x => x.id === id).orig;
+        var n = nodes.find(x => x.id === id).orig;
         n.isAchieved = true;
         Materia.postEdit(n.id, JSON.stringify(n));
 
@@ -911,10 +902,10 @@ function StrategyView(props)
             //Remove all outgoing links
             //Connect to new node
             //Connect new node with removed links
-            var links = graphData.links.filter(x => x.source === selectedNode.id).map(y => {return {A: newId, B: y.target}});
+            var links = edges.filter(x => x.source === selectedNode.id).map(y => {return {A: newId, B: y.target}});
             links.push({A: selectedNode.id, B: newId});
 
-            var toRemove = graphData.links.filter(x => x.source === selectedNode.id);
+            var toRemove = edges.filter(x => x.source === selectedNode.id);
             toRemove.forEach(x => Materia.postDelete(x.id));
 
             createLinks(links);
@@ -951,8 +942,8 @@ function StrategyView(props)
                 Materia.exec(linkReq, (u) => {});
             }
             //Make same set of links for new node
-            var inLinks = graphData.links.filter(x => x.target === selectedNode.id).map(y => {return {B: newId, A: y.source}});
-            var outLinks = graphData.links.filter(x => x.source === selectedNode.id).map(y => {return {B: y.target, A: newId}});
+            var inLinks = edges.filter(x => x.target === selectedNode.id).map(y => {return {B: newId, A: y.source}});
+            var outLinks = edges.filter(x => x.source === selectedNode.id).map(y => {return {B: y.target, A: newId}});
             var links = inLinks.concat(outLinks);
 
             createLinks(links);
@@ -982,7 +973,7 @@ function StrategyView(props)
 
         setUpdating(true);
 
-        var toDelete = graphData.nodes.filter(x => x.orig.isAchieved === 'true');
+        var toDelete = nodes.filter(x => x.orig.isAchieved === 'true');
 	
 	const chainDelete = (arr) => {
             if (arr.length > 0)
@@ -1028,9 +1019,9 @@ function StrategyView(props)
                     </IconButton>
                     {path.length > 0 && <PathCtrl currentText={path[path.length - 1].name} pathList={path.slice(0, path.length - 1)} onClick={onPathClick}/>}
                 </Grid>
-                {graphData && <WatchPanel nodes={graphData.nodes.filter(x => x.typeChoice === "Watch" && x.isAchieved==='false')} completed={onWatchCompleted}/>}
+                {nodes && edges && <WatchPanel nodes={nodes.filter(x => x.typeChoice === "Watch" && x.isAchieved==='false')} completed={onWatchCompleted}/>}
 		<div style={{width: '75vw', height: '75vh'}}>
-			{graphData && <ReactFlow
+			{nodes && edges && <ReactFlow
 			    nodes={nodes}
 			    edges={edges}
 			    fitView
