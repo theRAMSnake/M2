@@ -3,6 +3,7 @@ import time
 import paramiko
 import invest_survey
 import invest_analisys
+import make_news
 from materia_request import *
 
 def checkMateria(mr):
@@ -51,6 +52,7 @@ def runInvestAnalisys(mr):
 def collectNews(mr):
     print("Collecting news")
 
+    make_news.do(mr)
 
     print("Done")
 
