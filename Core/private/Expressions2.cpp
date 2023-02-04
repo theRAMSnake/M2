@@ -14,6 +14,12 @@ namespace materia
 namespace v2
 {
 
+struct binaryOr
+{
+};
+struct binaryAnd
+{
+};
 template<Type T>
 class ConstantExpression : public Expression
 {
@@ -165,6 +171,72 @@ private:
     std::shared_ptr<Expression> mArg2;
 };
 
+template<>
+class BinaryExpression<binaryOr> : public Expression
+{
+public:
+    BinaryExpression(std::shared_ptr<Expression> arg1, std::shared_ptr<Expression> arg2)
+    : mArg1(arg1)
+    , mArg2(arg2)
+    {
+    }
+
+    Value evaluate(const InterpreterContext& ctx) const
+    {
+        auto a1 = mArg1->evaluate(ctx);
+
+        if(std::holds_alternative<bool>(a1) && std::get<bool>(a1))
+        {
+            return true;
+        }
+
+        auto a2 = mArg2->evaluate(ctx);
+
+        if(std::holds_alternative<bool>(a2) && std::get<bool>(a2))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+private:
+    std::shared_ptr<Expression> mArg1;
+    std::shared_ptr<Expression> mArg2;
+};
+
+template<>
+class BinaryExpression<binaryAnd> : public Expression
+{
+public:
+    BinaryExpression(std::shared_ptr<Expression> arg1, std::shared_ptr<Expression> arg2)
+    : mArg1(arg1)
+    , mArg2(arg2)
+    {
+    }
+
+    Value evaluate(const InterpreterContext& ctx) const
+    {
+        auto a1 = mArg1->evaluate(ctx);
+
+        if(std::holds_alternative<bool>(a1) && std::get<bool>(a1))
+        {
+            auto a2 = mArg2->evaluate(ctx);
+
+            if(std::holds_alternative<bool>(a2) && std::get<bool>(a2))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+private:
+    std::shared_ptr<Expression> mArg1;
+    std::shared_ptr<Expression> mArg2;
+};
+
 class NotExpression : public Expression
 {
 public:
@@ -193,9 +265,7 @@ private:
 
 bool evaluateConnectionsFunctor(const Id& A, const Id& B, const ConnectionType& type, const Connections& cons)
 {
-    auto objCons = cons.get(A);
-    auto pos = std::find_if(objCons.begin(), objCons.end(), [&](auto x){return x.b == B && x.type == type;});
-    return pos != objCons.end();
+    return cons.contains(A, B, type);
 }
 
 static std::time_t to_time_t(const boost::gregorian::date& date )
@@ -257,15 +327,7 @@ public:
         }
         else if(name == "RootElement")
         {
-            auto objCons = cons.get(object.getId());
-            for(auto& c : objCons)
-            {
-                if(c.b == object.getId() && c.type == ConnectionType::Hierarchy)
-                {
-                    return false;
-                }
-            }
-            return true;
+            return !cons.contains(Connections::Any(), object.getId(), ConnectionType::Hierarchy);
         }
         else if(name == "ParentOf")
         {
@@ -309,34 +371,6 @@ private:
     std::shared_ptr<Expression> mName;
     std::vector<std::shared_ptr<Expression>> mParams;
 };
-struct binaryOr
-{
-    bool operator()(const Value& a, const Value& b) const
-    {
-        if(std::holds_alternative<bool>(a) && std::holds_alternative<bool>(b))
-        {
-            return std::get<bool>(a) || std::get<bool>(b);
-        }
-        else
-        {
-            throw std::runtime_error("Unable to logical or for expressions of non boolean type");
-        }
-    }
-};
-struct binaryAnd
-{
-    bool operator()(const Value& a, const Value& b) const
-    {
-        if(std::holds_alternative<bool>(a) && std::holds_alternative<bool>(b))
-        {
-            return std::get<bool>(a) &&  std::get<bool>(b);
-        }
-        else
-        {
-            throw std::runtime_error("Unable to logical or for expressions of non boolean type");
-        }
-    }
-};
 struct contains
 {
     bool operator()(const Value& a, const Value& b) const
@@ -364,7 +398,7 @@ public:
     {
         qi::real_parser<double, qi::strict_real_policies<double>> strict_double;
         constantBool = qi::bool_[qi::_val = phx::bind(&createExpression<ConstantExpression<Type::Bool>, bool>, qi::_1)];
-        constantInt = qi::long_[qi::_val = phx::bind(&createExpression<ConstantExpression<Type::Int>, std::int64_t>, qi::_1)];
+        constantInt = qi::long_long[qi::_val = phx::bind(&createExpression<ConstantExpression<Type::Int>, std::int64_t>, qi::_1)];
         constantDouble = strict_double[qi::_val = phx::bind(&createExpression<ConstantExpression<Type::Double>, double>, qi::_1)];
         constantCurrency = (qi::double_ >> +qi::char_("A-Z"))[qi::_val = phx::bind(&createExpression<CurrencyConstantExpression, double, std::vector<char>>, qi::_1, qi::_2)];
         constantPeriod = (qi::int_ >> qi::char_("mdy"))[qi::_val = phx::bind(&createExpression<PeriodConstantExpression, int, char>, qi::_1, qi::_2)];

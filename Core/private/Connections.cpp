@@ -48,20 +48,19 @@ Connections::Connections(Database& db)
     mStorage->foreach([&](std::string id, std::string json)
     {
         auto newConn = jsonToConnection(id, json);
-        mConnections[newConn.a].push_back(newConn);
-        mConnections[newConn.b].push_back(newConn);
+        mConnections.insert(newConn);
     });
 }
 
 void Connections::remove(const Id& id)
 {
-    for(auto& cmap : mConnections)
+    for(auto iter = mConnections.begin(); iter != mConnections.end(); ++iter)
     {
-        auto pos = find_by_id(cmap.second, id);
-        if(pos != cmap.second.end())
+        if(iter->id == id)
         {
-            cmap.second.erase(pos);
+            mConnections.erase(iter);
             mStorage->erase(id);
+            break;
         }
     }
 }
@@ -163,6 +162,11 @@ bool operator < (const Connection& a, const Connection& b)
 {
     return std::make_tuple(a.type, a.a, a.b) < std::make_tuple(b.type, b.a, b.b);
 }
+bool operator == (const Connection& a, const Connection& b)
+{
+    return std::make_tuple(a.type, a.a, a.b) == std::make_tuple(b.type, b.a, b.b);
+}
+
 
 Object connectionToObject(const Connection& src)
 {
@@ -180,8 +184,7 @@ Id Connections::create(const Id& a, const Id& b, const ConnectionType type)
 
     auto id = Id::generate();
     auto newConn = Connection{id, a, b, type};
-    mConnections[a].push_back(newConn);
-    mConnections[b].push_back(newConn);
+    mConnections.insert(newConn);
 
     mStorage->store(id, connectionToObject(newConn).toJson());
     return id;
@@ -189,17 +192,54 @@ Id Connections::create(const Id& a, const Id& b, const ConnectionType type)
 
 std::vector<Connection> Connections::get(const Id& a) const
 {
-    auto pos = mConnections.find(a);
-    if(pos != mConnections.end())
+    std::vector<Connection> result;
+
+    for(const auto& i : mConnections)
     {
-        return pos->second;
+        if(i.b == a || i.a == a)
+        {
+            result.push_back(i);
+        }
     }
-    return {};
+
+    return result;
+}
+
+bool Connections::contains(const Id& a, const Id& b, const ConnectionType type) const
+{
+    return mConnections.contains(Connection{materia::Id(), a, b, type});
+}
+
+bool Connections::contains(const Any& a, const Id& b, const ConnectionType type) const
+{
+    for(const auto& i : mConnections)
+    {
+        if(i.b == b && i.type == type)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void Connections::fetch(const std::vector<Id>& ids, std::vector<Connection>& out) const
+{
+    for(const auto& id : ids)
+    {
+        for(const auto& i : mConnections)
+        {
+            if(i.b == id || i.a == id)
+            {
+                out.push_back(i);
+            }
+        }
+    }
 }
 
 std::optional<Id> Connections::getPredecessorOf(const Id& id, const ConnectionType type) const
 {
-    for(const auto& i : get(id))
+    for(const auto& i : mConnections)
     {
         if(i.b == id && i.type == type)
         {
