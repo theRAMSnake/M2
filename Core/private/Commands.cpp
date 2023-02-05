@@ -72,7 +72,7 @@ ExecutionResult QueryCommand::execute(ObjectManager& objManager)
     }
 
     std::vector<Connection> resultCons;
-    std::vector<Id> fetchIds(result.first.size());
+    std::vector<Id> fetchIds;
 
     for(const auto& o : result.first)
     {

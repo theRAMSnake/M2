@@ -134,6 +134,8 @@ void ObjectManager::destroy(const Id id)
         return;
     }
 
+    auto typeName = pos->second.getType().name;
+
     auto connections = mConnections.get(id);
 
     //Remove all children and extensions
@@ -154,7 +156,7 @@ void ObjectManager::destroy(const Id id)
     }
 
     mPool.erase(id);
-    mStorages[pos->second.getType().name]->erase(id);
+    mStorages[typeName]->erase(id);
 }
 
 void ObjectManager::modify(const Id id, const IValueProvider& provider)

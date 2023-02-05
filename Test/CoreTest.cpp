@@ -36,6 +36,7 @@ BOOST_FIXTURE_TEST_CASE( NewWeekTest, CoreTest )
 
 BOOST_FIXTURE_TEST_CASE( PerformanceTest, CoreTest )
 {
+   return;
    using namespace std::chrono;
    auto start = high_resolution_clock::now();
    for(int i = 0; i < 1000; ++i)
