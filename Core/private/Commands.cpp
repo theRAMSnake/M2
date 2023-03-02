@@ -71,13 +71,15 @@ ExecutionResult QueryCommand::execute(ObjectManager& objManager)
         throw std::runtime_error("Cannot execute query without either ids or filter");
     }
 
-    std::set<Connection> resultCons;
+    std::vector<Connection> resultCons;
+    std::vector<Id> fetchIds(result.first.size());
 
     for(const auto& o : result.first)
     {
-        auto cons = objManager.getConnections().get(o.getId());
-        std::copy(cons.begin(), cons.end(), std::inserter(resultCons, resultCons.begin()));
+        fetchIds.push_back(o.getId());
     }
+
+    objManager.getConnections().fetch(fetchIds, resultCons);
 
     std::copy(resultCons.begin(), resultCons.end(), std::back_inserter(result.second));
 
