@@ -171,7 +171,8 @@ def proposeTrades(m2, currencyList):
                 "goal": 0,
                 "priority": -1,
                 "id": x["id"],
-                "new": False
+                "new": False,
+                "isTradeRestricted": x["isTradeRestricted"]
                 } 
 
     req = {
