@@ -102,7 +102,7 @@ def updateTargets(m2, currencyList, totalValue):
         "filter": "IS(finance_dataPoint) AND .timestamp > {}".format(oneYearAgo)
     }
     resp = m2.requestJson(req)
-    dataPoints = resp["object_list"] 
+    dataPoints = resp["object_list"]
     dataPoints.sort(reverse=False, key=sortByTimestamp)
 
     fullYearlyPE = Money(dataPoints[-1]["totalPortfolioValue"], currencyList) - Money(dataPoints[0]["totalPortfolioValue"], currencyList)
@@ -114,7 +114,10 @@ def updateTargets(m2, currencyList, totalValue):
     resp = m2.requestJson(req)
     invPerYear = Money("0.00EUR", currencyList)
     for c in resp["object_list"]:
-        invPerYear = invPerYear + Money(c["value"], currencyList)
+        if c["isWithdrawal"]:
+            invPerYear = invPerYear - Money(c["value"], currencyList)
+        else:
+            invPerYear = invPerYear + Money(c["value"], currencyList)
 
     avgPerDay = (fullYearlyPE - invPerYear) / 365
 
@@ -134,7 +137,10 @@ def updateTargets(m2, currencyList, totalValue):
     resp = m2.requestJson(req)
     invTotal = Money("0.00EUR", currencyList)
     for c in resp["object_list"]:
-        invTotal = invTotal + Money(c["value"], currencyList)
+        if c["isWithdrawal"]:
+            invTotal = invTotal - Money(c["value"], currencyList)
+        else:
+            invTotal = invTotal + Money(c["value"], currencyList)
 
     req = {
         "operation": "query",

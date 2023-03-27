@@ -203,7 +203,6 @@ void FinanceSS::onNewDay(const boost::gregorian::date& date)
 
 void FinanceSS::onNewWeek()
 {
-    
 }
 
 std::vector<TypeDef> FinanceSS::getTypes()
@@ -225,7 +224,8 @@ std::vector<TypeDef> FinanceSS::getTypes()
         }});
     result.push_back({"finance_investmentAction", "finance_investmentAction", {
         {"timestamp", Type::Timestamp},
-        {"value", Type::Money_v2}
+        {"value", Type::Money_v2},
+        {"isWithdrawal", Type::Bool}
         }});
     result.push_back({"finance_event", "finance_events", {
         {"categoryId", Type::Reference, {}, "finance_category"},
