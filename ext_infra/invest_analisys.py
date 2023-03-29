@@ -114,7 +114,7 @@ def updateTargets(m2, currencyList, totalValue):
     resp = m2.requestJson(req)
     invPerYear = Money("0.00EUR", currencyList)
     for c in resp["object_list"]:
-        if c["isWithdrawal"]:
+        if c.get("isWithdrawal", False):
             invPerYear = invPerYear - Money(c["value"], currencyList)
         else:
             invPerYear = invPerYear + Money(c["value"], currencyList)
@@ -137,7 +137,7 @@ def updateTargets(m2, currencyList, totalValue):
     resp = m2.requestJson(req)
     invTotal = Money("0.00EUR", currencyList)
     for c in resp["object_list"]:
-        if c["isWithdrawal"]:
+        if c.get("isWithdrawal", False):
             invTotal = invTotal - Money(c["value"], currencyList)
         else:
             invTotal = invTotal + Money(c["value"], currencyList)
