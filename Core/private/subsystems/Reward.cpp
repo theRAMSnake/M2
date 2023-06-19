@@ -247,11 +247,6 @@ void RewardSS::onNewDay(const boost::gregorian::date& date)
         auto wbpd = cfg["workburdenPerDay"].get<Type::Int>();
 
         wb.inc(wbpd);
-
-        if(wb > 600)
-        {
-            wb = 600;
-        }
     }
 
     auto coins = mOm.getOrCreate(Id("reward.coins"), "object");
