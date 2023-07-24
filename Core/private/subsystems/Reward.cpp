@@ -247,11 +247,6 @@ void RewardSS::onNewDay(const boost::gregorian::date& date)
         auto wbpd = cfg["workburdenPerDay"].get<Type::Int>();
 
         wb.inc(wbpd);
-
-        if(wb > 600)
-        {
-            wb = 600;
-        }
     }
 
     auto coins = mOm.getOrCreate(Id("reward.coins"), "object");
@@ -477,7 +472,7 @@ void RewardSS::addCoins(const int coins, const std::string& color)
     }
 
     auto coinsStash = mOm.getOrCreate(Id("reward.coins"), "object");
-    coinsStash[colorToUse] = static_cast<int>(coinsStash[colorToUse].get<Type::Int>() + coins);
+    coinsStash[colorToUse] = std::max(0, static_cast<int>(coinsStash[colorToUse].get<Type::Int>() + coins));
     mOm.modify(coinsStash);
 }
 
