@@ -114,7 +114,7 @@ def updateTargets(m2, currencyList, totalValue):
     resp = m2.requestJson(req)
     invPerYear = Money("0.00EUR", currencyList)
     for c in resp["object_list"]:
-        if c.get("isWithdrawal", False):
+        if c.get("isWithdrawal", False) == "true":
             invPerYear = invPerYear - Money(c["value"], currencyList)
         else:
             invPerYear = invPerYear + Money(c["value"], currencyList)
@@ -137,7 +137,7 @@ def updateTargets(m2, currencyList, totalValue):
     resp = m2.requestJson(req)
     invTotal = Money("0.00EUR", currencyList)
     for c in resp["object_list"]:
-        if c.get("isWithdrawal", False):
+        if c.get("isWithdrawal", False) == "true":
             invTotal = invTotal - Money(c["value"], currencyList)
         else:
             invTotal = invTotal + Money(c["value"], currencyList)
@@ -305,5 +305,5 @@ def do(m2):
 
     total = calculatePEandAddDataPoint(m2, currencyList)
     updateTargets(m2, currencyList, total)
-    proposeTrades(m2, currencyList)
+    #proposeTrades(m2, currencyList)
 

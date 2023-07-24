@@ -242,7 +242,7 @@ def genNewsFile(mr):
     filecontent = "<head><style>a { text-decoration: none;} </style> </head><body>"
 
     filecontent += genNlTimesContent()
-    filecontent += genRedditContent(mr)
+    #filecontent += genRedditContent(mr)
     filecontent += genHackernewsContent()
     filecontent += genSteamContent()
 
@@ -272,6 +272,3 @@ def publishFile(filename, mr):
 def do(mr):
     filename = genNewsFile(mr)
     publishFile(filename, mr)
-
-    snpContent = genSnpContent()
-    publishSnpContent(snpContent, mr)

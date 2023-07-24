@@ -25,7 +25,9 @@ def alphaReq(r, key):
         try:
             #There is a limit of 5 requests per minute, so sleep(20)
             time.sleep(20)
+            print(r)
             uri = "https://www.alphavantage.co/query?{}&apikey={}".format(r, key)
+            print(requests.get(uri).json())
             return requests.get(uri).json()
         except:
             pass
@@ -69,20 +71,12 @@ def do(m2):
     }
     resp = m2.requestJson(req);
     for c in resp["object_list"]:
-        tickers.append(c["ticker"])
-
-    req = {
-        "operation": "query",
-        "ids": ["data.snp"]
-    }
-    resp = m2.requestJson(req);
-    for i in range(20):
-        c = resp["object_list"][0][str(i)]
-        tickers.append(c["ticker"])
+        if c["amount"] != "0":
+            tickers.append(c["ticker"])
 
     for t in set(tickers):
         print(t)
-        alphaResp = alphaReq("function=TIME_SERIES_DAILY_ADJUSTED&symbol={}".format(t), args.api_key)
+        alphaResp = alphaReq("function=TIME_SERIES_DAILY&symbol={}".format(t), args.api_key)
         #print(alphaResp)
         lastDate = alphaResp["Meta Data"]["3. Last Refreshed"]
         value = alphaResp["Time Series (Daily)"][lastDate]["4. close"]
