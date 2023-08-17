@@ -275,7 +275,6 @@ function MainPage(props) {
                     <div className={classes.grow} />
                     <VariablePanel value={materiaModel.getPrimaryFocus()} commit={materiaModel.setPrimaryFocus} length={250}/>
                     <VariablePanel value={materiaModel.getYearlyIncome().toString()} readonly length={60} color={getIncomeColor(materiaModel.getYearlyIncome())}/>
-                    <VariablePanel value={parseInt((materiaModel.getInvestToSalaryRatio() * 100).toString()).toString() + "%"} readonly length={60}/>
                     <VariableBurndown var={materiaModel.getWorkBurden()} commit={materiaModel.setWorkBurden}/>
                     <BadgetList id='inbox' icon={MailIcon}/>
                     <IconButton color="inherit" onClick={onAddClicked}>
