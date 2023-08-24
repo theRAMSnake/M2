@@ -11,6 +11,8 @@ import {
   Background,
   useNodesState,
   useEdgesState,
+  applyNodeChanges,
+  applyEdgeChanges
 } from 'reactflow';
 import PathCtrl from './PathCtrl.jsx'
 import m3proxy from '../modules/m3proxy'
@@ -347,8 +349,8 @@ function WatchPanel(props)
 function StrategyView(props)
 {
     const [updating, setUpdating] = useState(true);
-    const [nodes, setNodes, onNodesChange] = useNodesState(null);
-    const [edges, setEdges, onEdgesChange] = useEdgesState(null);
+    const [nodes, setNodes] = useState(null);
+    const [edges, setEdges] = useState(null);
     const [path, setPath] = useState([]);
     const [initpath, setInitpath] = useState("");
     const [selectedNode, setSelectedNode] = useState(null);
@@ -362,6 +364,16 @@ function StrategyView(props)
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [graphId, setGraphId] = useState("");
     const [allConns, setAllConns] = useState(null);
+    const onNodesChange = React.useCallback(
+       (changes) => {
+         setNodes((nds) => applyNodeChanges(changes, nds));
+       },
+       [setNodes]
+    );
+    const onEdgesChange = React.useCallback(
+       (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+        [setEdges]
+    );
 
     if(initpath != props.initPath)
     {
@@ -759,11 +771,11 @@ function StrategyView(props)
     {
         if(deleteTarget.target)//link
         {
-            Materia.postDelete(deleteTarget.id);
+            Materia.sendDelete(deleteTarget.id, () => {});
         }
         else //node
         {
-            Materia.postDelete(selectedNode.id);
+            Materia.sendDelete(selectedNode.id, () => {});
             setSelectedNode(null);
         }
         setUpdating(true);
