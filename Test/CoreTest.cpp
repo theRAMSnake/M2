@@ -1,5 +1,4 @@
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE a
 #include <boost/test/unit_test.hpp>
 #include <Core/ICore3.hpp>
 #include <boost/property_tree/ptree.hpp>

@@ -1,4 +1,5 @@
 #define BOOST_TEST_DYN_LINK
+#define BOOST_TEST_MODULE a
 #include <boost/test/unit_test.hpp>
 #include <string>
 #include <Common/Codec.hpp>
