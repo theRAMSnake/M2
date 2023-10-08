@@ -18,16 +18,27 @@ public:
 
     void populate(Object& obj) const override
     {
-        int size = PyList_Size(mSrc);
-        for (int i = 0; i < size; i++) {
-            PyObject* pair = PyList_GetItem(mSrc, i);
-            char* first;
-            char* second;
-            if (PyArg_ParseTuple(pair, "ss", &first, &second)) {
-                obj[first] = second;
-            }
+        if (!PyObject_HasAttrString(mSrc, "__dict__")) {
+            throw std::runtime_error("Expected an object with attributes");
         }
 
+        PyObject* attributes = PyObject_GetAttrString(mSrc, "__dict__");
+        if (!PyDict_Check(attributes)) {
+            throw std::runtime_error("Object attributes are not a dictionary");
+        }
+
+        PyObject *key, *value;
+        Py_ssize_t pos = 0;
+        while (PyDict_Next(attributes, &pos, &key, &value)) {
+            const char* key_str = PyUnicode_AsUTF8(key);
+            PyObject* value_str_object = PyObject_Str(value);  // Convert value to string
+            const char* value_str = PyUnicode_AsUTF8(value_str_object);
+
+            obj[key_str] = value_str;
+
+            Py_DECREF(value_str_object);
+        }
+        Py_DECREF(attributes);
     }
 
 private:
@@ -37,21 +48,27 @@ private:
 static PyObject* py_create(PyObject* self, PyObject* args) {
     char* id;
     char* typename_;
-    PyObject* paramsList;
+    PyObject* pyObject;
 
-    if (!PyArg_ParseTuple(args, "ssO", &id, &typename_, &paramsList)) {
+    if (!PyArg_ParseTuple(args, "ssO", &id, &typename_, &pyObject)) {
         return nullptr;
     }
 
-    PythonValueProvider prov(paramsList);
+    PythonValueProvider prov(pyObject);
 
     std::optional<Id> new_id;
     if(std::string(id).size() != 0)
     {
         new_id = std::string(id);
     }
-    std::string result = gOmPtr->create(new_id, typename_, prov).getId();
-    return PyUnicode_FromString(result.c_str());
+
+    try {
+        std::string result = gOmPtr->create(new_id, typename_, prov).getId();
+        return PyUnicode_FromString(result.c_str());
+    } catch (const std::exception& e) {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        return nullptr;
+    }
 }
 
 static PyObject* py_modify(PyObject* self, PyObject* args) {
@@ -75,18 +92,18 @@ static PyObject* py_reward(PyObject* self, PyObject* args) {
 }
 
 static PyMethodDef methods[] = {
-    {"m4_create", py_create, METH_VARARGS, "Create function"},
-    {"m4_modify", py_modify, METH_VARARGS, "Modify function"},
-    {"m4_erase", py_erase, METH_VARARGS, "Erase function"},
-    {"m4_query_ids", py_query_ids, METH_VARARGS, "Query by ids function"},
-    {"m4_query_expr", py_query_expr, METH_VARARGS, "Query by expression function"},
-    {"m4_reward", py_reward, METH_VARARGS, "Reward function"},
+    {"create", py_create, METH_VARARGS, "Create function"},
+    {"modify", py_modify, METH_VARARGS, "Modify function"},
+    {"erase", py_erase, METH_VARARGS, "Erase function"},
+    {"query_ids", py_query_ids, METH_VARARGS, "Query by ids function"},
+    {"query_expr", py_query_expr, METH_VARARGS, "Query by expression function"},
+    {"reward", py_reward, METH_VARARGS, "Reward function"},
     {nullptr, nullptr, 0, nullptr}  // Sentinel
 };
 
 static struct PyModuleDef module = {
     PyModuleDef_HEAD_INIT,
-    "cpp_module",  // module name
+    "m4",  // module name
     nullptr,       // module documentation
     -1,            // module state size
     methods        // module methods
@@ -114,7 +131,7 @@ std::string runScript(const std::string& code, ObjectManager& om)
     gOmPtr = &om;
 
     if (!Py_IsInitialized()) {
-        PyImport_AppendInittab("cpp_module", &PyInit_cpp_module);
+        PyImport_AppendInittab("m4", &PyInit_cpp_module);
         Py_Initialize();
     }
 
@@ -122,6 +139,7 @@ std::string runScript(const std::string& code, ObjectManager& om)
 
     PyObject* global_dict = PyDict_New();
 
+    PyRun_String("import m4", Py_file_input, global_dict, global_dict);
     PyObject* result = PyRun_String(code.c_str(), Py_file_input, global_dict, global_dict);
 
     if (result == nullptr) {

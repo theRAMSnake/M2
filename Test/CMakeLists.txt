@@ -18,7 +18,7 @@ ScriptsTest.cpp
 #DatabaseTest.cpp
 #ContractsTest.cpp
 #Strategy3Test.cpp
-#Utils.cpp
+Utils.cpp
 #UserTest.cpp
 #IdeasTest.cpp
 #ConnectionsTest.cpp
