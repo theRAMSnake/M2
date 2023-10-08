@@ -1,5 +1,6 @@
 #include "Commands.hpp"
 #include "Connections.hpp"
+#include "ScriptRunner.hpp"
 #include "JsonRestorationProvider.hpp"
 #include "rng.hpp"
 #include <set>
@@ -114,6 +115,24 @@ ExecutionResult DestroyCommand::execute(ObjectManager& objManager)
 {
     objManager.destroy(mId);
     return Success{};
+}
+
+RunScriptCommand::RunScriptCommand(const std::string& script)
+: mScript(script)
+{
+
+}
+
+ExecutionResult RunScriptCommand::execute(ObjectManager& objManager)
+{
+    try
+    {
+        return runScript(mScript, objManager);
+    }
+    catch(std::exception& err)
+    {
+        return Error{err.what()};
+    }
 }
 
 ExecutionResult DescribeCommand::execute(ObjectManager& objManager)

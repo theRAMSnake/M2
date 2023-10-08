@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.6)
 project(m3core)
 
+find_package(PythonLibs 3.11 REQUIRED)
 LIST(APPEND CMAKE_MODULE_PATH "..")
 
 include_directories("..")
-include_directories("/usr/include/python3.8")
+include_directories(${PYTHON_INCLUDE_DIRS})
 
 add_library(m3core
 private/Core3.cpp
@@ -24,6 +25,7 @@ private/types/SimpleList.cpp
 private/types/Variable.cpp
 private/Type.cpp
 private/Connections.cpp
+private/ScriptRunner.cpp
 private/rng.cpp
 private/subsystems/Finance.cpp
 private/subsystems/User.cpp
@@ -37,4 +39,4 @@ private/subsystems/Ideas.cpp
 
 find_package(Boost COMPONENTS system REQUIRED)
 
-target_link_libraries(m3core m3common sqlite3 ${Boost_LIBRARIES} pthread fmt profiler)
+target_link_libraries(m3core m3common sqlite3 ${Boost_LIBRARIES} pthread fmt profiler ${PYTHON_LIBRARIES})

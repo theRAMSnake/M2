@@ -71,6 +71,13 @@ Command* parseModify(const boost::property_tree::ptree& src)
    return new ModifyCommand(id, writeJson(params));
 }
 
+Command* parseRun(const boost::property_tree::ptree& src)
+{
+   auto script = getOrThrow<std::string>(src, "script", "Script is not specified");
+
+   return new RunScriptCommand(script);
+}
+
 Command* parseDescribe(const boost::property_tree::ptree& src)
 {
    return new DescribeCommand();
@@ -123,6 +130,7 @@ Core3::Core3(const CoreConfig& config)
    mCommandDefs.push_back({"describe", parseDescribe});
    mCommandDefs.push_back({"random", parseRandom});
    mCommandDefs.push_back({"count", parseCount});
+   mCommandDefs.push_back({"run", parseRun});
    mCommandDefs.push_back({"backup", std::bind(parseBackup, std::placeholders::_1, config.dbFileName)});
 
    mObjManager.initialize(mDb);
@@ -163,6 +171,10 @@ std::string Core3::formatResponce(const ExecutionResult& result)
    if(std::holds_alternative<Success>(result))
    {
       responce["success"] = true;
+   }
+   else if(std::holds_alternative<Error>(result))
+   {
+      responce["error"] = std::get<Error>(result).error;
    }
    else if(std::holds_alternative<ObjectList>(result))
    {

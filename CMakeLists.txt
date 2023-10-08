@@ -12,7 +12,6 @@ link_directories("/usr/local/lib")
 
 add_subdirectory(Common)
 add_subdirectory(Core)
-add_subdirectory(Core4)
 add_subdirectory(Test)
 #add_subdirectory(Profile)
 add_subdirectory(Ctrl)
