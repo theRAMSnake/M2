@@ -1,5 +1,7 @@
 #include "ScriptRunner.hpp"
 #include "ObjectManager.hpp"
+#include "Expressions2.hpp"
+#include <iostream>
 #include <Python.h>
 
 namespace materia
@@ -7,6 +9,7 @@ namespace materia
 
 // Make sure this is getting accessed from the single thread only
 ObjectManager* gOmPtr = nullptr;
+static PyObject* MateriaObjectType = nullptr;
 
 class PythonValueProvider : public IValueProvider
 {
@@ -31,6 +34,10 @@ public:
         Py_ssize_t pos = 0;
         while (PyDict_Next(attributes, &pos, &key, &value)) {
             const char* key_str = PyUnicode_AsUTF8(key);
+            if(obj[std::string(key_str)].isReadonly())
+            {
+                continue;
+            }
             PyObject* value_str_object = PyObject_Str(value);  // Convert value to string
             const char* value_str = PyUnicode_AsUTF8(value_str_object);
 
@@ -72,23 +79,121 @@ static PyObject* py_create(PyObject* self, PyObject* args) {
 }
 
 static PyObject* py_modify(PyObject* self, PyObject* args) {
-    // ... Code for the py_modify function as shown above ...
+    char* id;
+    PyObject* pyObject;
+
+    // We expect two arguments: an ID and a python object
+    if (!PyArg_ParseTuple(args, "sO", &id, &pyObject)) {
+        return nullptr;
+    }
+
+    // Ensure ID is non-empty
+    if (std::string(id).size() == 0) {
+        PyErr_SetString(PyExc_ValueError, "ID cannot be an empty string");
+        return nullptr;
+    }
+
+    PythonValueProvider prov(pyObject);
+
+    try {
+        gOmPtr->modify(Id(id), prov);
+        Py_RETURN_NONE;  // Return 'None' in Python to signify successful completion
+    } catch (const std::exception& e) {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        return nullptr;
+    }
 }
 
 static PyObject* py_erase(PyObject* self, PyObject* args) {
-    // ... Code for the py_erase function as shown above ...
+    char* id;
+
+    // We expect a single argument: an ID
+    if (!PyArg_ParseTuple(args, "s", &id)) {
+        return nullptr;
+    }
+
+    // Ensure ID is non-empty
+    if (std::string(id).size() == 0) {
+        PyErr_SetString(PyExc_ValueError, "ID cannot be an empty string");
+        return nullptr;
+    }
+
+    try {
+        gOmPtr->destroy(Id(id));
+        Py_RETURN_NONE;  // Return 'None' in Python to signify successful completion
+    } catch (const std::exception& e) {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        return nullptr;
+    }
 }
 
 static PyObject* py_query_ids(PyObject* self, PyObject* args) {
-    // ... Code for the py_query_ids function as shown above ...
+    PyObject* pyIdList;
+
+    if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &pyIdList)) {
+        return nullptr;
+    }
+
+    int listSize = PyList_Size(pyIdList);
+    std::vector<Id> ids;
+    for (int i = 0; i < listSize; i++) {
+        PyObject* pyId = PyList_GetItem(pyIdList, i);
+        if (PyUnicode_Check(pyId)) {
+            ids.push_back(Id(PyUnicode_AsUTF8(pyId)));
+        } else {
+            PyErr_SetString(PyExc_TypeError, "All elements in the list must be strings.");
+            return nullptr;
+        }
+    }
+
+    try {
+        std::vector<Object> results = gOmPtr->query(ids);
+
+        PyObject* pyResults = PyList_New(results.size());
+        for (size_t i = 0; i < results.size(); ++i) {
+            PyObject* pyObjInstance = PyObject_CallObject(MateriaObjectType, nullptr);  // Create an instance of MateriaObject
+            for (const auto& field : results[i]) {
+                PyObject_SetAttrString(pyObjInstance, field.getName().c_str(), PyUnicode_FromString(field.get<Type::String>().c_str()));
+            }
+            PyList_SetItem(pyResults, i, pyObjInstance);
+        }
+
+        return pyResults;
+    } catch (const std::exception& e) {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        return nullptr;
+    }
 }
 
 static PyObject* py_query_expr(PyObject* self, PyObject* args) {
-    // ... Code for the py_query_expr function as shown above ...
-}
+    char* filter_expr;
 
-static PyObject* py_reward(PyObject* self, PyObject* args) {
-    // ... Code for the py_reward function as shown above ...
+    if (!PyArg_ParseTuple(args, "s", &filter_expr)) {
+        return nullptr;
+    }
+
+    try {
+        auto expr = v2::parseExpression(filter_expr);
+        if(!expr)
+        {
+            throw std::runtime_error("Failed to parse expression");
+        }
+        std::vector<Object> results = gOmPtr->query(*expr);
+
+        PyObject* pyResults = PyList_New(results.size());
+        for (size_t i = 0; i < results.size(); ++i) {
+            PyObject* pyObjInstance = PyObject_CallObject(MateriaObjectType, nullptr);  // Create an instance of MateriaObject
+            for (const auto& field : results[i]) {
+                PyObject_SetAttrString(pyObjInstance, field.getName().c_str(), PyUnicode_FromString(field.get<Type::String>().c_str()));
+            }
+            PyList_SetItem(pyResults, i, pyObjInstance);
+        }
+        return pyResults;
+
+    } catch (const std::exception& e) {
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        return nullptr;
+    }
 }
 
 static PyMethodDef methods[] = {
@@ -97,7 +202,6 @@ static PyMethodDef methods[] = {
     {"erase", py_erase, METH_VARARGS, "Erase function"},
     {"query_ids", py_query_ids, METH_VARARGS, "Query by ids function"},
     {"query_expr", py_query_expr, METH_VARARGS, "Query by expression function"},
-    {"reward", py_reward, METH_VARARGS, "Reward function"},
     {nullptr, nullptr, 0, nullptr}  // Sentinel
 };
 
@@ -126,6 +230,42 @@ std::string fetchPythonError() {
     return result;
 }
 
+
+void InitializeMateriaObjectClass(PyObject* m4Module) {
+    // Define the MateriaObject class.
+    const char* materiaObjectClassCode = R"(
+class MateriaObject:
+    def __init__(self):
+        pass
+)";
+    PyObject* pNamespace = PyDict_New();
+    PyObject* pCode = PyRun_String(materiaObjectClassCode, Py_file_input, pNamespace, pNamespace);
+    if (!pCode) {
+        PyErr_Print();
+        throw std::runtime_error("Failed to run MateriaObject class code.");
+    }
+    Py_XDECREF(pCode);
+
+    MateriaObjectType = PyDict_GetItemString(pNamespace, "MateriaObject");
+    if (!MateriaObjectType) {
+        PyErr_Print();
+        throw std::runtime_error("MateriaObject class not found in namespace.");
+    }
+    Py_INCREF(MateriaObjectType);
+
+    if (!m4Module) {
+        PyErr_Print();
+        throw std::runtime_error("m4Module is not initialized.");
+    }
+    if (PyModule_AddObject(m4Module, "MateriaObject", MateriaObjectType) < 0) {
+        PyErr_Print();
+        throw std::runtime_error("Failed to add MateriaObject to m4 module.");
+    }
+
+    Py_XDECREF(pNamespace);
+}
+
+
 std::string runScript(const std::string& code, ObjectManager& om)
 {
     gOmPtr = &om;
@@ -133,6 +273,13 @@ std::string runScript(const std::string& code, ObjectManager& om)
     if (!Py_IsInitialized()) {
         PyImport_AppendInittab("m4", &PyInit_cpp_module);
         Py_Initialize();
+        auto m4Module = PyImport_ImportModule("m4");
+        if (!m4Module) {
+            PyErr_Print();
+            throw std::runtime_error("Failed to import m4 module.");
+        }
+
+        InitializeMateriaObjectClass(m4Module);
     }
 
     std::string run_result;

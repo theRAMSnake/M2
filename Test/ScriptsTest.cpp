@@ -148,3 +148,163 @@ result = m4.create("id_preset", "object", empty_obj)
     BOOST_CHECK_EQUAL("5", query("id_preset", *mCore)->get<std::string>("intval"));
     BOOST_CHECK_EQUAL("str", query("id_preset", *mCore)->get<std::string>("strval"));
 }
+BOOST_FIXTURE_TEST_CASE(TestModifyApiWithAttrs, ScriptsTest)
+{
+    // First, we'll set up an object similar to how you did in the create test.
+    run(R"(
+class SetupObject:
+    pass
+
+initial_obj = SetupObject()
+initial_obj.intval = 5
+initial_obj.strval = "str"
+m4.create("id_to_modify", "object", initial_obj)
+)");
+
+    // Now, let's modify that object using the API
+    run(R"(
+class SetupObject:
+    pass
+
+obj_to_modify = SetupObject()
+obj_to_modify.intval = 10
+obj_to_modify.strval = "modified_str"
+result = m4.modify("id_to_modify", obj_to_modify)
+)");
+
+    // Now, let's check if the values have been modified.
+    BOOST_CHECK(query("id_to_modify", *mCore));
+
+    BOOST_CHECK_EQUAL("object", query("id_to_modify", *mCore)->get<std::string>("typename"));
+    BOOST_CHECK_EQUAL("10", query("id_to_modify", *mCore)->get<std::string>("intval"));  // Note the change in expected value
+    BOOST_CHECK_EQUAL("modified_str", query("id_to_modify", *mCore)->get<std::string>("strval"));  // Note the change in expected value
+}
+BOOST_FIXTURE_TEST_CASE(TestModifyApiWithAttrs2, ScriptsTest)
+{
+    // First, we'll set up an object similar to how you did in the create test.
+    run(R"(
+class SetupObject:
+    pass
+
+initial_obj = SetupObject()
+initial_obj.intval = 5
+initial_obj.strval = "str"
+m4.create("id_to_modify", "object", initial_obj)
+)");
+
+    // Now, let's modify that object using the API
+    run(R"(
+obj_to_modify = m4.query_ids(["id_to_modify"])[0]
+obj_to_modify.intval = 10
+obj_to_modify.strval = "modified_str"
+m4.modify("id_to_modify", obj_to_modify)
+)");
+
+    // Now, let's check if the values have been modified.
+    BOOST_CHECK(query("id_to_modify", *mCore));
+
+    BOOST_CHECK_EQUAL("object", query("id_to_modify", *mCore)->get<std::string>("typename"));
+    BOOST_CHECK_EQUAL("10", query("id_to_modify", *mCore)->get<std::string>("intval"));  // Note the change in expected value
+    BOOST_CHECK_EQUAL("modified_str", query("id_to_modify", *mCore)->get<std::string>("strval"));  // Note the change in expected value
+}
+BOOST_FIXTURE_TEST_CASE(TestEraseApi, ScriptsTest)
+{
+    // First, let's set up an object.
+    run(R"(
+class SetupObject:
+    pass
+
+initial_obj = SetupObject()
+initial_obj.intval = 5
+initial_obj.strval = "str"
+m4.create("id_to_erase", "object", initial_obj)
+)");
+
+    // Now, let's erase that object using the API.
+    run(R"(
+result = m4.erase("id_to_erase")
+)");
+
+    // Check if the object has been erased.
+    BOOST_CHECK(!query("id_to_erase", *mCore));  // Expecting the query to return null or equivalent.
+}
+BOOST_FIXTURE_TEST_CASE(TestQueryIdsApi, ScriptsTest)
+{
+    // Create the first object with a known id
+    BOOST_CHECK_EQUAL("id_1", run(R"(
+class SetupObject:
+    pass
+
+obj1 = SetupObject()
+obj1.intval = "5"
+obj1.strval = "string1"
+result = m4.create("id_1", "object", obj1)
+)"));
+
+    // Create the second object with another known id
+    BOOST_CHECK_EQUAL("id_2", run(R"(
+class SetupObject:
+    pass
+obj2 = SetupObject()
+obj2.intval = "10"
+obj2.strval = "string2"
+result = m4.create("id_2", "object", obj2)
+)"));
+
+    // Query the objects using their ids, validate the size of the result list, and verify their attributes
+    BOOST_CHECK_EQUAL("2", run(R"(
+queried_objects = m4.query_ids(["id_1", "id_2"])
+result = len(queried_objects)
+)"));
+
+    // Check the integer values of the objects
+    std::string checkIntvalScript = R"(
+queried_objects = m4.query_ids(["id_1", "id_2"])
+intvals = [queried_objects[0].intval, queried_objects[1].intval]
+result = 'intvals' if '5' in intvals and '10' in intvals else 'Fail'
+)";
+    BOOST_CHECK_EQUAL("intvals", run(checkIntvalScript));
+}
+
+BOOST_FIXTURE_TEST_CASE(TestQueryExprApi, ScriptsTest)
+{
+    // Create the first object with a known id
+    BOOST_CHECK_EQUAL("id_1", run(R"(
+class SetupObject:
+    pass
+
+obj1 = SetupObject()
+obj1.intval = "5"
+obj1.strval = "string1"
+result = m4.create("id_1", "object", obj1)
+)"));
+
+    // Create the second object with another known id, but with a different intval
+    BOOST_CHECK_EQUAL("id_2", run(R"(
+class SetupObject:
+    pass
+obj2 = SetupObject()
+obj2.intval = "10"
+obj2.strval = "string2"
+result = m4.create("id_2", "object", obj2)
+)"));
+
+    // Query the objects using the expression ".intval = 5" and validate the size of the result list
+    BOOST_CHECK_EQUAL("1", run(R"(
+queried_objects = m4.query_expr(".intval = \"5\"")
+result = len(queried_objects)
+)"));
+
+    // Verify the attributes of the returned object
+    BOOST_CHECK_EQUAL("5", run(R"(
+queried_objects = m4.query_expr(".intval = \"5\"")
+queried_object = queried_objects[0]
+result = queried_object.intval
+)"));
+
+    BOOST_CHECK_EQUAL("string1", run(R"(
+queried_objects = m4.query_expr(".intval = \"5\"")
+queried_object = queried_objects[0]
+result = queried_object.strval
+)"));
+}
