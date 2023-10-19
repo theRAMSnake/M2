@@ -56,8 +56,9 @@ static PyObject* py_create(PyObject* self, PyObject* args) {
     char* id;
     char* typename_;
     PyObject* pyObject;
+    char* parent_id = nullptr;
 
-    if (!PyArg_ParseTuple(args, "ssO", &id, &typename_, &pyObject)) {
+    if (!PyArg_ParseTuple(args, "ssO|s", &id, &typename_, &pyObject, &parent_id)) {
         return nullptr;
     }
 
@@ -71,6 +72,12 @@ static PyObject* py_create(PyObject* self, PyObject* args) {
 
     try {
         std::string result = gOmPtr->create(new_id, typename_, prov).getId();
+
+        if (parent_id) {
+            Id final_parent_id = Id(std::string(parent_id));
+            gOmPtr->getConnections().create(final_parent_id, Id(result), ConnectionType::Hierarchy);
+        }
+
         return PyUnicode_FromString(result.c_str());
     } catch (const std::exception& e) {
         PyErr_SetString(PyExc_RuntimeError, e.what());
@@ -280,6 +287,16 @@ std::string runScript(const std::string& code, ObjectManager& om)
         }
 
         InitializeMateriaObjectClass(m4Module);
+        // Add the 'bin/library' directory to sys.path
+        PyObject* sys = PyImport_ImportModule("sys");
+        PyObject* path = PyObject_GetAttrString(sys, "path");
+        PyObject* dirToAdd = PyUnicode_FromString("../Core/library");
+        PyList_Append(path, dirToAdd);
+
+        Py_XDECREF(dirToAdd);
+        Py_XDECREF(path);
+        Py_XDECREF(sys);
+        Py_XDECREF(m4Module);
     }
 
     std::string run_result;
@@ -305,7 +322,8 @@ std::string runScript(const std::string& code, ObjectManager& om)
         throw std::runtime_error("No 'result' key found in global dictionary.");
     }
 
-    Py_DECREF(pResult);
+    //Do not uncomment - will crash
+    //Py_DECREF(pResult);
 
     return run_result;
 }

@@ -308,3 +308,48 @@ queried_object = queried_objects[0]
 result = queried_object.strval
 )"));
 }
+
+BOOST_FIXTURE_TEST_CASE(TestCreateWithParent, ScriptsTest) {
+    // First, create a parent object.
+    std::string parentCreationScript = R"(
+class ParentObject:
+    pass
+
+parent_obj = ParentObject()
+parent_obj.some_attribute = "value"
+result = m4.create("pid", "object", parent_obj)
+    )";
+    std::string parent = run(parentCreationScript);
+    BOOST_CHECK_EQUAL(parent, "pid");
+
+    // Now, create a child object, specifying the parent's ID.
+    std::string childCreationScript = R"(
+class ChildObject:
+    pass
+
+child_obj = ChildObject()
+child_obj.some_other_attribute = "other_value"
+result = m4.create("", "object", child_obj, "pid")
+    )";
+    std::string childId = run(childCreationScript);
+    BOOST_REQUIRE(!childId.empty());  // Check that the child was created successfully.
+
+    std::string queryScript = R"(
+children = m4.query_expr('ChildOf("pid")')
+result = children[0].id
+    )";
+
+    std::string queriedChildrenResult = run(queryScript);
+
+    BOOST_CHECK_EQUAL(queriedChildrenResult, childId);  // Check that the IDs match.
+                                                        //
+    queryScript = R"(
+import common
+children = common.queryChildren("pid")
+result = children[0].id
+    )";
+
+    queriedChildrenResult = run(queryScript);
+
+    BOOST_CHECK_EQUAL(queriedChildrenResult, childId);  // Check that the IDs match.
+}
