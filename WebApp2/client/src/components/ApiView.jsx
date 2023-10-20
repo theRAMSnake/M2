@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import Materia from '../modules/materia_request'
-
-import { AceEditor } from "react-ace";
+import AceEditor from 'react-ace';
 import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/theme-monokai";
+import 'ace-builds/src-noconflict/mode-text';
 
 import locale    from 'react-json-editor-ajrm/locale/en';
 import {
@@ -35,10 +35,9 @@ function ApiView(props) {
     }
 
     return (
-        <Grid container direction="column" justify="space-around" alignItems="center" spacing={3}>
-            <Grid item xs={12}>
+        <Grid container direction="column" justify="space-around" alignItems="center">
                 {/* Python Script Editor */}
-                <Paper elevation={3} style={{ height: '40vh', width: '100%' }}>
+                <Paper elevation={3} style={{ height: '50vh', width: '100%' }}>
                     <AceEditor
                         mode="python"
                         theme="monokai"
@@ -50,25 +49,20 @@ function ApiView(props) {
                         width="100%"
                     />
                 </Paper>
-            </Grid>
-            <Grid item>
                 <Button variant="contained" color="primary" size="small" onClick={send_clicked}>Run Script</Button>
-            </Grid>
-            <Grid item xs={12}>
                 {/* Script Output */}
-                <Paper elevation={3} style={{ height: '40vh', width: '100%' }}>
+                <Paper elevation={3} style={{ height: '30vh', width: '100%' }}>
                     <AceEditor
-                        mode="json"
+                        mode="text"
                         theme="monokai"
                         name="outputViewer"
                         editorProps={{ $blockScrolling: true }}
-                        value={JSON.stringify(output, null, 2)}
+                        value={output}
                         height="100%"
                         width="100%"
                         readOnly={true}
                     />
                 </Paper>
-            </Grid>
         </Grid>
     );
 }
