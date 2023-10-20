@@ -21,7 +21,7 @@ function ApiView(props) {
         e.preventDefault();
 
         Materia.req(JSON.stringify({ operation: "run", script: script }), (r) => {
-           result = JSON.parse(r);
+           let result = JSON.parse(r);
            if(result.result) {
               setOutput(result.result);
            } else {
