@@ -353,3 +353,134 @@ result = children[0].id
 
     BOOST_CHECK_EQUAL(queriedChildrenResult, childId);  // Check that the IDs match.
 }
+
+BOOST_FIXTURE_TEST_CASE(TestCreateCollection, ScriptsTest)
+{
+    std::string result = run(R"(
+import collection
+collection.create_collection('test_collection')
+result = len(m4.query_expr('ChildOf(".collections") AND .name="test_collection"'))
+    )");
+    BOOST_CHECK_EQUAL("1", result);
+}
+
+BOOST_FIXTURE_TEST_CASE(TestRemoveCollection, ScriptsTest)
+{
+    // First, we need to create a collection that we will then remove.
+    run(R"(
+import collection
+collection.create_collection('collection_to_remove')
+result = 1
+    )");
+
+    // Now, we attempt to remove the collection.
+    run(R"(
+import collection
+collection.remove_collection('collection_to_remove')
+result = 1
+    )");
+
+    // After removal, we want to confirm that the collection no longer exists.
+    // We use the same query mechanism as in creation but this time we expect no matches (length 0).
+    std::string result_after_removal = run(R"(
+result = len(m4.query_expr('ChildOf(".collections") AND .name="collection_to_remove"'))
+    )");
+
+    // The result should be "0" indicating that no collections with the name 'collection_to_remove' exist.
+    BOOST_CHECK_EQUAL("0", result_after_removal);
+}
+
+BOOST_FIXTURE_TEST_CASE(TestCollectionGetItems, ScriptsTest)
+{
+    // First, create a new collection.
+    run(R"(
+import collection
+collection.create_collection('items_collection')
+result = 1
+    )");
+
+    // Directly add a few items to the collection using the 'm4' API.
+    run(R"(
+headers = m4.query_expr('ChildOf(".collections") AND .name="items_collection"')
+obj1 = m4.MateriaObject()
+obj1.intval = 5
+obj1.strval = "string1"
+m4.create("", "object", obj1, headers[0].id)
+
+obj2 = m4.MateriaObject()
+obj2.intval = 10
+obj2.strval = "string2"
+m4.create("", "object", obj2, headers[0].id)
+result = 1
+    )");
+
+    // Now, fetch the items from the collection using the Collection class and count them.
+    std::string result = run(R"(
+import collection
+coll = collection.Collection('items_collection')
+items = coll.get_items()
+result = len(items)
+    )");
+
+    // We added two items, so we expect a result of "2".
+    BOOST_CHECK_EQUAL("2", result);
+}
+
+BOOST_FIXTURE_TEST_CASE(TestCollectionAdd, ScriptsTest)
+{
+    // Create a new collection named 'add_collection'.
+    run(R"(
+import collection
+collection.create_collection('add_collection')
+result = 1
+    )");
+
+    // Prepare a MateriaObject as the item to be added.
+run(R"(
+import collection
+item = m4.MateriaObject()
+item.intval = 10
+item.strval = "string2"
+
+coll = collection.Collection('add_collection')
+coll.add(item)
+result = 1
+    )");
+
+    // Use Collection.get_items to retrieve items from the collection.
+    std::string query_result = run(R"(
+import collection
+coll = collection.Collection('add_collection')
+items = coll.get_items()
+result = len(items)
+    )");
+
+    // Check that 'get_items' returned exactly one result, indicating that the item was added successfully.
+    BOOST_CHECK_EQUAL("1", query_result);
+}
+
+BOOST_FIXTURE_TEST_CASE(TestCollectionRemove, ScriptsTest)
+{
+    // Single script that sets up a collection, adds an item, removes it, and then checks the removal.
+    std::string script_result = run(R"(
+import collection
+
+collection_name = 'test_collection'
+collection.create_collection(collection_name)
+
+obj = m4.MateriaObject()
+coll = collection.Collection(collection_name)
+
+coll.add(obj)
+
+coll.remove(coll.get_items()[0].id)
+
+items_after_removal = coll.get_items()
+item_still_exists = len(items_after_removal) > 0
+
+result = not item_still_exists
+    )");
+
+    // Check the final status to see if the item was successfully removed.
+    BOOST_CHECK_EQUAL("True", script_result);  // The removal is successful if we receive 'success'.
+}
