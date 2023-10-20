@@ -15,7 +15,7 @@ import {
 
 function ApiView(props) {
     const [script, setScript] = useState(""); // The script to run
-    const [output, setOutput] = useState({}); // The output from the script
+    const [output, setOutput] = useState(""); // The output from the script
 
     function send_clicked(e) {
         e.preventDefault();
