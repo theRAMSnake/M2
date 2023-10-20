@@ -45,6 +45,7 @@ function ApiView(props) {
                         theme="monokai"
                         onChange={handleScriptChange}
                         name="scriptEditor"
+                        showPrintMargin={false}
                         editorProps={{ $blockScrolling: true }}
                         value={script}
                         height="100%"
@@ -59,6 +60,7 @@ function ApiView(props) {
                         theme="monokai"
                         name="outputViewer"
                         editorProps={{ $blockScrolling: true }}
+                        showPrintMargin={false}
                         value={output}
                         height="100%"
                         width="100%"
