@@ -93,8 +93,6 @@ void timerFunc(materia::ICore3* core)
             }
 
             cicleCooldown = 3600;//Make sure we will never hit in at least one hour
-
-            core->executeCommandJson("{\"operation\":\"push\", \"params\":{\"listId\": \"inbox\", \"value\": \"Core daily updated.\"}}");
         }
 
         std::this_thread::sleep_for(std::chrono::seconds(1));

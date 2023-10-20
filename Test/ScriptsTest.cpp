@@ -11,19 +11,6 @@ public:
    {
       system("rm Test.db");
       mCore = materia::createCore({"Test.db"});
-       {
-          boost::property_tree::ptree create;
-          create.put("operation", "create");
-          create.put("typename", "object");
-          create.put("defined_id", "reward.coins");
-          create.put("params.Red", 0);
-          create.put("params.Blue", 0);
-          create.put("params.Yellow", 0);
-          create.put("params.Purple", 0);
-          create.put("params.Green", 0);
-
-          mCore->executeCommandJson(writeJson(create));
-       }
    }
 
 protected:
@@ -483,4 +470,296 @@ result = not item_still_exists
 
     // Check the final status to see if the item was successfully removed.
     BOOST_CHECK_EQUAL("True", script_result);  // The removal is successful if we receive 'success'.
+}
+
+BOOST_FIXTURE_TEST_CASE(TestCreateAmbition, ScriptsTest)
+{
+    // Test the creation of an ambition with valid inputs.
+    std::string script_result = run(R"(
+import ambitions
+import datetime
+
+name = 'Learn Python'
+color = 'Blue'
+expiry = datetime.datetime.now() + datetime.timedelta(days=1)
+
+# Try to create an ambition
+try:
+    ambitions.create_ambition(name, color, expiry)
+    result = 'Ambition created successfully.'
+except Exception as e:
+    result = str(e)
+    )");
+
+    BOOST_CHECK_EQUAL("Ambition created successfully.", script_result);
+}
+
+BOOST_FIXTURE_TEST_CASE(TestCreateAmbitionInvalidColor, ScriptsTest)
+{
+    // Test the creation of an ambition with an invalid color.
+    std::string script_result = run(R"(
+import ambitions
+import datetime
+
+name = 'Learn Python'
+color = 'invalid_color'
+expiry = datetime.datetime.now() + datetime.timedelta(days=1)
+
+# Try to create an ambition
+try:
+    ambitions.create_ambition(name, color, expiry)
+    result = 'Ambition created successfully.'
+except Exception as e:
+    result = str(e)
+    )");
+
+    BOOST_CHECK_NE("Ambition created successfully.", script_result);  // We expect an error here.
+}
+
+BOOST_FIXTURE_TEST_CASE(TestCreateAmbitionSameColor, ScriptsTest)
+{
+    // Test the constraint that there should not be two ambitions with the same color.
+    std::string script_result = run(R"(
+import ambitions
+import datetime
+
+name1 = 'Learn Python'
+name2 = 'Learn C++'
+color = 'Blue'
+expiry = datetime.datetime.now() + datetime.timedelta(days=1)
+
+# Try to create two ambitions with the same color
+ambitions.create_ambition(name1, color, expiry)
+try:
+    ambitions.create_ambition(name2, color, expiry)
+    result = 'Second ambition created with the same color.'
+except Exception as e:
+    result = str(e)
+    )");
+
+    BOOST_CHECK_NE("Second ambition created with the same color.", script_result);  // We expect an error here.
+}
+
+BOOST_FIXTURE_TEST_CASE(TestCreateAmbitionMaxLimit, ScriptsTest)
+{
+    // Test the constraint of having no more than 3 ambitions.
+    std::string script_result = run(R"(
+import ambitions
+import datetime
+
+expiry = datetime.datetime.now() + datetime.timedelta(days=1)
+
+ambitions.create_ambition('Ambition 1', 'Red', expiry)
+ambitions.create_ambition('Ambition 2', 'Green', expiry)
+ambitions.create_ambition('Ambition 3', 'Blue', expiry)
+try:
+    ambitions.create_ambition('Ambition 4', 'Yellow', expiry)
+    result = 'Fourth ambition created.'
+except Exception as e:
+    result = str(e)
+    )");
+
+    BOOST_CHECK_NE("Fourth ambition created.", script_result);  // We expect an error here, as it exceeds the max limit.
+}
+
+BOOST_FIXTURE_TEST_CASE(TestCreateAmbitionInvalidExpiry, ScriptsTest)
+{
+    // Test the creation of an ambition with an expiry date that is not in the future.
+    std::string script_result = run(R"(
+import ambitions
+import datetime
+
+name = 'Learn Python'
+color = 'Green'  # Assuming 'green' is a valid color.
+expiry = datetime.datetime.now()
+
+# Try to create an ambition with an invalid expiry date
+try:
+    ambitions.create_ambition(name, color, expiry)
+    result = 'Ambition created successfully.'
+except Exception as e:
+    result = str(e)  # Here, we are capturing the exception message to check what error was returned.
+    )");
+
+    BOOST_CHECK_NE("Ambition created successfully.", script_result);  // This means creation should not succeed.
+}
+
+BOOST_FIXTURE_TEST_CASE(TestRewardFunction, ScriptsTest)
+{
+    // Test the 'reward' function behavior with various inputs.
+    std::string script_result = run(R"(
+import reward
+import m4
+import random
+
+initial = m4.MateriaObject()
+initial.Red = 5
+initial.Blue = 3
+initial.Yellow = 0
+initial.Green = 0
+initial.Purple = 0
+m4.create('reward.coins', 'object', initial)
+
+number_of_coins = 3
+
+# In this scenario, we're testing the function's behavior when no color is specified.
+# The function should randomly select colors and distribute the coins.
+
+try:
+    reward.reward(number_of_coins)
+    coins_after_reward = m4.query_ids(['reward.coins'])[0]
+
+    total_coins = int(coins_after_reward.Red) + int(coins_after_reward.Blue) + int(coins_after_reward.Yellow) + int(coins_after_reward.Green) + int(coins_after_reward.Purple)
+    expected_total = 8 + number_of_coins  # We started with 8 coins and added 'number_of_coins'.
+
+    # Validate the coin count and construct the result string.
+    if total_coins == expected_total:
+        result = 'Total coin count is correct.'
+    else:
+        result = f'Error: Expected {expected_total} coins, got {total_coins}.'
+
+except Exception as e:
+    # Capture and return any exception message.
+    result = str(e)
+    )");
+
+    // Check the script's execution result.
+    BOOST_CHECK_EQUAL("Total coin count is correct.", script_result);  // Confirm that the coin count is as expected.
+}
+
+BOOST_FIXTURE_TEST_CASE(TestRewardFunction_AddSpecificColor, ScriptsTest)
+{
+    // Script to test adding coins of a specific color.
+    std::string script_result = run(R"(
+import reward
+import m4
+
+# Add coins to a specific color.
+color = 'Red'
+reward.reward(3, color)
+
+coins_after_reward = m4.query_ids(['reward.coins'])[0]
+
+# Validate the coin count for the specific color.
+result = 'Added to Red' if int(coins_after_reward.Red) == 3 else 'Error in adding Red coins'
+    )");
+
+    // Check the final coin count in the 'Red' category.
+    BOOST_CHECK_EQUAL("Added to Red", script_result);
+}
+
+BOOST_FIXTURE_TEST_CASE(TestRewardFunction_AddSpecificColor2, ScriptsTest)
+{
+    // Script to test adding coins of a specific color.
+    std::string script_result = run(R"(
+import reward
+import m4
+
+# Add coins to a specific color.
+color = 'Red'
+reward.reward(3, color)
+
+coins_after_reward = m4.query_ids(['reward.coins'])[0]
+
+# Validate the coin count for the specific color.
+result = 'Added to Red' if int(coins_after_reward.Green) == 0 else 'Error in adding Red coins'
+    )");
+
+    // Check the final coin count in the 'Red' category.
+    BOOST_CHECK_EQUAL("Added to Red", script_result);
+}
+
+BOOST_FIXTURE_TEST_CASE(TestRewardFunction_SubtractSpecificColor, ScriptsTest)
+{
+    // Script to test subtracting coins of a specific color.
+    std::string script_result = run(R"(
+import reward
+import m4
+
+initial = m4.MateriaObject()
+initial.Red = 5
+initial.Blue = 3
+initial.Yellow = 0
+initial.Green = 0
+initial.Purple = 0
+m4.create('reward.coins', 'object', initial)
+
+# Subtract coins from a specific color.
+color = 'Blue'
+reward.reward(-2, color)
+
+coins_after_reward = m4.query_ids(['reward.coins'])[0]
+
+# Validate the coin count for the specific color.
+result = 'Subtracted from Blue' if int(coins_after_reward.Blue) == 1 else 'Error in subtracting Blue coins'
+    )");
+
+    // Check the final coin count in the 'Blue' category.
+    BOOST_CHECK_EQUAL("Subtracted from Blue", script_result);
+}
+
+BOOST_FIXTURE_TEST_CASE(TestRewardFunction_SubtractInsufficientCoins, ScriptsTest)
+{
+    // Script to test behavior when there are insufficient coins for subtraction.
+    std::string script_result = run(R"(
+import reward
+import m4
+
+# Attempt to subtract more coins than available.
+color = 'Yellow'
+reward.reward(-1, color)
+
+coins_after_reward = m4.query_ids(['reward.coins'])[0]
+
+# Validate that the coin count did not go negative.
+result = 'Subtraction handled' if int(coins_after_reward.Yellow) == 0 else 'Error: Coin count went negative.'
+    )");
+
+    // Confirm that the coin count didn't go negative and the situation was handled gracefully.
+    BOOST_CHECK_EQUAL("Subtraction handled", script_result);
+}
+
+BOOST_FIXTURE_TEST_CASE(TestRewardFunction_SubtractInsufficientCoins2, ScriptsTest)
+{
+    // Script to test behavior when there are insufficient coins for subtraction.
+    std::string script_result = run(R"(
+import reward
+import m4
+
+# Attempt to subtract more coins than available.
+color = 'Yellow'
+reward.reward(5, color)
+reward.reward(-7, color)
+
+coins_after_reward = m4.query_ids(['reward.coins'])[0]
+
+# Validate that the coin count did not go negative.
+result = 'Subtraction handled' if int(coins_after_reward.Yellow) == 0 else 'Error: Coin count went negative.'
+    )");
+
+    // Confirm that the coin count didn't go negative and the situation was handled gracefully.
+    BOOST_CHECK_EQUAL("Subtraction handled", script_result);
+}
+
+// Test 4: Subtracting coins of random color.
+BOOST_FIXTURE_TEST_CASE(TestRewardFunction_SubtractRandomColor, ScriptsTest)
+{
+    // Script to test subtracting coins of a random color.
+    std::string script_result = run(R"(
+import reward
+import m4
+
+# Subtract coins from a random color.
+reward.reward(20)
+reward.reward(-10)
+
+coins_after_reward = m4.query_ids(['reward.coins'])[0]
+
+# Check that the total number of coins has decreased by one.
+total_coins_after = int(coins_after_reward.Red) + int(coins_after_reward.Blue) + int(coins_after_reward.Yellow) + int(coins_after_reward.Green) + int(coins_after_reward.Purple)
+result = 'Subtracted from random color' if total_coins_after == 10 else 'Error in random color subtraction'
+    )");
+
+    // Check the final total coin count.
+    BOOST_CHECK_EQUAL("Subtracted from random color", script_result);
 }

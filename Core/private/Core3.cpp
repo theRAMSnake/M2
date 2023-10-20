@@ -149,6 +149,12 @@ void Core3::onNewDay(const boost::gregorian::date& date)
    {
       s->onNewDay(date);
    }
+
+   boost::property_tree::ptree cmd;
+   cmd.put("operation", "run");
+   cmd.put("script", "import daily\ndaily.daily_update()\nresult=0");
+
+   executeCommandJson(writeJson(cmd));
 }
 
 void Core3::onNewWeek()

@@ -14,7 +14,7 @@ ScriptsTest.cpp
 #NewAPITest.cpp
 #ExpressionsTest2.cpp
 #ObjectTest.cpp
-#CoreTest.cpp
+CoreTest.cpp
 #DatabaseTest.cpp
 #ContractsTest.cpp
 #Strategy3Test.cpp
