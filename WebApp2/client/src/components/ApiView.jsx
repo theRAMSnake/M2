@@ -20,7 +20,7 @@ function ApiView(props) {
     function send_clicked(e) {
         e.preventDefault();
 
-        Materia.req({ operation: "run", script: script }, (r) => {
+        Materia.req(JSON.stringify({ operation: "run", script: script }), (r) => {
            setOutput(r);
         }, (err) => {
            setOutput(err);
