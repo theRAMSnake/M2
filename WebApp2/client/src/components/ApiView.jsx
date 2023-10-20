@@ -21,12 +21,9 @@ function ApiView(props) {
         e.preventDefault();
 
         Materia.req({ operation: "run", script: script }, (r) => {
-            result = JSON.parse(r);
-            if(result.result) {
-                setOutput(r.result);
-            } else {
-                setOutput(r.error);
-            }
+           setOutput(r);
+        }, (err) => {
+           setOutput(err);
         });
     }
 
