@@ -81,6 +81,10 @@ class Collection:
         # Query for the collection header by name
         collections = m4.query_expr(f'ChildOf(".collections") AND .name = "{collection_name}"')
 
+        if len(collections) == 0:
+            create_collection(collection_name)
+            collections = m4.query_expr(f'ChildOf(".collections") AND .name = "{collection_name}"')
+
         # Assuming the ID of the collection is the first element queried.
         return collections[0].id
 
