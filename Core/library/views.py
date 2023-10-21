@@ -12,7 +12,7 @@ def collection_to_json(name):
 
         # Dynamically gather the attributes from the item
         for attr in dir(item):
-            if not callable(getattr(item, attr)):
+            if not attr.startswith('_') and not callable(getattr(item, attr)):
                 item_dict[attr] = getattr(item, attr)
 
         items_as_dicts.append(item_dict)
