@@ -1,12 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import Materia from '../modules/materia_request'
 
+const removePrivateKeys = (data) => {
+    return data.map((item) => {
+      // Create a new object excluding keys that start with '_'.
+      const filteredItem = Object.keys(item)
+        .filter(key => !key.startsWith('_'))
+        .reduce((obj, key) => {
+          obj[key] = item[key];
+          return obj;
+        }, {});
+      return filteredItem;
+    });
+  };
+
 const loadContent = (colName, cb, cbError) => {
    let script = "import views\nresult = views.collection_to_json('" + colName + "')"
    Materia.req(JSON.stringify({ operation: "run", script: script }), (r) => {
       let result = JSON.parse(r);
       if(result.result) {
-         cb(JSON.parse(result.result));
+         cb(removePrivateKeys(JSON.parse(result.result)));
       } else {
          cbError(result.error);
       }
