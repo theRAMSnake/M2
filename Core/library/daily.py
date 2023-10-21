@@ -1,9 +1,10 @@
 from datetime import datetime
 import collection
 import m4
+import ambitions
 
 def m4_update(today):
-    pass
+    ambitions.update(today)
 
 def daily_update():
     events = collection.Collection("events")
