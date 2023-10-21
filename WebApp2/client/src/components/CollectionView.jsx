@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
-import { styled } from '@emotion/react';
+import { styled } from '@mui/system';
 import Materia from '../modules/materia_request'
 
 // Style the header
