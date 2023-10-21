@@ -12,6 +12,7 @@ import StrategyView from './StrategyView.jsx'
 import IdeasView from './IdeasView.jsx'
 import RewardView from './RewardView.jsx'
 import QueryView from './QueryView.jsx'
+import CollectionView from './CollectionView.jsx'
 import AddItemDialog from './AddItemDialog.jsx'
 import CalendarCtrl from './CalendarCtrl.jsx'
 import ContractsCtrl from './ContractsCtrl.jsx'
@@ -119,6 +120,7 @@ function MainPage(props) {
     const [contentType, setContentType] = React.useState("");
     const [query, setQuery] = React.useState("");
     const [strategyPath, setStrategyPath] = React.useState("/");
+    const [collectionName, setCollectionName] = React.useState("=");
     const [showAddDlg, setShowAddDlg] = React.useState(false);
     const [isInitialisation, setIsInitialisation] = React.useState(true);
 
@@ -160,6 +162,9 @@ function MainPage(props) {
 
         else if(ct == "ideas")
             return (<IdeasView/>);
+
+        else if(ct == "collections")
+            return (<CollectionView colName={collectionName}/>);
     }
 
     function logout_clicked(e) {
@@ -202,6 +207,11 @@ function MainPage(props) {
         {
             setContentType("strategy");
             setStrategyPath(text);
+        }
+        else if(text.charAt(0) === "=")
+        {
+            setContentType("collection");
+            setCollectionName(text);
         }
         else
         {
@@ -268,7 +278,7 @@ function MainPage(props) {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" className={classes.title}>
-                        Materia v 3.7.7
+                        Materia v 3.7.8
                     </Typography>
                     <ContractsCtrl/>
                     <SearchBar onSubmit={searchBarSubmit}/>
