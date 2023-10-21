@@ -163,7 +163,7 @@ function MainPage(props) {
         else if(ct == "ideas")
             return (<IdeasView/>);
 
-        else if(ct == "collections")
+        else if(ct == "collection")
             return (<CollectionView colName={collectionName}/>);
     }
 
@@ -278,7 +278,7 @@ function MainPage(props) {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" className={classes.title}>
-                        Materia v 3.7.8
+                        Materia v 3.7.9
                     </Typography>
                     <ContractsCtrl/>
                     <SearchBar onSubmit={searchBarSubmit}/>
