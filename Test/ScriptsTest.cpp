@@ -763,3 +763,41 @@ result = 'Subtracted from random color' if total_coins_after == 10 else 'Error i
     // Check the final total coin count.
     BOOST_CHECK_EQUAL("Subtracted from random color", script_result);
 }
+
+BOOST_FIXTURE_TEST_CASE(TestCollectionToJson, ScriptsTest)
+{
+    // Script to test the conversion of a collection to a JSON string.
+    std::string script_result = run(R"(
+import m4
+import json
+import views
+import collection
+
+# Create a test collection and populate it with MateriaObjects.
+try:
+    test_collection_name = "test_collection"
+
+    item1 = m4.MateriaObject()
+    item1.attribute1 = "value1"
+    item1.attribute2 = "value2"
+
+    item2 = m4.MateriaObject()
+    item2.attribute1 = "value3"
+    item2.attribute2 = "value4"
+
+    collection = collection.Collection(test_collection_name)
+    collection.add(item1)
+    collection.add(item2)
+
+    json_result = views.collection_to_json(test_collection_name)
+
+    json_as_dict = json.loads(json_result)
+    result = 1
+
+except Exception as e:
+    result = 'Exception occurred: ' + str(e)
+    )");
+
+    // Check the script's execution result. This should confirm that the JSON conversion was successful and accurate.
+    BOOST_CHECK_EQUAL("1", script_result);
+}
