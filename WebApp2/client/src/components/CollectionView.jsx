@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { styled } from '@emotion/react';
 import Materia from '../modules/materia_request'
+
+// Style the header
+const Header = styled(Typography)({
+  marginBottom: '20px',
+});
 
 const removePrivateKeys = (data) => {
     return data.map((item) => {
@@ -33,6 +40,14 @@ const CollectionView = ({ colName }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const removeUnwantedFields = (data) => {
+    // this doesn't remove the fields from 'content', it just prevents them from being displayed
+    return data.map((item) => {
+      const { id, modified, typename, ...rest } = item;
+      return rest;
+    });
+  };
+
   useEffect(() => {
     // If colName starts with "=", we remove that character.
     const adjustedColName = colName.startsWith('=') ? colName.slice(1) : colName;
@@ -57,26 +72,36 @@ const CollectionView = ({ colName }) => {
     return <div>Error: {error}</div>;
   }
 
+  const columns = content.length > 0 ? Object.keys(content[0]).filter(key => key !== 'id' && key !== 'modified' && key !== 'typename') : [];
+
   // Render the content as a table.
   return (
     <div>
-      <h1>Collection: {colName}</h1>
-      <table>
-        <thead>
-          <tr>
-            {/* Render table headers based on the object keys */}
-            {content[0] && Object.keys(content[0]).map((key) => <th key={key}>{key}</th>)}
-          </tr>
-        </thead>
-        <tbody>
-          {/* Render each item as a row in the table */}
-          {content.map((item, index) => (
-            <tr key={index}>
-              {Object.values(item).map((value, i) => <td key={i}>{value}</td>)} {/* Replace 'i' with a unique key if available */}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Header variant="h4" align="center">
+        {colName.replace(/^=/, '')} {/* Remove leading '=' */}
+      </Header>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              {columns.map((column) => (
+                <TableCell key={column}>{column}</TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {removeUnwantedFields(content).map((row, index) => (
+              <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                {columns.map((column) => (
+                  <TableCell key={column} component="th" scope="row">
+                    {row[column]}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 };
