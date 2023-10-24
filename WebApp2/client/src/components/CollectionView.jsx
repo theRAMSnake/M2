@@ -18,6 +18,10 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   },
 }));
 
+const Header = styled(Typography)({
+  marginBottom: '20px',
+});
+
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
     backgroundColor: theme.palette.action.hover,
@@ -111,7 +115,7 @@ const CollectionView = ({ colName }) => {
             </TableHead>
             <TableBody>
               {removeUnwantedFields(content).map((row, index) => (
-                <StyledTableRow key={index}>
+                <StyledTableRow key={index} hover sx={{ cursor: 'pointer' }}>
                     {columns.map((column) => (
                       <StyledTableCell align="right">{row[column]}</StyledTableCell>
                     ))}
