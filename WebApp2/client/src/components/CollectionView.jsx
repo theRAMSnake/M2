@@ -102,16 +102,16 @@ const CollectionView = ({ colName }) => {
 
   // Render the content as a table.
   return (
-    <div>
-      <Header variant="h4" align="center">
-        {colName.replace(/^=/, '')} {/* Remove leading '=' */}
+    <div style={{ margin: '0 3%' }}>
+      <Header variant="h4" align="center" color="primary">
+        {colName.replace(/^=/, '')}
       </Header>
       <TableContainer component={Paper}>
           <Table sx={{ minWidth: 700 }} aria-label="customized table">
             <TableHead>
               <TableRow>
                   {columns.map((column) => (
-                    <StyledTableCell align="right">{column}</StyledTableCell>
+                    <StyledTableCell>{column}</StyledTableCell>
                   ))}
               </TableRow>
             </TableHead>
@@ -119,7 +119,7 @@ const CollectionView = ({ colName }) => {
               {removeUnwantedFields(content).map((row, index) => (
                 <StyledTableRow key={index} hover sx={{ cursor: 'pointer' }}>
                     {columns.map((column) => (
-                      <StyledTableCell align="right">{row[column]}</StyledTableCell>
+                      <StyledTableCell>{row[column]}</StyledTableCell>
                     ))}
                 </StyledTableRow>
               ))}
