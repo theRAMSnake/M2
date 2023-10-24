@@ -1,12 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
-import { styled } from '@mui/system';
+import { styled } from '@mui/material/styles';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 import Materia from '../modules/materia_request'
 
-// Style the header
-const Header = styled(Typography)({
-  marginBottom: '20px',
-});
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '&:nth-of-type(odd)': {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  '&:last-child td, &:last-child th': {
+    border: 0,
+  },
+}));
 
 const removePrivateKeys = (data) => {
     return data.map((item) => {
@@ -81,27 +101,25 @@ const CollectionView = ({ colName }) => {
         {colName.replace(/^=/, '')} {/* Remove leading '=' */}
       </Header>
       <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell key={column}>{column}</TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {removeUnwantedFields(content).map((row, index) => (
-              <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                {columns.map((column) => (
-                  <TableCell key={column} component="th" scope="row">
-                    {row[column]}
-                  </TableCell>
-                ))}
+          <Table sx={{ minWidth: 700 }} aria-label="customized table">
+            <TableHead>
+              <TableRow>
+                  {columns.map((column) => (
+                    <StyledTableCell align="right">{column}</StyledTableCell>
+                  ))}
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {removeUnwantedFields(content).map((row, index) => (
+                <StyledTableRow key={index}>
+                    {columns.map((column) => (
+                      <StyledTableCell align="right">{row[column]}</StyledTableCell>
+                    ))}
+                </StyledTableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
     </div>
   );
 };
