@@ -13,4 +13,7 @@ def get_or_create(oid):
     return m4.query_ids([f"{oid}"])[0]
 
 def str_to_date(string):
-    return datetime.strptime(string, "%Y-%m-%d %H:%M:%S.%f")
+    try:
+        return datetime.strptime(string, "%Y-%m-%d %H:%M:%S.%f")
+    except ValueError as e:
+        return datetime.strptime(string, "%Y-%m-%d %H:%M:%S")
