@@ -136,7 +136,7 @@ const CollectionView = ({ colName }) => {
           },
         }}
       >
-        <div>
+        <Paper elevation={3} style={{ height: '100%', width: '100%' }}>
           <AceEditor
             mode="json"
             theme="monokai" // Choose your preferred theme
@@ -144,6 +144,9 @@ const CollectionView = ({ colName }) => {
             name="json-editor"
             editorProps={{ $blockScrolling: true }}
             value={editedJson}
+            height="100%"
+            showPrintMargin={false}
+            width="100%"
             setOptions={{
               useWorker: true, // Enable worker to auto-format JSON
               tabSize: 2, // Adjust the tab size for indentation
@@ -157,7 +160,7 @@ const CollectionView = ({ colName }) => {
           <Button variant="contained" color="secondary" onClick={handleCloseDialog}>
             Cancel
           </Button>
-        </div>
+        </Paper>
       </Dialog>
       <Header variant="h4" align="center" color="primary">
         {colName.replace(/^=/, '')}
