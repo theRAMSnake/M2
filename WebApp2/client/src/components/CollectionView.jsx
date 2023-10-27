@@ -69,7 +69,7 @@ const loadContent = (colName, cb, cbError) => {
 const CollectionView = ({ colName }) => {
   const [content, setContent] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [editedJson, setEditedJson] = useState(rowData.json);
+  const [editedJson, setEditedJson] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
