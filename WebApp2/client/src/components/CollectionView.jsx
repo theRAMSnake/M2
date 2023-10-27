@@ -69,7 +69,7 @@ const loadContent = (colName, cb, cbError) => {
 const CollectionView = ({ colName }) => {
   const [content, setContent] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [editedJson, setEditedJson] = useState({});
+  const [editedJson, setEditedJson] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -83,7 +83,7 @@ const CollectionView = ({ colName }) => {
 
   const handleOpenDialog = (index) => {
     setIsOpen(true);
-    setEditedJson(content[index]);
+    setEditedJson(JSON.stringify(content[index]));
   };
 
   const handleCloseDialog = () => {
