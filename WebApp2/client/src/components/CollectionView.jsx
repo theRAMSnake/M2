@@ -90,6 +90,8 @@ const CollectionView = ({ colName }) => {
     setIsOpen(false);
   };
 
+  const handleSave = () => {}
+
   useEffect(() => {
     // If colName starts with "=", we remove that character.
     const adjustedColName = colName.startsWith('=') ? colName.slice(1) : colName;
