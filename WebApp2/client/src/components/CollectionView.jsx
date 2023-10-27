@@ -9,6 +9,11 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Materia from '../modules/materia_request'
+import Dialog from '@material-ui/core/Dialog';
+import Button from '@material-ui/core/Button';
+import AceEditor from 'react-ace';
+import 'ace-builds/src-noconflict/mode-json';
+import 'ace-builds/src-noconflict/theme-monokai';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -63,6 +68,8 @@ const loadContent = (colName, cb, cbError) => {
 
 const CollectionView = ({ colName }) => {
   const [content, setContent] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [editedJson, setEditedJson] = useState(rowData.json);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -72,6 +79,15 @@ const CollectionView = ({ colName }) => {
       const { id, modified, typename, ...rest } = item;
       return rest;
     });
+  };
+
+  const handleOpenDialog = (index) => {
+    setIsOpen(true);
+    setEditedJson(content[index]);
+  };
+
+  const handleCloseDialog = () => {
+    setIsOpen(false);
   };
 
   useEffect(() => {
@@ -103,6 +119,25 @@ const CollectionView = ({ colName }) => {
   // Render the content as a table.
   return (
     <div style={{ margin: '0 3%' }}>
+      <Dialog open={isOpen} onClose={handleCloseDialog}>
+        <div>
+          <h2>Edit JSON</h2>
+          <AceEditor
+            mode="json"
+            theme="monokai" // Choose your preferred theme
+            //onChange={(newValue) => setEditedJson(newValue)}
+            name="json-editor"
+            editorProps={{ $blockScrolling: true }}
+            value={editedJson}
+          />
+          <Button variant="contained" color="primary" onClick={handleSave}>
+            Save
+          </Button>
+          <Button variant="contained" color="secondary" onClick={handleCloseDialog}>
+            Cancel
+          </Button>
+        </div>
+      </Dialog>
       <Header variant="h4" align="center" color="primary">
         {colName.replace(/^=/, '')}
       </Header>
@@ -117,7 +152,7 @@ const CollectionView = ({ colName }) => {
             </TableHead>
             <TableBody>
               {removeUnwantedFields(content).map((row, index) => (
-                <StyledTableRow key={index} hover sx={{ cursor: 'pointer' }}>
+                <StyledTableRow key={index} hover sx={{ cursor: 'pointer' }} onClick={() => handleOpenDialog(index)}>
                     {columns.map((column) => (
                       <StyledTableCell>{row[column]}</StyledTableCell>
                     ))}
