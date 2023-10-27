@@ -83,7 +83,7 @@ const CollectionView = ({ colName }) => {
 
   const handleOpenDialog = (index) => {
     setIsOpen(true);
-    setEditedJson(JSON.stringify(content[index]));
+    setEditedJson(JSON.stringify(content[index], null, 2));
   };
 
   const handleCloseDialog = () => {
@@ -121,7 +121,7 @@ const CollectionView = ({ colName }) => {
   // Render the content as a table.
   return (
     <div style={{ margin: '0 3%' }}>
-      <Dialog open={isOpen} onClose={handleCloseDialog}>
+      <Dialog open={isOpen} onClose={handleCloseDialog} height = '70vh' width='50vh'>
         <div>
           <h2>Edit JSON</h2>
           <AceEditor
