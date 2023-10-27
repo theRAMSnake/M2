@@ -121,9 +121,22 @@ const CollectionView = ({ colName }) => {
   // Render the content as a table.
   return (
     <div style={{ margin: '0 3%' }}>
-      <Dialog open={isOpen} onClose={handleCloseDialog} height = '70vh' width='50vh'>
+      <Dialog open={isOpen}
+        onClose={handleCloseDialog}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          style: {
+            width: '50%',
+            height: '70%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+          },
+        }}
+      >
         <div>
-          <h2>Edit JSON</h2>
           <AceEditor
             mode="json"
             theme="monokai" // Choose your preferred theme
