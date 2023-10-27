@@ -131,6 +131,12 @@ const CollectionView = ({ colName }) => {
             name="json-editor"
             editorProps={{ $blockScrolling: true }}
             value={editedJson}
+            setOptions={{
+              useWorker: true, // Enable worker to auto-format JSON
+              tabSize: 2, // Adjust the tab size for indentation
+              useSoftTabs: true, // Use soft tabs (spaces) for indentation
+              wrap: true, // Enable line wrapping
+            }}
           />
           <Button variant="contained" color="primary" onClick={handleSave}>
             Save
