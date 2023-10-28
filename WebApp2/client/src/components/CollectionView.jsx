@@ -12,6 +12,8 @@ import Materia from '../modules/materia_request'
 import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
 import AceEditor from 'react-ace';
+import SaveIcon from '@material-ui/icons/Save';
+import Fab from '@mui/material/Fab';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-monokai';
 
@@ -70,6 +72,7 @@ const CollectionView = ({ colName }) => {
   const [content, setContent] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [editedJson, setEditedJson] = useState("");
+  const [index, setIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -83,6 +86,7 @@ const CollectionView = ({ colName }) => {
 
   const handleOpenDialog = (index) => {
     setIsOpen(true);
+    setIndex(index);
     setEditedJson(JSON.stringify(content[index], null, 2));
   };
 
@@ -90,7 +94,11 @@ const CollectionView = ({ colName }) => {
     setIsOpen(false);
   };
 
-  const handleSave = () => {}
+  const handleSave = () => {
+    setIsOpen(false);
+    Materia.postEdit(content[index].id, editedJson);
+    setContent(JSON.parse(JSON.stringify(content)));
+  }
 
   useEffect(() => {
     // If colName starts with "=", we remove that character.
@@ -140,7 +148,7 @@ const CollectionView = ({ colName }) => {
           <AceEditor
             mode="json"
             theme="monokai" // Choose your preferred theme
-            //onChange={(newValue) => setEditedJson(newValue)}
+            onChange={(newValue) => setEditedJson(newValue)}
             name="json-editor"
             editorProps={{ $blockScrolling: true }}
             value={editedJson}
@@ -154,12 +162,9 @@ const CollectionView = ({ colName }) => {
               wrap: true, // Enable line wrapping
             }}
           />
-          <Button variant="contained" color="primary" onClick={handleSave}>
-            Save
-          </Button>
-          <Button variant="contained" color="secondary" onClick={handleCloseDialog}>
-            Cancel
-          </Button>
+          <Fab sx={{position: 'absolute', bottom: 16, right: 16}} color="primary" onClick={() => handleSave()}>
+            <SaveIcon/>
+          </Fab>
         </Paper>
       </Dialog>
       <Header variant="h4" align="center" color="primary">
