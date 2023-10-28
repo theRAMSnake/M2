@@ -71,6 +71,7 @@ const loadContent = (colName, cb, cbError) => {
 const CollectionView = ({ colName }) => {
   const [content, setContent] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [changed, setChanged] = useState(false);
   const [editedJson, setEditedJson] = useState("");
   const [index, setIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -96,7 +97,9 @@ const CollectionView = ({ colName }) => {
 
   const handleSave = () => {
     setIsOpen(false);
+    setChanged(false);
     Materia.postEdit(content[index].id, editedJson);
+    content[index] = JSON.parse(editedJson);
     setContent(JSON.parse(JSON.stringify(content)));
   }
 
@@ -148,7 +151,7 @@ const CollectionView = ({ colName }) => {
           <AceEditor
             mode="json"
             theme="monokai" // Choose your preferred theme
-            onChange={(newValue) => setEditedJson(newValue)}
+            onChange={(newValue) => {setEditedJson(newValue);setChanged(true);}}
             name="json-editor"
             editorProps={{ $blockScrolling: true }}
             value={editedJson}
@@ -162,9 +165,9 @@ const CollectionView = ({ colName }) => {
               wrap: true, // Enable line wrapping
             }}
           />
-          <Fab sx={{position: 'absolute', bottom: 16, right: 16}} color="primary" onClick={() => handleSave()}>
+          {changed && <Fab sx={{position: 'absolute', bottom: 16, right: 16}} color="primary" onClick={() => handleSave()}>
             <SaveIcon/>
-          </Fab>
+          </Fab>}
         </Paper>
       </Dialog>
       <Header variant="h4" align="center" color="primary">
