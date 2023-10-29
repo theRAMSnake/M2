@@ -99,11 +99,11 @@ const CollectionView = ({ colName }) => {
   };
 
   const stripElement = (obj) => {
-      newobj = JSON.parse(JSON.stringify(obj))
-      for (const key in newobj) {
-        if (newobj.hasOwnProperty(key)) {
-          if (typeof newobj[key] === 'object') {
-            newobj[key] = stripElement(newobj[key]); // Recurse into nested objects
+      let newobj = {}
+      for (const key in Object.keys(obj).filter(key => key !== 'id' && key !== 'modified' && key !== 'typename')) {
+        if (obj.hasOwnProperty(key)) {
+          if (typeof obj[key] === 'object') {
+            newobj[key] = stripElement(obj[key]); // Recurse into nested objects
           } else {
             newobj[key] = ""; // Set the value to an empty string
           }
@@ -227,7 +227,7 @@ const CollectionView = ({ colName }) => {
         {colName.replace(/^=/, '')}
       </Header>
       <Paper elevation={3} style={{ height: '100%', width: '100%' }}>
-          <Fab sx={{position: 'absolute', top: 16, right: 16}} color="primary" onClick={() => handleAdd()}>
+          <Fab sx={{top: 16, right: 16}} color="primary" onClick={() => handleAdd()}>
             <AddCircleOutlineIcon/>
           </Fab>
           <TableContainer component={Paper}>
