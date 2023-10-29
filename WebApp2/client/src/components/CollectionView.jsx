@@ -128,8 +128,8 @@ const CollectionView = ({ colName }) => {
   const jsonToM4O = (name, json) => {
       let res = name + " = m4.MateriaObject()\n";
       let ob = JSON.parse(json);
-      for (const key in obj) {
-          res = res + name + "." + key + "='" + obj[key] + "'\n"
+      for (const key in ob) {
+          res = res + name + "." + key + "='" + ob[key] + "'\n"
       }
       return res;
   }
