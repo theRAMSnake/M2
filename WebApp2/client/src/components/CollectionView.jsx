@@ -13,6 +13,7 @@ import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
 import AceEditor from 'react-ace';
 import SaveIcon from '@material-ui/icons/Save';
+import AddCircleOutlineIcon  from '@material-ui/icons/AddCircleOutline';
 import Fab from '@mui/material/Fab';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-monokai';
@@ -72,6 +73,7 @@ const CollectionView = ({ colName }) => {
   const [content, setContent] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [changed, setChanged] = useState(false);
+  const [isAdd, setIsAdd] = useState(false);
   const [editedJson, setEditedJson] = useState("");
   const [index, setIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -85,8 +87,9 @@ const CollectionView = ({ colName }) => {
     });
   };
 
-  const handleOpenDialog = (index) => {
+  const handleModify = (index) => {
     setIsOpen(true);
+    setIsAdd(true);
     setIndex(index);
     setEditedJson(JSON.stringify(content[index], null, 2));
   };
@@ -95,12 +98,60 @@ const CollectionView = ({ colName }) => {
     setIsOpen(false);
   };
 
+  const stripElement = (obj) => {
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          if (typeof obj[key] === 'object') {
+            stripElement(obj[key]); // Recurse into nested objects
+          } else {
+            obj[key] = ""; // Set the value to an empty string
+          }
+        }
+      }
+  }
+
+  const makeEmptyObject = (element) => {
+      {}
+  }
+
+  const handleAdd = () => {
+    setIsAdd(true);
+    setIsOpen(true);
+    setIndex(-1);
+    if(content.length > 0) {
+       setEditedJson(JSON.stringity(stripElement(content[0])));
+    } else {
+       setEditedJson(JSON.stringity(makeEmptyObject()));
+    }
+  }
+
   const handleSave = () => {
     setIsOpen(false);
     setChanged(false);
-    Materia.postEdit(content[index].id, editedJson);
-    content[index] = JSON.parse(editedJson);
-    setContent(JSON.parse(JSON.stringify(content)));
+    if(isAdd) {
+        var req = {
+            operation: "create",
+            typename: "object",
+            params: JSON.parse(editedJson)
+        }
+        Materia.exec(req, (rsp) => {
+            var result = rsp;
+            if(result.result_id) {
+                const adjustedColName = colName.startsWith('=') ? colName.slice(1) : colName;
+                loadContent(adjustedColName, (data) => {
+                  setContent(data);  // set the content
+                  setIsLoading(false); // indicate that loading has completed
+                }, (error) => {
+                  setError(error); // set the error message
+                  setIsLoading(false); // indicate that loading has completed, even though it's with an error
+                });
+            }
+        });
+    } else {
+        Materia.postEdit(content[index].id, editedJson);
+        content[index] = JSON.parse(editedJson);
+        setContent(JSON.parse(JSON.stringify(content)));
+    }
   }
 
   useEffect(() => {
@@ -174,6 +225,9 @@ const CollectionView = ({ colName }) => {
         {colName.replace(/^=/, '')}
       </Header>
       <TableContainer component={Paper}>
+          <Fab sx={{position: 'absolute', top: 16, right: 16}} color="primary" onClick={() => handleAdd()}>
+            <AddCircleOutlineIcon/>
+          </Fab>
           <Table sx={{ minWidth: 700 }} aria-label="customized table">
             <TableHead>
               <TableRow>
@@ -184,7 +238,7 @@ const CollectionView = ({ colName }) => {
             </TableHead>
             <TableBody>
               {removeUnwantedFields(content).map((row, index) => (
-                <StyledTableRow key={index} hover sx={{ cursor: 'pointer' }} onClick={() => handleOpenDialog(index)}>
+                <StyledTableRow key={index} hover sx={{ cursor: 'pointer' }} onClick={() => handleModify(index)}>
                     {columns.map((column) => (
                       <StyledTableCell>{row[column]}</StyledTableCell>
                     ))}
