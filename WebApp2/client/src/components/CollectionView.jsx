@@ -103,7 +103,7 @@ const CollectionView = ({ colName }) => {
   const stripElement = (obj) => {
       let newobj = {}
       for (const key in Object.keys(obj).filter(key => key !== 'id' && key !== 'modified' && key !== 'typename')) {
-         console.log(key)
+         console.log(key);
          newobj[key] = ""; // Set the value to an empty string
       }
       return newobj
@@ -138,8 +138,7 @@ const CollectionView = ({ colName }) => {
                   setError(error); // set the error message
                   setIsLoading(false); // indicate that loading has completed, even though it's with an error
                 });
-            }
-        });
+       });
     } else {
         Materia.postEdit(content[index].id, editedJson);
         content[index] = JSON.parse(editedJson);
