@@ -121,9 +121,9 @@ const CollectionView = ({ colName }) => {
     setIsOpen(true);
     setIndex(-1);
     if(content.length > 0) {
-       setEditedJson(JSON.stringity(stripElement(content[0])));
+       setEditedJson(JSON.stringify(stripElement(content[0])));
     } else {
-       setEditedJson(JSON.stringity(makeEmptyObject()));
+       setEditedJson(JSON.stringify(makeEmptyObject()));
     }
   }
 
@@ -227,7 +227,7 @@ const CollectionView = ({ colName }) => {
         {colName.replace(/^=/, '')}
       </Header>
       <Paper elevation={3} style={{ height: '100%', width: '100%' }}>
-          <Fab sx={{top: 16, right: 16}} color="primary" onClick={() => handleAdd()}>
+          <Fab sx={{position: 'absolute', top: 16, right: 16}} color="primary" onClick={() => handleAdd()}>
             <AddCircleOutlineIcon/>
           </Fab>
           <TableContainer component={Paper}>
