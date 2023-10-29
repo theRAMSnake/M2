@@ -127,14 +127,8 @@ const CollectionView = ({ colName }) => {
     setIsOpen(false);
     setChanged(false);
     if(isAdd) {
-        var req = {
-            operation: "create",
-            typename: "object",
-            params: JSON.parse(editedJson)
-        }
-        Materia.exec(req, (rsp) => {
-            var result = rsp;
-            if(result.result_id) {
+       let script = "import views\nresult = views.collection_to_json('" + colName + "')"
+       Materia.req(JSON.stringify({ operation: "run", script: script }), (r) => {
                 const adjustedColName = colName.startsWith('=') ? colName.slice(1) : colName;
                 loadContent(adjustedColName, (data) => {
                   setContent(data);  // set the content
@@ -223,7 +217,7 @@ const CollectionView = ({ colName }) => {
       </Header>
       <Grid container direction="column" justify="space-around" alignItems="center">
           <IconButton edge="end" aria-label="complete" onClick={() => handleAdd()}>
-            <AddCircleOutlineIcon/>
+            <AddCircleOutlineIcon color="white"/>
           </IconButton>
           <TableContainer component={Paper}>
               <Table sx={{ minWidth: 700 }} aria-label="customized table">
