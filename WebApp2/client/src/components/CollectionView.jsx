@@ -89,7 +89,7 @@ const CollectionView = ({ colName }) => {
 
   const handleModify = (index) => {
     setIsOpen(true);
-    setIsAdd(true);
+    setIsAdd(false);
     setIndex(index);
     setEditedJson(JSON.stringify(content[index], null, 2));
   };
@@ -99,15 +99,17 @@ const CollectionView = ({ colName }) => {
   };
 
   const stripElement = (obj) => {
-      for (const key in obj) {
-        if (obj.hasOwnProperty(key)) {
-          if (typeof obj[key] === 'object') {
-            stripElement(obj[key]); // Recurse into nested objects
+      newobj = JSON.parse(JSON.stringify(obj))
+      for (const key in newobj) {
+        if (newobj.hasOwnProperty(key)) {
+          if (typeof newobj[key] === 'object') {
+            newobj[key] = stripElement(newobj[key]); // Recurse into nested objects
           } else {
-            obj[key] = ""; // Set the value to an empty string
+            newobj[key] = ""; // Set the value to an empty string
           }
         }
       }
+      return newobj
   }
 
   const makeEmptyObject = (element) => {
@@ -224,29 +226,31 @@ const CollectionView = ({ colName }) => {
       <Header variant="h4" align="center" color="primary">
         {colName.replace(/^=/, '')}
       </Header>
-      <TableContainer component={Paper}>
+      <Paper elevation={3} style={{ height: '100%', width: '100%' }}>
           <Fab sx={{position: 'absolute', top: 16, right: 16}} color="primary" onClick={() => handleAdd()}>
             <AddCircleOutlineIcon/>
           </Fab>
-          <Table sx={{ minWidth: 700 }} aria-label="customized table">
-            <TableHead>
-              <TableRow>
-                  {columns.map((column) => (
-                    <StyledTableCell>{column}</StyledTableCell>
+          <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                <TableHead>
+                  <TableRow>
+                      {columns.map((column) => (
+                        <StyledTableCell>{column}</StyledTableCell>
+                      ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {removeUnwantedFields(content).map((row, index) => (
+                    <StyledTableRow key={index} hover sx={{ cursor: 'pointer' }} onClick={() => handleModify(index)}>
+                        {columns.map((column) => (
+                          <StyledTableCell>{row[column]}</StyledTableCell>
+                        ))}
+                    </StyledTableRow>
                   ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {removeUnwantedFields(content).map((row, index) => (
-                <StyledTableRow key={index} hover sx={{ cursor: 'pointer' }} onClick={() => handleModify(index)}>
-                    {columns.map((column) => (
-                      <StyledTableCell>{row[column]}</StyledTableCell>
-                    ))}
-                </StyledTableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                </TableBody>
+              </Table>
+            </TableContainer>
+      </Paper>
     </div>
   );
 };
