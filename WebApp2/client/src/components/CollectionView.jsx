@@ -135,10 +135,11 @@ const CollectionView = ({ colName }) => {
   }
 
   const handleSave = () => {
+    const adjustedColName = colName.startsWith('=') ? colName.slice(1) : colName;
     setIsOpen(false);
     setChanged(false);
     if(isAdd) {
-       let script = "import collection\nimport m4\n" + jsonToM4O("a", editedJson) + "\ncol = collection.Collection('" + colName + "')\ncol.add(a)\nresult = 1";
+       let script = "import collection\nimport m4\n" + jsonToM4O("a", editedJson) + "\ncol = collection.Collection('" + adjustedColName + "')\ncol.add(a)\nresult = 1";
        Materia.req(JSON.stringify({ operation: "run", script: script }), (r) => {
           let result = JSON.parse(r);
           if(result.result) {
