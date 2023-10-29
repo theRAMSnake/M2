@@ -8,6 +8,8 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
 import Materia from '../modules/materia_request'
 import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
@@ -101,13 +103,7 @@ const CollectionView = ({ colName }) => {
   const stripElement = (obj) => {
       let newobj = {}
       for (const key in Object.keys(obj).filter(key => key !== 'id' && key !== 'modified' && key !== 'typename')) {
-        if (obj.hasOwnProperty(key)) {
-          if (typeof obj[key] === 'object') {
-            newobj[key] = stripElement(obj[key]); // Recurse into nested objects
-          } else {
-            newobj[key] = ""; // Set the value to an empty string
-          }
-        }
+         newobj[key] = ""; // Set the value to an empty string
       }
       return newobj
   }
@@ -121,7 +117,7 @@ const CollectionView = ({ colName }) => {
     setIsOpen(true);
     setIndex(-1);
     if(content.length > 0) {
-       setEditedJson(JSON.stringify(stripElement(content[0])));
+       setEditedJson(JSON.stringify(stripElement(content[0]), null, 2));
     } else {
        setEditedJson(JSON.stringify(makeEmptyObject()));
     }
@@ -212,7 +208,6 @@ const CollectionView = ({ colName }) => {
             showPrintMargin={false}
             width="100%"
             setOptions={{
-              useWorker: true, // Enable worker to auto-format JSON
               tabSize: 2, // Adjust the tab size for indentation
               useSoftTabs: true, // Use soft tabs (spaces) for indentation
               wrap: true, // Enable line wrapping
@@ -226,10 +221,10 @@ const CollectionView = ({ colName }) => {
       <Header variant="h4" align="center" color="primary">
         {colName.replace(/^=/, '')}
       </Header>
-      <Paper elevation={3} style={{ height: '100%', width: '100%' }}>
-          <Fab sx={{position: 'absolute', top: 16, right: 16}} color="primary" onClick={() => handleAdd()}>
+      <Grid container direction="column" justify="space-around" alignItems="center">
+          <IconButton edge="end" aria-label="complete" onClick={() => handleAdd()}>
             <AddCircleOutlineIcon/>
-          </Fab>
+          </IconButton>
           <TableContainer component={Paper}>
               <Table sx={{ minWidth: 700 }} aria-label="customized table">
                 <TableHead>
@@ -250,7 +245,7 @@ const CollectionView = ({ colName }) => {
                 </TableBody>
               </Table>
             </TableContainer>
-      </Paper>
+      </Grid>
     </div>
   );
 };
