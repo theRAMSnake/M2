@@ -125,20 +125,34 @@ const CollectionView = ({ colName }) => {
     }
   }
 
+  const jsonToM4O = (name, json) => {
+      let res = name + " = m4.MateriaObject()\n";
+      let ob = JSON.parse(json);
+      for (const key in obj) {
+          res = res + name + "." + key + "='" + obj[key] + "'\n"
+      }
+      return res;
+  }
+
   const handleSave = () => {
     setIsOpen(false);
     setChanged(false);
     if(isAdd) {
-       let script = "import views\nresult = views.collection_to_json('" + colName + "')"
+       let script = "import collection\nimport m4\n" + jsonToM4O("a", editedJson) + "\ncol = collection.Collection('" + colName + '")\ncol.add(a)\nresult = 1";
        Materia.req(JSON.stringify({ operation: "run", script: script }), (r) => {
-                const adjustedColName = colName.startsWith('=') ? colName.slice(1) : colName;
-                loadContent(adjustedColName, (data) => {
-                  setContent(data);  // set the content
-                  setIsLoading(false); // indicate that loading has completed
-                }, (error) => {
-                  setError(error); // set the error message
-                  setIsLoading(false); // indicate that loading has completed, even though it's with an error
-                });
+          let result = JSON.parse(r);
+          if(result.result) {
+             const adjustedColName = colName.startsWith('=') ? colName.slice(1) : colName;
+             loadContent(adjustedColName, (data) => {
+               setContent(data);  // set the content
+               setIsLoading(false); // indicate that loading has completed
+             }, (error) => {
+               setError(error); // set the error message
+               setIsLoading(false); // indicate that loading has completed, even though it's with an error
+             });
+          } else {
+             setError(result.error); // set the error message
+          }
        });
     } else {
         Materia.postEdit(content[index].id, editedJson);
@@ -217,7 +231,7 @@ const CollectionView = ({ colName }) => {
         {colName.replace(/^=/, '')}
       </Header>
       <Grid container direction="column" justify="space-around" alignItems="center">
-          <IconButton edge="end" aria-label="complete" onClick={() => handleAdd()} color="white">
+          <IconButton edge="end" aria-label="complete" onClick={() => handleAdd()} color="primary">
             <AddCircleOutlineIcon/>
           </IconButton>
           <TableContainer component={Paper}>
