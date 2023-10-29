@@ -102,9 +102,10 @@ const CollectionView = ({ colName }) => {
 
   const stripElement = (obj) => {
       let newobj = {}
-      for (const key in Object.keys(obj).filter(key => key !== 'id' && key !== 'modified' && key !== 'typename')) {
-         console.log(key);
-         newobj[key] = ""; // Set the value to an empty string
+      for (const key in obj) {
+          if (key !== 'id' && key !== 'modified' && key !== 'typename') {
+             newobj[key] = ""; // Set the value to an empty string
+          }
       }
       return newobj
   }
@@ -216,8 +217,8 @@ const CollectionView = ({ colName }) => {
         {colName.replace(/^=/, '')}
       </Header>
       <Grid container direction="column" justify="space-around" alignItems="center">
-          <IconButton edge="end" aria-label="complete" onClick={() => handleAdd()}>
-            <AddCircleOutlineIcon color="white"/>
+          <IconButton edge="end" aria-label="complete" onClick={() => handleAdd()} color="white">
+            <AddCircleOutlineIcon/>
           </IconButton>
           <TableContainer component={Paper}>
               <Table sx={{ minWidth: 700 }} aria-label="customized table">
