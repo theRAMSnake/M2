@@ -270,8 +270,8 @@ const CollectionView = ({ colName }) => {
                             color="primary"
                             checked={sel}
                           />
-                        ))}
                         </StyledTableCell>
+                        ))}
                         {columns.map((column) => (
                           <StyledTableCell onClick={() => handleModify(index)}>{row[column]}</StyledTableCell>
                         ))}
