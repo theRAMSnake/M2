@@ -253,6 +253,11 @@ const CollectionView = ({ colName }) => {
                 <TableBody>
                   {removeUnwantedFields(content).map((row, index) => (
                     <StyledTableRow key={index} hover sx={{ cursor: 'pointer' }} onClick={() => handleModify(index)}>
+                        <StyledTableCell padding="checkbox">
+                          <Checkbox
+                            color="primary"
+                          />
+                        </StyledTableCell>
                         {columns.map((column) => (
                           <StyledTableCell>{row[column]}</StyledTableCell>
                         ))}
