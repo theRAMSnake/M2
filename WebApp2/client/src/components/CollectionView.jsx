@@ -99,12 +99,12 @@ const CollectionView = ({ colName }) => {
     setEditedJson(JSON.stringify(content[index], null, 2));
   };
 
-  const handleSelecteAll = (index) => {
+  const handleSelecteAll = () => {
       let newSelected = selected.slice().fill(!selected.some(element => element === true));
       setSelected(newSelected);
   };
 
-  const handleSelected = () => {
+  const handleSelected = (index) => {
       let newSelected = selected.slice();
       newSelected[index] = !newSelected[index];
       setSelected(newSelected);
@@ -262,7 +262,7 @@ const CollectionView = ({ colName }) => {
               <Table sx={{ minWidth: 700 }} aria-label="customized table">
                 <TableHead>
                   <TableRow>
-                      <StyledTableCell padding="checkbox" onClick={() => handleSelecteAll(index)}>
+                      <StyledTableCell padding="checkbox" onClick={() => handleSelecteAll()}>
                           <Checkbox
                             color="primary"
                           />
