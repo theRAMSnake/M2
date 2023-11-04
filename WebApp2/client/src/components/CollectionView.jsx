@@ -250,7 +250,7 @@ const CollectionView = ({ colName }) => {
           <IconButton edge="start" aria-label="complete" onClick={() => handleAdd()} color="primary">
             <AddCircleOutlineIcon/>
           </IconButton>
-          <IconButton edge="start" aria-label="complete" onClick={() => handleDelete()} enabled={arr.some(element => element === true)} color="primary">
+          <IconButton edge="start" aria-label="complete" onClick={() => handleDelete()} enabled={selected.some(element => element === true)} color="primary">
             <DeleteForeverIcon/>
           </IconButton>
           <TableContainer component={Paper}>
