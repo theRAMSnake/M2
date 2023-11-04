@@ -89,7 +89,7 @@ class Collection:
         return collections[0].id
 
     def add(self, item):
-        m4.create("", "object", item, self.header_id)
+        return m4.create("", "object", item, self.header_id)
 
     def remove(self, object_id):
         """Remove an object from the collection."""
