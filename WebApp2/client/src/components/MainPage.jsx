@@ -18,6 +18,7 @@ import CalendarCtrl from './CalendarCtrl.jsx'
 import ContractsCtrl from './ContractsCtrl.jsx'
 import VariableBurndown from './VariableBurndown.jsx'
 import VariablePanel from './VariablePanel.jsx'
+import Divider from '@mui/material/Divider';
 
 import {
     AppBar,
@@ -278,7 +279,7 @@ function MainPage(props) {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" className={classes.title}>
-                        Materia v3.7.51
+                        Materia v3.7.52
                     </Typography>
                     <ContractsCtrl/>
                     <SearchBar onSubmit={searchBarSubmit}/>
@@ -337,6 +338,7 @@ function MainPage(props) {
                     </ListItem>
                     ))}
                 </List>
+                <Divider />
             </Drawer>
             <Drawer
                 className={classes.drawer}

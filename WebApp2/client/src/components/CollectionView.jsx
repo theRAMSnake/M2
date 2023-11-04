@@ -60,12 +60,13 @@ const removePrivateKeys = (data) => {
     });
   };
 
-const loadContent = (colName, cb, cbError) => {
+const loadCollection = (colName, cb, cbError) => {
    let script = "import views\nresult = views.collection_to_json('" + colName + "')"
    Materia.req(JSON.stringify({ operation: "run", script: script }), (r) => {
       let result = JSON.parse(r);
       if(result.result) {
-         cb(removePrivateKeys(JSON.parse(result.result)));
+         //cb(removePrivateKeys(JSON.parse(result.result)));
+         cb(JSON.parse(result.result));
       } else {
          cbError(result.error);
       }
@@ -184,7 +185,7 @@ const CollectionView = ({ colName }) => {
           let result = JSON.parse(r);
           if(result.result) {
              const adjustedColName = colName.startsWith('=') ? colName.slice(1) : colName;
-             loadContent(adjustedColName, (data) => {
+             loadCollection(adjustedColName, (data) => {
                let falsesArray = Array.from(data, () => false);
                setSelected(falsesArray);
                setContent(data);  // set the content
@@ -209,7 +210,7 @@ const CollectionView = ({ colName }) => {
     const adjustedColName = colName.startsWith('=') ? colName.slice(1) : colName;
 
     // Load content using the provided function and colName.
-    loadContent(adjustedColName, (data) => {
+    loadCollection(adjustedColName, (data) => {
       let falsesArray = Array.from(data, () => false);
       setSelected(falsesArray);
       setContent(data);  // set the content
