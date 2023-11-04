@@ -255,7 +255,7 @@ const CollectionView = ({ colName }) => {
           <IconButton edge="start" aria-label="complete" onClick={() => handleAdd()} color="primary">
             <AddCircleOutlineIcon/>
           </IconButton>
-          <IconButton edge="start" aria-label="complete" onClick={() => handleDelete()} disabled={selected.some(element => element === false)} color="primary">
+          <IconButton edge="start" aria-label="complete" onClick={() => handleDelete()} disabled={!selected.some(element => element === true)} color="primary">
             <DeleteForeverIcon/>
           </IconButton>
           <TableContainer component={Paper}>
@@ -265,6 +265,7 @@ const CollectionView = ({ colName }) => {
                       <StyledTableCell padding="checkbox" onClick={() => handleSelecteAll()}>
                           <Checkbox
                             color="primary"
+                            checked={selected.some(element => element === true)}
                           />
                       </StyledTableCell>
                       {columns.map((column) => (
