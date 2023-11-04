@@ -19,6 +19,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import AddCircleOutlineIcon  from '@material-ui/icons/AddCircleOutline';
 import Fab from '@mui/material/Fab';
 import Checkbox from '@mui/material/Checkbox';
+import ConfirmationDialog from './dialogs/ConfirmationDialog.jsx'
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-monokai';
 
@@ -83,6 +84,7 @@ const CollectionView = ({ colName }) => {
   const [index, setIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [inDeleteDialog, setInDeleteDialog] = useState(false);
 
   const removeUnwantedFields = (data) => {
     // this doesn't remove the fields from 'content', it just prevents them from being displayed
@@ -91,6 +93,27 @@ const CollectionView = ({ colName }) => {
       return rest;
     });
   };
+
+  function onDeleteDialogCancel()
+  {
+      setInDeleteDialog(false);
+  }
+
+  function onDeleteDialogOk()
+  {
+      setInDeleteDialog(false);
+      let newContent = [];
+      for (let i = 0; i < selected.length; i++) {
+          if(selected[i]) {
+              Materia.postDelete(content[i].id);
+          } else {
+              newContent.push(content[i]);
+          }
+      }
+      setContent(newContent);
+      let falsesArray = Array.from(newContent, () => false);
+      setSelected(falsesArray);
+  }
 
   const handleModify = (index) => {
     setIsOpen(true);
@@ -139,17 +162,7 @@ const CollectionView = ({ colName }) => {
     }
   }
   const handleDelete = () => {
-      let newContent = [];
-      for (let i = 0; i < selected.length; i++) {
-          if(selected[i]) {
-              Materia.postDelete(content[i].id);
-          } else {
-              newContent.push(content[i]);
-          }
-      }
-      setContent(newContent);
-      let falsesArray = Array.from(newContent, () => false);
-      setSelected(falsesArray);
+      setInDeleteDialog(true);
   }
 
   const jsonToM4O = (name, json) => {
@@ -222,6 +235,7 @@ const CollectionView = ({ colName }) => {
   // Render the content as a table.
   return (
     <div style={{ margin: '0 3%' }}>
+      <ConfirmationDialog open={inDeleteDialog} question="delete" caption="confirm delete" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
       <Dialog open={isOpen}
         onClose={handleCloseDialog}
         maxWidth="md"
