@@ -17,6 +17,7 @@ import AceEditor from 'react-ace';
 import SaveIcon from '@material-ui/icons/Save';
 import AddCircleOutlineIcon  from '@material-ui/icons/AddCircleOutline';
 import Fab from '@mui/material/Fab';
+import Checkbox from '@mui/material/Checkbox';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-monokai';
 
@@ -231,14 +232,19 @@ const CollectionView = ({ colName }) => {
       <Header variant="h4" align="center" color="primary">
         {colName.replace(/^=/, '')}
       </Header>
-      <Grid container direction="column" justify="space-around" alignItems="center">
-          <IconButton edge="end" aria-label="complete" onClick={() => handleAdd()} color="primary">
+      <Grid container direction="column" justify="space-around" alignItems="flex-start">
+          <IconButton edge="start" aria-label="complete" onClick={() => handleAdd()} color="primary">
             <AddCircleOutlineIcon/>
           </IconButton>
           <TableContainer component={Paper}>
               <Table sx={{ minWidth: 700 }} aria-label="customized table">
                 <TableHead>
                   <TableRow>
+                      <StyledTableCell padding="checkbox">
+                          <Checkbox
+                            color="primary"
+                          />
+                      </StyledTableCell>
                       {columns.map((column) => (
                         <StyledTableCell>{column}</StyledTableCell>
                       ))}
