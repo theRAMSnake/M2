@@ -100,6 +100,11 @@ const CollectionView = ({ colName }) => {
   };
 
   const handleSelected = (index) => {
+      let newSelected = selected.slice().fill(!selected.some(element => element === true));
+      setSelected(newSelected);
+  };
+
+  const handleSelecteAll = () => {
       let newSelected = selected.slice();
       newSelected[index] = !newSelected[index];
       setSelected(newSelected);
@@ -250,14 +255,14 @@ const CollectionView = ({ colName }) => {
           <IconButton edge="start" aria-label="complete" onClick={() => handleAdd()} color="primary">
             <AddCircleOutlineIcon/>
           </IconButton>
-          <IconButton edge="start" aria-label="complete" onClick={() => handleDelete()} enabled={selected.some(element => element === true)} color="primary">
+          <IconButton edge="start" aria-label="complete" onClick={() => handleDelete()} disabled={selected.some(element => element === false)} color="primary">
             <DeleteForeverIcon/>
           </IconButton>
           <TableContainer component={Paper}>
               <Table sx={{ minWidth: 700 }} aria-label="customized table">
                 <TableHead>
                   <TableRow>
-                      <StyledTableCell padding="checkbox">
+                      <StyledTableCell padding="checkbox" onClick={() => handleSelecteAll(index)}>
                           <Checkbox
                             color="primary"
                           />
