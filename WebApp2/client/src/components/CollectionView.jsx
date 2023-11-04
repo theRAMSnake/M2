@@ -99,12 +99,12 @@ const CollectionView = ({ colName }) => {
     setEditedJson(JSON.stringify(content[index], null, 2));
   };
 
-  const handleSelected = (index) => {
+  const handleSelecteAll = (index) => {
       let newSelected = selected.slice().fill(!selected.some(element => element === true));
       setSelected(newSelected);
   };
 
-  const handleSelecteAll = () => {
+  const handleSelected = () => {
       let newSelected = selected.slice();
       newSelected[index] = !newSelected[index];
       setSelected(newSelected);
