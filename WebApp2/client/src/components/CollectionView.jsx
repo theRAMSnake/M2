@@ -246,7 +246,7 @@ const CollectionView = ({ colName }) => {
       <Header variant="h4" align="center" color="primary">
         {colName.replace(/^=/, '')}
       </Header>
-      <Grid container direction="column" justify="space-around" alignItems="flex-start">
+      <Grid container direction="row" justify="space-around" alignItems="flex-start">
           <IconButton edge="start" aria-label="complete" onClick={() => handleAdd()} color="primary">
             <AddCircleOutlineIcon/>
           </IconButton>
