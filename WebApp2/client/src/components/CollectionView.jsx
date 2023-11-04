@@ -12,6 +12,7 @@ import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import Materia from '../modules/materia_request'
+import ScriptHelper from '../modules/script_helper'
 import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
 import AceEditor from 'react-ace';
@@ -46,34 +47,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     border: 0,
   },
 }));
-
-const removePrivateKeys = (data) => {
-    return data.map((item) => {
-      // Create a new object excluding keys that start with '_'.
-      const filteredItem = Object.keys(item)
-        .filter(key => !key.startsWith('_'))
-        .reduce((obj, key) => {
-          obj[key] = item[key];
-          return obj;
-        }, {});
-      return filteredItem;
-    });
-  };
-
-const loadCollection = (colName, cb, cbError) => {
-   let script = "import views\nresult = views.collection_to_json('" + colName + "')"
-   Materia.req(JSON.stringify({ operation: "run", script: script }), (r) => {
-      let result = JSON.parse(r);
-      if(result.result) {
-         //cb(removePrivateKeys(JSON.parse(result.result)));
-         cb(JSON.parse(result.result));
-      } else {
-         cbError(result.error);
-      }
-   }, (err) => {
-      cbError(err);
-   });
-};
 
 const CollectionView = ({ colName }) => {
   const [content, setContent] = useState([]);
@@ -185,7 +158,7 @@ const CollectionView = ({ colName }) => {
           let result = JSON.parse(r);
           if(result.result) {
              const adjustedColName = colName.startsWith('=') ? colName.slice(1) : colName;
-             loadCollection(adjustedColName, (data) => {
+             ScriptHelper.loadCollection(adjustedColName, (data) => {
                let falsesArray = Array.from(data, () => false);
                setSelected(falsesArray);
                setContent(data);  // set the content
@@ -210,7 +183,7 @@ const CollectionView = ({ colName }) => {
     const adjustedColName = colName.startsWith('=') ? colName.slice(1) : colName;
 
     // Load content using the provided function and colName.
-    loadCollection(adjustedColName, (data) => {
+    ScriptHelper.loadCollection(adjustedColName, (data) => {
       let falsesArray = Array.from(data, () => false);
       setSelected(falsesArray);
       setContent(data);  // set the content
