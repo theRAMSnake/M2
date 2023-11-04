@@ -74,6 +74,7 @@ const loadContent = (colName, cb, cbError) => {
 
 const CollectionView = ({ colName }) => {
   const [content, setContent] = useState([]);
+  const [selected, setSelected] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [changed, setChanged] = useState(false);
   const [isAdd, setIsAdd] = useState(false);
@@ -95,6 +96,12 @@ const CollectionView = ({ colName }) => {
     setIsAdd(false);
     setIndex(index);
     setEditedJson(JSON.stringify(content[index], null, 2));
+  };
+
+  const handleSelected = (index) => {
+      let newSelected = selected.slice();
+      newSelected[index] = !newSelected[index];
+      setSelected(newSelected);
   };
 
   const handleCloseDialog = () => {
@@ -146,6 +153,8 @@ const CollectionView = ({ colName }) => {
           if(result.result) {
              const adjustedColName = colName.startsWith('=') ? colName.slice(1) : colName;
              loadContent(adjustedColName, (data) => {
+               let falsesArray = Array.from(data, () => false);
+               setSelected(falsesArray);
                setContent(data);  // set the content
                setIsLoading(false); // indicate that loading has completed
              }, (error) => {
@@ -169,6 +178,8 @@ const CollectionView = ({ colName }) => {
 
     // Load content using the provided function and colName.
     loadContent(adjustedColName, (data) => {
+      let falsesArray = Array.from(data, () => false);
+      setSelected(falsesArray);
       setContent(data);  // set the content
       setIsLoading(false); // indicate that loading has completed
     }, (error) => {
@@ -240,11 +251,11 @@ const CollectionView = ({ colName }) => {
               <Table sx={{ minWidth: 700 }} aria-label="customized table">
                 <TableHead>
                   <TableRow>
-                      <StyledTableCell padding="checkbox">
+                      <TableCell padding="checkbox">
                           <Checkbox
                             color="primary"
                           />
-                      </StyledTableCell>
+                      </TableCell>
                       {columns.map((column) => (
                         <StyledTableCell>{column}</StyledTableCell>
                       ))}
@@ -252,14 +263,17 @@ const CollectionView = ({ colName }) => {
                 </TableHead>
                 <TableBody>
                   {removeUnwantedFields(content).map((row, index) => (
-                    <StyledTableRow key={index} hover sx={{ cursor: 'pointer' }} onClick={() => handleModify(index)}>
-                        <StyledTableCell padding="checkbox">
+                    <StyledTableRow key={index} hover sx={{ cursor: 'pointer' }} >
+                        {selected.map((sel) => (
+                        <StyledTableCell padding="checkbox" onClick={() => handleSelected(index)}>
                           <Checkbox
                             color="primary"
+                            checked={sel}
                           />
+                        )}
                         </StyledTableCell>
                         {columns.map((column) => (
-                          <StyledTableCell>{row[column]}</StyledTableCell>
+                          <StyledTableCell onClick={() => handleModify(index)}>{row[column]}</StyledTableCell>
                         ))}
                     </StyledTableRow>
                   ))}
