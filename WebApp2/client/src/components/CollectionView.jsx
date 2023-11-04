@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import Materia from '../modules/materia_request'
 import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
@@ -132,6 +133,8 @@ const CollectionView = ({ colName }) => {
        setEditedJson(JSON.stringify(makeEmptyObject()));
     }
   }
+  const handleDelete = () => {
+  }
 
   const jsonToM4O = (name, json) => {
       let res = name + " = m4.MateriaObject()\n";
@@ -247,15 +250,18 @@ const CollectionView = ({ colName }) => {
           <IconButton edge="start" aria-label="complete" onClick={() => handleAdd()} color="primary">
             <AddCircleOutlineIcon/>
           </IconButton>
+          <IconButton edge="start" aria-label="complete" onClick={() => handleDelete()} enabled={arr.some(element => element === true)} color="primary">
+            <DeleteForeverIcon/>
+          </IconButton>
           <TableContainer component={Paper}>
               <Table sx={{ minWidth: 700 }} aria-label="customized table">
                 <TableHead>
                   <TableRow>
-                      <TableCell padding="checkbox">
+                      <StyledTableCell padding="checkbox">
                           <Checkbox
                             color="primary"
                           />
-                      </TableCell>
+                      </StyledTableCell>
                       {columns.map((column) => (
                         <StyledTableCell>{column}</StyledTableCell>
                       ))}
@@ -264,14 +270,12 @@ const CollectionView = ({ colName }) => {
                 <TableBody>
                   {removeUnwantedFields(content).map((row, index) => (
                     <StyledTableRow key={index} hover sx={{ cursor: 'pointer' }} >
-                        {selected.map((sel) => (
                         <StyledTableCell padding="checkbox" onClick={() => handleSelected(index)}>
                           <Checkbox
                             color="primary"
-                            checked={sel}
+                            checked={selected[index]}
                           />
                         </StyledTableCell>
-                        ))}
                         {columns.map((column) => (
                           <StyledTableCell onClick={() => handleModify(index)}>{row[column]}</StyledTableCell>
                         ))}
