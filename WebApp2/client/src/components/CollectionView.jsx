@@ -139,6 +139,17 @@ const CollectionView = ({ colName }) => {
     }
   }
   const handleDelete = () => {
+      let newContent = [];
+      for (let i = 0; i < selected.length; i++) {
+          if(selected[i]) {
+              Materia.postDelete(content[i].id);
+          } else {
+              newContent.push(content[i]);
+          }
+      }
+      setContent(newContent);
+      let falsesArray = Array.from(newContent, () => false);
+      setSelected(falsesArray);
   }
 
   const jsonToM4O = (name, json) => {
