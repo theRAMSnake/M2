@@ -12,6 +12,7 @@ import StrategyView from './StrategyView.jsx'
 import IdeasView from './IdeasView.jsx'
 import RewardView from './RewardView.jsx'
 import QueryView from './QueryView.jsx'
+import ProjectView from './ProjectView.jsx'
 import CollectionView from './CollectionView.jsx'
 import AddItemDialog from './AddItemDialog.jsx'
 import CalendarCtrl from './CalendarCtrl.jsx'
@@ -119,6 +120,7 @@ function MainPage(props) {
     const [ldOpen, setldOpen] = React.useState(false);
     const [rdOpen, setrdOpen] = React.useState(false);
     const [contentType, setContentType] = React.useState("");
+    const [projectName, setProjectName] = React.useState("");
     const [query, setQuery] = React.useState("");
     const [projects, setProjects] = React.useState([]);
     const [strategyPath, setStrategyPath] = React.useState("/");
@@ -167,6 +169,9 @@ function MainPage(props) {
 
         else if(ct == "collection")
             return (<CollectionView colName={collectionName}/>);
+
+        else if(ct == "project")
+            return (<ProjectView colName={projectName}/>);
     }
 
     function logout_clicked(e) {
@@ -208,6 +213,13 @@ function MainPage(props) {
         {
             setContentType("ideas");
         }
+    }
+
+    function projectItemClicked(name)
+    {
+        setldOpen(false);
+        setProjectName(name);
+        setContentType("project");
     }
 
     function searchBarSubmit(text)
@@ -287,7 +299,7 @@ function MainPage(props) {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" className={classes.title}>
-                        Materia v3.7.55
+                        Materia v3.7.56
                     </Typography>
                     <ContractsCtrl/>
                     <SearchBar onSubmit={searchBarSubmit}/>
@@ -349,7 +361,7 @@ function MainPage(props) {
                 <Divider />
                 <List>
                     {projects.map((p, index) => (
-                    <ListItem button key={p.name}>
+                    <ListItem button key={p.name} onClick={() => {projectItemClicked(p.name)}>
                         <ListItemText primary={p.name} />
                     </ListItem>
                     ))}
