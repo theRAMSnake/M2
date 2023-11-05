@@ -81,7 +81,7 @@ def update(today):
 
         elif hasattr(amb, 'completed') and bool(amb.completed):
             if not hasattr(amb, 'bonus_end_date'):
-                amb.bonus_end_date = str(str_to_date(amb.expiry) + timedelta(days=random.randint(0, 30)))
+                amb.bonus_end_date = str(str_to_date(amb.expiry) + timedelta(days=random.randint(10, 60)))
                 while amb.color in failed_colors:
                     failed_colors.remove(amb.color)
                     save_failed_ambition_colors(failed_colors)

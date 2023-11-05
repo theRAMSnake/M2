@@ -18,6 +18,7 @@ import CalendarCtrl from './CalendarCtrl.jsx'
 import ContractsCtrl from './ContractsCtrl.jsx'
 import VariableBurndown from './VariableBurndown.jsx'
 import VariablePanel from './VariablePanel.jsx'
+import ScriptHelper from '../modules/script_helper'
 
 import {
     AppBar,
@@ -112,13 +113,14 @@ function calculateNumImportantCalendarItems(calendarItems)
 }
 
 function MainPage(props) {
-    
+
     const classes = useStyles();
     const [refreshCnt, setRefreshCnt] = React.useState(0);
     const [ldOpen, setldOpen] = React.useState(false);
     const [rdOpen, setrdOpen] = React.useState(false);
     const [contentType, setContentType] = React.useState("");
     const [query, setQuery] = React.useState("");
+    const [projects, setProjects] = React.useState([]);
     const [strategyPath, setStrategyPath] = React.useState("/");
     const [collectionName, setCollectionName] = React.useState("=");
     const [showAddDlg, setShowAddDlg] = React.useState(false);
@@ -171,6 +173,13 @@ function MainPage(props) {
         e.preventDefault();
         Auth.deauthenticateUser();
     }
+
+  React.useEffect(() => {
+    ScriptHelper.loadCollection("projects", (data) => {
+        setProjects(data);
+    }, (error) => {
+    });
+  }, []);
 
     function menuItemClicked(index)
     {
@@ -278,7 +287,7 @@ function MainPage(props) {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" className={classes.title}>
-                        Materia v3.7.53
+                        Materia v3.7.55
                     </Typography>
                     <ContractsCtrl/>
                     <SearchBar onSubmit={searchBarSubmit}/>
@@ -338,6 +347,13 @@ function MainPage(props) {
                     ))}
                 </List>
                 <Divider />
+                <List>
+                    {projects.map((p, index) => (
+                    <ListItem button key={p.name}>
+                        <ListItemText primary={p.name} />
+                    </ListItem>
+                    ))}
+                </List>
             </Drawer>
             <Drawer
                 className={classes.drawer}
