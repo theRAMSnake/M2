@@ -361,7 +361,7 @@ function MainPage(props) {
                 <Divider />
                 <List>
                     {projects.map((p, index) => (
-                    <ListItem button key={p.name} onClick={() => {projectItemClicked(p.name)}>
+                    <ListItem button key={p.name} onClick={() => {projectItemClicked(p.name)}}>
                         <ListItemText primary={p.name} />
                     </ListItem>
                     ))}
