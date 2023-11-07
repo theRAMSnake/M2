@@ -171,7 +171,7 @@ function MainPage(props) {
             return (<CollectionView colName={collectionName}/>);
 
         else if(ct == "project")
-            return (<ProjectView colName={projectName}/>);
+            return (<ProjectView projName={projectName}/>);
     }
 
     function logout_clicked(e) {
@@ -260,7 +260,7 @@ function MainPage(props) {
     function onAddClicked(e)
     {
         setShowAddDlg(true);
-    } 
+    }
 
     function onAddDialogClosed(e)
     {
@@ -299,7 +299,7 @@ function MainPage(props) {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" className={classes.title}>
-                        Materia v3.7.56
+                        Materia v3.7.57
                     </Typography>
                     <ContractsCtrl/>
                     <SearchBar onSubmit={searchBarSubmit}/>
