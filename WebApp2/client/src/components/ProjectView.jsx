@@ -4,7 +4,7 @@ import ProjectCollectionBar from './ProjectCollectionBar.jsx'
 
 const ProjectView = ({ projName }) => {
     return (
-        <ProjectCollectionBar collections={[]}/>
+        <ProjectCollectionBar projName={projName}/>
     );
 };
 

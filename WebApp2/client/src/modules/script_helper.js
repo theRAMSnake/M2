@@ -17,6 +17,16 @@ static loadCollection (colName, cb, cbError) {
    });
 };
 
+static exec (script, cb) {
+   Materia.req(JSON.stringify({ operation: "run", script: script }), (r) => {
+      let result = JSON.parse(r);
+      if(result.result) {
+         cb(JSON.parse(result.result));
+      } else {
+          console.log(result.error);
+      }
+   });
+};
 };
 
 export default ScriptHelper;

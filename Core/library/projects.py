@@ -9,3 +9,14 @@ def create_project(name):
     uscript = m4.MateriaObject()
     uscript.code = ""
     m4.create("", "object", uscript, i);
+
+def bind_collection(projectName, collectionName):
+    for p in collection.Collection("projects"):
+        if p.name == projectName:
+            binding = m4.MateriaObject()
+            binding.name = collectionName
+            binding.elementType = "binding"
+            m4.create("", "object", binding, p.id);
+            return
+
+    raise ValueError("Project not found")

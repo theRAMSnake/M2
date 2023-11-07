@@ -6,9 +6,9 @@ import IconButton from '@mui/material/IconButton';
 import AddCircleOutlineIcon  from '@material-ui/icons/AddCircleOutline';
 import TextQueryDialog from './dialogs/TextQueryDialog.jsx'
 
-const ProjectCollectionBar = ({ collections }) => {
+const ProjectCollectionBar = ({ projName }) => {
     const [inNameDialog, setInNameDialog] = useState(false);
-    const [myCollections, setMyCollections] = useState(collections);
+    const [myCollections, setMyCollections] = useState([]);
 
     const handleAdd = () => {
         setInNameDialog(true);
@@ -20,16 +20,18 @@ const ProjectCollectionBar = ({ collections }) => {
 
     const handleNameFinished = (name) => {
         setInNameDialog(false);
-        //Update here
+        ScriptHelper.exec("import projects\nprojects.bind_collection(" + projName + ", " + name + ")\nresult=1");
     }
 
     return (
+      <div>
       <Grid container direction="row" justify="space-around" alignItems="flex-start">
           {inNameDialog && <TextQueryDialog text={""} onFinished={handleNameFinished} onCanceled={handleNameCanceled}/>}
           <IconButton edge="start" aria-label="complete" onClick={() => handleAdd()}>
             <AddCircleOutlineIcon/>
           </IconButton>
       </Grid>
+      </div>
     );
 };
 
