@@ -1,10 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ScriptHelper from '../modules/script_helper'
 import AddCircleOutlineIcon  from '@material-ui/icons/AddCircleOutline';
 import TextQueryDialog from './dialogs/TextQueryDialog.jsx'
 import {
     Grid,
+    Toolbar,
+    Paper,
     IconButton
 } from "@material-ui/core";
 
@@ -29,11 +31,11 @@ const ProjectCollectionBar = ({ projName }) => {
       <div>
       <Grid container direction="row" justify="space-around" alignItems="flex-start">
           {inNameDialog && <TextQueryDialog text={""} onFinished={handleNameFinished} onCanceled={handleNameCanceled}/>}
-          <div>
+          <Toolbar>
               <IconButton edge="start" onClick={() => handleAdd()}>
                 <AddCircleOutlineIcon/>
               </IconButton>
-          </div>
+          </Toolbar>
       </Grid>
       </div>
     );

@@ -20,3 +20,14 @@ def bind_collection(projectName, collectionName):
             return
 
     raise ValueError("Project not found")
+
+def project_collections(projectName):
+    result = []
+    for p in collection.Collection("projects"):
+        if p.name == projectName:
+            children = m4.query_expr(f'ChildOf("{p.id}")')
+            for c in children:
+                if c.elementType == "binding":
+                    result.append(c.name)
+
+    raise ValueError("Project not found")
