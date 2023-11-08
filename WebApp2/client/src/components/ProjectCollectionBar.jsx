@@ -15,10 +15,6 @@ const ProjectCollectionBar = ({ projName }) => {
     const [myCollections, setMyCollections] = useState([]);
 
     useEffect(() => {
-      // If colName starts with "=", we remove that character.
-      const adjustedColName = colName.startsWith('=') ? colName.slice(1) : colName;
-
-      // Load content using the provided function and colName.
       ScriptHelper.exec("import projects\nprojects.project_collections(" + projName + ")", (data) => {
           setMyCollections(data);
       });
