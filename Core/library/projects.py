@@ -31,3 +31,15 @@ def project_collections(projectName):
                     result.append(c.name)
 
     raise ValueError("Project not found")
+
+def unbind_collection(projectName, colName):
+    result = []
+    for p in collection.Collection("projects"):
+        if p.name == projectName:
+            children = m4.query_expr(f'ChildOf("{p.id}")')
+            for c in children:
+                if c.elementType == "binding" and c.name == colName:
+                    m4.erase(c.id)
+                    return
+
+    raise ValueError("Project not found")

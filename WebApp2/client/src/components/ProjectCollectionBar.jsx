@@ -14,6 +14,16 @@ const ProjectCollectionBar = ({ projName }) => {
     const [inNameDialog, setInNameDialog] = useState(false);
     const [myCollections, setMyCollections] = useState([]);
 
+    useEffect(() => {
+      // If colName starts with "=", we remove that character.
+      const adjustedColName = colName.startsWith('=') ? colName.slice(1) : colName;
+
+      // Load content using the provided function and colName.
+      ScriptHelper.exec("import projects\nprojects.project_collections(" + projName + ")", (data) => {
+          setMyCollections(data);
+      });
+    }, [projName]); // re-run the effect if colName changes
+
     const handleAdd = () => {
         setInNameDialog(true);
     }
@@ -31,6 +41,11 @@ const ProjectCollectionBar = ({ projName }) => {
       <div>
       <Grid container direction="row" alignItems="flex-start">
           {inNameDialog && <TextQueryDialog text={""} onFinished={handleNameFinished} onCanceled={handleNameCanceled}/>}
+          {myCollections.map((col) => (
+            <Paper>
+              {col}
+            </Paper>
+          ))}
           <Toolbar style={{ width: '100%' }}>
               <IconButton edge="start" onClick={() => handleAdd()}>
                 <AddCircleOutlineIcon/>
