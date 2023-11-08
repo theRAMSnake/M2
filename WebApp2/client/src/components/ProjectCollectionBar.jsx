@@ -29,9 +29,9 @@ const ProjectCollectionBar = ({ projName }) => {
 
     return (
       <div>
-      <Grid container direction="row" justify="space-around" alignItems="flex-start">
+      <Grid container direction="row" alignItems="flex-start">
           {inNameDialog && <TextQueryDialog text={""} onFinished={handleNameFinished} onCanceled={handleNameCanceled}/>}
-          <Toolbar>
+          <Toolbar style={{ width: '100%' }}>
               <IconButton edge="start" onClick={() => handleAdd()}>
                 <AddCircleOutlineIcon/>
               </IconButton>
