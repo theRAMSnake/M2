@@ -12,7 +12,7 @@ def create_project(name):
     m4.create("", "object", uscript, i);
 
 def bind_collection(projectName, collectionName):
-    for p in collection.Collection("projects"):
+    for p in collection.Collection("projects").get_items():
         if p.name == projectName:
             binding = m4.MateriaObject()
             binding.name = collectionName
@@ -24,7 +24,7 @@ def bind_collection(projectName, collectionName):
 
 def project_collections(projectName):
     result = []
-    for p in collection.Collection("projects"):
+    for p in collection.Collection("projects").get_items():
         if p.name == projectName:
             children = m4.query_expr(f'ChildOf("{p.id}")')
             for c in children:
@@ -34,7 +34,7 @@ def project_collections(projectName):
 
     raise ValueError("Project not found")
 
-def unbind_collection(projectName, colName):
+def unbind_collection(projectName, colName).get_items():
     result = []
     for p in collection.Collection("projects"):
         if p.name == projectName:
