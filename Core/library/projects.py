@@ -29,6 +29,7 @@ def project_collections(projectName):
             for c in children:
                 if c.elementType == "binding":
                     result.append(c.name)
+            return result
 
     raise ValueError("Project not found")
 
