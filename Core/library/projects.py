@@ -34,9 +34,9 @@ def project_collections(projectName):
 
     raise ValueError("Project not found")
 
-def unbind_collection(projectName, colName).get_items():
+def unbind_collection(projectName, colName):
     result = []
-    for p in collection.Collection("projects"):
+    for p in collection.Collection("projects").get_items():
         if p.name == projectName:
             children = m4.query_expr(f'ChildOf("{p.id}")')
             for c in children:
