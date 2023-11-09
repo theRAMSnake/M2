@@ -15,7 +15,7 @@ const ProjectCollectionBar = ({ projName }) => {
     const [myCollections, setMyCollections] = useState([]);
 
     useEffect(() => {
-      ScriptHelper.exec("import projects\nprojects.project_collections(" + projName + ")", (data) => {
+      ScriptHelper.exec("import projects\nprojects.project_collections('" + projName + "')", (data) => {
           setMyCollections(data);
       });
     }, [projName]); // re-run the effect if colName changes
@@ -30,7 +30,7 @@ const ProjectCollectionBar = ({ projName }) => {
 
     const handleNameFinished = (name) => {
         setInNameDialog(false);
-        ScriptHelper.exec("import projects\nprojects.bind_collection(" + projName + ", " + name + ")\nresult=1");
+        ScriptHelper.exec("import projects\nprojects.bind_collection('" + projName + "', '" + name + "')\nresult=1");
     }
 
     return (
