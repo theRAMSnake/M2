@@ -1,4 +1,5 @@
 import collection
+import json
 import m4
 
 def create_project(name):
@@ -29,7 +30,7 @@ def project_collections(projectName):
             for c in children:
                 if c.elementType == "binding":
                     result.append(c.name)
-            return result
+            return json.dumps(result)
 
     raise ValueError("Project not found")
 
