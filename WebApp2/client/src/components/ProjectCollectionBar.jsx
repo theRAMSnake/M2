@@ -38,7 +38,7 @@ const ProjectCollectionBar = ({ projName }) => {
       <div>
       <Grid container direction="row" alignItems="flex-start">
           {inNameDialog && <TextQueryDialog text={""} onFinished={handleNameFinished} onCanceled={handleNameCanceled}/>}
-          <Toolbar style={{ width: '100%' }} gap: '10px'>
+          <Toolbar style={{ width: '100%', gap: '10px'}} >
               {myCollections.map((col) => (
                 <Paper style={{ padding: '5px', display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
                   <Typography variant="h6" elevation={3}>{col}</Typography>
