@@ -15,7 +15,7 @@ const ProjectCollectionBar = ({ projName }) => {
     const [myCollections, setMyCollections] = useState([]);
 
     useEffect(() => {
-      ScriptHelper.exec("import projects\nprojects.project_collections('" + projName + "')", (data) => {
+      ScriptHelper.exec("import projects\nresult = projects.project_collections('" + projName + "')", (data) => {
           setMyCollections(data);
       });
     }, [projName]); // re-run the effect if colName changes
