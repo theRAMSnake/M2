@@ -3,18 +3,27 @@ import React, { useState, useEffect } from 'react';
 import ScriptHelper from '../modules/script_helper'
 import AddCircleOutlineIcon  from '@material-ui/icons/AddCircleOutline';
 import TextQueryDialog from './dialogs/TextQueryDialog.jsx'
+import Slide from '@material-ui/core/Slide';
 import {
     Grid,
     Toolbar,
+    Dialog,
     Paper,
     IconButton,
     Typography
 } from "@material-ui/core";
 import ConfirmationDialog from './dialogs/ConfirmationDialog.jsx'
+import CollectionView from './CollectionView.jsx'
+
+const Transition = React.forwardRef(function Transition(props, ref)
+{
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const ProjectCollectionBar = ({ projName }) => {
     const [inNameDialog, setInNameDialog] = useState(false);
     const [inDeleteDialog, setInDeleteDialog] = useState(false);
+    const [colViewOpen, setColViewOpen] = useState(false);
     const [myCollections, setMyCollections] = useState([]);
     const [selected, setSelected] = useState("");
 
@@ -38,6 +47,8 @@ const ProjectCollectionBar = ({ projName }) => {
     }
 
     const handleLeftClick = (colName) => {
+        setSelected(colName);
+        setColViewOpen(true);
     };
 
     const handleRightClick = (event, colName) => {
@@ -63,11 +74,18 @@ const ProjectCollectionBar = ({ projName }) => {
         }
     }
 
+    function onColViewClose() {
+        setColViewOpen(false);
+    }
+
     return (
       <div>
       <Grid container direction="row" alignItems="flex-start">
           {inNameDialog && <TextQueryDialog text={""} onFinished={handleNameFinished} onCanceled={handleNameCanceled}/>}
           <ConfirmationDialog open={inDeleteDialog} question="delete" caption="confirm delete" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
+          <Dialog open={colViewOpen} onClose={onColViewClose} fullScreen TransitionComponent={Transition}>
+              <CollectionView colName={selected}/>
+          </Dialog>
           <Toolbar style={{ width: '100%', gap: '10px'}} >
               {myCollections.map((col) => (
                 <Paper style={{ padding: '5px', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
