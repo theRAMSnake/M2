@@ -10,10 +10,13 @@ import {
     IconButton,
     Typography
 } from "@material-ui/core";
+import ConfirmationDialog from './dialogs/ConfirmationDialog.jsx'
 
 const ProjectCollectionBar = ({ projName }) => {
     const [inNameDialog, setInNameDialog] = useState(false);
+    const [inDeleteDialog, setInDeleteDialog] = useState(false);
     const [myCollections, setMyCollections] = useState([]);
+    const [selected, setSelected] = useState("");
 
     useEffect(() => {
       ScriptHelper.exec("import projects\nresult = projects.project_collections('" + projName + "')", (data) => {
@@ -34,13 +37,42 @@ const ProjectCollectionBar = ({ projName }) => {
         ScriptHelper.exec("import projects\nprojects.bind_collection('" + projName + "', '" + name + "')\nresult=1", (data)=>{});
     }
 
+    const handleLeftClick = (colName) => {
+    };
+
+    const handleRightClick = (event, colName) => {
+        event.preventDefault(); // Prevents the default context menu
+        setInDeleteDialog(true);
+        setSelected(colName);
+    };
+
+    function onDeleteDialogCancel()
+    {
+        setInDeleteDialog(false);
+    }
+
+    function onDeleteDialogOk()
+    {
+        setInDeleteDialog(false);
+        const index = myCollections.findIndex(col => col === selected);
+        if (index > -1) {
+            const updatedCollections = [...myCollections]; // Create a copy of the array
+            updatedCollections.splice(index, 1); // Remove the item at the found index
+            setMyCollections(updatedCollections); // Update the state with the new array
+            ScriptHelper.exec("import projects\nprojects.unbind_collection('" + projName + "', '" + selected + "')\nresult=1", (data)=>{});
+        }
+    }
+
     return (
       <div>
       <Grid container direction="row" alignItems="flex-start">
           {inNameDialog && <TextQueryDialog text={""} onFinished={handleNameFinished} onCanceled={handleNameCanceled}/>}
+          <ConfirmationDialog open={inDeleteDialog} question="delete" caption="confirm delete" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
           <Toolbar style={{ width: '100%', gap: '10px'}} >
               {myCollections.map((col) => (
-                <Paper style={{ padding: '5px', display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                <Paper style={{ padding: '5px', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+                       onClick={() => handleLeftClick(col)}
+                       onContextMenu={(event) => handleRightClick(event, col)}>
                   <Typography variant="h6" elevation={3}>{col}</Typography>
                 </Paper>
               ))}
