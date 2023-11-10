@@ -30,7 +30,7 @@ const ProjectCollectionBar = ({ projName }) => {
 
     const handleNameFinished = (name) => {
         setInNameDialog(false);
-        ScriptHelper.exec("import projects\nprojects.bind_collection('" + projName + "', '" + name + "')\nresult=1");
+        ScriptHelper.exec("import projects\nprojects.bind_collection('" + projName + "', '" + name + "')\nresult=1", (data)=>{});
     }
 
     return (
