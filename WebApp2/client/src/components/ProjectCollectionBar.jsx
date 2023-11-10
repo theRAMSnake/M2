@@ -7,7 +7,8 @@ import {
     Grid,
     Toolbar,
     Paper,
-    IconButton
+    IconButton,
+    Typography
 } from "@material-ui/core";
 
 const ProjectCollectionBar = ({ projName }) => {
@@ -37,12 +38,12 @@ const ProjectCollectionBar = ({ projName }) => {
       <div>
       <Grid container direction="row" alignItems="flex-start">
           {inNameDialog && <TextQueryDialog text={""} onFinished={handleNameFinished} onCanceled={handleNameCanceled}/>}
-          {myCollections.map((col) => (
-            <Paper>
-              {col}
-            </Paper>
-          ))}
           <Toolbar style={{ width: '100%' }}>
+              {myCollections.map((col) => (
+                <Paper>
+                  <Typography variant="h6" elevation={3}>{col}</Typography>
+                </Paper>
+              ))}
               <IconButton edge="start" onClick={() => handleAdd()}>
                 <AddCircleOutlineIcon/>
               </IconButton>
