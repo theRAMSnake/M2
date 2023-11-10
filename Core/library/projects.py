@@ -8,6 +8,7 @@ def create_project(name):
     i = collection.Collection("projects").add(prj)
 
     uscript = m4.MateriaObject()
+    uscript.elementType = "update_script"
     uscript.code = ""
     m4.create("", "object", uscript, i);
 
@@ -45,3 +46,21 @@ def unbind_collection(projectName, colName):
                     return
 
     raise ValueError("Project not found")
+
+def update_project(name):
+    for p in collection.Collection("projects").get_items():
+        if p.name == projectName:
+            children = m4.query_expr(f'ChildOf("{p.id}")')
+            for c in children:
+                if c.elementType == "update_script":
+                    exec(c.code)
+
+def update_projects():
+    events = collection.Collection("events")
+    for p in collection.Collection("projects").get_items():
+        try:
+            update_project(p.name)
+        except Exception as e:
+            ev = m4.MateriaObject()
+            ev.result = f"Project {p.name} failed: {e.text}"
+            events.add(ev)
