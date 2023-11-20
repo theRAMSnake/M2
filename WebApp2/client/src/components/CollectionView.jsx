@@ -21,6 +21,7 @@ import AddCircleOutlineIcon  from '@material-ui/icons/AddCircleOutline';
 import Fab from '@mui/material/Fab';
 import Checkbox from '@mui/material/Checkbox';
 import ConfirmationDialog from './dialogs/ConfirmationDialog.jsx'
+import EditorDialog from './dialogs/EditorDialog.jsx'
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-monokai';
 
@@ -148,12 +149,12 @@ const CollectionView = ({ colName }) => {
       return res;
   }
 
-  const handleSave = () => {
+  const handleSave = (text) => {
     const adjustedColName = colName.startsWith('=') ? colName.slice(1) : colName;
     setIsOpen(false);
     setChanged(false);
     if(isAdd) {
-       let script = "import collection\nimport m4\n" + jsonToM4O("a", editedJson) + "\ncol = collection.Collection('" + adjustedColName + "')\ncol.add(a)\nresult = 1";
+       let script = "import collection\nimport m4\n" + jsonToM4O("a", text) + "\ncol = collection.Collection('" + adjustedColName + "')\ncol.add(a)\nresult = 1";
        Materia.req(JSON.stringify({ operation: "run", script: script }), (r) => {
           let result = JSON.parse(r);
           if(result.result) {
@@ -172,8 +173,8 @@ const CollectionView = ({ colName }) => {
           }
        });
     } else {
-        Materia.postEdit(content[index].id, editedJson);
-        content[index] = JSON.parse(editedJson);
+        Materia.postEdit(content[index].id, text);
+        content[index] = JSON.parse(text);
         setContent(JSON.parse(JSON.stringify(content)));
     }
   }
@@ -210,43 +211,7 @@ const CollectionView = ({ colName }) => {
   return (
     <div style={{ margin: '0 3%' }}>
       <ConfirmationDialog open={inDeleteDialog} question="delete" caption="confirm delete" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
-      <Dialog open={isOpen}
-        onClose={handleCloseDialog}
-        maxWidth="md"
-        fullWidth
-        PaperProps={{
-          style: {
-            width: '50%',
-            height: '70%',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-          },
-        }}
-      >
-        <Paper elevation={3} style={{ height: '100%', width: '100%' }}>
-          <AceEditor
-            mode="json"
-            theme="monokai" // Choose your preferred theme
-            onChange={(newValue) => {setEditedJson(newValue);setChanged(true);}}
-            name="json-editor"
-            editorProps={{ $blockScrolling: true }}
-            value={editedJson}
-            height="100%"
-            showPrintMargin={false}
-            width="100%"
-            setOptions={{
-              tabSize: 2, // Adjust the tab size for indentation
-              useSoftTabs: true, // Use soft tabs (spaces) for indentation
-              wrap: true, // Enable line wrapping
-            }}
-          />
-          {changed && <Fab sx={{position: 'absolute', bottom: 16, right: 16}} color="primary" onClick={() => handleSave()}>
-            <SaveIcon/>
-          </Fab>}
-        </Paper>
-      </Dialog>
+      {isOpen && <EditorDialog onClose={handleCloseDialog} text={editedJson} onSave={handleSave} />}
       <Header variant="h4" align="center" color="primary">
         {colName.replace(/^=/, '')}
       </Header>
