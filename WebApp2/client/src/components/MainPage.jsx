@@ -181,7 +181,7 @@ function MainPage(props) {
 
   React.useEffect(() => {
     ScriptHelper.loadCollection("projects", (data) => {
-        setProjects(data);
+        setProjects(data.items);
     }, (error) => {
     });
   }, []);
@@ -299,7 +299,7 @@ function MainPage(props) {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" className={classes.title}>
-                        Materia v3.7.75
+                        Materia v3.7.76
                     </Typography>
                     <ContractsCtrl/>
                     <SearchBar onSubmit={searchBarSubmit}/>
