@@ -247,7 +247,7 @@ next_day = today + datetime.timedelta(days=1)
 
 # Execute the 'update' function again, which should now recognize the expired ambition and apply penalties.
 ambitions.update(next_day)
-ambitions.update(next_day + datetime.timedelta(days=50))
+ambitions.update(next_day + datetime.timedelta(days=1000))
 
 result = len(collection.Collection('ambitions').get_items())
     )");

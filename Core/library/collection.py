@@ -75,9 +75,9 @@ def remove_collection(collection_name):
 class Collection:
     def __init__(self, collection_name):
         self.collection_name = collection_name
-        self.header_id = self._get_header_id(collection_name)
+        self.header = self._get_header(collection_name)
 
-    def _get_header_id(self, collection_name):
+    def _get_header(self, collection_name):
         # Query for the collection header by name
         collections = m4.query_expr(f'ChildOf(".collections") AND .name = "{collection_name}"')
 
@@ -85,11 +85,10 @@ class Collection:
             create_collection(collection_name)
             collections = m4.query_expr(f'ChildOf(".collections") AND .name = "{collection_name}"')
 
-        # Assuming the ID of the collection is the first element queried.
-        return collections[0].id
+        return collections[0]
 
     def add(self, item):
-        return m4.create("", "object", item, self.header_id)
+        return m4.create("", "object", item, self.header.id)
 
     def remove(self, object_id):
         """Remove an object from the collection."""
@@ -97,5 +96,16 @@ class Collection:
 
     def get_items(self):
         """Fetch and return all items from the collection."""
-        return m4.query_expr(f'ChildOf("{self.header_id}")')
+        return m4.query_expr(f'ChildOf("{self.header.id}")')
 
+class GenericObject:
+    def __init__(self, dictionary):
+        for key, value in dictionary.items():
+            setattr(self, key, value)
+
+def set_collection_ingestion(name, ingestion_json):
+    c = Collection(name)
+    header = c.header
+    header.ingestion = GenericObject(json.loads(ingestion_json))
+
+    m4.modify(header.id, header)

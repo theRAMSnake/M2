@@ -297,6 +297,10 @@ void Object::fillObject(boost::property_tree::ptree& p, const Object& o)
     }
 }
 
+const std::map<std::string, Object::ChildrenHolder>& Object::getChildrenMap() const {
+    return mChildren;
+}
+
 std::string Object::toJson() const
 {
     boost::property_tree::ptree p;

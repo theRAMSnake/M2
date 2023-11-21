@@ -145,16 +145,17 @@ void Core3::TEST_reinitReward()
 
 void Core3::onNewDay(const boost::gregorian::date& date)
 {
-   for(auto s : mSubsystems)
-   {
-      s->onNewDay(date);
-   }
-
    boost::property_tree::ptree cmd;
    cmd.put("operation", "run");
    cmd.put("script", "import daily\ndaily.daily_update()\nresult=0");
 
    executeCommandJson(writeJson(cmd));
+
+   for(auto s : mSubsystems)
+   {
+      s->onNewDay(date);
+   }
+
 }
 
 void Core3::onNewWeek()

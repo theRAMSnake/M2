@@ -80,9 +80,9 @@ const CollectionView = ({ colName }) => {
       let newContent = [];
       for (let i = 0; i < selected.length; i++) {
           if(selected[i]) {
-              Materia.postDelete(content[i].id);
+              Materia.postDelete(content.items[i].id);
           } else {
-              newContent.push(content[i]);
+              newContent.push(content.items[i]);
           }
       }
       setContent(newContent);
@@ -94,7 +94,7 @@ const CollectionView = ({ colName }) => {
     setIsOpen(true);
     setIsAdd(false);
     setIndex(index);
-    setEditedJson(JSON.stringify(content[index], null, 2));
+    setEditedJson(JSON.stringify(content.items[index], null, 2));
   };
 
   const handleSelecteAll = () => {
@@ -130,8 +130,8 @@ const CollectionView = ({ colName }) => {
     setIsAdd(true);
     setIsOpen(true);
     setIndex(-1);
-    if(content.length > 0) {
-       setEditedJson(JSON.stringify(stripElement(content[0]), null, 2));
+    if(content.items.length > 0) {
+       setEditedJson(JSON.stringify(stripElement(content.items[0]), null, 2));
     } else {
        setEditedJson(JSON.stringify(makeEmptyObject()));
     }
@@ -173,8 +173,8 @@ const CollectionView = ({ colName }) => {
           }
        });
     } else {
-        Materia.postEdit(content[index].id, text);
-        content[index] = JSON.parse(text);
+        Materia.postEdit(content.items[index].id, text);
+        content.items[index] = JSON.parse(text);
         setContent(JSON.parse(JSON.stringify(content)));
     }
   }
@@ -205,7 +205,7 @@ const CollectionView = ({ colName }) => {
     return <div>Error: {error}</div>;
   }
 
-  const columns = content.length > 0 ? Object.keys(content[0]).filter(key => key !== 'id' && key !== 'modified' && key !== 'typename') : [];
+  const columns = content.items.length > 0 ? Object.keys(content.items[0]).filter(key => key !== 'id' && key !== 'modified' && key !== 'typename') : [];
 
   // Render the content as a table.
   return (
@@ -238,7 +238,7 @@ const CollectionView = ({ colName }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {removeUnwantedFields(content).map((row, index) => (
+                  {removeUnwantedFields(content.items).map((row, index) => (
                     <StyledTableRow key={index} hover sx={{ cursor: 'pointer' }} >
                         <StyledTableCell padding="checkbox" onClick={() => handleSelected(index)}>
                           <Checkbox

@@ -1,4 +1,5 @@
 import json
+import m4
 from collection import Collection
 
 def collection_to_json(name):
@@ -17,5 +18,9 @@ def collection_to_json(name):
 
         items_as_dicts.append(item_dict)
 
-    json_str = json.dumps(items_as_dicts, default=str)
+    result = m4.MateriaObject()
+    result.items = items_as_dicts
+    result.header = collection.header
+
+    json_str = json.dumps(result, default=str)
     return json_str

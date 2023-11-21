@@ -175,6 +175,8 @@ private:
 class Object
 {
 public:
+    using ChildrenHolder = std::variant<Object, std::vector<Object>>;
+
     Object(const TypeDef& type, const Id id);
     Object(const Object& other) = default;
     Object(Object&& other) noexcept = default;
@@ -191,6 +193,7 @@ public:
 
     const Object& getChild(const std::string& tag) const;
     std::vector<Object> getChildren() const;
+    const std::map<std::string, ChildrenHolder>& getChildrenMap() const;
     
     const bool contains(const std::string& fieldName) const;
     void clear(const std::string& fieldName);
@@ -209,7 +212,6 @@ private:
     TypeDef mTypeDef;
     Id mId;
     std::vector<Field> mFields;
-    using ChildrenHolder = std::variant<Object, std::vector<Object>>;
     std::map<std::string, ChildrenHolder> mChildren;
 };
 

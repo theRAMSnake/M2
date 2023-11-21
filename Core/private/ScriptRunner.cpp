@@ -38,12 +38,39 @@ public:
             {
                 continue;
             }
-            PyObject* value_str_object = PyObject_Str(value);  // Convert value to string
-            const char* value_str = PyUnicode_AsUTF8(value_str_object);
+            if (PyDict_Check(value))
+            {
+                PythonValueProvider prov(value);
+                Object subObj({"object"}, Id::generate());
+                prov.populate(subObj);
+                obj.setChild(key_str, subObj);
+            }
+            else if (PyList_Check(value))
+            {
+                Py_ssize_t size = PyList_Size(value);
+                std::vector<Object> subObjs;
+                for (Py_ssize_t i = 0; i < size; ++i) {
+                    PyObject* item = PyList_GetItem(value, i);
+                    if (PyDict_Check(item)) {
+                        PythonValueProvider prov(item);
+                        Object subObj({"object"}, Id::generate());
+                        prov.populate(subObj);
+                        subObjs.push_back(subObj);
+                    } else {
+                        throw std::runtime_error("List items are expected to be objects only");
+                    }
+                }
+                obj.setChildren(key_str, subObjs);
+            }
+            else
+            {
+                PyObject* value_str_object = PyObject_Str(value);  // Convert value to string
+                const char* value_str = PyUnicode_AsUTF8(value_str_object);
 
-            obj[key_str] = value_str;
+                obj[key_str] = value_str;
 
-            Py_DECREF(value_str_object);
+                Py_DECREF(value_str_object);
+            }
         }
         Py_DECREF(attributes);
     }
@@ -134,6 +161,29 @@ static PyObject* py_erase(PyObject* self, PyObject* args) {
     }
 }
 
+PyObject* createObject(const Object& src) {
+    PyObject* pyObjInstance = PyObject_CallObject(MateriaObjectType, nullptr);  // Create an instance of MateriaObject
+    for (const auto& field : src) {
+        PyObject_SetAttrString(pyObjInstance, field.getName().c_str(), PyUnicode_FromString(field.get<Type::String>().c_str()));
+    }
+    for(const auto& sub : src.getChildrenMap()) {
+        PyObject *attr_name = PyUnicode_FromString(sub.first.c_str());
+        if(std::holds_alternative<Object>(sub.second)) {
+            const auto& obj = std::get<Object>(sub.second);
+            PyObject_SetAttr(pyObjInstance, attr_name, createObject(obj));
+        } else {
+            const auto& objs = std::get<std::vector<Object>>(sub.second);
+            PyObject* pyResults = PyList_New(objs.size());
+            for (size_t i = 0; i < objs.size(); ++i) {
+                PyList_SetItem(pyResults, i, createObject(objs[i]));
+            }
+            PyObject_SetAttr(pyObjInstance, attr_name, pyResults);
+        }
+        Py_DECREF(attr_name);
+    }
+    return pyObjInstance;
+}
+
 static PyObject* py_query_ids(PyObject* self, PyObject* args) {
     PyObject* pyIdList;
 
@@ -158,11 +208,7 @@ static PyObject* py_query_ids(PyObject* self, PyObject* args) {
 
         PyObject* pyResults = PyList_New(results.size());
         for (size_t i = 0; i < results.size(); ++i) {
-            PyObject* pyObjInstance = PyObject_CallObject(MateriaObjectType, nullptr);  // Create an instance of MateriaObject
-            for (const auto& field : results[i]) {
-                PyObject_SetAttrString(pyObjInstance, field.getName().c_str(), PyUnicode_FromString(field.get<Type::String>().c_str()));
-            }
-            PyList_SetItem(pyResults, i, pyObjInstance);
+            PyList_SetItem(pyResults, i, createObject(results[i]));
         }
 
         return pyResults;
@@ -189,11 +235,7 @@ static PyObject* py_query_expr(PyObject* self, PyObject* args) {
 
         PyObject* pyResults = PyList_New(results.size());
         for (size_t i = 0; i < results.size(); ++i) {
-            PyObject* pyObjInstance = PyObject_CallObject(MateriaObjectType, nullptr);  // Create an instance of MateriaObject
-            for (const auto& field : results[i]) {
-                PyObject_SetAttrString(pyObjInstance, field.getName().c_str(), PyUnicode_FromString(field.get<Type::String>().c_str()));
-            }
-            PyList_SetItem(pyResults, i, pyObjInstance);
+            PyList_SetItem(pyResults, i, createObject(results[i]));
         }
         return pyResults;
 
