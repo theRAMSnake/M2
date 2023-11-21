@@ -801,3 +801,31 @@ except Exception as e:
     // Check the script's execution result. This should confirm that the JSON conversion was successful and accurate.
     BOOST_CHECK_EQUAL("1", script_result);
 }
+BOOST_FIXTURE_TEST_CASE(TestSubObj, ScriptsTest)
+{
+    // Script to test the conversion of a collection to a JSON string.
+    std::string script_result = run(R"(
+import m4
+
+item1 = m4.MateriaObject()
+item1.attribute1 = "value1"
+item1.attribute2 = "value2"
+
+item2 = m4.MateriaObject()
+item2.attribute1 = "value3"
+item2.attribute2 = "value4"
+item2.attribute3 = item1
+
+id = m4.create("id_preset", "object", item2)
+
+result_item2 = m4.query_ids(["id_preset"])[0]
+
+result = result_item2.attribute1 == "value3"
+result = result and result_item2.attribute2 == "value4"
+result = result and result_item2.attribute3.attribute1 == "value1"
+result = result and result_item2.attribute3.attribute2 == "value2"
+)");
+
+    // Check the script's execution result. This should confirm that the JSON conversion was successful and accurate.
+    BOOST_CHECK_EQUAL("True", script_result);
+}

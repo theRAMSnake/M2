@@ -11,6 +11,10 @@ namespace materia
 ObjectManager* gOmPtr = nullptr;
 static PyObject* MateriaObjectType = nullptr;
 
+int is_instance_of_any_class(PyObject *obj) {
+    return PyObject_HasAttrString(obj, "__dict__");
+}
+
 class PythonValueProvider : public IValueProvider
 {
 public:
@@ -38,7 +42,7 @@ public:
             {
                 continue;
             }
-            if (PyDict_Check(value))
+            if (is_instance_of_any_class(value))
             {
                 PythonValueProvider prov(value);
                 Object subObj({"object"}, Id::generate());
