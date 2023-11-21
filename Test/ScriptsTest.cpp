@@ -791,7 +791,7 @@ try:
 
     json_result = views.collection_to_json(test_collection_name)
 
-    json_as_dict = json.loads(json_result)
+    result = json.loads(json_result)
     result = 1
 
 except Exception as e:
