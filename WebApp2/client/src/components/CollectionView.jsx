@@ -160,7 +160,7 @@ const CollectionView = ({ colName }) => {
           if(result.result) {
              const adjustedColName = colName.startsWith('=') ? colName.slice(1) : colName;
              ScriptHelper.loadCollection(adjustedColName, (data) => {
-               let falsesArray = Array.from(data, () => false);
+               let falsesArray = Array.from(data.items, () => false);
                setSelected(falsesArray);
                setContent(data);  // set the content
                setIsLoading(false); // indicate that loading has completed
