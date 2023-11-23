@@ -185,7 +185,7 @@ const CollectionView = ({ colName }) => {
 
     // Load content using the provided function and colName.
     ScriptHelper.loadCollection(adjustedColName, (data) => {
-      let falsesArray = Array.from(data, () => false);
+      let falsesArray = Array.from(data.items, () => false);
       setSelected(falsesArray);
       setContent(data);  // set the content
       setIsLoading(false); // indicate that loading has completed
