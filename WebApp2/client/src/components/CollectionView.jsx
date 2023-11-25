@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Grid from '@mui/material/Grid';
-import IconButton from '@mui/material/IconButton';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import Materia from '../modules/materia_request'
 import ScriptHelper from '../modules/script_helper'
@@ -17,13 +9,24 @@ import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
 import AceEditor from 'react-ace';
 import SaveIcon from '@material-ui/icons/Save';
+import EditIcon from '@material-ui/icons/Edit';
 import AddCircleOutlineIcon  from '@material-ui/icons/AddCircleOutline';
-import Fab from '@mui/material/Fab';
-import Checkbox from '@mui/material/Checkbox';
 import ConfirmationDialog from './dialogs/ConfirmationDialog.jsx'
 import EditorDialog from './dialogs/EditorDialog.jsx'
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-monokai';
+import {
+    Checkbox,
+    Fab,
+    IconButton,
+    Paper,
+    Grid,
+    Typography,
+    TableRow,
+    TableHead,
+    Table,
+    TableBody
+} from "@material-ui/core";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -60,6 +63,7 @@ const CollectionView = ({ colName }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [inDeleteDialog, setInDeleteDialog] = useState(false);
+  const [inHeaderDialog, setInHeaderDialog] = useState(false);
 
   const removeUnwantedFields = (data) => {
     // this doesn't remove the fields from 'content', it just prevents them from being displayed
@@ -112,6 +116,10 @@ const CollectionView = ({ colName }) => {
     setIsOpen(false);
   };
 
+  const handleCloseHeaderDialog = () => {
+    setInHeaderDialog(false);
+  };
+
   const stripElement = (obj) => {
       let newobj = {}
       for (const key in obj) {
@@ -140,6 +148,10 @@ const CollectionView = ({ colName }) => {
       setInDeleteDialog(true);
   }
 
+  const handleEditHeader = () => {
+      setInHeaderDialog(true);
+  }
+
   const jsonToM4O = (name, json) => {
       let res = name + " = m4.MateriaObject()\n";
       let ob = JSON.parse(json);
@@ -147,6 +159,12 @@ const CollectionView = ({ colName }) => {
           res = res + name + "." + key + "='" + ob[key] + "'\n"
       }
       return res;
+  }
+  const handleHeaderDialogSave = (text) => {
+      setInHeaderDialog(false);
+      Materia.postEdit(content.header.id, text);
+      content.header = JSON.parse(text);
+      setContent(JSON.parse(JSON.stringify(content)));
   }
 
   const handleSave = (text) => {
@@ -212,6 +230,7 @@ const CollectionView = ({ colName }) => {
     <div style={{ margin: '0 3%' }}>
       <ConfirmationDialog open={inDeleteDialog} question="delete" caption="confirm delete" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
       {isOpen && <EditorDialog onClose={handleCloseDialog} text={editedJson} onSave={handleSave} />}
+      {inHeaderDialog && <EditorDialog onClose={handleCloseHeaderDialog} text={JSON.stringify(content.header)} onSave={handleHeaderDialogSave} />}
       <Header variant="h4" align="center" color="primary">
         {colName.replace(/^=/, '')}
       </Header>
@@ -221,6 +240,9 @@ const CollectionView = ({ colName }) => {
           </IconButton>
           <IconButton edge="start" aria-label="complete" onClick={() => handleDelete()} disabled={!selected.some(element => element === true)} color="primary">
             <DeleteForeverIcon/>
+          </IconButton>
+          <IconButton edge="start" aria-label="complete" onClick={() => handleEditHeader()} color="primary">
+            <EditIcon/>
           </IconButton>
           <TableContainer component={Paper}>
               <Table sx={{ minWidth: 700 }} aria-label="customized table">
