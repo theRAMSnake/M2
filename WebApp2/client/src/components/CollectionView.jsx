@@ -230,18 +230,18 @@ const CollectionView = ({ colName }) => {
     <div style={{ margin: '0 3%' }}>
       <ConfirmationDialog open={inDeleteDialog} question="delete" caption="confirm delete" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
       {isOpen && <EditorDialog onClose={handleCloseDialog} text={editedJson} onSave={handleSave} />}
-      {inHeaderDialog && <EditorDialog onClose={handleCloseHeaderDialog} text={JSON.stringify(content.header)} onSave={handleHeaderDialogSave} />}
+      {inHeaderDialog && <EditorDialog onClose={handleCloseHeaderDialog} text={JSON.stringify(content.header, null, 2)} onSave={handleHeaderDialogSave} />}
       <Header variant="h4" align="center" color="primary">
         {colName.replace(/^=/, '')}
       </Header>
-      <Grid container direction="row" justify="space-around" alignItems="flex-start">
-          <IconButton edge="start" aria-label="complete" onClick={() => handleAdd()} color="primary">
+      <Grid container direction="row" alignItems="flex-start">
+          <IconButton edge="start" aria-label="complete" onClick={() => handleAdd()}>
             <AddCircleOutlineIcon/>
           </IconButton>
-          <IconButton edge="start" aria-label="complete" onClick={() => handleDelete()} disabled={!selected.some(element => element === true)} color="primary">
+          <IconButton edge="start" aria-label="complete" onClick={() => handleDelete()} disabled={!selected.some(element => element === true)} >
             <DeleteForeverIcon/>
           </IconButton>
-          <IconButton edge="start" aria-label="complete" onClick={() => handleEditHeader()} color="primary">
+          <IconButton edge="start" aria-label="complete" onClick={() => handleEditHeader()} >
             <EditIcon/>
           </IconButton>
           <TableContainer component={Paper}>
