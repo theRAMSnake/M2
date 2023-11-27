@@ -7,12 +7,19 @@ def toDict(obj):
 
    # Dynamically gather the attributes from the item
    for attr in dir(obj):
-       if isinstance(getattr(obj, attr), m4.MateriaObject):
+       x = getattr(obj, attr)
+       if isinstance(x, m4.MateriaObject):
            item_dict[attr] = toDict(getattr(obj, attr))
            continue
 
-       if not attr.startswith('_') and not callable(getattr(obj, attr)):
-           item_dict[attr] = getattr(obj, attr)
+       if isinstance(x, list):
+           item_dict[attr] = []
+           for y in x:
+               item_dict[attr].append(toDict(y))
+           continue
+
+       if not attr.startswith('_') and not callable(x):
+           item_dict[attr] = x
 
    return item_dict
 
