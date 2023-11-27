@@ -99,6 +99,22 @@ std::vector<std::string> extractArray(const boost::property_tree::ptree& ptree)
     return result;
 }
 
+bool is_array_of_objects(const boost::property_tree::ptree& node) {
+    // Assuming arrays are represented by multiple children with the same key
+    // or unnamed nodes. This logic may need to be adjusted based on your actual JSON structure.
+    if (node.empty()) {
+        return false; // Empty node, not an array
+    }
+
+    auto first_child_key = node.begin()->first;
+    for (const auto& child : node) {
+        if (child.first != first_child_key) {
+            return false; // Different keys, not an array
+        }
+    }
+    return true;
+}
+
 void JsonRestorationProvider::populate(Object& obj) const
 {
     auto type = obj.getType();
@@ -131,7 +147,7 @@ void JsonRestorationProvider::populate(Object& obj) const
         else
         {
             //Array of object deserialization is not supported
-            if(c.second.data().empty() && c.second.size() == 1)
+            if(c.second.data().empty() && !is_array_of_objects(c.second))
             {
                 Object subobj({"object"}, Id(c.second.get<std::string>("id")));
                 JsonRestorationProvider sub(c.second);
@@ -139,7 +155,7 @@ void JsonRestorationProvider::populate(Object& obj) const
 
                 obj.setChild(c.first, subobj);
             }
-            else if(c.second.data().empty() && c.second.size() > 1)
+            else if(c.second.data().empty() && is_array_of_objects(c.second))
             {
                 std::vector<Object> objectArray;
                 for (const auto& item : c.second)
