@@ -55,7 +55,7 @@ public:
                 std::vector<Object> subObjs;
                 for (Py_ssize_t i = 0; i < size; ++i) {
                     PyObject* item = PyList_GetItem(value, i);
-                    if (PyDict_Check(item)) {
+                    if (is_instance_of_any_class(item)) {
                         PythonValueProvider prov(item);
                         Object subObj({"object"}, Id::generate());
                         prov.populate(subObj);

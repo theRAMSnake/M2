@@ -11,9 +11,9 @@ add_executable(Test
 EncDecTest.cpp
 ScriptsTest.cpp
 #RewardTest.cpp
-#NewAPITest.cpp
+NewAPITest.cpp
 #ExpressionsTest2.cpp
-#ObjectTest.cpp
+ObjectTest.cpp
 CoreTest.cpp
 #DatabaseTest.cpp
 #ContractsTest.cpp

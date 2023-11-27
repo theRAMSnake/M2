@@ -131,13 +131,25 @@ void JsonRestorationProvider::populate(Object& obj) const
         else
         {
             //Array of object deserialization is not supported
-            if(c.second.data().empty() && c.second.size() != 0)
+            if(c.second.data().empty() && c.second.size() == 1)
             {
                 Object subobj({"object"}, Id(c.second.get<std::string>("id")));
                 JsonRestorationProvider sub(c.second);
                 sub.populate(subobj);
 
                 obj.setChild(c.first, subobj);
+            }
+            else if(c.second.data().empty() && c.second.size() > 1)
+            {
+                std::vector<Object> objectArray;
+                for (const auto& item : c.second)
+                {
+                    Object subobj({"object"}, Id(item.second.get<std::string>("id")));
+                    JsonRestorationProvider sub(item.second);
+                    sub.populate(subobj);
+                    objectArray.push_back(subobj);
+                }
+                obj.setChildren(c.first, objectArray);
             }
             else
             {
