@@ -106,6 +106,10 @@ bool is_array_of_objects(const boost::property_tree::ptree& node) {
         return false; // Empty node, not an array
     }
 
+    if (node.size() == 1) {
+        return false;
+    }
+
     auto first_child_key = node.begin()->first;
     for (const auto& child : node) {
         if (child.first != first_child_key) {
