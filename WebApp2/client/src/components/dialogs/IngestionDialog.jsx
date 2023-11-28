@@ -56,30 +56,35 @@ export default function IngestionDialog(props)
     {
         let newObj = JSON.parse(JSON.stringify(object));
         newObj[e.target.id] = e.target.value;
+        setObject(newObj);
     }
 
     function handleIntFieldChange(e)
     {
         let newObj = JSON.parse(JSON.stringify(object));
         newObj[e.target.id] = parseInt(e.target.value);
+        setObject(newObj);
     }
 
     function handleDoubleFieldChange(e)
     {
         let newObj = JSON.parse(JSON.stringify(object));
         newObj[e.target.id] = parseFloat(e.target.value);
+        setObject(newObj);
     }
 
     function handleDTChange(val, id)
     {
         let newObj = JSON.parse(JSON.stringify(object));
         newObj[id] = val;
+        setObject(newObj);
     }
 
     function handleMoney2Change(id, val)
     {
         let newObj = JSON.parse(JSON.stringify(object));
         newObj[id] = val;
+        setObject(newObj);
     }
 
     function createPropCtrl(req)
