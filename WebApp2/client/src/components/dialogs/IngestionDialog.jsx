@@ -24,16 +24,12 @@ function createDefault(f)
 {
     var type = f.type;
 
-    if(type === 'string') return "";
-    if(type === 'array') return [];
-    if(type === 'bool') return false;
-    if(type === 'int') return 0;
-    if(type === 'double') return 0.0;
-    if(type === 'choice') return f.options[0];
-    if(type === 'money') return 0;
-    if(type === 'money_v2') return "0.00EUR";
-    if(type === 'reference') return "";
-    if(type === 'timestamp') return Math.floor(toUTC(new Date()) / 1000);
+    if(type === 'String') return "";
+    if(type === 'Bool') return false;
+    if(type === 'Int') return 0;
+    if(type === 'Double') return 0.0;
+    if(type === 'Money') return "0.00EUR";
+    if(type === 'Timestamp') return Math.floor(toUTC(new Date()) / 1000);
 }
 
 function buildInitObject(ingestion, obj)
@@ -98,19 +94,19 @@ export default function IngestionDialog(props)
 
     function createPropCtrl(req)
     {
-        if(req.type === 'string' || req.type === 'period')
+        if(req.type === 'String')
             return <TextField inputProps={{onChange: handleFieldChange}} value={props.object[req.name]} fullWidth id={req.name} label={req.name} />;
-        if(req.type === 'bool')
+        if(req.type === 'Bool')
             return <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: handleCbChange}} id={req.name} checked={props.object[req.name].toString() === "true"} />} label={req.name} />
-        if(req.type === 'int')
+        if(req.type === 'Int')
             return <TextField inputProps={{onChange: handleIntFieldChange, type: 'number'}} value={props.object[req.name]} id={req.name} fullWidth label={req.name} />;
-        if(req.type === 'double')
+        if(req.type === 'Double')
             return <TextField inputProps={{onChange: handleDoubleFieldChange, type: 'number', step:'any'}} value={props.object[req.name]} id={req.name} fullWidth label={req.name} />;
-        if(req.type === 'timestamp')
+        if(req.type === 'Timestamp')
         {
             return <DateTimeCtrl onChange={handleDTChange} value={props.object[req.name]} id={req.name}/>
         }
-        if(req.type === 'money_v2')
+        if(req.type === 'Money')
         {
             return <MoneyCtrl onChange={handleMoney2Change} value={props.object[req.name]} id={req.name}/>
         }
