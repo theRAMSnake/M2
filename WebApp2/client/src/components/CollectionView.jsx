@@ -12,6 +12,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import EditIcon from '@material-ui/icons/Edit';
 import AddCircleOutlineIcon  from '@material-ui/icons/AddCircleOutline';
 import ConfirmationDialog from './dialogs/ConfirmationDialog.jsx'
+import ConfirmationDialog from './dialogs/IngestionDialog.jsx'
 import EditorDialog from './dialogs/EditorDialog.jsx'
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-monokai';
@@ -62,6 +63,7 @@ const CollectionView = ({ colName }) => {
   const [index, setIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [objectInEdit, setObjectInEdit] = useState('');
   const [inDeleteDialog, setInDeleteDialog] = useState(false);
   const [inHeaderDialog, setInHeaderDialog] = useState(false);
 
@@ -99,6 +101,7 @@ const CollectionView = ({ colName }) => {
     setIsAdd(false);
     setIndex(index);
     setEditedJson(JSON.stringify(content.items[index], null, 2));
+    setObjectInEdit(content.items[index]);
   };
 
   const handleSelecteAll = () => {
@@ -137,6 +140,7 @@ const CollectionView = ({ colName }) => {
   const handleAdd = () => {
     setIsAdd(true);
     setIsOpen(true);
+    setObjectInEdit(null);
     setIndex(-1);
     if(content.items.length > 0) {
        setEditedJson(JSON.stringify(stripElement(content.items[0]), null, 2));
@@ -229,7 +233,8 @@ const CollectionView = ({ colName }) => {
   return (
     <div style={{ margin: '0 3%' }}>
       <ConfirmationDialog open={inDeleteDialog} question="delete" caption="confirm delete" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
-      {isOpen && <EditorDialog onClose={handleCloseDialog} text={editedJson} onSave={handleSave} />}
+      {isOpen && !content.header.ingestion && <EditorDialog onClose={handleCloseDialog} text={editedJson} onSave={handleSave} />}
+      {isOpen && content.header.ingestion && <IngestionDialog open={true} ingestion={content.header.ingestion} object={objectInEdit} onCancel={handleCloseDialog} onOk={handleSave} />}
       {inHeaderDialog && <EditorDialog onClose={handleCloseHeaderDialog} text={JSON.stringify(content.header, null, 2)} onSave={handleHeaderDialogSave} />}
       <Header variant="h4" align="center" color="primary">
         {colName.replace(/^=/, '')}
