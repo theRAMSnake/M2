@@ -12,7 +12,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import EditIcon from '@material-ui/icons/Edit';
 import AddCircleOutlineIcon  from '@material-ui/icons/AddCircleOutline';
 import ConfirmationDialog from './dialogs/ConfirmationDialog.jsx'
-import ConfirmationDialog from './dialogs/IngestionDialog.jsx'
+import IngestionDialog from './dialogs/IngestionDialog.jsx'
 import EditorDialog from './dialogs/EditorDialog.jsx'
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-monokai';
