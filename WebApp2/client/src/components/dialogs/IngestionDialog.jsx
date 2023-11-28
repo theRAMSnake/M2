@@ -54,7 +54,7 @@ export default function IngestionDialog(props)
 
     function handleFieldChange(e)
     {
-        let newObj = JSON.parse(JSON.stringify(props.object));
+        let newObj = JSON.parse(JSON.stringify(object));
         newObj[e.target.id] = e.target.value;
 
         props.onChange(newObj);
@@ -62,7 +62,7 @@ export default function IngestionDialog(props)
 
     function handleIntFieldChange(e)
     {
-        let newObj = JSON.parse(JSON.stringify(props.object));
+        let newObj = JSON.parse(JSON.stringify(object));
         newObj[e.target.id] = parseInt(e.target.value);
 
         props.onChange(newObj);
@@ -70,7 +70,7 @@ export default function IngestionDialog(props)
 
     function handleDoubleFieldChange(e)
     {
-        let newObj = JSON.parse(JSON.stringify(props.object));
+        let newObj = JSON.parse(JSON.stringify(object));
         newObj[e.target.id] = parseFloat(e.target.value);
 
         props.onChange(newObj);
@@ -78,7 +78,7 @@ export default function IngestionDialog(props)
 
     function handleDTChange(val, id)
     {
-        let newObj = JSON.parse(JSON.stringify(props.object));
+        let newObj = JSON.parse(JSON.stringify(object));
         newObj[id] = val;
 
         props.onChange(newObj);
@@ -86,7 +86,7 @@ export default function IngestionDialog(props)
 
     function handleMoney2Change(id, val)
     {
-        let newObj = JSON.parse(JSON.stringify(props.object));
+        let newObj = JSON.parse(JSON.stringify(object));
         newObj[id] = val;
 
         props.onChange(newObj);
@@ -95,20 +95,20 @@ export default function IngestionDialog(props)
     function createPropCtrl(req)
     {
         if(req.type === 'String')
-            return <TextField inputProps={{onChange: handleFieldChange}} value={props.object[req.name]} fullWidth id={req.name} label={req.name} />;
+            return <TextField inputProps={{onChange: handleFieldChange}} value={object[req.name]} fullWidth id={req.name} label={req.name} />;
         if(req.type === 'Bool')
-            return <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: handleCbChange}} id={req.name} checked={props.object[req.name].toString() === "true"} />} label={req.name} />
+            return <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: handleCbChange}} id={req.name} checked={object[req.name].toString() === "true"} />} label={req.name} />
         if(req.type === 'Int')
-            return <TextField inputProps={{onChange: handleIntFieldChange, type: 'number'}} value={props.object[req.name]} id={req.name} fullWidth label={req.name} />;
+            return <TextField inputProps={{onChange: handleIntFieldChange, type: 'number'}} value={object[req.name]} id={req.name} fullWidth label={req.name} />;
         if(req.type === 'Double')
-            return <TextField inputProps={{onChange: handleDoubleFieldChange, type: 'number', step:'any'}} value={props.object[req.name]} id={req.name} fullWidth label={req.name} />;
+            return <TextField inputProps={{onChange: handleDoubleFieldChange, type: 'number', step:'any'}} value={object[req.name]} id={req.name} fullWidth label={req.name} />;
         if(req.type === 'Timestamp')
         {
-            return <DateTimeCtrl onChange={handleDTChange} value={props.object[req.name]} id={req.name}/>
+            return <DateTimeCtrl onChange={handleDTChange} value={object[req.name]} id={req.name}/>
         }
         if(req.type === 'Money')
         {
-            return <MoneyCtrl onChange={handleMoney2Change} value={props.object[req.name]} id={req.name}/>
+            return <MoneyCtrl onChange={handleMoney2Change} value={object[req.name]} id={req.name}/>
         }
     }
 
