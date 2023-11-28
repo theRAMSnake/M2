@@ -7,8 +7,8 @@ import {
     DialogActions
 } from "@material-ui/core";
 
-import DateTimeCtrl from './DateTimeCtrl.jsx'
-import MoneyCtrl from './MoneyCtrl.jsx'
+import DateTimeCtrl from '../DateTimeCtrl.jsx'
+import MoneyCtrl from '../MoneyCtrl.jsx'
 import {
     FormControlLabel,
     TextField,
