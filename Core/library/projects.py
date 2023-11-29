@@ -35,6 +35,28 @@ def project_collections(projectName):
 
     raise ValueError("Project not found")
 
+def project_update_script(projectName):
+    for p in collection.Collection("projects").get_items():
+        if p.name == projectName:
+            children = m4.query_expr(f'ChildOf("{p.id}")')
+            for c in children:
+                if c.elementType == "update_script":
+                    return c.code
+
+    raise ValueError("Project not found")
+
+def modify_project_update_script(projectName, newCode):
+    for p in collection.Collection("projects").get_items():
+        if p.name == projectName:
+            children = m4.query_expr(f'ChildOf("{p.id}")')
+            for c in children:
+                if c.elementType == "update_script":
+                    c.code = newCode
+                    m4.modify(c.id, c)
+                    return
+
+    raise ValueError("Project not found")
+
 def unbind_collection(projectName, colName):
     result = []
     for p in collection.Collection("projects").get_items():

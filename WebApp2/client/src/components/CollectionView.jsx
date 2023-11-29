@@ -83,16 +83,17 @@ const CollectionView = ({ colName }) => {
   function onDeleteDialogOk()
   {
       setInDeleteDialog(false);
-      let newContent = [];
+      let newContent = JSON.parse(JSON.stringify(content));
+      newContent.items = [];
       for (let i = 0; i < selected.length; i++) {
           if(selected[i]) {
               Materia.postDelete(content.items[i].id);
           } else {
-              newContent.push(content.items[i]);
+              newContent.items.push(content.items[i]);
           }
       }
       setContent(newContent);
-      let falsesArray = Array.from(newContent, () => false);
+      let falsesArray = Array.from(newContent.items, () => false);
       setSelected(falsesArray);
   }
 
