@@ -42,6 +42,7 @@ const ProjectView = ({ projName }) => {
         let resultScript = escapeForPython(newScript);
         ScriptHelper.exec(`import projects\nscript="${resultScript}"\nprojects.modify_project_update_script("${projName}", script)\nresult=1`, (data)=>{
             setUpdateScript(newScript);
+            setInScriptEditDialog(false);
         });
     }
 
