@@ -7,6 +7,7 @@ import {
 } from "@material-ui/core";
 import EditIcon from '@material-ui/icons/Edit';
 import UpdateIcon from '@material-ui/icons/Update';
+import EditorDialog from './dialogs/EditorDialog.jsx'
 
 const ProjectView = ({ projName }) => {
     const [updateScript, setUpdateScript] = useState(null);
@@ -40,6 +41,7 @@ const ProjectView = ({ projName }) => {
     }
 
     return (
+        <div>
         <ProjectCollectionBar projName={projName}/>
         <Toolbar style={{ width: '100%', gap: '10px'}} >
            <IconButton edge="start" onClick={() => handleEdit()}>
@@ -50,6 +52,7 @@ const ProjectView = ({ projName }) => {
            </IconButton>
         </Toolbar>
         {inScriptEditDialog && <EditorDialog onClose={handleCloseDialog} text={updateScript} onSave={handleScriptSave} mode="python" />}
+        </div>
     );
 };
 
