@@ -28,13 +28,18 @@ const ProjectView = ({ projName }) => {
         setInScriptEditDialog(false);
     }
 
+    const handleUpdate = () => {
+        ScriptHelper.exec("import projects\nprojects.update_project('${projName}')\nresult=1", (data)=>{
+        };
+    }
+
     function escapeForPython(str) {
         // Replace backslash with double backslash and double quotes with escaped double quotes
         return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
     }
 
     const handleScriptSave = (newScript) => {
-        resultScript = escapeForPython(newScript);
+        let resultScript = escapeForPython(newScript);
         ScriptHelper.exec("import projects\nscript=\"${resultScript}\"\nprojects.modify_project_update_script('${projName}', script)\nresult=1", (data)=>{
             setUpdateScript(newScript);
         });
