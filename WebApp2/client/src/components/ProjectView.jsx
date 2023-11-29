@@ -30,7 +30,7 @@ const ProjectView = ({ projName }) => {
 
     const handleUpdate = () => {
         ScriptHelper.exec("import projects\nprojects.update_project('${projName}')\nresult=1", (data)=>{
-        };
+        });
     }
 
     function escapeForPython(str) {
