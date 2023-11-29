@@ -15,7 +15,7 @@ const ProjectView = ({ projName }) => {
 
     const handleEdit = () => {
         if(!updateScript) {
-            ScriptHelper.exec("import projects\nresult=projects.project_update_script('" + projName + "')", (data)=>{
+            ScriptHelper.exec_string("import projects\nresult=projects.project_update_script('" + projName + "')", (data)=>{
                 setUpdateScript(data);
                 setInScriptEditDialog(true);
             });

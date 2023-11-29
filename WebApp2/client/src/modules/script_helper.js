@@ -27,6 +27,17 @@ static exec (script, cb) {
       }
    });
 };
+
+static exec_string (script, cb) {
+   Materia.req(JSON.stringify({ operation: "run", script: script }), (r) => {
+      let result = JSON.parse(r);
+      if(result.result !== null) {
+         cb(result.result);
+      } else {
+          console.log(result.error);
+      }
+   });
+};
 };
 
 export default ScriptHelper;
