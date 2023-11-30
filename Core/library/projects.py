@@ -71,7 +71,7 @@ def unbind_collection(projectName, colName):
 
 def update_project(name):
     for p in collection.Collection("projects").get_items():
-        if p.name == projectName:
+        if p.name == name:
             children = m4.query_expr(f'ChildOf("{p.id}")')
             for c in children:
                 if c.elementType == "update_script":
