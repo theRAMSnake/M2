@@ -1,7 +1,6 @@
 import React from 'react';
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
-import 'react-resizable/css/styles.css';
 
 const DesignerItem = () => {
     return (
