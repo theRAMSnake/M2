@@ -8,7 +8,9 @@ const DesignerItem = () => {
       bounds="parent"
     >
       <ResizableBox width={200} height={200} minConstraints={[100, 100]} maxConstraints={[300, 300]}>
-        <span>Contents</span>
+        <div style={{ border: '1px solid white', height: '100%', width: '100%' }}>
+            Contents
+        </div>
       </ResizableBox>
     </Draggable>
   );
