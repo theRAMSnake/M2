@@ -28,13 +28,11 @@ return (
                     topLeft: false
                 }}
         >
-        <div>
-        <div className="drag-handle" style={{ cursor: 'move', backgroundColor: 'lightblue', userSelect: 'none' }}>
-          Drag here
-        </div>
         <div style={{ border: '1px solid white', height: '100%', width: '100%' }}>
+            <div className="drag-handle" style={{ cursor: 'move', backgroundColor: 'lightblue', userSelect: 'none' }}>
+              Drag here
+            </div>
             Contents
-        </div>
         </div>
       </Resizable>
     </Draggable>
