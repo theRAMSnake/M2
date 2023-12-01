@@ -49,10 +49,11 @@ const ProjectView = ({ projName }) => {
     }
 
     const containerStyle = {
-        width: '100vw',  // 100% of the viewport width
+        width: '98vw',  // 100% of the viewport width
         height: '75vh',  // 75% of the viewport height
-        border: '1px solid black', // Optional, for visualizing the container
-        boxSizing: 'border-box' // Ensures that the border is included in the width/height
+        border: '1px solid white', // Optional, for visualizing the container
+        boxSizing: 'border-box', // Ensures that the border is included in the width/height
+        position: 'relative'
     };
 
     return (
