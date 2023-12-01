@@ -299,12 +299,12 @@ function MainPage(props) {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" className={classes.title}>
-                        Materia v3.7.101
+                        Materia v3.7.102
                     </Typography>
                     <ContractsCtrl/>
                     <SearchBar onSubmit={searchBarSubmit}/>
                     <div className={classes.grow} />
-                    <VariablePanel value={materiaModel.getPrimaryFocus()} commit={materiaModel.setPrimaryFocus} length={240}/>
+                    <VariablePanel value={materiaModel.getPrimaryFocus()} commit={materiaModel.setPrimaryFocus} length={200}/>
                     <VariablePanel value={materiaModel.getYearlyIncome().toString()} readonly length={60} color={getIncomeColor(materiaModel.getYearlyIncome())}/>
                     <VariableBurndown var={materiaModel.getWorkBurden()} commit={materiaModel.setWorkBurden}/>
                     <BadgetList id='inbox' icon={MailIcon}/>
