@@ -17,12 +17,24 @@ return (
                 setWidth(width + delta.width);
                 setHeight(height + delta.height);
             } }
+        enable={{
+                    top: false,
+                    right: true,
+                    bottom: true,
+                    left: false,
+                    topRight: false,
+                    bottomRight: true,
+                    bottomLeft: false,
+                    topLeft: false
+                }}
         >
+        <div>
         <div className="drag-handle" style={{ cursor: 'move', backgroundColor: 'lightblue', userSelect: 'none' }}>
           Drag here
         </div>
         <div style={{ border: '1px solid white', height: '100%', width: '100%' }}>
             Contents
+        </div>
         </div>
       </Resizable>
     </Draggable>
