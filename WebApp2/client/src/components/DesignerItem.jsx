@@ -1,16 +1,23 @@
 import React, {useState} from 'react';
 import Draggable from 'react-draggable';
 import { Resizable } from 're-resizable';
+import createControl from './ProjectControls.jsx'
 
+const DesignerItem = ({ control }) => {
+    const [width, setWidth] = useState(control.width);
+    const [height, setHeight] = useState(control.height);
+    const [position, setPosition] = useState({ x: control.x, y: control.y });
 
-const DesignerItem = () => {
-    const [width, setWidth] = useState(200);
-    const [height, setHeight] = useState(200);
+    const handleDrag = (e, data) => {
+        setPosition({ x: data.x, y: data.y });
+    };
 
 return (
     <Draggable
       bounds="parent"
       handle=".drag-handle"
+      position={position}
+      onStop={handleDrag}
     >
       <Resizable size={{width: width, height: height}}
         onResizeStop={ ( event, direction, elt, delta ) => {
@@ -32,7 +39,7 @@ return (
             <div className="drag-handle" style={{ cursor: 'move', backgroundColor: 'lightblue', userSelect: 'none' }}>
               Drag here
             </div>
-            Contents
+            {createControl(c)}
         </div>
       </Resizable>
     </Draggable>

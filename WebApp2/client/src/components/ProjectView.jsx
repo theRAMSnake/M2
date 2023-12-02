@@ -2,18 +2,25 @@ import React, { useState, useEffect } from 'react';
 import ScriptHelper from '../modules/script_helper'
 import ProjectCollectionBar from './ProjectCollectionBar.jsx'
 import DesignerItem from './DesignerItem.jsx'
+import ProjectItem from './ProjectItem.jsx'
 import {
     Toolbar,
-    IconButton
+    IconButton,
+    Checkbox
 } from "@material-ui/core";
 import EditIcon from '@material-ui/icons/Edit';
 import UpdateIcon from '@material-ui/icons/Update';
 import EditorDialog from './dialogs/EditorDialog.jsx'
 
+const testControls = () => {
+    return [{type: "static", value: "value", x: 0, y: 0, w: 100, h:100}];
+}
+
 const ProjectView = ({ projName }) => {
     const [updateScript, setUpdateScript] = useState(null);
     const [inScriptEditDialog, setInScriptEditDialog] = useState(false);
     const [designerMode, setDesignerMode] = useState(true);
+    const [controls, setControls] = useState(testControls());
 
     const handleEdit = () => {
         if(!updateScript) {
@@ -56,6 +63,10 @@ const ProjectView = ({ projName }) => {
         position: 'relative'
     };
 
+    const handleCheckboxChange = (event) => {
+        setDesignerMode(event.target.checked);
+    };
+
     return (
         <div>
         <ProjectCollectionBar projName={projName}/>
@@ -66,10 +77,14 @@ const ProjectView = ({ projName }) => {
            <IconButton edge="start" onClick={() => handleUpdate()}>
              <UpdateIcon/>
            </IconButton>
+           <Checkbox checked={designerMode} onChange={handleCheckboxChange}>
         </Toolbar>
         {inScriptEditDialog && <EditorDialog onClose={handleCloseDialog} text={updateScript} onSave={handleScriptSave} mode="python" />}
         <div style={containerStyle}>
-            {designerMode && <DesignerItem/>}
+            {controls.map((c) => (
+                {designerMode && <DesignerItem control={c} />}
+                {!designerMode && <ProjectItem control={c} />}
+            ))}
         </div>
         </div>
     );
