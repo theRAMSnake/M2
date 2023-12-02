@@ -77,7 +77,7 @@ const ProjectView = ({ projName }) => {
            <IconButton edge="start" onClick={() => handleUpdate()}>
              <UpdateIcon/>
            </IconButton>
-           <Checkbox checked={designerMode} onChange={handleCheckboxChange}>
+           <Checkbox checked={designerMode} onChange={handleCheckboxChange}/>
         </Toolbar>
         {inScriptEditDialog && <EditorDialog onClose={handleCloseDialog} text={updateScript} onSave={handleScriptSave} mode="python" />}
         <div style={containerStyle}>
