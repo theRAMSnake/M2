@@ -39,7 +39,7 @@ return (
             <div className="drag-handle" style={{ cursor: 'move', backgroundColor: 'lightblue', userSelect: 'none' }}>
               Drag here
             </div>
-            {createControl(c)}
+            {createControl(control)}
         </div>
       </Resizable>
     </Draggable>
