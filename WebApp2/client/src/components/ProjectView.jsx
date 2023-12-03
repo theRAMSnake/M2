@@ -82,8 +82,11 @@ const ProjectView = ({ projName }) => {
         {inScriptEditDialog && <EditorDialog onClose={handleCloseDialog} text={updateScript} onSave={handleScriptSave} mode="python" />}
         <div style={containerStyle}>
             {controls.map((c) => (
-                {designerMode && <DesignerItem control={c} />}
-                {!designerMode && <ProjectItem control={c} />}
+                if(designerMode) {
+                    return <DesignerItem control={c} />;
+                } else {
+                    return <ProjectItem control={c} />;
+                }
             ))}
         </div>
         </div>
