@@ -2,8 +2,8 @@ import React, {useState} from 'react';
 import createControl from './ProjectControls.jsx'
 
 const ProjectItem = ({ control }) => {
-    const [width, setWidth] = useState(control.width);
-    const [height, setHeight] = useState(control.height);
+    const [width, setWidth] = useState(control.w);
+    const [height, setHeight] = useState(control.h);
     const [position, setPosition] = useState({ x: control.x, y: control.y });
 
 return (

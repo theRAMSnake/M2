@@ -4,8 +4,8 @@ import { Resizable } from 're-resizable';
 import createControl from './ProjectControls.jsx'
 
 const DesignerItem = ({ control }) => {
-    const [width, setWidth] = useState(control.width);
-    const [height, setHeight] = useState(control.height);
+    const [width, setWidth] = useState(control.w);
+    const [height, setHeight] = useState(control.h);
     const [position, setPosition] = useState({ x: control.x, y: control.y });
 
     const handleDrag = (e, data) => {
