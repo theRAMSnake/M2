@@ -16,7 +16,7 @@ return (
             border: '1px solid white'
         }}
     >
-        {createControl(c)}
+        {createControl(control)}
     </div>
   );
 };
