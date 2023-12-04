@@ -83,7 +83,7 @@ const ProjectView = ({ projName }) => {
                 controls[i] = JSON.parse(JSON.stringify(c));
             }
         }
-        setControls(...controls);
+        setControls(controls.slice());
     };
 
     const MessageBox = ({ message, onClose }) => {
