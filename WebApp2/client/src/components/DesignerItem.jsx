@@ -12,6 +12,7 @@ const DesignerItem = ({ control, onControlChange }) => {
         control.x = data.x;
         control.y = data.y;
         onControlChange(control);
+        setPosition({control.x, control.y});
     };
 
 return (
@@ -26,6 +27,8 @@ return (
                 control.w = width + delta.width;
                 control.h = height + delta.height;
                 onControlChange(control);
+                setWidth(control.w);
+                setHeight(control.h);
             } }
         enable={{
                     top: false,

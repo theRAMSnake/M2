@@ -65,15 +65,15 @@ const ProjectView = ({ projName }) => {
 
     const handleCheckboxChange = (event) => {
         setDesignerMode(event.target.checked);
+        if(!event.target.checked) {
+            for (let i = 0; i < controls.length; i++) {
+                controls[i] = JSON.parse(JSON.stringify(c));
+            }
+            setControls(...controls);
+        }
     };
 
     const onControlChange = (c) => {
-        for (let i = 0; i < controls.length; i++) {
-            if(controls[i].id === c.id) {
-                controls[i] = JSON.parse(JSON.stringify(c));
-            }
-        }
-        setControls(...controls);
     };
 
     return (
