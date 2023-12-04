@@ -3,6 +3,7 @@ import collection
 import m4
 import ambitions
 import reward
+import projects
 
 def m4_update(today):
     current_day = datetime.now().weekday()
@@ -11,6 +12,7 @@ def m4_update(today):
     if 0 <= current_day <= 4:  # 0 is Monday, 4 is Friday
         reward.reward(-10)
     ambitions.update(today)
+    update_projects()
 
 def daily_update():
     events = collection.Collection("events")

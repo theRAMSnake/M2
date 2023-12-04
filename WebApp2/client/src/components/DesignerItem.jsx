@@ -12,7 +12,7 @@ const DesignerItem = ({ control, onControlChange }) => {
         control.x = data.x;
         control.y = data.y;
         onControlChange(control);
-        setPosition({control.x, control.y});
+        setPosition({x: control.x, y: control.y});
     };
 
 return (

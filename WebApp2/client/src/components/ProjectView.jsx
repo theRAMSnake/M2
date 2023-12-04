@@ -21,6 +21,8 @@ const ProjectView = ({ projName }) => {
     const [inScriptEditDialog, setInScriptEditDialog] = useState(false);
     const [designerMode, setDesignerMode] = useState(true);
     const [controls, setControls] = useState(testControls());
+    const [showUpdateResult, setShowUpdateResult] = useState(false);
+    const [updateResult, setUpdateResult] = useState("");
 
     const handleEdit = () => {
         if(!updateScript) {
@@ -38,7 +40,9 @@ const ProjectView = ({ projName }) => {
     }
 
     const handleUpdate = () => {
-        ScriptHelper.exec(`import projects\nprojects.update_project('${projName}')\nresult=1`, (data)=>{
+        ScriptHelper.exec_string_or_error(`import projects\nprojects.update_project('${projName}')\nresult=1`, (data)=>{
+            setShowUpdateResult(true);
+            setUpdateResult(data);
         });
     }
 
@@ -74,6 +78,15 @@ const ProjectView = ({ projName }) => {
     };
 
     const onControlChange = (c) => {
+    };
+
+    const MessageBox = ({ message, onClose }) => {
+        return (
+            <div className="message-box">
+                <p>{message}</p>
+                <button onClick={onClose}>Close</button>
+            </div>
+        );
     };
 
     return (
