@@ -3,13 +3,15 @@ import Draggable from 'react-draggable';
 import { Resizable } from 're-resizable';
 import createControl from './ProjectControls.jsx'
 
-const DesignerItem = ({ control }) => {
+const DesignerItem = ({ control, onControlChange }) => {
     const [width, setWidth] = useState(control.w);
     const [height, setHeight] = useState(control.h);
     const [position, setPosition] = useState({ x: control.x, y: control.y });
 
     const handleDrag = (e, data) => {
-        setPosition({ x: data.x, y: data.y });
+        control.x = data.x;
+        control.y = data.y;
+        onControlChange(control);
     };
 
 return (
@@ -21,8 +23,9 @@ return (
     >
       <Resizable size={{width: width, height: height}}
         onResizeStop={ ( event, direction, elt, delta ) => {
-                setWidth(width + delta.width);
-                setHeight(height + delta.height);
+                control.w = width + delta.width;
+                control.h = height + delta.height;
+                onControlChange(control);
             } }
         enable={{
                     top: false,

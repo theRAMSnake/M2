@@ -13,7 +13,7 @@ import UpdateIcon from '@material-ui/icons/Update';
 import EditorDialog from './dialogs/EditorDialog.jsx'
 
 const testControls = () => {
-    return [{type: "static", value: "value", x: 0, y: 0, w: 100, h:100}];
+    return [{id: "5", type: "static", value: "value", x: 0, y: 0, w: 100, h:100}];
 }
 
 const ProjectView = ({ projName }) => {
@@ -67,6 +67,15 @@ const ProjectView = ({ projName }) => {
         setDesignerMode(event.target.checked);
     };
 
+    const onControlChange = (c) => {
+        for (let i = 0; i < controls.length; i++) {
+            if(controls[i].id === c.id) {
+                controls[i] = JSON.parse(JSON.stringify(c));
+            }
+        }
+        setControls(...controls);
+    };
+
     return (
         <div>
         <ProjectCollectionBar projName={projName}/>
@@ -83,7 +92,7 @@ const ProjectView = ({ projName }) => {
         <div style={containerStyle}>
             {controls.map((c) => (
                 designerMode ?
-                    <DesignerItem control={c} /> :
+                    <DesignerItem control={c} onChange={(x) => onControlChange(x)} /> :
                     <ProjectItem control={c} />
             ))}
         </div>
