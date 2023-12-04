@@ -117,7 +117,7 @@ const ProjectView = ({ projName }) => {
         <div style={containerStyle}>
             {controls.map((c) => (
                 designerMode ?
-                    <DesignerItem control={c} onChange={(x) => onControlChange(x)} /> :
+                    <DesignerItem control={c} onControlChange={(x) => onControlChange(x)} /> :
                     <ProjectItem control={c} />
             ))}
         </div>
