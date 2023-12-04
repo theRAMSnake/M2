@@ -11,8 +11,8 @@ const DesignerItem = ({ control, onControlChange }) => {
     const handleDrag = (e, data) => {
         control.x = data.x;
         control.y = data.y;
-        onControlChange(control);
-        setPosition({x: control.x, y: control.y});
+        props.onControlChange(control);
+        //setPosition({x: control.x, y: control.y});
     };
 
 return (
@@ -26,9 +26,9 @@ return (
         onResizeStop={ ( event, direction, elt, delta ) => {
                 control.w = width + delta.width;
                 control.h = height + delta.height;
-                onControlChange(control);
-                setWidth(control.w);
-                setHeight(control.h);
+                props.onControlChange(control);
+                //setWidth(control.w);
+                //setHeight(control.h);
             } }
         enable={{
                     top: false,
