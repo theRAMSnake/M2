@@ -7,17 +7,17 @@ import {
     Toolbar,
     IconButton,
     Divider,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    Button,
     Checkbox
 } from "@material-ui/core";
 import EditIcon from '@material-ui/icons/Edit';
 import UpdateIcon from '@material-ui/icons/Update';
 import FontDownloadIcon from '@material-ui/icons/FontDownload';
 import EditorDialog from './dialogs/EditorDialog.jsx'
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import Button from '@mui/material/Button';
 import newControl from './ProjectControls.jsx'
 
 const testControls = () => {
@@ -112,6 +112,7 @@ const ProjectView = ({ projName }) => {
 
     const handleNewControl = (c) => {
         controls.push(c);
+        setControls(controls.slice());
     }
 
     return (
