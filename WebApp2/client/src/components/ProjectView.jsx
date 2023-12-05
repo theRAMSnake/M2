@@ -11,7 +11,7 @@ import {
 } from "@material-ui/core";
 import EditIcon from '@material-ui/icons/Edit';
 import UpdateIcon from '@material-ui/icons/Update';
-import FontDownloadIcon from '@material-ui/icons/FontDowload';
+import FontDownloadIcon from '@material-ui/icons/FontDownload';
 import EditorDialog from './dialogs/EditorDialog.jsx'
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
