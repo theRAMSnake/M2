@@ -6,11 +6,19 @@ import ProjectItem from './ProjectItem.jsx'
 import {
     Toolbar,
     IconButton,
+    Divider,
     Checkbox
 } from "@material-ui/core";
 import EditIcon from '@material-ui/icons/Edit';
 import UpdateIcon from '@material-ui/icons/Update';
+import FontDowloadIcon from '@material-ui/icons/FontDowload';
 import EditorDialog from './dialogs/EditorDialog.jsx'
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import Button from '@mui/material/Button';
+import newControl from './ProjectControls.jsx'
 
 const testControls = () => {
     return [{id: "5", type: "static", value: "value", x: 0, y: 0, w: 100, h:100}];
@@ -19,8 +27,8 @@ const testControls = () => {
 const ProjectView = ({ projName }) => {
     const [updateScript, setUpdateScript] = useState(null);
     const [inScriptEditDialog, setInScriptEditDialog] = useState(false);
-    const [designerMode, setDesignerMode] = useState(true);
-    const [controls, setControls] = useState(testControls());
+    const [designerMode, setDesignerMode] = useState(false);
+    const [controls, setControls] = useState([]);
     const [showUpdateResult, setShowUpdateResult] = useState(false);
     const [updateResult, setUpdateResult] = useState("");
 
@@ -82,12 +90,29 @@ const ProjectView = ({ projName }) => {
 
     const MessageBox = ({ message, onClose }) => {
         return (
-            <div className="message-box">
-                <p>{message}</p>
-                <button onClick={onClose}>Close</button>
-            </div>
+            <Dialog
+                open={true}
+                onClose={onClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        {updateResult}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={onClose} color="primary" autoFocus>
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
         );
     };
+
+    const handleNewControl = (c) => {
+        controls.push(c);
+    }
 
     return (
         <div>
@@ -106,6 +131,11 @@ const ProjectView = ({ projName }) => {
              <UpdateIcon/>
            </IconButton>
            <Checkbox checked={designerMode} onChange={handleCheckboxChange}/>
+           {designerMode && <Divider/>}
+           {designerMode &&
+               <IconButton edge="start" onClick={() => handleNewControl(newControl("static"))}>
+                 <FontDowloadIcon/>
+               </IconButton>}
         </Toolbar>
         {inScriptEditDialog && <EditorDialog onClose={handleCloseDialog} text={updateScript} onSave={handleScriptSave} mode="python" />}
         <div style={containerStyle}>
