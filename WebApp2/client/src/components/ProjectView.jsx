@@ -18,7 +18,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import UpdateIcon from '@material-ui/icons/Update';
 import FontDownloadIcon from '@material-ui/icons/FontDownload';
 import EditorDialog from './dialogs/EditorDialog.jsx'
-import newControl from './ProjectControls.jsx'
+import { newControl } from './ProjectControls.jsx'
 
 const testControls = () => {
     return [{id: "5", type: "static", value: "value", x: 0, y: 0, w: 100, h:100}];
