@@ -113,6 +113,7 @@ const ProjectView = ({ projName }) => {
     const handleNewControl = (c) => {
         controls.push(c);
         setControls(controls.slice());
+        console.log(controls);
     }
 
     return (

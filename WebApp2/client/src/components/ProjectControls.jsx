@@ -20,8 +20,8 @@ function generateRandomString(length) {
     return result;
 }
 
-export const newControl = (src) => {
-    return {id: generateRandomString(10), type: "static", value: "value", x: 0, y: 0, w: 100, h:100};
+export const newControl = (t) => {
+    return {id: generateRandomString(10), type: t, value: "value", x: 0, y: 0, w: 100, h:100};
 }
 
 export default createControl;
