@@ -9,10 +9,10 @@ const ProjectItem = ({ control }) => {
 return (
     <div style={{
             position: 'absolute', // Use absolute positioning
-            left: `${position.x}px`, // Set left position
-            top: `${position.y}px`, // Set top position
-            width: `${width}px`, // Set width
-            height: `${height}px`, // Set height
+            left: `${control.x}px`, // Set left position
+            top: `${control.y}px`, // Set top position
+            width: `${control.w}px`, // Set width
+            height: `${control.h}px`, // Set height
             border: '1px solid white'
         }}
     >

@@ -4,31 +4,24 @@ import { Resizable } from 're-resizable';
 import createControl from './ProjectControls.jsx'
 
 const DesignerItem = ({ control, onControlChange }) => {
-    const [width, setWidth] = useState(control.w);
-    const [height, setHeight] = useState(control.h);
-    const [position, setPosition] = useState({ x: control.x, y: control.y });
-
     const handleDrag = (e, data) => {
         control.x = data.x;
         control.y = data.y;
         onControlChange(control);
-        //setPosition({x: control.x, y: control.y});
     };
 
 return (
     <Draggable
       bounds="parent"
       handle=".drag-handle"
-      position={position}
+      position={{x: control.x, y: control.y}}
       onStop={handleDrag}
     >
-      <Resizable size={{width: width, height: height}}
+      <Resizable size={{width: control.w, height: control.h}}
         onResizeStop={ ( event, direction, elt, delta ) => {
-                control.w = width + delta.width;
-                control.h = height + delta.height;
+                control.w = control.w + delta.width;
+                control.h = control.h + delta.height;
                 onControlChange(control);
-                //setWidth(control.w);
-                //setHeight(control.h);
             } }
         enable={{
                     top: false,
