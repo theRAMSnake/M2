@@ -299,7 +299,7 @@ function MainPage(props) {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" className={classes.title}>
-                        Materia v3.7.119
+                        Materia v3.7.120
                     </Typography>
                     <ContractsCtrl/>
                     <SearchBar onSubmit={searchBarSubmit}/>
@@ -319,11 +319,6 @@ function MainPage(props) {
                     <Button variant="contained" color="primary" size="small" onClick={logout_clicked}>Logout</Button>
                 </Toolbar>
             </AppBar>
-            <Snackbar open={snackOpen} autoHideDuration={6000} onClose={handleSnackClose}>
-                <MuiAlert elevation={6} variant="filled" onClose={handleSnackClose} severity="error">
-                    {lastError}
-                </MuiAlert>
-            </Snackbar>
             {showAddDlg && <AddItemDialog onClose={onAddDialogClosed}/>}
             <Divider/>
             <Grid  style={{paddingTop:'5px'}} container direction="column" justify="center" alignItems="center">

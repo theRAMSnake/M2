@@ -11,7 +11,7 @@ import {
 } from "@material-ui/core";
 import EditIcon from '@material-ui/icons/Edit';
 import UpdateIcon from '@material-ui/icons/Update';
-import FontDowloadIcon from '@material-ui/icons/FontDowload';
+import FontDownloadIcon from '@material-ui/icons/FontDowload';
 import EditorDialog from './dialogs/EditorDialog.jsx'
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -134,7 +134,7 @@ const ProjectView = ({ projName }) => {
            {designerMode && <Divider/>}
            {designerMode &&
                <IconButton edge="start" onClick={() => handleNewControl(newControl("static"))}>
-                 <FontDowloadIcon/>
+                 <FontDownloadIcon/>
                </IconButton>}
         </Toolbar>
         {inScriptEditDialog && <EditorDialog onClose={handleCloseDialog} text={updateScript} onSave={handleScriptSave} mode="python" />}
