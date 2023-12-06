@@ -42,7 +42,7 @@ return (
             </div>
             {createControl(control)}
         </div>
-      //</Resizable>
+    {/*</Resizable>*/}
     </Draggable>
   );
 };
