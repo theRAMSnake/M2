@@ -5,8 +5,8 @@ import createControl from './ProjectControls.jsx'
 
 const DesignerItem = ({ control, onControlChange }) => {
     const handleDrag = (e, data) => {
-        const snappedX = Math.round(data.x / 5) * 5;
-        const snappedY = Math.round(data.y / 5) * 5;
+        const snappedX = Math.round(data.x / 10) * 10;
+        const snappedY = Math.round(data.y / 10) * 10;
         control.x = snappedX;
         control.y = snappedY;
         onControlChange(control);
@@ -23,6 +23,8 @@ return (
         onResizeStop={ ( event, direction, elt, delta ) => {
                 control.w = control.w + delta.width;
                 control.h = control.h + delta.height;
+                control.w = Math.round(control.w / 10) * 10;
+                control.h = Math.round(control.h / 10) * 10;
                 onControlChange(control);
             } }
         enable={{
