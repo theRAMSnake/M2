@@ -5,8 +5,10 @@ import createControl from './ProjectControls.jsx'
 
 const DesignerItem = ({ control, onControlChange }) => {
     const handleDrag = (e, data) => {
-        control.x = data.x;
-        control.y = data.y;
+        const snappedX = Math.round(data.x / 5) * 5;
+        const snappedY = Math.round(data.y / 5) * 5;
+        control.x = snappedX;
+        control.y = snappedY;
         onControlChange(control);
     };
 
@@ -17,7 +19,7 @@ return (
       position={{x: control.x, y: control.y}}
       onStop={handleDrag}
     >
-      <Resizable size={{width: control.w, height: control.h}}
+    {/*<Resizable size={{width: control.w, height: control.h}}
         onResizeStop={ ( event, direction, elt, delta ) => {
                 control.w = control.w + delta.width;
                 control.h = control.h + delta.height;
@@ -33,14 +35,14 @@ return (
                     bottomLeft: false,
                     topLeft: false
                 }}
-        >
+        >*/}
         <div style={{ border: '1px solid white', height: '100%', width: '100%', position:'absolute' }}>
             <div className="drag-handle" style={{ cursor: 'move', backgroundColor: 'lightblue', userSelect: 'none' }}>
               Drag here
             </div>
             {createControl(control)}
         </div>
-      </Resizable>
+      //</Resizable>
     </Draggable>
   );
 };
