@@ -36,7 +36,7 @@ return (
                     topLeft: false
                 }}
         >*/}
-        <div style={{ border: '1px solid white', height: '100%', width: '100%', position:'absolute' }}>
+        <div style={{ border: '1px solid white', height: '100', width: '100', position:'absolute' }}>
             <div className="drag-handle" style={{ cursor: 'move', backgroundColor: 'lightblue', userSelect: 'none' }}>
               Drag here
             </div>
