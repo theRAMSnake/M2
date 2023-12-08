@@ -89,7 +89,7 @@ def update_projects():
 
 def create_project_control(name, control_definition):
     for p in collection.Collection("projects").get_items():
-        if p.name == projectName:
+        if p.name == name:
             control_definition.elementType = "control"
             return m4.create("", "object", control_definition, p.id);
 

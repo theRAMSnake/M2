@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ScriptHelper from '../modules/script_helper'
 import ProjectCollectionBar from './ProjectCollectionBar.jsx'
 import DesignerItem from './DesignerItem.jsx'
+import Materia from '../modules/materia_request'
 import ProjectItem from './ProjectItem.jsx'
 import {
     Toolbar,
@@ -33,7 +34,15 @@ const ProjectView = ({ projName, projectId }) => {
     const [updateResult, setUpdateResult] = useState("");
 
     useEffect(() => {
-      // If colName starts with "=", we remove that character.
+      const req = {
+          operation: "query",
+          filter: `ChildOf("${projectId}") AND .elementType = "control"`
+      };
+
+      Materia.exec(req, (r) =>
+      {
+          setControls(r.object_list);
+      });
     }, [projectId]);
 
     const handleEdit = () => {
