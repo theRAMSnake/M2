@@ -32,6 +32,10 @@ const ProjectView = ({ projName, projectId }) => {
     const [showUpdateResult, setShowUpdateResult] = useState(false);
     const [updateResult, setUpdateResult] = useState("");
 
+    useEffect(() => {
+      // If colName starts with "=", we remove that character.
+    }, [projectId]);
+
     const handleEdit = () => {
         if(!updateScript) {
             ScriptHelper.exec_string("import projects\nresult=projects.project_update_script('" + projName + "')", (data)=>{
