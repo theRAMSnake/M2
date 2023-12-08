@@ -111,7 +111,7 @@ const ProjectView = ({ projName }) => {
     };
 
     const handleNewControl = (c) => {
-        let script = `import projects\nimport m4\n{ScriptHelper.jsonToM4O("a", JSON.stringify(c))}\nresult = projects.create_project_control({projName}, a)`;
+        let script = `import projects\nimport m4\n${ScriptHelper.jsonToM4O("a", JSON.stringify(c))}\nresult = projects.create_project_control(${projName}, a)`;
         ScriptHelper.exec_string(script, (data)=>{
             c.id = data;
             controls.push(c);
