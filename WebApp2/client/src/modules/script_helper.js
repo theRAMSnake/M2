@@ -48,6 +48,14 @@ static exec_string_or_error (script, cb) {
       }
    });
 };
+static jsonToM4O = (name, json) => {
+      let res = name + " = m4.MateriaObject()\n";
+      let ob = JSON.parse(json);
+      for (const key in ob) {
+          res = res + name + "." + key + "='" + ob[key] + "'\n"
+      }
+      return res;
+  }
 };
 
 export default ScriptHelper;

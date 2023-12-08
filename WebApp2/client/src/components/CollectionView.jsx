@@ -157,14 +157,6 @@ const CollectionView = ({ colName }) => {
       setInHeaderDialog(true);
   }
 
-  const jsonToM4O = (name, json) => {
-      let res = name + " = m4.MateriaObject()\n";
-      let ob = JSON.parse(json);
-      for (const key in ob) {
-          res = res + name + "." + key + "='" + ob[key] + "'\n"
-      }
-      return res;
-  }
   const handleHeaderDialogSave = (text) => {
       setInHeaderDialog(false);
       Materia.postEdit(content.header.id, text);
@@ -177,7 +169,7 @@ const CollectionView = ({ colName }) => {
     setIsOpen(false);
     setChanged(false);
     if(isAdd) {
-       let script = "import collection\nimport m4\n" + jsonToM4O("a", text) + "\ncol = collection.Collection('" + adjustedColName + "')\ncol.add(a)\nresult = 1";
+       let script = "import collection\nimport m4\n" + ScriptHelper.jsonToM4O("a", text) + "\ncol = collection.Collection('" + adjustedColName + "')\ncol.add(a)\nresult = 1";
        Materia.req(JSON.stringify({ operation: "run", script: script }), (r) => {
           let result = JSON.parse(r);
           if(result.result) {

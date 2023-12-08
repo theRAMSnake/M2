@@ -86,3 +86,11 @@ def update_projects():
             ev = m4.MateriaObject()
             ev.result = f"Project {p.name} failed: {e.text}"
             events.add(ev)
+
+def create_project_control(name, control_definition):
+    for p in collection.Collection("projects").get_items():
+        if p.name == projectName:
+            control_definition.elementType = "control"
+            return m4.create("", "object", control_definition, p.id);
+
+    raise ValueError("Project not found")
