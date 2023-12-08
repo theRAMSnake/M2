@@ -2,6 +2,11 @@ import React, {useState} from 'react';
 import Draggable from 'react-draggable';
 import { Resizable } from 're-resizable';
 import createControl from './ProjectControls.jsx'
+import {
+    IconButton
+} from "@material-ui/core";
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import EditIcon from '@material-ui/icons/Edit';
 
 const DesignerItem = ({ control, onControlChange }) => {
     const handleDrag = (e, data) => {
@@ -43,6 +48,12 @@ return (
             <div className="drag-handle" style={{ cursor: 'move', backgroundColor: 'lightblue', userSelect: 'none' }}>
               Drag here
             </div>
+            <IconButton size="small" style={{ position: 'absolute', bottom: 0, left: 0 }}>
+              <DeleteForeverIcon fontSize="inherit"/>
+            </IconButton>
+            <IconButton size="small" style={{ position: 'absolute', bottom: 0, right: 0 }}>
+              <EditIcon fontSize="inherit"/>
+            </IconButton>
             {createControl(control)}
         </div>
       </Resizable>
