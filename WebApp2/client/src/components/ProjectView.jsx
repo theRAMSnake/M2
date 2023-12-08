@@ -96,6 +96,7 @@ const ProjectView = ({ projName, projectId }) => {
         for (let i = 0; i < controls.length; i++) {
             if(controls[i].id === c.id) {
                 controls[i] = JSON.parse(JSON.stringify(c));
+                Materia.postEdit(c.id, JSON.stringify(c));
             }
         }
         setControls(controls.slice());
