@@ -121,6 +121,7 @@ function MainPage(props) {
     const [rdOpen, setrdOpen] = React.useState(false);
     const [contentType, setContentType] = React.useState("");
     const [projectName, setProjectName] = React.useState("");
+    const [projectId, setProjectId] = React.useState("");
     const [query, setQuery] = React.useState("");
     const [projects, setProjects] = React.useState([]);
     const [strategyPath, setStrategyPath] = React.useState("/");
@@ -171,7 +172,7 @@ function MainPage(props) {
             return (<CollectionView colName={collectionName}/>);
 
         else if(ct == "project")
-            return (<ProjectView projName={projectName}/>);
+            return (<ProjectView projName={projectName} projectId={projectId}/>);
     }
 
     function logout_clicked(e) {
@@ -215,10 +216,11 @@ function MainPage(props) {
         }
     }
 
-    function projectItemClicked(name)
+    function projectItemClicked(name, id)
     {
         setldOpen(false);
         setProjectName(name);
+        setProjectId(id);
         setContentType("project");
     }
 
@@ -299,7 +301,7 @@ function MainPage(props) {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" className={classes.title}>
-                        Materia v3.7.133
+                        Materia v3.7.138
                     </Typography>
                     <ContractsCtrl/>
                     <SearchBar onSubmit={searchBarSubmit}/>
@@ -356,7 +358,7 @@ function MainPage(props) {
                 <Divider />
                 <List>
                     {projects.map((p, index) => (
-                    <ListItem button key={p.name} onClick={() => {projectItemClicked(p.name)}}>
+                    <ListItem button key={p.name} onClick={() => {projectItemClicked(p.name, p.id)}}>
                         <ListItemText primary={p.name} />
                     </ListItem>
                     ))}
