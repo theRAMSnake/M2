@@ -7,8 +7,11 @@ import {
 } from "@material-ui/core";
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import EditIcon from '@material-ui/icons/Edit';
+import ConfirmationDialog from './dialogs/ConfirmationDialog.jsx'
 
 const DesignerItem = ({ control, onControlChange }) => {
+    const [inDeleteDialog, setInDeleteDialog] = useState(false);
+
     const handleDrag = (e, data) => {
         const snappedX = Math.round(data.x / 10) * 10;
         const snappedY = Math.round(data.y / 10) * 10;
@@ -18,9 +21,22 @@ const DesignerItem = ({ control, onControlChange }) => {
     };
 
     const handleDelete = () => {
+        setInDeleteDialog(true);
     }
 
     const handleModify = () => {
+    }
+
+    function onDeleteDialogCancel()
+    {
+        setInDeleteDialog(false);
+    }
+
+    function onDeleteDialogOk()
+    {
+        setInDeleteDialog(false);
+        control.deleteFlag = true;
+        onControlChange(control);
     }
 
 return (
@@ -30,6 +46,7 @@ return (
       position={{x: control.x, y: control.y}}
       onStop={handleDrag}
     >
+      <ConfirmationDialog open={inDeleteDialog} question="delete" caption="confirm delete" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
       <Resizable size={{width: control.w, height: control.h}}
         onResizeStop={ ( event, direction, elt, delta ) => {
                 control.w = control.w + delta.width;
@@ -58,10 +75,10 @@ return (
             <div className="drag-handle" style={{ cursor: 'move', backgroundColor: 'lightblue', userSelect: 'none' }}>
               Drag here
             </div>
-            <IconButton size="small" style={{ position: 'absolute', bottom: 0, left: 0 }} onClick={() => handleDelete()>
+            <IconButton size="small" style={{ position: 'absolute', bottom: 0, left: 0 }} onClick={() => handleDelete()}>
               <DeleteForeverIcon fontSize="inherit"/>
             </IconButton>
-            <IconButton size="small" style={{ position: 'absolute', bottom: 0, right: 0 }} onClick={() => handleModify()>
+            <IconButton size="small" style={{ position: 'absolute', bottom: 0, right: 0 }} onClick={() => handleModify()}>
               <EditIcon fontSize="inherit"/>
             </IconButton>
             {createControl(control)}

@@ -104,8 +104,11 @@ const ProjectView = ({ projName, projectId }) => {
     const onControlChange = (c) => {
         for (let i = 0; i < controls.length; i++) {
             if(controls[i].id === c.id) {
-                controls[i] = JSON.parse(JSON.stringify(c));
-                Materia.postEdit(c.id, JSON.stringify(c));
+                if(c.deleteFlag) {
+                } else {
+                    controls[i] = JSON.parse(JSON.stringify(c));
+                    Materia.postEdit(c.id, JSON.stringify(c));
+                }
             }
         }
         setControls(controls.slice());
