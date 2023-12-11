@@ -41,7 +41,7 @@ const ProjectView = ({ projName, projectId }) => {
 
       Materia.exec(req, (r) =>
       {
-          newControls = [];
+          let newControls = [];
           for (let i = 0; i < r.object_list.length; i++) {
               let newControl = {...r.object_list[i]};
               newControl.x = parseInt(newControl.x, 10);
@@ -102,16 +102,21 @@ const ProjectView = ({ projName, projectId }) => {
     };
 
     const onControlChange = (c) => {
+        let newControls = [];
+
         for (let i = 0; i < controls.length; i++) {
             if(controls[i].id === c.id) {
                 if(c.deleteFlag) {
+                    Materia.postDelete(c.id);
+                    continue;
                 } else {
                     controls[i] = JSON.parse(JSON.stringify(c));
                     Materia.postEdit(c.id, JSON.stringify(c));
                 }
             }
+            newControls.push(controls[i]);
         }
-        setControls(controls.slice());
+        setControls(newControls);
     };
 
     const MessageBox = ({ message, onClose }) => {
