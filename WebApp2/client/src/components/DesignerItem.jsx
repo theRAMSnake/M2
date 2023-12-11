@@ -17,6 +17,12 @@ const DesignerItem = ({ control, onControlChange }) => {
         onControlChange(control);
     };
 
+    const handleDelete = () => {
+    }
+
+    const handleModify = () => {
+    }
+
 return (
     <Draggable
       bounds="parent"
@@ -43,15 +49,19 @@ return (
                     topLeft: false
                 }}
         style={{position: 'absolute'}}
+        minWidth={50}
+        minHeight={25}
+        maxWidth={500}
+        maxHeight={500}>
         >
         <div style={{ border: '1px solid white', height: '100%', width: '100%', position:'absolute' }}>
             <div className="drag-handle" style={{ cursor: 'move', backgroundColor: 'lightblue', userSelect: 'none' }}>
               Drag here
             </div>
-            <IconButton size="small" style={{ position: 'absolute', bottom: 0, left: 0 }}>
+            <IconButton size="small" style={{ position: 'absolute', bottom: 0, left: 0 }} onClick={() => handleDelete()>
               <DeleteForeverIcon fontSize="inherit"/>
             </IconButton>
-            <IconButton size="small" style={{ position: 'absolute', bottom: 0, right: 0 }}>
+            <IconButton size="small" style={{ position: 'absolute', bottom: 0, right: 0 }} onClick={() => handleModify()>
               <EditIcon fontSize="inherit"/>
             </IconButton>
             {createControl(control)}

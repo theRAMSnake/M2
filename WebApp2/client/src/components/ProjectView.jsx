@@ -41,7 +41,15 @@ const ProjectView = ({ projName, projectId }) => {
 
       Materia.exec(req, (r) =>
       {
-          setControls(r.object_list);
+          newControls = [];
+          for (let i = 0; i < r.object_list.length; i++) {
+              let newControl = {...r.object_list[i]};
+              newControl.x = parseInt(newControl.x, 10);
+              newControl.y = parseInt(newControl.y, 10);
+              newControl.w = parseInt(newControl.w, 10);
+              newControl.h = parseInt(newControl.h, 10);
+          }
+          setControls(newControls);
       });
     }, [projectId]);
 
