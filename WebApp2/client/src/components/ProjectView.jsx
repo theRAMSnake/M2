@@ -48,6 +48,7 @@ const ProjectView = ({ projName, projectId }) => {
               newControl.y = parseInt(newControl.y, 10);
               newControl.w = parseInt(newControl.w, 10);
               newControl.h = parseInt(newControl.h, 10);
+              newControls.push(newControl);
           }
           setControls(newControls);
       });
