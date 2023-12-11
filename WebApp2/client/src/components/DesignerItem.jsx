@@ -52,7 +52,7 @@ return (
         minWidth={50}
         minHeight={25}
         maxWidth={500}
-        maxHeight={500}>
+        maxHeight={500}
         >
         <div style={{ border: '1px solid white', height: '100%', width: '100%', position:'absolute' }}>
             <div className="drag-handle" style={{ cursor: 'move', backgroundColor: 'lightblue', userSelect: 'none' }}>
