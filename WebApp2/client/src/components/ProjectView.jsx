@@ -176,7 +176,6 @@ const ProjectView = ({ projName, projectId }) => {
         {inScriptEditDialog && <EditorDialog onClose={handleCloseDialog} text={updateScript} onSave={handleScriptSave} mode="python" />}
         <div style={containerStyle}>
             {controls.map((c) => (
-                console.log(c);
                 designerMode ?
                     <DesignerItem control={c} onControlChange={(x) => onControlChange(x)} /> :
                     <ProjectItem control={c} />
