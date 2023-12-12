@@ -47,7 +47,7 @@ return (
       onStop={handleDrag}
     >
       <ConfirmationDialog open={inDeleteDialog} question="delete" caption="confirm delete" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
-      <Resizable size={{width: control.w, height: control.h}}
+      {null && <Resizable size={{width: control.w, height: control.h}}
         onResizeStop={ ( event, direction, elt, delta ) => {
                 control.w = control.w + delta.width;
                 control.h = control.h + delta.height;
@@ -83,7 +83,7 @@ return (
             </IconButton>
             {createControl(control)}
         </div>
-      </Resizable>
+      </Resizable>}
     </Draggable>
   );
 };
