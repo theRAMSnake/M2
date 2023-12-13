@@ -39,14 +39,11 @@ const DesignerItem = ({ control, onControlChange }) => {
         onControlChange(control);
     }
 
-    console.log(control);
-
 return (
-    <div>
-    {null && <Draggable
+    <Draggable
       bounds="parent"
       handle=".drag-handle"
-      position={{x: control.x, y: control.y}}
+      //position={{x: control.x, y: control.y}}
       onStop={handleDrag}
     >
       {null && <ConfirmationDialog open={inDeleteDialog} question="delete" caption="confirm delete" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />}
@@ -87,8 +84,7 @@ return (
             {createControl(control)}
         </div>
       </Resizable>}
-    </Draggable>}
-    </div>
+    </Draggable>
   );
 };
 
