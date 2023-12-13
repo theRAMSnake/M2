@@ -42,7 +42,7 @@ const DesignerItem = ({ control, onControlChange }) => {
     console.log(control);
 
 return (
-    <div/>
+    <div>
     {null && <Draggable
       bounds="parent"
       handle=".drag-handle"
@@ -88,6 +88,7 @@ return (
         </div>
       </Resizable>}
     </Draggable>}
+    </div>
   );
 };
 
