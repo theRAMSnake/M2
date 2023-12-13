@@ -39,6 +39,8 @@ const DesignerItem = ({ control, onControlChange }) => {
         onControlChange(control);
     }
 
+    console.log(control);
+
 return (
     <Draggable
       bounds="parent"
