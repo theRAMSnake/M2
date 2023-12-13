@@ -42,7 +42,8 @@ const DesignerItem = ({ control, onControlChange }) => {
     console.log(control);
 
 return (
-    <Draggable
+    <div/>
+    {null && <Draggable
       bounds="parent"
       handle=".drag-handle"
       position={{x: control.x, y: control.y}}
@@ -86,7 +87,7 @@ return (
             {createControl(control)}
         </div>
       </Resizable>}
-    </Draggable>
+    </Draggable>}
   );
 };
 
