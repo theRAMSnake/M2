@@ -46,6 +46,9 @@ return (
       //position={{x: control.x, y: control.y}}
       onStop={handleDrag}
     >
+      <div>
+         tests
+      </div>
       {null && <ConfirmationDialog open={inDeleteDialog} question="delete" caption="confirm delete" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />}
       {null && <Resizable size={{width: control.w, height: control.h}}
         onResizeStop={ ( event, direction, elt, delta ) => {
