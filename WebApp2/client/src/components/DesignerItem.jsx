@@ -38,7 +38,6 @@ const DesignerItem = ({ control, onControlChange }) => {
         control.deleteFlag = true;
         onControlChange(control);
     }
-    // {null && <ConfirmationDialog open={inDeleteDialog} question="delete" caption="confirm delete" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />}
 
 return (
     <Draggable
@@ -72,6 +71,7 @@ return (
         maxHeight={500}
         >
         <div style={{ border: '1px solid white', height: '100%', width: '100%', position:'absolute' }}>
+            <ConfirmationDialog open={inDeleteDialog} question="delete" caption="confirm delete" onNo={onDeleteDialogCancel} onYes={onDeleteDialogOk} />
             <div className="drag-handle" style={{ cursor: 'move', backgroundColor: 'lightblue', userSelect: 'none' }}>
               Drag here
             </div>
