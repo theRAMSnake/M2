@@ -12,6 +12,10 @@ def create_project(name):
     uscript.code = ""
     m4.create("", "object", uscript, i);
 
+    state = m4.MateriaObject()
+    state.elementType = "state"
+    m4.create("", "object", state, i);
+
 def bind_collection(projectName, collectionName):
     for p in collection.Collection("projects").get_items():
         if p.name == projectName:
@@ -70,12 +74,19 @@ def unbind_collection(projectName, colName):
     raise ValueError("Project not found")
 
 def update_project(name):
+    code_to_exec = ""
+    state_obj = None
     for p in collection.Collection("projects").get_items():
         if p.name == name:
             children = m4.query_expr(f'ChildOf("{p.id}")')
             for c in children:
                 if c.elementType == "update_script":
-                    exec(c.code)
+                    code_to_exec = c.code
+                if c.elementType == "state":
+                    state_obj = c
+
+    exec(code_to_exec)
+    m4.modify(state_obj.id, state_obj)
 
 def update_projects():
     events = collection.Collection("events")
