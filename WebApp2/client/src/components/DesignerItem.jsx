@@ -3,14 +3,37 @@ import Draggable from 'react-draggable';
 import { Resizable } from 're-resizable';
 import createControl from './ProjectControls.jsx'
 import {
-    IconButton
+    IconButton,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    TextField,
+    Button
 } from "@material-ui/core";
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import EditIcon from '@material-ui/icons/Edit';
 import ConfirmationDialog from './dialogs/ConfirmationDialog.jsx'
 
+const DesignerItemEditor = ({ content }) => {
+    return <Dialog fullWidth onClose={props.onCanceled} open={true}>
+        <DialogContent>
+           {content}
+        </DialogContent>
+        <DialogActions>
+            <Button variant="contained" onClick={props.onCanceled} color="primary">
+                Cancel
+            </Button>
+            <Button variant="contained" onClick={() => props.onFinished()} color="primary" >
+                Ok
+            </Button>
+        </DialogActions>
+    </Dialog>
+}
+
 const DesignerItem = ({ control, onControlChange }) => {
     const [inDeleteDialog, setInDeleteDialog] = useState(false);
+    const [inModifyDialog, setInModifyDialog] = useState(false);
+    const [editorControl, setEditorControl] = useState(null);
 
     const handleDrag = (e, data) => {
         const snappedX = Math.round(data.x / 10) * 10;
@@ -25,6 +48,20 @@ const DesignerItem = ({ control, onControlChange }) => {
     }
 
     const handleModify = () => {
+        setInModifyDialog(true);
+    }
+
+    const onEditorControlChanged = (c) => {
+        setEditorControl(c);
+    }
+
+    const onEditorCanceled = () => {
+        setInModifyDialog(false);
+    }
+
+    const onEditorFinished = () => {
+        onControlChange(editorControl);
+        setInModifyDialog(false);
     }
 
     function onDeleteDialogCancel()
@@ -82,6 +119,7 @@ return (
               <EditIcon fontSize="inherit"/>
             </IconButton>
             {createControl(control)}
+            {inModifyDialog && <DesignerItemEditor content={createControlEditor(editorControl, onEditorControlChanged)} onCanceled=onEditorCanceled onFinished=onEditorFinished/>}
         </div>
       </Resizable>
     </Draggable>
