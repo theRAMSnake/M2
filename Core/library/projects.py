@@ -75,7 +75,7 @@ def unbind_collection(projectName, colName):
 
 def update_project(name):
     code_to_exec = ""
-    state_obj = None
+    state = None
     for p in collection.Collection("projects").get_items():
         if p.name == name:
             children = m4.query_expr(f'ChildOf("{p.id}")')
@@ -83,10 +83,10 @@ def update_project(name):
                 if c.elementType == "update_script":
                     code_to_exec = c.code
                 if c.elementType == "state":
-                    state_obj = c
+                    state = c
 
     exec(code_to_exec)
-    m4.modify(state_obj.id, state_obj)
+    m4.modify(state_obj.id, state)
 
 def update_projects():
     events = collection.Collection("events")
@@ -95,7 +95,7 @@ def update_projects():
             update_project(p.name)
         except Exception as e:
             ev = m4.MateriaObject()
-            ev.result = f"Project {p.name} failed: {e.text}"
+            ev.result = f"Project {p.name} failed: {e}"
             events.add(ev)
 
 def create_project_control(name, control_definition):
