@@ -8,7 +8,7 @@ const Static = ({ control }) => {
       );
 };
 
-const StaticEditor = ({ control, changeCb }) => {
+export const StaticEditor = ({ control, changeCb }) => {
     return (
         <div>
             {control.value}
