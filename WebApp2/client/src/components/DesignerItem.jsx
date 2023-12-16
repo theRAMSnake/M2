@@ -119,7 +119,7 @@ return (
               <EditIcon fontSize="inherit"/>
             </IconButton>
             {createControl(control)}
-            {inModifyDialog && <DesignerItemEditor content={createControlEditor(editorControl, onEditorControlChanged)} onCanceled=onEditorCanceled onFinished=onEditorFinished/>}
+            {inModifyDialog && <DesignerItemEditor content={createControlEditor(editorControl, onEditorControlChanged)} onCanceled={onEditorCanceled} onFinished={onEditorFinished}/>}
         </div>
       </Resizable>
     </Draggable>
