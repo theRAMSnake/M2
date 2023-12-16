@@ -17,7 +17,7 @@ import ConfirmationDialog from './dialogs/ConfirmationDialog.jsx'
 const DesignerItemEditor = ({ content, onCanceled, onFinished }) => {
     return <Dialog fullWidth onClose={onCanceled} open={true}>
         <DialogContent>
-           {content}
+           {/*content*/}
         </DialogContent>
         <DialogActions>
             <Button variant="contained" onClick={onCanceled} color="primary">
