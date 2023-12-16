@@ -17,7 +17,7 @@ import ConfirmationDialog from './dialogs/ConfirmationDialog.jsx'
 const DesignerItemEditor = ({ content, onCanceled, onFinished }) => {
     return <Dialog fullWidth onClose={onCanceled} open={true}>
         <DialogContent>
-           {/*content*/}
+           {content}
         </DialogContent>
         <DialogActions>
             <Button variant="contained" onClick={onCanceled} color="primary">
@@ -119,7 +119,7 @@ return (
               <EditIcon fontSize="inherit"/>
             </IconButton>
             {createControl(control)}
-            {inModifyDialog && <DesignerItemEditor content={createControlEditor(editorControl, onEditorControlChanged)} onCanceled={onEditorCanceled} onFinished={onEditorFinished}/>}
+            {inModifyDialog && <DesignerItemEditor content={createControl(control)/*createControlEditor(editorControl, onEditorControlChanged)*/} onCanceled={onEditorCanceled} onFinished={onEditorFinished}/>}
         </div>
       </Resizable>
     </Draggable>
