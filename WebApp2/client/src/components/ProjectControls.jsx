@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import Static from './project_controls/Static.jsx'
-import StaticEditor from './project_controls/Static.jsx'
+import {StaticEditor} from './project_controls/Static.jsx'
 
 export const createControlEditor = (src, changeCb) => {
     if(src.type === "static") {

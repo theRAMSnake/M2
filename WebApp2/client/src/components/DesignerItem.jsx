@@ -33,7 +33,7 @@ const DesignerItemEditor = ({ content }) => {
 const DesignerItem = ({ control, onControlChange }) => {
     const [inDeleteDialog, setInDeleteDialog] = useState(false);
     const [inModifyDialog, setInModifyDialog] = useState(false);
-    const [editorControl, setEditorControl] = useState(null);
+    const [editorControl, setEditorControl] = useState({...control});
 
     const handleDrag = (e, data) => {
         const snappedX = Math.round(data.x / 10) * 10;
