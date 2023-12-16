@@ -14,16 +14,16 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import EditIcon from '@material-ui/icons/Edit';
 import ConfirmationDialog from './dialogs/ConfirmationDialog.jsx'
 
-const DesignerItemEditor = ({ content }) => {
-    return <Dialog fullWidth onClose={props.onCanceled} open={true}>
+const DesignerItemEditor = ({ content, onCanceled, onFinished }) => {
+    return <Dialog fullWidth onClose={onCanceled} open={true}>
         <DialogContent>
            {content}
         </DialogContent>
         <DialogActions>
-            <Button variant="contained" onClick={props.onCanceled} color="primary">
+            <Button variant="contained" onClick={onCanceled} color="primary">
                 Cancel
             </Button>
-            <Button variant="contained" onClick={() => props.onFinished()} color="primary" >
+            <Button variant="contained" onClick={() => onFinished()} color="primary" >
                 Ok
             </Button>
         </DialogActions>
