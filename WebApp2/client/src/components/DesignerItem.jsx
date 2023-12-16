@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import Draggable from 'react-draggable';
 import { Resizable } from 're-resizable';
-import createControl from './ProjectControls.jsx'
+import createControl, {createControlEditor} from './ProjectControls.jsx'
 import {
     IconButton,
     Dialog,
