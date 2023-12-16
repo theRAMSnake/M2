@@ -86,7 +86,7 @@ def update_project(name):
                     state = c
 
     exec(code_to_exec)
-    m4.modify(state_obj.id, state)
+    m4.modify(state.id, state)
 
 def update_projects():
     events = collection.Collection("events")
