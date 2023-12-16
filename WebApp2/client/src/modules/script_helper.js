@@ -41,7 +41,7 @@ static exec_string (script, cb) {
 static exec_string_or_error (script, cb) {
    Materia.req(JSON.stringify({ operation: "run", script: script }), (r) => {
       let result = JSON.parse(r);
-      if(result.result !== null) {
+      if(result.result) {
          cb(result.result);
       } else {
          cb(result.error);
