@@ -47,10 +47,6 @@ const DesignerItem = ({ control, onControlChange }) => {
         setInDeleteDialog(true);
     }
 
-    const onEditorControlChanged = (c) => {
-        setEditorControl(c);
-    }
-
     const handleModify = () => {
         setEditor(createControlEditor(control))
         setInModifyDialog(true);

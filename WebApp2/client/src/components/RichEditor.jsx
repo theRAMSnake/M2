@@ -37,4 +37,4 @@ const RichEditor = ({ initialValue, getRefCb }) => {
       );
 };
 
-export default Static;
+export default RichEditor;
