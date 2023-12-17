@@ -33,7 +33,7 @@ const DesignerItemEditor = ({ content, onCanceled, onFinished }) => {
 const DesignerItem = ({ control, onControlChange }) => {
     const [inDeleteDialog, setInDeleteDialog] = useState(false);
     const [inModifyDialog, setInModifyDialog] = useState(false);
-    const [editorControl, setEditorControl] = useState({...control});
+    const [editor, setEditor] = useState(null);
 
     const handleDrag = (e, data) => {
         const snappedX = Math.round(data.x / 10) * 10;
@@ -47,12 +47,13 @@ const DesignerItem = ({ control, onControlChange }) => {
         setInDeleteDialog(true);
     }
 
-    const handleModify = () => {
-        setInModifyDialog(true);
-    }
-
     const onEditorControlChanged = (c) => {
         setEditorControl(c);
+    }
+
+    const handleModify = () => {
+        setEditor(createControlEditor(control))
+        setInModifyDialog(true);
     }
 
     const onEditorCanceled = () => {
@@ -60,7 +61,7 @@ const DesignerItem = ({ control, onControlChange }) => {
     }
 
     const onEditorFinished = () => {
-        onControlChange(editorControl);
+        onControlChange(editor.getContent());
         setInModifyDialog(false);
     }
 
@@ -119,7 +120,7 @@ return (
               <EditIcon fontSize="inherit"/>
             </IconButton>
             {createControl(control)}
-            {inModifyDialog && <DesignerItemEditor content={createControlEditor(editorControl, onEditorControlChanged)} onCanceled={onEditorCanceled} onFinished={onEditorFinished}/>}
+            {inModifyDialog && <DesignerItemEditor content={editor} onCanceled={onEditorCanceled} onFinished={onEditorFinished}/>}
         </div>
       </Resizable>
     </Draggable>
