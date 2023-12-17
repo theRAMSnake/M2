@@ -32,6 +32,7 @@ const ProjectView = ({ projName, projectId }) => {
     const [controls, setControls] = useState([]);
     const [showUpdateResult, setShowUpdateResult] = useState(false);
     const [updateResult, setUpdateResult] = useState("");
+    const [state, setState] = useState(null);
 
     useEffect(() => {
       const req = {
@@ -51,6 +52,16 @@ const ProjectView = ({ projName, projectId }) => {
               newControls.push(newControl);
           }
           setControls(newControls);
+      });
+
+      const req2 = {
+          operation: "query",
+          filter: `ChildOf("${projectId}") AND .elementType = "state"`
+      };
+
+      Materia.exec(req2, (r) =>
+      {
+          setState(r.object_list[0]);
       });
     }, [projectId]);
 
@@ -177,8 +188,8 @@ const ProjectView = ({ projName, projectId }) => {
         <div style={containerStyle}>
             {controls.map((c) => (
                 designerMode ?
-                    <DesignerItem control={c} onControlChange={(x) => onControlChange(x)} /> :
-                    <ProjectItem control={c} />
+                    <DesignerItem control={c} onControlChange={(x) => onControlChange(x)} state={state} /> :
+                    <ProjectItem control={c} state={state} />
             ))}
         </div>
         </div>

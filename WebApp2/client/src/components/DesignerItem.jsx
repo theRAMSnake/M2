@@ -30,7 +30,7 @@ const DesignerItemEditor = ({ content, onCanceled, onFinished }) => {
     </Dialog>
 }
 
-const DesignerItem = ({ control, onControlChange }) => {
+const DesignerItem = ({ control, onControlChange, state }) => {
     const [inDeleteDialog, setInDeleteDialog] = useState(false);
     const [inModifyDialog, setInModifyDialog] = useState(false);
     const [editor, setEditor] = useState(null);
@@ -115,7 +115,7 @@ return (
             <IconButton size="small" style={{ position: 'absolute', bottom: 0, right: 0 }} onClick={() => handleModify()}>
               <EditIcon fontSize="inherit"/>
             </IconButton>
-            {createControl(control)}
+            {createControl(control, state)}
             {inModifyDialog && <DesignerItemEditor content={editor.render()} onCanceled={onEditorCanceled} onFinished={onEditorFinished}/>}
         </div>
       </Resizable>

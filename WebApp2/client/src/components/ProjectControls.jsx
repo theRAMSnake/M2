@@ -10,9 +10,9 @@ export const createControlEditor = (src) => {
     }
 }
 
-const createControl = (src) => {
+const createControl = (src, state) => {
     if(src.type === "static") {
-        return (<Static control={src}/>);
+        return (<Static control={src} state={state}/>);
     } else {
         return (<div>error</div>);
     }
