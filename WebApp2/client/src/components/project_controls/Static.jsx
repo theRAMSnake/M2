@@ -1,5 +1,5 @@
 import React, {useState, useRef} from 'react';
-import RichEditor from './RichEditor.jsx'
+import RichEditor from '../RichEditor.jsx'
 
 const Static = ({ control }) => {
     return (
