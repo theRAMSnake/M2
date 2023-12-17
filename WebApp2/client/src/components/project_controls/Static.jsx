@@ -3,9 +3,7 @@ import RichEditor from '../RichEditor.jsx'
 
 const Static = ({ control }) => {
     return (
-        <div>
-            {control.value}
-        </div>
+        <div dangerouslySetInnerHTML={control.value} </div>
       );
 };
 
