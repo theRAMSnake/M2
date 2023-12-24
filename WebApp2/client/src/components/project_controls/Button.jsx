@@ -3,13 +3,13 @@ import {
     Button
 } from "@material-ui/core";
 
-const Button = ({ control, state }) => {
+const PushButton = ({ control, state }) => {
     return (
         <Button variant="contained">{control.value}</Button>
       );
 };
 
-export class ButtonEditor extends React.Component {
+export class PushButtonEditor extends React.Component {
     constructor(props) {
         super(props);
     }
@@ -26,4 +26,4 @@ export class ButtonEditor extends React.Component {
     }
 }
 
-export default Button;
+export default PushButton;

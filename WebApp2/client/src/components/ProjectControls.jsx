@@ -1,14 +1,14 @@
 import React, {useState} from 'react';
 import Static from './project_controls/Static.jsx'
 import {StaticEditor} from './project_controls/Static.jsx'
-import Button from './project_controls/Button.jsx'
-import {ButtonEditor} from './project_controls/Button.jsx'
+import PushButton from './project_controls/Button.jsx'
+import {PushButtonEditor} from './project_controls/Button.jsx'
 
 export const createControlEditor = (src) => {
     if(src.type === "static") {
         return new StaticEditor({control: src});
     } else if(src.type === "button") {
-        return new ButtonEditor({control: src});
+        return new PushButtonEditor({control: src});
     } else {
         return (<div>error</div>);
     }
@@ -18,7 +18,7 @@ const createControl = (src, state) => {
     if(src.type === "static") {
         return (<Static control={src} state={state}/>);
     } else if(src.type === "button") {
-        return (<Button control={src}/>);
+        return (<PushButton control={src}/>);
     } else {
         return (<div>error</div>);
     }
