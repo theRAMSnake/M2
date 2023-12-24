@@ -2,7 +2,8 @@ import React, {useState, useRef} from 'react';
 import RichEditor from '../RichEditor.jsx'
 
 function replaceTemplateString(content, state) {
-  console.log(content)
+  console.log(content);
+  console.log(state);
   return content.replace(/\${(.*?)}/g, (match, path) => {
     const keys = path.split('.');
 
