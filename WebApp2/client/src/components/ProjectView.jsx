@@ -183,7 +183,8 @@ const ProjectView = ({ projName, projectId }) => {
            {designerMode &&
                <IconButton edge="start" onClick={() => handleNewControl(newControl("static"))}>
                  <FontDownloadIcon/>
-               </IconButton>
+               </IconButton>}
+           {designerMode &&
                <IconButton edge="start" onClick={() => handleNewControl(newControl("button"))}>
                  <Crop169Icon/>
                </IconButton>}
