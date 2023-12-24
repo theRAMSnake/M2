@@ -18,6 +18,7 @@ import {
 import EditIcon from '@material-ui/icons/Edit';
 import UpdateIcon from '@material-ui/icons/Update';
 import FontDownloadIcon from '@material-ui/icons/FontDownload';
+import Crop169Icon from '@material-ui/icons/Crop169';
 import EditorDialog from './dialogs/EditorDialog.jsx'
 import { newControl } from './ProjectControls.jsx'
 
@@ -182,6 +183,9 @@ const ProjectView = ({ projName, projectId }) => {
            {designerMode &&
                <IconButton edge="start" onClick={() => handleNewControl(newControl("static"))}>
                  <FontDownloadIcon/>
+               </IconButton>
+               <IconButton edge="start" onClick={() => handleNewControl(newControl("button"))}>
+                 <Crop169Icon/>
                </IconButton>}
         </Toolbar>
         {inScriptEditDialog && <EditorDialog onClose={handleCloseDialog} text={updateScript} onSave={handleScriptSave} mode="python" />}
