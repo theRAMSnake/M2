@@ -2,14 +2,14 @@ import React, {useState, useRef} from 'react';
 import RichEditor from '../RichEditor.jsx'
 
 function replaceTemplateString(content, state) {
-  console.log(content);
-  console.log(state);
   return content.replace(/\${(.*?)}/g, (match, path) => {
     const keys = path.split('.');
 
     const fetchValue = (obj, keyPath) => {
-      return keyPath.reduce((current, key) => {
-        if (current && typeof current === 'object' && key in current) {
+      return keyPath.reduce((current, key, index) => {
+        if (Array.isArray(current)) {
+          return current.map(item => fetchValue(item, keyPath.slice(index)));
+        } else if (current && typeof current === 'object' && key in current) {
           return current[key];
         }
         return undefined;
@@ -23,12 +23,7 @@ function replaceTemplateString(content, state) {
     }
 
     if (Array.isArray(result)) {
-      const listItems = result.map(item => {
-        if (typeof item === 'object') {
-          return `<li>${fetchValue(item, keys.slice(1))}</li>`;
-        }
-        return `<li>${item}</li>`;
-      }).join('');
+      const listItems = result.map(item => `<li>${item}</li>`).join('');
       return `<ul>${listItems}</ul>`;
     } else {
       return result;
