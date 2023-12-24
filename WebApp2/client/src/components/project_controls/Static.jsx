@@ -3,18 +3,30 @@ import RichEditor from '../RichEditor.jsx'
 
 function replaceTemplateString(content, state) {
   return content.replace(/\${(.*?)}/g, (match, path) => {
-    // Split the path into its components
     const keys = path.split('.');
 
-    // Reduce the keys to get the final value
-    const result = keys.reduce((currentObject, key) => {
-      // Check if the currentObject is valid and has the key
-      return currentObject !== null && currentObject !== undefined ? currentObject[key] : '';
-    }, state);
+    const fetchValue = (obj, keyPath) => {
+      return keyPath.reduce((current, key) => {
+        if (current && typeof current === 'object' && key in current) {
+          return current[key];
+        }
+        return undefined;
+      }, obj);
+    };
 
-    // Check if the result is an array and convert it to an HTML list if it is
+    const result = fetchValue(state, keys);
+
+    if (result === undefined) {
+      return '';
+    }
+
     if (Array.isArray(result)) {
-      const listItems = result.map(item => `<li>${item[keys[keys.length - 1]]}</li>`).join('');
+      const listItems = result.map(item => {
+        if (typeof item === 'object') {
+          return `<li>${fetchValue(item, keys.slice(1))}</li>`;
+        }
+        return `<li>${item}</li>`;
+      }).join('');
       return `<ul>${listItems}</ul>`;
     } else {
       return result;
