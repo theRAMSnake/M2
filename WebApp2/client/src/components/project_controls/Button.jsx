@@ -5,7 +5,7 @@ import {
 
 const PushButton = ({ control, state }) => {
     return (
-        <Button variant="contained">{control.value}</Button>
+        <Button variant="contained" style={{ width: control.w, height: control.h }}>{control.value}</Button>
       );
 };
 
