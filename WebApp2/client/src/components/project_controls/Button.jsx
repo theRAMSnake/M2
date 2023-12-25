@@ -26,15 +26,15 @@ export class PushButtonEditor extends React.Component {
         return this.myObject;
     }
 
-    function handleCaptionChange(e) {
+    handleCaptionChange(e) {
         this.myObject = {...this.myObject, caption: e.target.value};
     }
 
-    function handleConfirmationChange(e) {
+    handleConfirmationChange(e) {
         this.myObject = {...this.myObject, need_confirmation: String(e.target.checked)};
     }
 
-    function handleUpdateChange(e) {
+    handleUpdateChange(e) {
         this.myObject = {...this.myObject, need_update: String(e.target.checked)};
     }
 
