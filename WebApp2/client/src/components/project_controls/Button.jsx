@@ -26,7 +26,7 @@ export class PushButtonEditor extends React.Component {
         return this.myObject;
     }
 
-    function handleFieldChange(e) {
+    function handleCaptionChange(e) {
         this.myObject = {...this.myObject, caption: e.target.value};
     }
 
