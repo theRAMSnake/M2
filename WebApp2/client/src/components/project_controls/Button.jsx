@@ -2,7 +2,7 @@ import React, {useState, useRef} from 'react';
 import {
     Button,
     Checkbox,
-    FormControl,
+    FormControlLabel,
     TextField
 } from "@material-ui/core";
 import AceEditor from 'react-ace';
