@@ -60,7 +60,7 @@ export class PushButtonEditor extends React.Component {
                   onChange={(newValue) => {myObject.script = newValue;}}
                   name="json-editor"
                   editorProps={{ $blockScrolling: true }}
-                  value={this.myObject.script}
+                  value={myObject.script}
                   height="30vh"
                   showPrintMargin={false}
                   width="100%"
