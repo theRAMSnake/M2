@@ -1,28 +1,55 @@
 import React, {useState, useRef} from 'react';
 import {
-    Button
+    Button,
+    Checkbox,
+    TextField
 } from "@material-ui/core";
+import AceEditor from 'react-ace';
+import 'ace-builds/src-noconflict/mode-json';
+import 'ace-builds/src-noconflict/theme-monokai';
 
 const PushButton = ({ control, state }) => {
     return (
-        <Button variant="contained" style={{ width: control.w - 10, height: control.h - 24 }}>{control.value}</Button>
+        <Button variant="contained" style={{ width: control.w - 6, height: control.h - 48 }}>{control.value}</Button>
       );
 };
 
 export class PushButtonEditor extends React.Component {
     constructor(props) {
         super(props);
+        const { control } = this.props;
+        this.myObject = {...control};
     }
 
     getContent() {
         const { control } = this.props;
-        return {...control}
+        return this.myObject;
     }
 
     render() {
-        const { control } = this.props;
-
-        return (<div>soon</div>);
+        return(
+            <div>
+                <TextField inputProps={{onChange: handleCaptionChange}} value={this.myObject.value} fullWidth label="Caption" />;
+                <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: handleConfirmationChange}} checked={this.myObject.need_confirmation === "true"} />} label="Need confirmation" />
+                <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: handleUpdateChange}} checked={this.myObject.need_update === "true"} />} label="Need update" />
+                <AceEditor
+                  mode="python"
+                  theme="monokai" // Choose your preferred theme
+                  onChange={(newValue) => {this.myObject.script = newValue;}}
+                  name="json-editor"
+                  editorProps={{ $blockScrolling: true }}
+                  value={this.myObject.script}
+                  height="100%"
+                  showPrintMargin={false}
+                  width="100%"
+                  setOptions={{
+                    tabSize: 2, // Adjust the tab size for indentation
+                    useSoftTabs: true, // Use soft tabs (spaces) for indentation
+                    wrap: true, // Enable line wrapping
+                  }}
+                />
+            </div>
+        );
     }
 }
 
