@@ -27,15 +27,15 @@ export class PushButtonEditor extends React.Component {
         return this.myObject;
     }
 
-    handleCaptionChange(e) {
+    handleCaptionChange = (e) => {
         this.myObject = {...this.myObject, caption: e.target.value};
     }
 
-    handleConfirmationChange(e) {
+    handleConfirmationChange = (e) => {
         this.myObject = {...this.myObject, need_confirmation: String(e.target.checked)};
     }
 
-    handleUpdateChange(e) {
+    handleUpdateChange = (e) => {
         this.myObject = {...this.myObject, need_update: String(e.target.checked)};
     }
 
@@ -52,7 +52,7 @@ export class PushButtonEditor extends React.Component {
                   name="json-editor"
                   editorProps={{ $blockScrolling: true }}
                   value={this.myObject.script}
-                  height="100%"
+                  height="30vh"
                   showPrintMargin={false}
                   width="100%"
                   setOptions={{
