@@ -313,17 +313,19 @@ public:
             firstParam = std::get<std::string>(eval);
         }
 
+        // Objectless functions
+        if(name == "DATE")
+        {
+            boost::gregorian::date d = boost::gregorian::from_string(firstParam);
+            return to_time_t(d);
+        }
+
         const auto& cons = ctx.getConnections();
         const auto& object = ctx.getObject();
 
         if(name == "IS")
         {
             return ctx.getObject().getType().name == firstParam;
-        }
-        else if(name == "DATE")
-        {
-            boost::gregorian::date d = boost::gregorian::from_string(firstParam);
-            return to_time_t(d);
         }
         else if(name == "RootElement")
         {

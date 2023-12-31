@@ -473,6 +473,16 @@ void RewardSS::addCoins(const int coins, const std::string& color)
 
     auto coinsStash = mOm.getOrCreate(Id("reward.coins"), "object");
     coinsStash[colorToUse] = std::max(0, static_cast<int>(coinsStash[colorToUse].get<Type::Int>() + coins));
+
+    types::Variable discipline_level(mOm, Id("discipline.level"));
+    auto val = discipline_level.asInt();
+    auto chance = 1 - 100.0 / static_cast<double>(val + 100);
+    for(int i = 0; i < coins; ++i) {
+        if(val != 0 && Rng::genProbability(chance)) {
+            colorToUse = COIN_COLORS[Rng::genChoise(COIN_COLORS.size())];
+            coinsStash[colorToUse] = coinsStash[colorToUse].get<Type::Int>() + 1;
+        }
+    }
     mOm.modify(coinsStash);
 }
 

@@ -44,6 +44,15 @@ def reward(number, color=None):
                 color = random.choice(available_colors)
                 coins[color] -= 1
 
+    objs = m4.query_ids(["discipline.level"])
+    if len(objs) > 0 and number > 0:
+        val = int(objs[0].value)
+        chance = 1 - 100.0 / float(val + 100);
+        for _ in range(number):
+            if random.random() <= chance:
+                random_color = random.choice(get_reward_colors())
+                coins[random_color] += 1
+
     # Now, we'll update the 'reward.coins' object with the new values
     for coin_color, value in coins.items():
         setattr(coins_object, coin_color, str(value))
