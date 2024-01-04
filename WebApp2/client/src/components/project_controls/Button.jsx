@@ -34,7 +34,7 @@ export class PushButtonEditor extends React.Component {
         console.log(e.target.value);
         this.setState(prevState => ({
             //myObject : {...prevState.myObject, value: e.target.value, a: 1}
-            myObject : {value: e.target.value}
+            value: e.target.value
         }), () => console.log(this.state.myObject));
     }
 
