@@ -22,6 +22,7 @@ export class PushButtonEditor extends React.Component {
         this.state = {
             myObject: {...control}
         }
+        console.log("create")
     }
 
     getContent() {
@@ -30,6 +31,7 @@ export class PushButtonEditor extends React.Component {
     }
 
     handleCaptionChange = (e) => {
+        console.log(e.target.value);
         this.setState(prevState => ({
             myObject : {...prevState.myObject, value: e.target.value}
         }), () => console.log(this.state.myObject));
