@@ -8,7 +8,7 @@ export const createControlEditor = (src) => {
     if(src.type === "static") {
         return new StaticEditor({control: src});
     } else if(src.type === "button") {
-        return new PushButtonEditor({control: src});
+        return (<PushButtonEditor control={src} />);
     } else {
         return (<div>error</div>);
     }
