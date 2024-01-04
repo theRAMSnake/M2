@@ -30,7 +30,7 @@ export class PushButtonEditor extends React.Component {
     }
 
     handleCaptionChange = (e) => {
-        this.setState({myObject : {...prevState.myObject, value: e.target.value}})
+        this.setState({myObject : {...this.state.myObject, value: e.target.value}})
     }
 
     handleConfirmationChange = (e) => {
