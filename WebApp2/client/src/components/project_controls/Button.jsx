@@ -52,7 +52,7 @@ export class PushButtonEditor extends React.Component {
         console.log("render")
         return(
             <div>
-                <TextField inputProps={{onChange: this.handleCaptionChange}} value={this.state.value} fullWidth label="Caption" />
+                <TextField inputProps={{onChange: this.handleCaptionChange}} value={this.state.myObject.value} fullWidth label="Caption" />
                 <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: this.handleConfirmationChange}} checked={myObject.need_confirmation === "true"} />} label="Need confirmation" />
                 <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: this.handleUpdateChange}} checked={myObject.need_update === "true"} />} label="Need update" />
                 <AceEditor
