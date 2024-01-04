@@ -31,6 +31,7 @@ export class PushButtonEditor extends React.Component {
 
     handleCaptionChange = (e) => {
         this.setState({myObject : {...this.state.myObject, value: e.target.value}})
+        console.log(this.state);
     }
 
     handleConfirmationChange = (e) => {
@@ -47,6 +48,7 @@ export class PushButtonEditor extends React.Component {
 
     render() {
         const { myObject } = this.state;
+        console.log(this.state);
         return(
             <div>
                 <TextField inputProps={{onChange: this.handleCaptionChange}} value={myObject.value} fullWidth label="Caption" />
