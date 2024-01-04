@@ -116,7 +116,7 @@ return (
               <EditIcon fontSize="inherit"/>
             </IconButton>
             {createControl(control, state)}
-            {inModifyDialog && <DesignerItemEditor content={editor.render()} onCanceled={onEditorCanceled} onFinished={onEditorFinished}/>}
+            {inModifyDialog && <DesignerItemEditor content={editor} onCanceled={onEditorCanceled} onFinished={onEditorFinished}/>}
         </div>
       </Resizable>
     </Draggable>
