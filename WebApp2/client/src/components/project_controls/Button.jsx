@@ -20,9 +20,9 @@ export class PushButtonEditor extends React.Component {
         super(props);
         const { control } = this.props;
         this.state = {
-            myObject: {...control}
+            //myObject: {...control}
+            value: control.value
         }
-        console.log("create")
     }
 
     getContent() {
@@ -33,7 +33,8 @@ export class PushButtonEditor extends React.Component {
     handleCaptionChange = (e) => {
         console.log(e.target.value);
         this.setState(prevState => ({
-            myObject : {...prevState.myObject, value: e.target.value, a: 1}
+            //myObject : {...prevState.myObject, value: e.target.value, a: 1}
+            myObject : {value: e.target.value}
         }), () => console.log(this.state.myObject));
     }
 
@@ -54,8 +55,8 @@ export class PushButtonEditor extends React.Component {
         console.log("render")
         return(
             <div>
-                <TextField inputProps={{onChange: this.handleCaptionChange}} value={this.state.myObject.value} fullWidth label="Caption" />
-                <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: this.handleConfirmationChange}} checked={myObject.need_confirmation === "true"} />} label="Need confirmation" />
+                <TextField inputProps={{onChange: this.handleCaptionChange}} value={this.state.value} fullWidth label="Caption" />
+            {/*<FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: this.handleConfirmationChange}} checked={myObject.need_confirmation === "true"} />} label="Need confirmation" />
                 <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: this.handleUpdateChange}} checked={myObject.need_update === "true"} />} label="Need update" />
                 <AceEditor
                   mode="python"
@@ -72,7 +73,7 @@ export class PushButtonEditor extends React.Component {
                     useSoftTabs: true, // Use soft tabs (spaces) for indentation
                     wrap: true, // Enable line wrapping
                   }}
-                />
+                />*/}
             </div>
         );
     }
