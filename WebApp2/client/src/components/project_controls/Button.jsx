@@ -30,6 +30,7 @@ export class PushButtonEditor extends React.Component {
     }
 
     handleCaptionChange = (e) => {
+        console.log(e.target.value);
         this.setState({myObject : {...this.state.myObject, value: e.target.value}})
         console.log(this.state);
     }
@@ -48,7 +49,7 @@ export class PushButtonEditor extends React.Component {
 
     render() {
         const { myObject } = this.state;
-        console.log(this.state);
+        console.log("render")
         return(
             <div>
                 <TextField inputProps={{onChange: this.handleCaptionChange}} value={myObject.value} fullWidth label="Caption" />
