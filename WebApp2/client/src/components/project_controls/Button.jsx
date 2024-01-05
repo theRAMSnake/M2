@@ -8,10 +8,43 @@ import {
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-monokai';
+import ConfirmationDialog from './dialogs/ConfirmationDialog.jsx'
 
 const PushButton = ({ control, state }) => {
+    const [inConfirmationDialog, setInConfirmationDialog] = useState(false);
+
+    function onConfirmationDialogCancel()
+    {
+        setInConfirmationDialog(false);
+    }
+
+    function onConfirmationDialogOk()
+    {
+        setInConfirmationDialog(false);
+        action();
+    }
+
+    const onClick = () => {
+        if(control.need_confirmation === 'true') {
+            setInConfirmationDialog(true);
+        } else {
+            action();
+        }
+    }
+
+    const action = () => {
+        console.log("action")
+    }
+
     return (
-        <Button variant="contained" style={{ width: control.w - 6, height: control.h - 48 }}>{control.value}</Button>
+        <div>
+            <ConfirmationDialog open={inConfirmationDialog} question="confirmation" caption="are you sure?" onNo={onConfirmationDialogCancel} onYes={onConfirmationDialogOk} />
+            <Button
+                variant="contained"
+                style={{ width: control.w - 6, height: control.h - 48 }}
+                onClick={() => onClick()}
+            >{control.value}</Button>
+        </div>
       );
 };
 
@@ -52,8 +85,8 @@ export class PushButtonEditor extends React.Component {
         return(
             <div>
                 <TextField inputProps={{onChange: this.handleCaptionChange}} value={myObject.value} fullWidth label="Caption" />
-            {/*<FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: this.handleConfirmationChange}} checked={myObject.need_confirmation === "true"} />} label="Need confirmation" />
-                <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: this.handleUpdateChange}} checked={myObject.need_update === "true"} />} label="Need update" />
+            <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: this.handleConfirmationChange}} checked={myObject.need_confirmation === "true"} />} label="Need confirmation" />
+            (/*    <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: this.handleUpdateChange}} checked={myObject.need_update === "true"} />} label="Need update" />
                 <AceEditor
                   mode="python"
                   theme="monokai" // Choose your preferred theme
