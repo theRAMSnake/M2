@@ -24,7 +24,7 @@ const DesignerItemEditor = ({ content, onCanceled, onFinished }) => {
             <Button variant="contained" onClick={onCanceled} color="primary">
                 Cancel
             </Button>
-            <Button variant="contained" onClick={() => onFinished(contentRef.content.getContent())} color="primary" >
+            <Button variant="contained" onClick={() => onFinished(contentRef.current.getContent())} color="primary" >
                 Ok
             </Button>
         </DialogActions>
