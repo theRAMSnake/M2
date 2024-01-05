@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import Draggable from 'react-draggable';
 import { Resizable } from 're-resizable';
 import createControl, {createControlEditor} from './ProjectControls.jsx'
@@ -15,15 +15,16 @@ import EditIcon from '@material-ui/icons/Edit';
 import ConfirmationDialog from './dialogs/ConfirmationDialog.jsx'
 
 const DesignerItemEditor = ({ content, onCanceled, onFinished }) => {
+    const contentRef = useRef();
     return <Dialog fullWidth onClose={onCanceled} open={true}>
         <DialogContent>
-           {content}
+           {React.cloneElement(content, { ref: contentRef })}
         </DialogContent>
         <DialogActions>
             <Button variant="contained" onClick={onCanceled} color="primary">
                 Cancel
             </Button>
-            <Button variant="contained" onClick={() => onFinished()} color="primary" >
+            <Button variant="contained" onClick={() => onFinished(contentRef.content.getContent())} color="primary" >
                 Ok
             </Button>
         </DialogActions>
@@ -56,8 +57,8 @@ const DesignerItem = ({ control, onControlChange, state }) => {
         setInModifyDialog(false);
     }
 
-    const onEditorFinished = () => {
-        onControlChange(editor.getContent());
+    const onEditorFinished = (newControl) => {
+        onControlChange(newControl);
         setInModifyDialog(false);
     }
 

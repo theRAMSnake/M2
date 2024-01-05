@@ -6,7 +6,7 @@ import {PushButtonEditor} from './project_controls/Button.jsx'
 
 export const createControlEditor = (src) => {
     if(src.type === "static") {
-        return new StaticEditor({control: src});
+        return (<StaticEditor control={src} />);
     } else if(src.type === "button") {
         return (<PushButtonEditor control={src} />);
     } else {
