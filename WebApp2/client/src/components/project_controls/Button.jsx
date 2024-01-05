@@ -8,7 +8,7 @@ import {
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-monokai';
-import ConfirmationDialog from './dialogs/ConfirmationDialog.jsx'
+import ConfirmationDialog from '../dialogs/ConfirmationDialog.jsx'
 
 const PushButton = ({ control, state }) => {
     const [inConfirmationDialog, setInConfirmationDialog] = useState(false);
