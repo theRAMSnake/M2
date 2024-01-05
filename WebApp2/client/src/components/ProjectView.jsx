@@ -34,6 +34,7 @@ const ProjectView = ({ projName, projectId }) => {
     const [showUpdateResult, setShowUpdateResult] = useState(false);
     const [updateResult, setUpdateResult] = useState("");
     const [state, setState] = useState(null);
+    const [version, setVersion] = useState(0);
 
     useEffect(() => {
       const req = {
@@ -64,7 +65,7 @@ const ProjectView = ({ projName, projectId }) => {
       {
           setState(r.object_list[0]);
       });
-    }, [projectId]);
+    }, [projectId, version]);
 
     const handleEdit = () => {
         if(!updateScript) {
@@ -85,6 +86,9 @@ const ProjectView = ({ projName, projectId }) => {
         ScriptHelper.exec_string_or_error(`import projects\nprojects.update_project('${projName}')\nresult=1`, (data)=>{
             setShowUpdateResult(true);
             setUpdateResult(data);
+            if(data === '1') {
+                setVersion(version + 1);
+            }
         });
     }
 
