@@ -20,8 +20,7 @@ export class PushButtonEditor extends React.Component {
         super(props);
         const { control } = this.props;
         this.state = {
-            //myObject: {...control}
-            value: control.value
+            myObject: {...control}
         }
     }
 
@@ -31,13 +30,9 @@ export class PushButtonEditor extends React.Component {
     }
 
     handleCaptionChange = (e) => {
-        console.log(e.target.value);
-        console.log(this.state);
-        e.stopPropagation();
         this.setState(prevState => ({
-            //myObject : {...prevState.myObject, value: e.target.value, a: 1}
-            value: e.target.value
-        }), () => console.log(this.state.myObject));
+            myObject : {...prevState.myObject, value: e.target.value}
+        }));
     }
 
     handleConfirmationChange = (e) => {
@@ -54,10 +49,9 @@ export class PushButtonEditor extends React.Component {
 
     render() {
         const { myObject } = this.state;
-        console.log("render")
         return(
             <div>
-                <TextField inputProps={{onChange: this.handleCaptionChange}} value={this.state.value} fullWidth label="Caption" />
+                <TextField inputProps={{onChange: this.handleCaptionChange}} value={myObject.value} fullWidth label="Caption" />
             {/*<FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: this.handleConfirmationChange}} checked={myObject.need_confirmation === "true"} />} label="Need confirmation" />
                 <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: this.handleUpdateChange}} checked={myObject.need_update === "true"} />} label="Need update" />
                 <AceEditor
