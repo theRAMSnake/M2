@@ -30,6 +30,7 @@ const PushButton = ({ control, updateCb }) => {
             setInConfirmationDialog(true);
         } else {
             action();
+            updateCb();
         }
     }
 
@@ -103,7 +104,7 @@ export class PushButtonEditor extends React.Component {
                     useSoftTabs: true, // Use soft tabs (spaces) for indentation
                     wrap: true, // Enable line wrapping
                   }}
-                />*/}
+                />*/})
             </div>
         );
     }
