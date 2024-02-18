@@ -10,7 +10,7 @@ import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-monokai';
 import ConfirmationDialog from '../dialogs/ConfirmationDialog.jsx'
 
-const PushButton = ({ control, updateCb }) => {
+const PushButton = ({ control, updateCb, projName }) => {
     const [inConfirmationDialog, setInConfirmationDialog] = useState(false);
 
     function onConfirmationDialogCancel()
@@ -34,8 +34,16 @@ const PushButton = ({ control, updateCb }) => {
         }
     }
 
+    function escapeForPython(str) {
+        // Replace backslash with double backslash and double quotes with escaped double quotes
+        return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    }
+
     const action = () => {
-        console.log("action")
+        let resultScript = escapeForPython(control.script);
+        ScriptHelper.exec(`import projects\nscript="""${resultScript}"""\nprojects.run_project_script("${projName}", script)\nresult=1`, (data)=>{
+            console.log(data)
+        });
     }
 
     return (

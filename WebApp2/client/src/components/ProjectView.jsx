@@ -205,7 +205,7 @@ const ProjectView = ({ projName, projectId }) => {
             {controls.map((c) => (
                 designerMode ?
                     <DesignerItem control={c} onControlChange={(x) => onControlChange(x)} state={state} updateCb={() => {}} /> :
-                    <ProjectItem control={c} state={state} updateCb={handleUpdateSilent} />
+                    <ProjectItem control={c} state={state} updateCb={handleUpdateSilent} projName={projName} />
             ))}
         </div>
         </div>

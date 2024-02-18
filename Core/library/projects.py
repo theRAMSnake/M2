@@ -88,6 +88,19 @@ def update_project(name):
     exec(code_to_exec)
     m4.modify(state.id, state)
 
+def run_project_script(name, script):
+    code_to_exec = script
+    state = None
+    for p in collection.Collection("projects").get_items():
+        if p.name == name:
+            children = m4.query_expr(f'ChildOf("{p.id}")')
+            for c in children:
+                if c.elementType == "state":
+                    state = c
+
+    exec(code_to_exec)
+    m4.modify(state.id, state)
+
 def update_projects():
     events = collection.Collection("events")
     for p in collection.Collection("projects").get_items():
