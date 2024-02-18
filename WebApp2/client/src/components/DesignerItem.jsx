@@ -116,7 +116,7 @@ return (
             <IconButton size="small" style={{ position: 'absolute', bottom: 0, right: 0 }} onClick={() => handleModify()}>
               <EditIcon fontSize="inherit"/>
             </IconButton>
-            {createControl(control, state)}
+            {createControl(control, state, () => {})}
             {inModifyDialog && <DesignerItemEditor content={editor} onCanceled={onEditorCanceled} onFinished={onEditorFinished}/>}
         </div>
       </Resizable>

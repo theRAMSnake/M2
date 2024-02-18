@@ -14,11 +14,11 @@ export const createControlEditor = (src) => {
     }
 }
 
-const createControl = (src, state) => {
+const createControl = (src, state, updateCb) => {
     if(src.type === "static") {
         return (<Static control={src} state={state}/>);
     } else if(src.type === "button") {
-        return (<PushButton control={src}/>);
+        return (<PushButton control={src} updateCb={updateCb}/>);
     } else {
         return (<div>error</div>);
     }

@@ -10,7 +10,7 @@ import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-monokai';
 import ConfirmationDialog from '../dialogs/ConfirmationDialog.jsx'
 
-const PushButton = ({ control, state }) => {
+const PushButton = ({ control, updateCb }) => {
     const [inConfirmationDialog, setInConfirmationDialog] = useState(false);
 
     function onConfirmationDialogCancel()
@@ -22,6 +22,7 @@ const PushButton = ({ control, state }) => {
     {
         setInConfirmationDialog(false);
         action();
+        updateCb();
     }
 
     const onClick = () => {

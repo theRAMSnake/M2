@@ -92,6 +92,13 @@ const ProjectView = ({ projName, projectId }) => {
         });
     }
 
+    const handleUpdateSilent = () => {
+        ScriptHelper.exec_string_or_error(`import projects\nprojects.update_project('${projName}')\nresult=1`, (data)=>{
+            if(data === '1') {
+                setVersion(version + 1);
+            }
+        });
+    }
     function escapeForPython(str) {
         // Replace backslash with double backslash and double quotes with escaped double quotes
         return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
@@ -197,8 +204,8 @@ const ProjectView = ({ projName, projectId }) => {
         <div style={containerStyle}>
             {controls.map((c) => (
                 designerMode ?
-                    <DesignerItem control={c} onControlChange={(x) => onControlChange(x)} state={state} /> :
-                    <ProjectItem control={c} state={state} />
+                    <DesignerItem control={c} onControlChange={(x) => onControlChange(x)} state={state} updateCb={() => {}} /> :
+                    <ProjectItem control={c} state={state} updateCb={handleUpdateSilent} />
             ))}
         </div>
         </div>
