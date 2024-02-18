@@ -19,6 +19,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import UpdateIcon from '@material-ui/icons/Update';
 import FontDownloadIcon from '@material-ui/icons/FontDownload';
 import Crop169Icon from '@material-ui/icons/Crop169';
+import ExplicitIcon from '@material-ui/icons/Explicit';
 import EditorDialog from './dialogs/EditorDialog.jsx'
 import { newControl } from './ProjectControls.jsx'
 
@@ -29,6 +30,7 @@ const testControls = () => {
 const ProjectView = ({ projName, projectId }) => {
     const [updateScript, setUpdateScript] = useState(null);
     const [inScriptEditDialog, setInScriptEditDialog] = useState(false);
+    const [inStateEditDialog, setInStateEditDialog] = useState(false);
     const [designerMode, setDesignerMode] = useState(false);
     const [controls, setControls] = useState([]);
     const [showUpdateResult, setShowUpdateResult] = useState(false);
@@ -78,8 +80,13 @@ const ProjectView = ({ projName, projectId }) => {
         }
     }
 
+    const handleEditState = () => {
+        setInStateEditDialog(true);
+    }
+
     const handleCloseDialog = () => {
         setInScriptEditDialog(false);
+        setInStateEditDialog(false);
     }
 
     const handleUpdate = () => {
@@ -110,6 +117,9 @@ const ProjectView = ({ projName, projectId }) => {
             setUpdateScript(newScript);
             setInScriptEditDialog(false);
         });
+    }
+
+    const handleStateSave = (newState) => {
     }
 
     const containerStyle = {
@@ -189,6 +199,9 @@ const ProjectView = ({ projName, projectId }) => {
            <IconButton edge="start" onClick={() => handleUpdate()}>
              <UpdateIcon/>
            </IconButton>
+           <IconButton edge="start" onClick={() => handleEditState()}>
+             <ExplicitIcon/>
+           </IconButton>
            <Checkbox checked={designerMode} onChange={handleCheckboxChange}/>
            {designerMode && <Divider/>}
            {designerMode &&
@@ -201,6 +214,7 @@ const ProjectView = ({ projName, projectId }) => {
                </IconButton>}
         </Toolbar>
         {inScriptEditDialog && <EditorDialog onClose={handleCloseDialog} text={updateScript} onSave={handleScriptSave} mode="python" />}
+        {inStateEditDialog && <EditorDialog onClose={handleCloseDialog} text={state} onSave={handleStateSave} mode="python" />}
         <div style={containerStyle}>
             {controls.map((c) => (
                 designerMode ?
