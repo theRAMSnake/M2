@@ -214,12 +214,12 @@ const ProjectView = ({ projName, projectId }) => {
                </IconButton>}
         </Toolbar>
         {inScriptEditDialog && <EditorDialog onClose={handleCloseDialog} text={updateScript} onSave={handleScriptSave} mode="python" />}
-        {inStateEditDialog && <EditorDialog onClose={handleCloseDialog} text={state} onSave={handleStateSave} mode="python" />}
+        {inStateEditDialog && <EditorDialog onClose={handleCloseDialog} text={JSON.stringify(state)} onSave={handleStateSave} mode="python" />}
         <div style={containerStyle}>
             {controls.map((c) => (
                 designerMode ?
                     <DesignerItem control={c} onControlChange={(x) => onControlChange(x)} state={state} updateCb={() => {}} /> :
-                    <ProjectItem control={c} state={JSON.stringify(state)} updateCb={handleUpdateSilent} projName={projName} />
+                    <ProjectItem control={c} state={state} updateCb={handleUpdateSilent} projName={projName} />
             ))}
         </div>
         </div>
