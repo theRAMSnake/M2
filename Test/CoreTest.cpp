@@ -151,10 +151,10 @@ total_coins_after = int(coins_after_update.Red) + int(coins_after_update.Blue) +
 
 # Here, you need to determine the expected total based on what penalties or rewards should have been applied.
 # This depends on your system's logic for handling expired ambitions.
-expected_total_after_changes = 50 - 2 - 2 - 2  # For example, if you expect a 2-coin penalty for the expired ambition.
+expected_total_after_changes = 50 - 2 - 2 # For example, if you expect a 2-coin penalty for the expired ambition.
 
 # Build the result message.
-if total_coins_after == expected_total_after_changes and len(collection.Collection('ambitions').get_items()) == 2:
+if total_coins_after == expected_total_after_changes and len(collection.Collection('ambitions').get_items()) == 3:
     result = 'Update function handled ambition expiry correctly.'
 else:
     result = f'Error: Expected {expected_total_after_changes} coins, got {total_coins_after}.'
@@ -254,51 +254,4 @@ result = len(collection.Collection('ambitions').get_items())
 
     // Check the script's execution result.
     BOOST_CHECK_EQUAL("0", script_result);
-}
-
-BOOST_FIXTURE_TEST_CASE(TestUpdateFunction_ExpiryFlagCleared, CoreTest)
-{
-    // Script to test the 'update' function's behavior with ambition expiry.
-    std::string script_result = run(R"(
-import ambitions
-import reward
-import m4
-import datetime
-import collection
-
-expiry_imminent = datetime.datetime.now() + datetime.timedelta(minutes=1)
-expiry_future = datetime.datetime.now() + datetime.timedelta(days=10)
-
-ambitions.create_ambition('Ambition 1', 'Red', expiry_imminent)
-ambitions.create_ambition('Ambition 2', 'Blue', expiry_future)
-
-ambitions.update(expiry_imminent)
-
-ambitions.create_ambition('Ambition 3', 'Red', expiry_future)
-
-pts = 0
-if len(ambitions.get_failed_ambition_colors()) == 1:
-    pts = pts + 1
-
-ambitions_collection = collection.Collection('ambitions')
-for amb in ambitions_collection.get_items():
-    if amb.name == "Ambition 2":
-        ambitions.complete_ambition(amb.id)
-
-ambitions.update(expiry_imminent)
-if len(ambitions.get_failed_ambition_colors()) == 1:
-    pts = pts + 1
-
-for amb in ambitions_collection.get_items():
-    if amb.name == "Ambition 3":
-        ambitions.complete_ambition(amb.id)
-ambitions.update(expiry_imminent)
-if len(ambitions.get_failed_ambition_colors()) == 0:
-    pts = pts + 1
-
-result = len(collection.Collection('ambitions').get_items()) + pts
-    )");
-
-    // Check the script's execution result.
-    BOOST_CHECK_EQUAL("5", script_result);
 }

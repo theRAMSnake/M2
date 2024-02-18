@@ -45,27 +45,9 @@ def create_ambition(name, color, expiry):
     # Add the new ambition to the collection
     ambitions_collection.add(new_ambition)
 
-def get_failed_ambition_colors():
-    reward_cb_object = common.get_or_create('reward.cb')
-
-    if reward_cb_object and hasattr(reward_cb_object, 'failed_colors'):
-        failed_colors_str = reward_cb_object.failed_colors
-        return json.loads(failed_colors_str)
-    else:
-        # If the object or field doesn't exist, return an empty list.
-        return []
-
-def save_failed_ambition_colors(failed_colors):
-    failed_colors_str = json.dumps(failed_colors)
-    reward_cb_object = common.get_or_create('reward.cb')
-    reward_cb_object.failed_colors = failed_colors_str
-    m4.modify('reward.cb', reward_cb_object)
-
 def update(today):
     ambitions_collection = Collection('ambitions')
     ambitions = ambitions_collection.get_items()
-
-    failed_colors = get_failed_ambition_colors()
 
     # If there are fewer than 3 active ambitions, we'll penalize by draining two coins.
     if len(ambitions) < 3:
@@ -73,18 +55,9 @@ def update(today):
 
     # Now, we'll go through each ambition and check its status.
     for amb in ambitions:
-        if str_to_date(amb.expiry) <= today and not (hasattr(amb, 'completed') and bool(amb.completed)):
-            failed_colors.append(amb.color)
-            save_failed_ambition_colors(failed_colors)
-            ambitions_collection.remove(amb.id)
-            continue
-
-        elif hasattr(amb, 'completed') and bool(amb.completed):
+        if hasattr(amb, 'completed') and bool(amb.completed):
             if not hasattr(amb, 'bonus_end_date'):
                 amb.bonus_end_date = str(today + timedelta(days=random.randint(20, 60)))
-                while amb.color in failed_colors:
-                    failed_colors.remove(amb.color)
-                    save_failed_ambition_colors(failed_colors)
                 m4.modify(amb.id, amb)
 
             if today <= str_to_date(amb.bonus_end_date):
@@ -93,10 +66,8 @@ def update(today):
             else:
                 # If the bonus period has ended, delete the ambition from the collection.
                 ambitions_collection.remove(amb.id)
-
-    # Apply a daily penalty for each color that has failed ambitions until replaced.
-    for color in failed_colors:
-        reward.reward(-2, color)  # Draining two coins as a penalty.
+        elif str_to_date(amb.expiry) <= today:
+            reward.reward(-2, amb.color)
 
 def complete_ambition(ambition_id):
     # Access the collection of ambitions.
