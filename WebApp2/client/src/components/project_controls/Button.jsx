@@ -88,7 +88,7 @@ export class PushButtonEditor extends React.Component {
             <div>
                 <TextField inputProps={{onChange: this.handleCaptionChange}} value={myObject.value} fullWidth label="Caption" />
             <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: this.handleConfirmationChange}} checked={myObject.need_confirmation === "true"} />} label="Need confirmation" />
-            (/*    <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: this.handleUpdateChange}} checked={myObject.need_update === "true"} />} label="Need update" />
+            <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: this.handleUpdateChange}} checked={myObject.need_update === "true"} />} label="Need update" />
                 <AceEditor
                   mode="python"
                   theme="monokai" // Choose your preferred theme
@@ -104,7 +104,7 @@ export class PushButtonEditor extends React.Component {
                     useSoftTabs: true, // Use soft tabs (spaces) for indentation
                     wrap: true, // Enable line wrapping
                   }}
-                />*/})
+                />
             </div>
         );
     }
