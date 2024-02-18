@@ -9,6 +9,7 @@ import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-monokai';
 import ConfirmationDialog from '../dialogs/ConfirmationDialog.jsx'
+import ScriptHelper from '../../modules/script_helper'
 
 const PushButton = ({ control, updateCb, projName }) => {
     const [inConfirmationDialog, setInConfirmationDialog] = useState(false);
