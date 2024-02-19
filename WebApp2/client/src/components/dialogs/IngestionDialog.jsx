@@ -25,7 +25,7 @@ function createDefault(f)
     var type = f.type;
 
     if(type === 'String') return "";
-    if(type === 'Choice') return f.values[0].text;
+    if(type === 'Choice') return f.values[0];
     if(type === 'Bool') return false;
     if(type === 'Int') return 0;
     if(type === 'Double') return 0.0;
@@ -111,7 +111,7 @@ export default function IngestionDialog(props)
                                     id: req.name,
                                 }}
                                 >
-                                {req.values.map((obj, index) => <option aria-label="None" value={obj.text} key={index} >{obj.text}</option>)}
+                                {req.values.map((obj, index) => <option aria-label="None" value={obj} key={index} >{obj}</option>)}
                             </Select>
                     </FormControl>
         }
