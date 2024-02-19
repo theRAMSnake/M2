@@ -25,6 +25,7 @@ function createDefault(f)
     var type = f.type;
 
     if(type === 'String') return "";
+    if(type === 'Choice') return f.values[0].text;
     if(type === 'Bool') return false;
     if(type === 'Int') return 0;
     if(type === 'Double') return 0.0;
@@ -43,7 +44,7 @@ function buildInitObject(ingestion, obj)
     var j = 0;
     for (j = 0; j < ingestion.length; j++)
     {
-        result[ingestion[j].name] = createDefault(ingestion[j].type);
+        result[ingestion[j].name] = createDefault(ingestion[j]);
     }
 
     return result;
@@ -87,10 +88,33 @@ export default function IngestionDialog(props)
         setObject(newObj);
     }
 
+    function handleChoiceChange(e)
+    {
+        let newObj = JSON.parse(JSON.stringify(object));
+        newObj[e.target.id] = e.target.value;
+        setObject(newObj);
+    }
+
     function createPropCtrl(req)
     {
         if(req.type === 'String')
             return <TextField inputProps={{onChange: handleFieldChange}} value={object[req.name]} fullWidth id={req.name} label={req.name} />;
+        if(req.type === 'Choice') {
+            return <FormControl fullWidth style={{marginTop: '10px'}}>
+                        <InputLabel htmlFor={req.name}>{req.name}</InputLabel>
+                            <Select
+                                native
+                                value={object[req.name]}
+                                onChange={handleChoiceChange}
+                                inputProps={{
+                                    name: req.name,
+                                    id: req.name,
+                                }}
+                                >
+                                {req.values.map((obj, index) => <option aria-label="None" value={obj.text} key={index} >{obj.text}</option>)}
+                            </Select>
+                    </FormControl>
+        }
         if(req.type === 'Bool')
             return <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: handleCbChange}} id={req.name} checked={object[req.name].toString() === "true"} />} label={req.name} />
         if(req.type === 'Int')
