@@ -123,6 +123,7 @@ const ProjectView = ({ projName, projectId }) => {
        let obj = JSON.parse(newState)
        setState(obj)
        Materia.postEdit(obj.id, JSON.stringify(obj));
+       setInStateEditDialog(false);
     }
 
     const containerStyle = {
