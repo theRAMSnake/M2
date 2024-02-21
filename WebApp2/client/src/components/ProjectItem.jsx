@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import createControl from './ProjectControls.jsx'
 
-const ProjectItem = ({ control, state, updateCb, projName }) => {
+const ProjectItem = ({ control, state, updateCb, stateUpdCb, projName }) => {
     const [width, setWidth] = useState(control.w);
     const [height, setHeight] = useState(control.h);
     const [position, setPosition] = useState({ x: control.x, y: control.y });
@@ -15,7 +15,7 @@ return (
             height: `${control.h}px` // Set height
         }}
     >
-        {createControl(control, state, updateCb, projName)}
+        {createControl(control, state, updateCb, stateUpdCb, projName)}
     </div>
   );
 };

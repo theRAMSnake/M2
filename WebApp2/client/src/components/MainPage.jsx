@@ -301,7 +301,7 @@ function MainPage(props) {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" className={classes.title}>
-                        Materia v3.7.227
+                        Materia v3.7.228
                     </Typography>
                     <ContractsCtrl/>
                     <SearchBar onSubmit={searchBarSubmit}/>

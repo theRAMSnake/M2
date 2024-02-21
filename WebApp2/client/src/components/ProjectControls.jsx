@@ -3,22 +3,28 @@ import Static from './project_controls/Static.jsx'
 import {StaticEditor} from './project_controls/Static.jsx'
 import PushButton from './project_controls/Button.jsx'
 import {PushButtonEditor} from './project_controls/Button.jsx'
+import CheckboxM from './project_controls/Checkbox.jsx'
+import {CheckboxEditor} from './project_controls/Checkbox.jsx'
 
 export const createControlEditor = (src) => {
     if(src.type === "static") {
         return (<StaticEditor control={src} />);
     } else if(src.type === "button") {
         return (<PushButtonEditor control={src} />);
+    } else if(src.type === "checkbox") {
+        return (<CheckboxEditor control={src} />);
     } else {
         return (<div>error</div>);
     }
 }
 
-const createControl = (src, state, updateCb, projName) => {
+const createControl = (src, state, updateCb, stateUpdCb, projName) => {
     if(src.type === "static") {
         return (<Static control={src} state={state}/>);
     } else if(src.type === "button") {
         return (<PushButton control={src} updateCb={updateCb} projName={projName}/>);
+    } else if(src.type === "checkbox") {
+        return (<CheckboxM control={src} state={state} stateUpdCb={stateUpdCb}/>);
     } else {
         return (<div>error</div>);
     }

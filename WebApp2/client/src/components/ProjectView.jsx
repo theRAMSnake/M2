@@ -19,6 +19,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import UpdateIcon from '@material-ui/icons/Update';
 import FontDownloadIcon from '@material-ui/icons/FontDownload';
 import Crop169Icon from '@material-ui/icons/Crop169';
+import CheckIcon from '@material-ui/icons/Check';
 import ExplicitIcon from '@material-ui/icons/Explicit';
 import EditorDialog from './dialogs/EditorDialog.jsx'
 import { newControl } from './ProjectControls.jsx'
@@ -216,6 +217,10 @@ const ProjectView = ({ projName, projectId }) => {
                <IconButton edge="start" onClick={() => handleNewControl(newControl("button"))}>
                  <Crop169Icon/>
                </IconButton>}
+           {designerMode &&
+               <IconButton edge="start" onClick={() => handleNewControl(newControl("checkbox"))}>
+                 <CheckIcon/>
+               </IconButton>}
         </Toolbar>
         {inScriptEditDialog && <EditorDialog onClose={handleCloseDialog} text={updateScript} onSave={handleScriptSave} mode="python" />}
         {inStateEditDialog && <EditorDialog onClose={handleCloseDialog} text={JSON.stringify(state, null, 2)} onSave={handleStateSave} mode="json" />}
@@ -223,7 +228,7 @@ const ProjectView = ({ projName, projectId }) => {
             {controls.map((c) => (
                 designerMode ?
                     <DesignerItem control={c} onControlChange={(x) => onControlChange(x)} state={state} updateCb={() => {}} /> :
-                    <ProjectItem control={c} state={state} updateCb={handleUpdateSilent} projName={projName} />
+                    <ProjectItem control={c} state={state} updateCb={handleUpdateSilent} stateUpdCb={handleStateSave} projName={projName} />
             ))}
         </div>
         </div>
