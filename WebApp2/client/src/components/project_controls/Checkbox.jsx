@@ -7,9 +7,11 @@ import {
 } from "@material-ui/core";
 
 const CheckboxM = ({ control, state, stateUpdCb }) => {
+    const checked = state[control.binding] ? true : false;
+    const label = control.label ? control.label : "";
     return (
         <div>
-            <FormControlLabel margin='dense' control={<Checkbox inputProps={{onChange: this.handleChange}} checked={state[control.binding]} />} label={control.label} />
+            <FormControlLabel margin='dense' control={<Checkbox inputProps={{onChange: this.handleChange}} checked={checked} />} label={label} />
         </div>
       );
 };
