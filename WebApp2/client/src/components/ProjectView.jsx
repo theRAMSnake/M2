@@ -127,6 +127,12 @@ const ProjectView = ({ projName, projectId }) => {
        setInStateEditDialog(false);
     }
 
+    const handleStateSaveFromObject = (newState) => {
+       setState(newState)
+       Materia.postEdit(newState.id, JSON.stringify(newState));
+       setInStateEditDialog(false);
+    }
+
     const containerStyle = {
         width: '98vw',  // 100% of the viewport width
         height: '75vh',  // 75% of the viewport height
@@ -228,7 +234,7 @@ const ProjectView = ({ projName, projectId }) => {
             {controls.map((c) => (
                 designerMode ?
                     <DesignerItem control={c} onControlChange={(x) => onControlChange(x)} state={state} updateCb={() => {}} /> :
-                    <ProjectItem control={c} state={state} updateCb={handleUpdateSilent} stateUpdCb={handleStateSave} projName={projName} />
+                    <ProjectItem control={c} state={state} updateCb={handleUpdateSilent} stateUpdCb={handleStateSaveFromObject} projName={projName} />
             ))}
         </div>
         </div>
