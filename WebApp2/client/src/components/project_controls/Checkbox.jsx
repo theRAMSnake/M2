@@ -10,12 +10,12 @@ const CheckboxM = ({ control, state, stateUpdCb }) => {
     const checked = (control.binding && state[control.binding]) ? true : false;
     const label = control.label ? control.label : "";
 
-    handleChange = (e) => {
+    const handleChange = (e) => {
     }
 
     return (
         <div>
-            <FormControlLabel margin='dense' control={<Checkbox inputProps={{onChange: this.handleChange}} checked={checked} />} label={label} />
+            <FormControlLabel margin='dense' control={<Checkbox inputProps={{onChange: handleChange}} checked={checked} />} label={label} />
         </div>
       );
 };
