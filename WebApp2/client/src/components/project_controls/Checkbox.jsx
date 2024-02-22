@@ -14,6 +14,9 @@ const CheckboxM = ({ control, state, stateUpdCb }) => {
     const label = control.label ? control.label : "";
 
     const handleChange = (e) => {
+        let newState = {...state};
+        newState[control.binding] = e.target.value.toString();
+        stateUpdCb(newState);
     }
 
     return (
