@@ -9,7 +9,7 @@ import {
 const CheckboxM = ({ control, state, stateUpdCb }) => {
     return (
         <div>
-            <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: this.handleChange}} checked={state[control.binding]} />} label={control.label} />
+            <FormControlLabel margin='dense' control={<Checkbox inputProps={{onChange: this.handleChange}} checked={state[control.binding]} />} label={control.label} />
         </div>
       );
 };
