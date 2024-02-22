@@ -15,7 +15,7 @@ const CheckboxM = ({ control, state, stateUpdCb }) => {
 
     const handleChange = (e) => {
         let newState = {...state};
-        newState[control.binding] = e.target.value.toString();
+        newState[control.binding] = e.target.checked ? "true" : "false";
         stateUpdCb(newState);
     }
 
