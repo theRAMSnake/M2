@@ -7,7 +7,7 @@ import {
 } from "@material-ui/core";
 
 const CheckboxM = ({ control, state, stateUpdCb }) => {
-    const checked = (control.binding && state[control.binding]) ? true : false;
+    const checked = (control.binding && state[control.binding] === "true") ? true : false;
     const label = control.label ? control.label : "";
 
     const handleChange = (e) => {
