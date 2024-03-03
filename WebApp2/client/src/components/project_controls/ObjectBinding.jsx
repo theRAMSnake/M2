@@ -5,6 +5,7 @@ import {
     FormControlLabel,
     TextField
 } from "@material-ui/core";
+import EditorDialog from '../dialogs/EditorDialog.jsx'
 
 function replaceTemplateString(content, state) {
   return content.replace(/\${(.*?)}/g, (match, path) => {
@@ -38,6 +39,8 @@ function replaceTemplateString(content, state) {
 
 const ObjectBinding = ({ control}) => {
     const [object, setObject] = useState(null);
+    const [isOpen, setIsOpen] = useState(false);
+    const [editedJson, setEditedJson] = useState("");
 
     useEffect(() => {
       const req = {
@@ -52,10 +55,25 @@ const ObjectBinding = ({ control}) => {
     }, [control.binding]);
 
     const handleClick = () => {
-        alert('Clicked!');
+        setIsOpen(true);
+        setEditedJson(JSON.stringify(object, null, 2));
     };
+
+    const handleCloseDialog = () => {
+      setIsOpen(false);
+    };
+
+    const handleSave = (text) => {
+      setIsOpen(false);
+      Materia.postEdit(object.id, text);
+      setObject(JSON.parse(text));
+    }
+
     return (
+    <div>
+        {isOpen && <EditorDialog onClose={handleCloseDialog} text={editedJson} onSave={handleSave} />}
         <div style={{cursor: "pointer"}} onClick={handleClick} dangerouslySetInnerHTML={{__html: replaceTemplateString(control.value, object)}}/>
+    </div>
       );
 };
 
