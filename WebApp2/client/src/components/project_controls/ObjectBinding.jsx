@@ -58,12 +58,16 @@ export class ObjectBindingEditor extends React.Component {
     constructor(props) {
         super(props);
         this.editorRef = null;
+        this.state = {
+            myObject: {...control}
+        }
     }
 
     getContent() {
         const { control } = this.props;
+        const { myObject } = this.state;
         if (this.editorRef) {
-            return {...control, value: this.editorRef.getContent()};
+            return {...myObject, value: this.editorRef.getContent()};
         }
     }
 
@@ -74,13 +78,13 @@ export class ObjectBindingEditor extends React.Component {
     }
 
     render() {
-        const { control } = this.props;
+        const { myObject } = this.state;
 
         return (
             <div>
                 <TextField inputProps={{onChange: this.handleBindingChange}} value={myObject.binding} fullWidth label="Binding" />
                 <RichEditor
-                    initialValue={control.value}
+                    initialValue={myObject.value}
                     getRefCb={(editor) => this.editorRef = editor}
                 />
             </div>
