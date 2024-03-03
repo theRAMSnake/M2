@@ -21,7 +21,7 @@ import FontDownloadIcon from '@material-ui/icons/FontDownload';
 import Crop169Icon from '@material-ui/icons/Crop169';
 import CheckIcon from '@material-ui/icons/Check';
 import ExplicitIcon from '@material-ui/icons/Explicit';
-import CommitIcon from '@material-ui/icons/Commit';
+import CodeIcon from '@material-ui/icons/Code';
 import EditorDialog from './dialogs/EditorDialog.jsx'
 import { newControl } from './ProjectControls.jsx'
 
@@ -230,7 +230,7 @@ const ProjectView = ({ projName, projectId }) => {
                </IconButton>}
            {designerMode &&
                <IconButton edge="start" onClick={() => handleNewControl(newControl("object_binding"))}>
-                 <CommitIcon/>
+                 <CodeIcon/>
                </IconButton>}
         </Toolbar>
         {inScriptEditDialog && <EditorDialog onClose={handleCloseDialog} text={updateScript} onSave={handleScriptSave} mode="python" />}
