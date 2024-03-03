@@ -57,6 +57,7 @@ const ObjectBinding = ({ control}) => {
 export class ObjectBindingEditor extends React.Component {
     constructor(props) {
         super(props);
+        const { control } = this.props;
         this.editorRef = null;
         this.state = {
             myObject: {...control}
