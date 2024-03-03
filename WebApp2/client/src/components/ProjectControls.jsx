@@ -5,6 +5,8 @@ import PushButton from './project_controls/Button.jsx'
 import {PushButtonEditor} from './project_controls/Button.jsx'
 import CheckboxM from './project_controls/Checkbox.jsx'
 import {CheckboxEditor} from './project_controls/Checkbox.jsx'
+import ObjectBinding from './project_controls/ObjectBinding.jsx'
+import {ObjectBindingEditor} from './project_controls/ObjectBinding.jsx'
 
 export const createControlEditor = (src) => {
     if(src.type === "static") {
@@ -13,6 +15,8 @@ export const createControlEditor = (src) => {
         return (<PushButtonEditor control={src} />);
     } else if(src.type === "checkbox") {
         return (<CheckboxEditor control={src} />);
+    } else if(src.type === "object_binding") {
+        return (<ObjectBindingEditor control={src} />);
     } else {
         return (<div>error</div>);
     }
@@ -25,6 +29,8 @@ const createControl = (src, state, updateCb, stateUpdCb, projName) => {
         return (<PushButton control={src} updateCb={updateCb} projName={projName}/>);
     } else if(src.type === "checkbox") {
         return (<CheckboxM control={src} state={state} stateUpdCb={stateUpdCb}/>);
+    } else if(src.type === "object_binding") {
+        return (<ObjectBinding control={src}/>);
     } else {
         return (<div>error</div>);
     }
