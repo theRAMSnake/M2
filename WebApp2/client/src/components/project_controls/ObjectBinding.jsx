@@ -1,6 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react';
 import RichEditor from '../RichEditor.jsx'
-import Materia from '../modules/materia_request'
+import Materia from '../../modules/materia_request'
 
 function replaceTemplateString(content, state) {
   return content.replace(/\${(.*?)}/g, (match, path) => {
