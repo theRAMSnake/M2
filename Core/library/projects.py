@@ -91,12 +91,15 @@ def update_project(name):
 def run_project_script(name, script):
     code_to_exec = script
     state = None
+    controls = []
     for p in collection.Collection("projects").get_items():
         if p.name == name:
             children = m4.query_expr(f'ChildOf("{p.id}")')
             for c in children:
                 if c.elementType == "state":
                     state = c
+                if c.elementType == "control":
+                    controls.append(c)
 
     exec(code_to_exec)
     m4.modify(state.id, state)
