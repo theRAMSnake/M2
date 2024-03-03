@@ -38,6 +38,7 @@ function replaceTemplateString(content, state) {
 
 const ObjectBinding = ({ control}) => {
     const [object, setObject] = useState(null);
+
     useEffect(() => {
       const req = {
           operation: "query",
@@ -49,8 +50,12 @@ const ObjectBinding = ({ control}) => {
           setObject(r.object_list[0]);
       });
     }, [control.binding]);
+
+    const handleClick = () => {
+        alert('Clicked!');
+    };
     return (
-        <div dangerouslySetInnerHTML={{__html: replaceTemplateString(control.value, object)}}/>
+        <div style={{cursor: "pointer"}} onClick={handleClick} dangerouslySetInnerHTML={{__html: replaceTemplateString(control.value, object)}}/>
       );
 };
 
