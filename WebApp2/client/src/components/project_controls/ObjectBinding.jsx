@@ -1,6 +1,10 @@
 import React, {useState, useRef, useEffect} from 'react';
 import RichEditor from '../RichEditor.jsx'
 import Materia from '../../modules/materia_request'
+import {
+    FormControlLabel,
+    TextField
+} from "@material-ui/core";
 
 function replaceTemplateString(content, state) {
   return content.replace(/\${(.*?)}/g, (match, path) => {
