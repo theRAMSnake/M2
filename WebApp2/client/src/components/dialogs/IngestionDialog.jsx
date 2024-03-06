@@ -130,7 +130,7 @@ export default function IngestionDialog(props)
                     </FormControl>
         }
         if(req.type === 'Bool')
-            return <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: handleCbChange}} id={req.name} checked={object[req.name].toString() === "true"} />} label={req.name} />
+            return <FormControlLabel margin='dense' fullWidth control={<Checkbox inputProps={{onChange: handleCbChange}} id={req.name} checked={object[req.name] && object[req.name].toString() === "true"} />} label={req.name} />
         if(req.type === 'Int')
             return <TextField inputProps={{onChange: handleIntFieldChange, type: 'number'}} value={object[req.name]} id={req.name} fullWidth label={req.name} />;
         if(req.type === 'Double')
