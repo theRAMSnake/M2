@@ -100,6 +100,15 @@ export default function IngestionDialog(props)
         setObject(newObj);
     }
 
+    function handleCbChange(e)
+    {
+        let newObj = JSON.parse(JSON.stringify(object));
+        newObj[e.target.id] = e.target.checked ? 'true' : 'false';
+
+        setObject(newObj);
+    }
+
+
     function createPropCtrl(req)
     {
         if(req.type === 'String')
