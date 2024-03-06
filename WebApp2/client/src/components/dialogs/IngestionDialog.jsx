@@ -20,6 +20,11 @@ import {
     InputAdornment
 } from '@material-ui/core'
 
+function toUTC(date)
+{
+    return new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+}
+
 function createDefault(f)
 {
     var type = f.type;

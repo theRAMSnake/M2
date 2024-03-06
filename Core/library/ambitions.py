@@ -28,11 +28,10 @@ def create_ambition(name, color, expiry):
 
     existing_ambitions = ambitions_collection.get_items()
 
-    if len(existing_ambitions) >= 3:
-        raise ValueError("Cannot have more than 3 ambitions.")
-
     # Check for an ambition with the same color.
     for ambition in existing_ambitions:
+        if hasattr(ambition, 'completed') and bool(ambition.completed):
+            continue
         if ambition.color == color:
             raise ValueError("An ambition with the same color already exists.")
 
