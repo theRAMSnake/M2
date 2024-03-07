@@ -16,41 +16,6 @@ JsonRestorationProvider::JsonRestorationProvider(const boost::property_tree::ptr
 
 }
 
-Money parseMoney(const std::string& src)
-{
-    std::istringstream str(src);
-    Money result;
-
-    str >> result.base;
-    if(!str)
-    {
-        throw std::runtime_error("Cannot parse money: " + src);
-    }
-
-    char dummy;
-    str >> dummy;
-
-    if(!str)
-    {
-        throw std::runtime_error("Cannot parse money: " + src);
-    }
-
-    str >> std::setw(2) >> result.coins;
-    if(!str)
-    {
-        throw std::runtime_error("Cannot parse money: " + src);
-    }
-
-    str >> std::setw(0) >> result.currency;
-
-    if(!str)
-    {
-        throw std::runtime_error("Cannot parse money: " + src);
-    }
-
-    return result;
-}
-
 Period parsePeriod(const std::string& src)
 {
     using namespace boost::gregorian;

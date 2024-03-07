@@ -71,7 +71,7 @@ public:
                 PyObject* value_str_object = PyObject_Str(value);  // Convert value to string
                 const char* value_str = PyUnicode_AsUTF8(value_str_object);
 
-                obj[key_str] = value_str;
+                obj[key_str] = std::string(value_str);
 
                 Py_DECREF(value_str_object);
             }

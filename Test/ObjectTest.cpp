@@ -34,6 +34,17 @@ BOOST_FIXTURE_TEST_CASE( TestTimestamp, ObjectTest )
     BOOST_CHECK_EQUAL(55, (*mObject)["f1"].get<materia::Type::Timestamp>().value);
 }
 
+BOOST_FIXTURE_TEST_CASE( TestTimestampFromString, ObjectTest ) 
+{
+    (*mObject)["f1"] = std::string("55");
+    BOOST_CHECK_EQUAL(55, (*mObject)["f1"].get<materia::Type::Timestamp>().value);
+
+    materia::JsonRestorationProvider p(mObject->toJson());
+    p.populate(*mObject);   
+
+    BOOST_CHECK_EQUAL(55, (*mObject)["f1"].get<materia::Type::Timestamp>().value);
+}
+
 BOOST_FIXTURE_TEST_CASE( TestOption, ObjectTest ) 
 {
     (*mObject)["f2"] = "1";

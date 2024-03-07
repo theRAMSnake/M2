@@ -24,6 +24,7 @@ std::string to_string(const materia::Period& src);
 namespace materia
 {
 
+Money parseMoney(const std::string& src);
 class Object;
 //Design: if value is convertible to another type without loss - it would be converted.
 //Can be any materia primitive
@@ -118,6 +119,8 @@ private:
         case Type::Money_v2:
             if constexpr (std::is_same<T, Money>::value)
                 return val;
+            if constexpr (std::is_same<T, std::string>::value)
+                return parseMoney(val);
             break;
 
         case Type::Period:
@@ -149,6 +152,8 @@ private:
             //Nothing
             if constexpr (std::is_same<T, Time>::value)
                 return val;
+            if constexpr (std::is_same<T, std::string>::value)
+                return Time{boost::lexical_cast<std::time_t>(val)};
             break;
         }
 

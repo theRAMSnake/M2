@@ -52,6 +52,41 @@ std::string to_string(const std::vector<std::string>& src)
 namespace materia
 {
 
+Money parseMoney(const std::string& src)
+{
+    std::istringstream str(src);
+    Money result;
+
+    str >> result.base;
+    if(!str)
+    {
+        throw std::runtime_error("Cannot parse money: " + src);
+    }
+
+    char dummy;
+    str >> dummy;
+
+    if(!str)
+    {
+        throw std::runtime_error("Cannot parse money: " + src);
+    }
+
+    str >> std::setw(2) >> result.coins;
+    if(!str)
+    {
+        throw std::runtime_error("Cannot parse money: " + src);
+    }
+
+    str >> std::setw(0) >> result.currency;
+
+    if(!str)
+    {
+        throw std::runtime_error("Cannot parse money: " + src);
+    }
+
+    return result;
+}
+
 void ensureValidKeyName(const std::string& key)
 {
     if(key.find('.') != std::string::npos)

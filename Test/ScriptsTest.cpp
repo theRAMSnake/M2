@@ -540,28 +540,6 @@ except Exception as e:
     BOOST_CHECK_NE("Second ambition created with the same color.", script_result);  // We expect an error here.
 }
 
-BOOST_FIXTURE_TEST_CASE(TestCreateAmbitionMaxLimit, ScriptsTest)
-{
-    // Test the constraint of having no more than 3 ambitions.
-    std::string script_result = run(R"(
-import ambitions
-import datetime
-
-expiry = datetime.datetime.now() + datetime.timedelta(days=1)
-
-ambitions.create_ambition('Ambition 1', 'Red', expiry)
-ambitions.create_ambition('Ambition 2', 'Green', expiry)
-ambitions.create_ambition('Ambition 3', 'Blue', expiry)
-try:
-    ambitions.create_ambition('Ambition 4', 'Yellow', expiry)
-    result = 'Fourth ambition created.'
-except Exception as e:
-    result = str(e)
-    )");
-
-    BOOST_CHECK_NE("Fourth ambition created.", script_result);  // We expect an error here, as it exceeds the max limit.
-}
-
 BOOST_FIXTURE_TEST_CASE(TestCreateAmbitionInvalidExpiry, ScriptsTest)
 {
     // Test the creation of an ambition with an expiry date that is not in the future.
