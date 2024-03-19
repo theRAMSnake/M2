@@ -263,7 +263,7 @@ std::string Core3::executeCommandJson(const std::string& json)
 
 void Core3::notifyLongCommand(const std::string& cmd, unsigned int value)
 {
-   mCommonSS->push(Id("inbox"), "Command execution exceeds time limit: (" + std::to_string(value) + "ms) " + cmd);
+   mCommonSS->push(Id("metrics"), "Command execution exceeds time limit: (" + std::to_string(value) + "ms) " + cmd);
 }
 
 }
