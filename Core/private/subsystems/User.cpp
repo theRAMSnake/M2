@@ -215,7 +215,6 @@ static std::time_t to_time_t(const boost::gregorian::date& date )
 
 void UserSS::advanceExpiredCalendarItems(const boost::gregorian::date& date)
 {
-   bool hasExpiredItems = false;
    auto curTime = to_time_t(date);
    auto curDayBegin = curTime - (curTime % 86400);
    for(auto o : mOm.getAll("calendar_item"))
@@ -223,18 +222,8 @@ void UserSS::advanceExpiredCalendarItems(const boost::gregorian::date& date)
        if((o)["entityTypeChoice"].get<Type::Choice>() != "Event" && (o)["timestamp"].get<Type::Timestamp>().value < curTime)
        {
            o["timestamp"] = Time{curDayBegin + (o["timestamp"].get<Type::Timestamp>().value % 86400)};
-           hasExpiredItems = true;
            mOm.modify(o);
        }
-   }
-
-   if(hasExpiredItems)
-   {
-       mReward.removeGenerator(Id("mod.calendar"));
-   }
-   else
-   {
-       mReward.setGenerator(Id("mod.calendar"), "Clean calendar", 2, {});
    }
 }
 

@@ -252,6 +252,9 @@ void RewardSS::onNewDay(const boost::gregorian::date& date)
     auto coins = mOm.getOrCreate(Id("reward.coins"), "object");
     for(auto o : mOm.getAll("reward_generator"))
     {
+        //std::cout << "Generating for: " << o["desc"].get<Type::String>() << "\n";
+        //std::cout << " value :" << o["value"].get<Type::Int>() << "\n";
+        //std::cout << " color :" << o["color"].get<Type::String>() << "\n";
         std::string color;
         if(o["type"].get<Type::Choice>() == "Random")
         {

@@ -202,7 +202,7 @@ BOOST_FIXTURE_TEST_CASE( AddWorkburden, RewardTest )
    create.put("defined_id", "config.reward");
    create.put("params.workburdenPerDay", 200);
 
-   std::cout << mCore->executeCommandJson(writeJson(create));
+   mCore->executeCommandJson(writeJson(create));
 
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 1)); //Friday
                                                                             //
@@ -243,6 +243,8 @@ BOOST_FIXTURE_TEST_CASE( GeneratorsTestRandom, RewardTest )
    create.put("params.entityTypeChoice", "Task");
    mCore->executeCommandJson(writeJson(create));
 
+   set("workburden", -10000, *mCore);
+
    {
       boost::property_tree::ptree create;
       create.put("operation", "create");
@@ -273,11 +275,11 @@ BOOST_FIXTURE_TEST_CASE( GeneratorsTestRandom, RewardTest )
 
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 2));
 
-   BOOST_CHECK_EQUAL(2 + 2 , getTotalCoinAmount());
+   BOOST_CHECK_EQUAL(1 + 1 , getTotalCoinAmount());
 
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 3));
 
-   BOOST_CHECK_EQUAL(3 + 3 , getTotalCoinAmount());
+   BOOST_CHECK_EQUAL(1 + 1 , getTotalCoinAmount());
 
    {
       boost::property_tree::ptree create;
@@ -291,7 +293,7 @@ BOOST_FIXTURE_TEST_CASE( GeneratorsTestRandom, RewardTest )
 
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 4));
 
-   BOOST_CHECK_EQUAL(5 + 4, getTotalCoinAmount());
+   BOOST_CHECK_EQUAL(3, getTotalCoinAmount());
 
    deleteAll("reward_generator", *mCore);
 
@@ -367,8 +369,8 @@ BOOST_FIXTURE_TEST_CASE( GeneratorsTestSpecific, RewardTest )
 
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 5));
    coins = query("reward.coins", *mCore);
-   BOOST_CHECK_EQUAL(2, coins->get<int>("Red"));
-   BOOST_CHECK_EQUAL(4, coins->get<int>("Blue"));
+   BOOST_CHECK_EQUAL(1, coins->get<int>("Red"));
+   BOOST_CHECK_EQUAL(2, coins->get<int>("Blue"));
    BOOST_CHECK_EQUAL(0, coins->get<int>("Green"));
    BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));
    BOOST_CHECK_EQUAL(0, coins->get<int>("Yellow"));
@@ -396,7 +398,7 @@ BOOST_FIXTURE_TEST_CASE( GeneratorsTestSpecific, RewardTest )
 
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 6));
    coins = query("reward.coins", *mCore);
-   BOOST_CHECK_EQUAL(3, coins->get<int>("Red"));
+   BOOST_CHECK_EQUAL(1, coins->get<int>("Red"));
    BOOST_CHECK(coins->get<int>("Blue") < 3);
    BOOST_CHECK_EQUAL(0, coins->get<int>("Green"));
    BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));
@@ -404,7 +406,7 @@ BOOST_FIXTURE_TEST_CASE( GeneratorsTestSpecific, RewardTest )
 
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 7));
    coins = query("reward.coins", *mCore);
-   BOOST_CHECK_EQUAL(4, coins->get<int>("Red"));
+   BOOST_CHECK_EQUAL(1, coins->get<int>("Red"));
    BOOST_CHECK(coins->get<int>("Blue") < 3);
    BOOST_CHECK_EQUAL(0, coins->get<int>("Green"));
    BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));
