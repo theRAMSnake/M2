@@ -232,52 +232,11 @@ void UserSS::onNewDay(const boost::gregorian::date& date)
    awardInbox();
    generateNewTOD();
    advanceExpiredCalendarItems(date);
-   updatePortfolio();
 }
 
 void UserSS::onNewWeek()
 {
     
-}
-
-void UserSS::updatePortfolio()
-{
-    try
-    {
-        auto snp = mOm.get(Id("data.snp"));
-        auto cfg = mOm.get(Id("config.invest"));
-
-        auto totalMoney = cfg["snpgoal"].get<Type::Int>();
-
-        double totalWeight = 0.0;
-        for(auto c : snp.getChildren())
-        {
-            totalWeight += c["weight"].get<Type::Double>();
-        }
-
-        auto moneyPerWeight = totalMoney / totalWeight;
-
-        mOm.destroy(Id("portfolio_goal"));
-
-        auto result = mOm.getOrCreate(Id("portfolio_goal"), "object");
-
-        for(auto c : snp.getChildren())
-        {
-            Object item(c);
-            item["amount"] = (item["weight"].get<Type::Double>() * moneyPerWeight) / item["price"].get<Type::Double>();
-
-            auto key = item["ticker"].get<Type::String>();
-            boost::algorithm::replace_all(key, ".", "_");
-
-            result.setChild(key, item);
-        }
-
-        mOm.modify(result);
-    }
-    catch(...)
-    {
-
-    }
 }
 
 std::vector<TypeDef> UserSS::getTypes()
