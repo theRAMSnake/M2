@@ -45,6 +45,12 @@ protected:
        return result;
    }
 
+   int getGoldenCoinAmount()
+   {
+       auto coins = query("reward.coins", *mCore);
+       return coins->get<int>("Gold");
+   }
+
    int getTotalCost(const boost::property_tree::ptree& p)
    {
        int result = 0;
@@ -103,8 +109,8 @@ reward.reward(100)
 result = 1
    )");
 
-   BOOST_CHECK(getTotalCoinAmount() > 105);
-   BOOST_CHECK(getTotalCoinAmount() < 200);
+   BOOST_CHECK(getGoldenCoinAmount() > 0);
+   BOOST_CHECK_EQUAL(100, getTotalCoinAmount());
 }
 BOOST_FIXTURE_TEST_CASE( AddPointsDisciplineCpp, RewardTest )
 {
@@ -131,8 +137,8 @@ BOOST_FIXTURE_TEST_CASE( AddPointsDisciplineCpp, RewardTest )
 
    mCore->executeCommandJson(writeJson(rwd));
 
-   BOOST_CHECK(getTotalCoinAmount() > 105);
-   BOOST_CHECK(getTotalCoinAmount() < 200);
+   BOOST_CHECK(getGoldenCoinAmount() > 0);
+   BOOST_CHECK_EQUAL(100, getTotalCoinAmount());
 }
 BOOST_FIXTURE_TEST_CASE( AddPoints, RewardTest )
 {

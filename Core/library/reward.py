@@ -16,11 +16,16 @@ def reward(number, color=None):
         initial.Yellow = 0
         initial.Green = 0
         initial.Purple = 0
+        initial.Gold = 0
         m4.create('reward.coins', 'object', initial)
         coins_object = m4.query_ids(['reward.coins'])[0]
 
     # Get the current state of coins from the object's attributes
     coins = {coin_color: int(getattr(coins_object, coin_color, 0)) for coin_color in get_reward_colors()}
+    if hasattr(coins_object, "Gold"):
+        coins["Gold"] = int(coins_object.Gold)
+    else:
+        coins["Gold"] = 0
 
     if color:
         # If a specific color is specified, we adjust the number of coins of that color
@@ -50,8 +55,7 @@ def reward(number, color=None):
         chance = 1 - 100.0 / float(val + 100);
         for _ in range(number):
             if random.random() <= chance:
-                random_color = random.choice(get_reward_colors())
-                coins[random_color] += 1
+                coins["Gold"] += 1
 
     # Now, we'll update the 'reward.coins' object with the new values
     for coin_color, value in coins.items():

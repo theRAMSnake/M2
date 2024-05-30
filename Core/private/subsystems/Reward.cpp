@@ -482,8 +482,7 @@ void RewardSS::addCoins(const int coins, const std::string& color)
     auto chance = 1 - 100.0 / static_cast<double>(val + 100);
     for(int i = 0; i < coins; ++i) {
         if(val != 0 && Rng::genProbability(chance)) {
-            colorToUse = COIN_COLORS[Rng::genChoise(COIN_COLORS.size())];
-            coinsStash[colorToUse] = coinsStash[colorToUse].get<Type::Int>() + 1;
+            coinsStash["Gold"] = coinsStash["Gold"].get<Type::Int>() + 1;
         }
     }
     mOm.modify(coinsStash);
