@@ -41,7 +41,7 @@ def reward(number, color=None):
                 random_color = random.choice(get_reward_colors())
                 coins[random_color] += 1
             else:
-                available_colors = [c for c, count in coins.items() if count > 0]
+                available_colors = [c for c, count in coins.items() if count > 0 and c != "Gold"]
 
                 if not available_colors:
                     break
