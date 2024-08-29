@@ -13,7 +13,7 @@ const Textbox = ({ control, state, stateUpdCb }) => {
 
     return (
         <div>
-            <FormControlLabel margin='dense' control={<TextField inputProps={{onChange: handleChange}} value={value} />} />
+            <FormControlLabel style={{ marginLeft: '10px' }} margin='dense' control={<TextField inputProps={{onChange: handleChange}} value={value} />} />
         </div>
       );
 };
