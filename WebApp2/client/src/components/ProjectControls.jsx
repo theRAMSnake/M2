@@ -7,6 +7,8 @@ import CheckboxM from './project_controls/Checkbox.jsx'
 import {CheckboxEditor} from './project_controls/Checkbox.jsx'
 import ObjectBinding from './project_controls/ObjectBinding.jsx'
 import {ObjectBindingEditor} from './project_controls/ObjectBinding.jsx'
+import TextBox from './project_controls/Textbox.jsx'
+import {TextBoxEditor} from './project_controls/Textbox.jsx'
 
 export const createControlEditor = (src) => {
     if(src.type === "static") {
@@ -17,6 +19,8 @@ export const createControlEditor = (src) => {
         return (<CheckboxEditor control={src} />);
     } else if(src.type === "object_binding") {
         return (<ObjectBindingEditor control={src} />);
+    } else if(src.type === "textbox") {
+        return (<TextBoxEditor control={src} />);
     } else {
         return (<div>error</div>);
     }
@@ -31,6 +35,8 @@ const createControl = (src, state, updateCb, stateUpdCb, projName) => {
         return (<CheckboxM control={src} state={state} stateUpdCb={stateUpdCb}/>);
     } else if(src.type === "object_binding") {
         return (<ObjectBinding control={src}/>);
+    } else if(src.type === "textbox") {
+        return (<TextBox control={src}/>);
     } else {
         return (<div>error</div>);
     }

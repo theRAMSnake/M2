@@ -40,6 +40,14 @@ const PushButton = ({ control, updateCb, projName }) => {
         return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
     }
 
+    function replaceInputTokens(str, map) {
+        // Use a regular expression to find all occurrences of tokens with double underscores
+        return str.replace(/__([a-zA-Z0-9_]+)/g, function(match, key) {
+            // Check if the key exists in the map and replace with its value, otherwise keep the original match
+            return key in map ? map[key] : match;
+        });
+    }
+
     const action = () => {
         let resultScript = escapeForPython(control.script);
         ScriptHelper.exec(`import projects\nscript="""${resultScript}"""\nprojects.run_project_script("${projName}", script)\nresult=1`, (data)=>{
