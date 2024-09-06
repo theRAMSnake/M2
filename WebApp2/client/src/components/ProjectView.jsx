@@ -40,6 +40,7 @@ const ProjectView = ({ projName, projectId }) => {
     const [updateResult, setUpdateResult] = useState("");
     const [state, setState] = useState(null);
     const [version, setVersion] = useState(0);
+    const [inputStore, setInputStore] = useState({});
 
     useEffect(() => {
       const req = {
@@ -244,7 +245,7 @@ const ProjectView = ({ projName, projectId }) => {
             {controls.map((c) => (
                 designerMode ?
                     <DesignerItem control={c} onControlChange={(x) => onControlChange(x)} state={state} updateCb={() => {}} /> :
-                    <ProjectItem control={c} state={state} updateCb={handleUpdateSilent} stateUpdCb={handleStateSaveFromObject} projName={projName} />
+                    <ProjectItem control={c} state={state} updateCb={handleUpdateSilent} stateUpdCb={handleStateSaveFromObject} projName={projName} inputStore={inputStore} />
             ))}
         </div>
         </div>

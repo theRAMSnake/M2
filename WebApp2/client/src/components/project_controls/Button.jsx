@@ -11,7 +11,7 @@ import 'ace-builds/src-noconflict/theme-monokai';
 import ConfirmationDialog from '../dialogs/ConfirmationDialog.jsx'
 import ScriptHelper from '../../modules/script_helper'
 
-const PushButton = ({ control, updateCb, projName }) => {
+const PushButton = ({ control, updateCb, projName, inputStore }) => {
     const [inConfirmationDialog, setInConfirmationDialog] = useState(false);
 
     function onConfirmationDialogCancel()
@@ -49,7 +49,8 @@ const PushButton = ({ control, updateCb, projName }) => {
     }
 
     const action = () => {
-        let resultScript = escapeForPython(control.script);
+        let preResultScript = replaceInputTokens(control.script, inputStore)
+        let resultScript = escapeForPython(preResultScript);
         ScriptHelper.exec(`import projects\nscript="""${resultScript}"""\nprojects.run_project_script("${projName}", script)\nresult=1`, (data)=>{
             console.log(data)
         });

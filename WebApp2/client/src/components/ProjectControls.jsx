@@ -26,17 +26,17 @@ export const createControlEditor = (src) => {
     }
 }
 
-const createControl = (src, state, updateCb, stateUpdCb, projName) => {
+const createControl = (src, state, updateCb, stateUpdCb, projName, inputStore) => {
     if(src.type === "static") {
         return (<Static control={src} state={state}/>);
     } else if(src.type === "button") {
-        return (<PushButton control={src} updateCb={updateCb} projName={projName}/>);
+        return (<PushButton control={src} updateCb={updateCb} projName={projName} inputStore={inputStore}/>);
     } else if(src.type === "checkbox") {
         return (<CheckboxM control={src} state={state} stateUpdCb={stateUpdCb}/>);
     } else if(src.type === "object_binding") {
         return (<ObjectBinding control={src}/>);
     } else if(src.type === "textbox") {
-        return (<TextBox control={src}/>);
+        return (<TextBox control={src} inputStore={inputStore}/>);
     } else {
         return (<div>error</div>);
     }

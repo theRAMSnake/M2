@@ -5,10 +5,11 @@ import {
     TextField
 } from "@material-ui/core";
 
-const Textbox = ({ control, state, stateUpdCb }) => {
+const Textbox = ({ control, inputStore }) => {
     const [value, setValue] = useState("");
     const handleChange = (e) => {
-        setValue(e.target.value)
+        inputStore[control.binding] = e.target.value;
+        setValue(e.target.value);
     }
 
     return (
@@ -32,12 +33,6 @@ export class TextBoxEditor extends React.Component {
         return myObject;
     }
 
-    handleLabelChange = (e) => {
-        this.setState(prevState => ({
-            myObject : {...prevState.myObject, label: e.target.value}
-        }));
-    }
-
     handleBindingChange = (e) => {
         this.setState(prevState => ({
             myObject : {...prevState.myObject, binding: e.target.value}
@@ -48,7 +43,6 @@ export class TextBoxEditor extends React.Component {
         const { myObject } = this.state;
         return(
             <div>
-                <TextField inputProps={{onChange: this.handleLabelChange}} value={myObject.label} fullWidth label="Label" />
                 <TextField inputProps={{onChange: this.handleBindingChange}} value={myObject.binding} fullWidth label="Binding" />
             </div>
         );
