@@ -230,7 +230,7 @@ const CollectionView = ({ colName }) => {
       {isOpen && content.header.ingestion && <IngestionDialog open={true} ingestion={content.header.ingestion} object={objectInEdit} onCancel={handleCloseDialog} onOk={handleSave} />}
       {inHeaderDialog && <EditorDialog onClose={handleCloseHeaderDialog} text={JSON.stringify(content.header, null, 2)} onSave={handleHeaderDialogSave} />}
       <Header variant="h4" align="center" color="primary">
-        {colName.replace(/^=/, '')}
+        {colName.replace(/^=/, '') + "(" + content.items.length + ")"}
       </Header>
       <Grid container direction="row" alignItems="flex-start">
           <IconButton edge="start" aria-label="complete" onClick={() => handleAdd()}>
