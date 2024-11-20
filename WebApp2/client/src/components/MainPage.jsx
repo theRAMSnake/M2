@@ -16,7 +16,6 @@ import ProjectView from './ProjectView.jsx'
 import CollectionView from './CollectionView.jsx'
 import AddItemDialog from './AddItemDialog.jsx'
 import CalendarCtrl from './CalendarCtrl.jsx'
-import ContractsCtrl from './ContractsCtrl.jsx'
 import VariableBurndown from './VariableBurndown.jsx'
 import VariablePanel from './VariablePanel.jsx'
 import ScriptHelper from '../modules/script_helper'
@@ -301,9 +300,8 @@ function MainPage(props) {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" className={classes.title}>
-                        Materia v4.0.4
+                        Materia v4.0.5
                     </Typography>
-                    <ContractsCtrl/>
                     <SearchBar onSubmit={searchBarSubmit}/>
                     <div className={classes.grow} />
                     <VariablePanel value={materiaModel.getPrimaryFocus()} commit={materiaModel.setPrimaryFocus} length={200}/>

@@ -11,7 +11,6 @@ def m4_update(today):
     # Check if the current day is a weekday
     if 0 <= current_day <= 4:  # 0 is Monday, 4 is Friday
         reward.reward(-11)
-    ambitions.update(today)
     projects.update_projects()
 
 def daily_update():
