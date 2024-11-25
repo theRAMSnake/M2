@@ -266,4 +266,15 @@ void Core3::notifyLongCommand(const std::string& cmd, unsigned int value)
    mCommonSS->push(Id("metrics"), "Command execution exceeds time limit: (" + std::to_string(value) + "ms) " + cmd);
 }
 
+void Core3::healthcheck() {
+   static unsigned int hc_count = 0;
+   mDb.getTable("healthcheck")->directStore(Id("0"), std::to_string(hc_count));
+   auto result = mDb.getTable("healthcheck")->load(Id("0"));
+   if(result && *result == std::to_string(hc_count)) {
+      hc_count++;
+   } else {
+       throw std::runtime_error("Healthcheck failed");
+   }
+}
+
 }

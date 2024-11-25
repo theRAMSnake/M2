@@ -74,11 +74,22 @@ void timerFunc(materia::ICore3* core)
         auto t = std::time(NULL);
         auto tm_struct = localtime(&t);
 
+        //Healthcheck
+        if(tm_struct->tm_min % 5 == 0) {
+            try {
+                core->healthcheck();
+            } catch(...) {
+                logger << "Healthcheck failed, aborting";
+                abort();
+            }
+        }
+
         if(cicleCooldown > 0)
         {
             cicleCooldown--;
         }
 
+        //Daily update
         if(tm_struct->tm_hour == 3 && tm_struct->tm_min == 0 && cicleCooldown == 0)
         {
             std::unique_lock<std::mutex> lock(gMainMutex);

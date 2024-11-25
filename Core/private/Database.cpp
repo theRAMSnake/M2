@@ -47,6 +47,11 @@ void DatabaseTable::store(const Id& id, const std::string& data)
     mDb.queueStore(mInsertBinder, id, data);
 }
 
+void DatabaseTable::directStore(const Id& id, const std::string& data) {
+    mInsertBinder->get() << id << data;
+    mInsertBinder->get()++;
+}
+
 std::optional<std::string> DatabaseTable::load(const Id& id)
 {
     std::optional<std::string> result;

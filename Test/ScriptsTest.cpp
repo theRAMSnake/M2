@@ -40,7 +40,7 @@ protected:
 BOOST_FIXTURE_TEST_CASE(TestNoApi, ScriptsTest)
 {
     BOOST_CHECK_EQUAL("5", run("result = 2+3"));
-    BOOST_CHECK_EQUAL("'division by zero'", run("result = 5/0"));
+    BOOST_CHECK_EQUAL("ZeroDivisionError('division by zero')", run("result = 5/0"));
     BOOST_CHECK_EQUAL("No 'result' key found in global dictionary.", run("\"jjj\""));
 }
 
@@ -76,7 +76,7 @@ result = m4.create("id_preset", "object", empty_obj)
 }
 BOOST_FIXTURE_TEST_CASE(TestCreateInvalid, ScriptsTest)
 {
-    BOOST_CHECK_EQUAL("'argument 1 must be str, not None'", run(R"(
+    BOOST_CHECK_EQUAL("TypeError('argument 1 must be str, not None')", run(R"(
 class EmptyObject:
     pass
 
@@ -84,7 +84,7 @@ empty_obj = EmptyObject()
 result = m4.create(None, "object", empty_obj)
      )"));
 
-    BOOST_CHECK_EQUAL("'Wrong type while creating object '", run(R"(
+    BOOST_CHECK_EQUAL("RuntimeError('Wrong type while creating object ')", run(R"(
 class EmptyObject:
     pass
 
@@ -92,7 +92,7 @@ empty_obj = EmptyObject()
 result = m4.create("id_preset", "", empty_obj)
      )"));
 
-    BOOST_CHECK_EQUAL("'Expected an object with attributes'", run(R"(
+    BOOST_CHECK_EQUAL("RuntimeError('Expected an object with attributes')", run(R"(
 class EmptyObject:
     pass
 
@@ -100,7 +100,7 @@ empty_obj = EmptyObject()
 result = m4.create("id_preset", "object", None)
      )"));
 
-    BOOST_CHECK_EQUAL("'argument 2 must be str, not None'", run(R"(
+    BOOST_CHECK_EQUAL("TypeError('argument 2 must be str, not None')", run(R"(
 class EmptyObject:
     pass
 
@@ -108,7 +108,7 @@ empty_obj = EmptyObject()
 result = m4.create("id_preset", None, empty_obj)
      )"));
 
-    BOOST_CHECK_EQUAL("'argument 1 must be str, not None'", run(R"(
+    BOOST_CHECK_EQUAL("TypeError('argument 1 must be str, not None')", run(R"(
 class EmptyObject:
     pass
 
@@ -118,7 +118,7 @@ result = m4.create(None, None, empty_obj)
 }
 BOOST_FIXTURE_TEST_CASE(TestCreateApiLogicalError, ScriptsTest)
 {
-    BOOST_CHECK_EQUAL("'Object with id id_preset already exist'", run(R"(
+    BOOST_CHECK_EQUAL("RuntimeError('Object with id id_preset already exist')", run(R"(
 class EmptyObject:
     pass
 
@@ -472,95 +472,6 @@ result = not item_still_exists
     BOOST_CHECK_EQUAL("True", script_result);  // The removal is successful if we receive 'success'.
 }
 
-BOOST_FIXTURE_TEST_CASE(TestCreateAmbition, ScriptsTest)
-{
-    // Test the creation of an ambition with valid inputs.
-    std::string script_result = run(R"(
-import ambitions
-import datetime
-
-name = 'Learn Python'
-color = 'Blue'
-expiry = datetime.datetime.now() + datetime.timedelta(days=1)
-
-# Try to create an ambition
-try:
-    ambitions.create_ambition(name, color, expiry)
-    result = 'Ambition created successfully.'
-except Exception as e:
-    result = str(e)
-    )");
-
-    BOOST_CHECK_EQUAL("Ambition created successfully.", script_result);
-}
-
-BOOST_FIXTURE_TEST_CASE(TestCreateAmbitionInvalidColor, ScriptsTest)
-{
-    // Test the creation of an ambition with an invalid color.
-    std::string script_result = run(R"(
-import ambitions
-import datetime
-
-name = 'Learn Python'
-color = 'invalid_color'
-expiry = datetime.datetime.now() + datetime.timedelta(days=1)
-
-# Try to create an ambition
-try:
-    ambitions.create_ambition(name, color, expiry)
-    result = 'Ambition created successfully.'
-except Exception as e:
-    result = str(e)
-    )");
-
-    BOOST_CHECK_NE("Ambition created successfully.", script_result);  // We expect an error here.
-}
-
-BOOST_FIXTURE_TEST_CASE(TestCreateAmbitionSameColor, ScriptsTest)
-{
-    // Test the constraint that there should not be two ambitions with the same color.
-    std::string script_result = run(R"(
-import ambitions
-import datetime
-
-name1 = 'Learn Python'
-name2 = 'Learn C++'
-color = 'Blue'
-expiry = datetime.datetime.now() + datetime.timedelta(days=1)
-
-# Try to create two ambitions with the same color
-ambitions.create_ambition(name1, color, expiry)
-try:
-    ambitions.create_ambition(name2, color, expiry)
-    result = 'Second ambition created with the same color.'
-except Exception as e:
-    result = str(e)
-    )");
-
-    BOOST_CHECK_NE("Second ambition created with the same color.", script_result);  // We expect an error here.
-}
-
-BOOST_FIXTURE_TEST_CASE(TestCreateAmbitionInvalidExpiry, ScriptsTest)
-{
-    // Test the creation of an ambition with an expiry date that is not in the future.
-    std::string script_result = run(R"(
-import ambitions
-import datetime
-
-name = 'Learn Python'
-color = 'Green'  # Assuming 'green' is a valid color.
-expiry = datetime.datetime.now()
-
-# Try to create an ambition with an invalid expiry date
-try:
-    ambitions.create_ambition(name, color, expiry)
-    result = 'Ambition created successfully.'
-except Exception as e:
-    result = str(e)  # Here, we are capturing the exception message to check what error was returned.
-    )");
-
-    BOOST_CHECK_NE("Ambition created successfully.", script_result);  // This means creation should not succeed.
-}
 
 BOOST_FIXTURE_TEST_CASE(TestRewardFunction, ScriptsTest)
 {

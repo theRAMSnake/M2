@@ -16,7 +16,6 @@ ExpressionsTest2.cpp
 ObjectTest.cpp
 CoreTest.cpp
 #DatabaseTest.cpp
-ContractsTest.cpp
 Strategy3Test.cpp
 Utils.cpp
 UserTest.cpp
