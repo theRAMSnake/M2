@@ -74,20 +74,22 @@ void timerFunc(materia::ICore3* core)
         auto t = std::time(NULL);
         auto tm_struct = localtime(&t);
 
-        //Healthcheck
-        if(tm_struct->tm_min % 5 == 0) {
-            try {
-                core->healthcheck();
-            } catch(...) {
-                logger << "Healthcheck failed, aborting";
-                abort();
-            }
-        }
-
         if(cicleCooldown > 0)
         {
             cicleCooldown--;
         }
+
+        cicleCooldown = 3600;//Make sure we will never hit in at least one hour
+
+        //Healthcheck
+        try {
+            std::unique_lock<std::mutex> lock(gMainMutex);
+            core->healthcheck();
+        } catch(...) {
+            logger << "Healthcheck failed, aborting";
+            abort();
+        }
+
 
         //Daily update
         if(tm_struct->tm_hour == 3 && tm_struct->tm_min == 0 && cicleCooldown == 0)
@@ -102,8 +104,6 @@ void timerFunc(materia::ICore3* core)
             {
                 core->onNewWeek();
             }
-
-            cicleCooldown = 3600;//Make sure we will never hit in at least one hour
         }
 
         std::this_thread::sleep_for(std::chrono::seconds(1));
