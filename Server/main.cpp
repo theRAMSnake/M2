@@ -79,32 +79,34 @@ void timerFunc(materia::ICore3* core)
             cicleCooldown--;
         }
 
-        cicleCooldown = 3600;//Make sure we will never hit in at least one hour
+        if(cicleCooldown == 0) {
 
-        //Healthcheck
-        try {
+            cicleCooldown = 3600;//Make sure we will never hit in at least one hour
+
             std::unique_lock<std::mutex> lock(gMainMutex);
-            core->healthcheck();
-        } catch(...) {
-            logger << "Healthcheck failed, aborting";
-            abort();
-        }
 
+            try {
+                core->healthcheck();
+            } catch(...) {
+                logger << "Healthcheck failed, aborting";
+                abort();
+            }
 
-        //Daily update
-        if(tm_struct->tm_hour == 3 && tm_struct->tm_min == 0 && cicleCooldown == 0)
-        {
-            std::unique_lock<std::mutex> lock(gMainMutex);
-            core->onNewDay(boost::gregorian::day_clock::local_day());
-
-            t = std::time(NULL);
-            tm_struct = localtime(&t);
-
-            if(tm_struct->tm_wday == 1 /*Monday*/)
+            //Daily update
+            if(tm_struct->tm_hour == 3)
             {
-                core->onNewWeek();
+                core->onNewDay(boost::gregorian::day_clock::local_day());
+
+                t = std::time(NULL);
+                tm_struct = localtime(&t);
+
+                if(tm_struct->tm_wday == 1 /*Monday*/)
+                {
+                    core->onNewWeek();
+                }
             }
         }
+
 
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
