@@ -161,9 +161,6 @@ function MainPage(props) {
         else if(ct == "strategy")
             return (<StrategyView initPath={strategyPath}/>);
 
-        else if(ct == "reward")
-            return (<RewardView/>);
-
         else if(ct == "ideas")
             return (<IdeasView/>);
 
@@ -300,7 +297,7 @@ function MainPage(props) {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" className={classes.title}>
-                        Materia v4.0.5
+                        Materia v4.0.6
                     </Typography>
                     <SearchBar onSubmit={searchBarSubmit}/>
                     <div className={classes.grow} />
@@ -347,7 +344,7 @@ function MainPage(props) {
                 </div>
                 <Divider />
                 <List>
-                    {['API', 'Finance', 'Journal', 'Strategy', 'Reward', 'Ideas'].map((text, index) => (
+                    {['API', 'Finance', 'Journal', 'Strategy', 'Ideas'].map((text, index) => (
                     <ListItem button key={text} onClick={() => {menuItemClicked(index)}}>
                         <ListItemText primary={text} />
                     </ListItem>
