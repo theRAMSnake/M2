@@ -1,0 +1,18 @@
+# Migration script dependencies
+# All dependencies are part of Python standard library, so no external packages needed
+
+# Required Python version
+# Python >= 3.6
+
+# Standard library modules used:
+# - sqlite3 (database operations)
+# - json (JSON parsing and serialization)
+# - sys (system operations)
+# - os (file system operations)
+# - argparse (command line argument parsing)
+# - typing (type hints)
+# - datetime (date/time operations)
+# - uuid (unique identifier generation)
+# - tempfile (temporary file operations for testing)
+
+# No external dependencies required

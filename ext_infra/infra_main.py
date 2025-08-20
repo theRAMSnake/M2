@@ -72,7 +72,7 @@ def main():
     runInvestSurey(mr)
     runInvestAnalisys(mr)
 
-    collectNews(mr)
+    #collectNews(mr)
 
 if __name__=="__main__":
     main()
