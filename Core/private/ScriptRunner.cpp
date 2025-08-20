@@ -326,6 +326,7 @@ std::string runScript(const std::string& code, ObjectManager& om)
     if (!Py_IsInitialized()) {
         PyImport_AppendInittab("m4", &PyInit_cpp_module);
         Py_Initialize();
+        PyEval_InitThreads(); // Initialize threading support
         auto m4Module = PyImport_ImportModule("m4");
         if (!m4Module) {
             PyErr_Print();
@@ -344,6 +345,9 @@ std::string runScript(const std::string& code, ObjectManager& om)
         Py_XDECREF(sys);
         Py_XDECREF(m4Module);
     }
+
+    // Acquire the GIL for this thread
+    PyGILState_STATE gstate = PyGILState_Ensure();
 
     std::string run_result;
 
@@ -370,6 +374,9 @@ std::string runScript(const std::string& code, ObjectManager& om)
 
     //Do not uncomment - will crash
     //Py_DECREF(pResult);
+
+    // Release the GIL
+    PyGILState_Release(gstate);
 
     return run_result;
 }
