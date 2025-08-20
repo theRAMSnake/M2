@@ -14,6 +14,21 @@ public:
    {
       system("rm Test.db");
       mCore = materia::createCore({"Test.db"});
+
+      std::string script_result = run(R"(
+import ambitions
+import reward
+import m4
+import datetime
+import collection
+
+expiry_future = datetime.datetime.now() + datetime.timedelta(days=1000)
+
+ambitions.create_ambition('Ambition 1', 'Red', expiry_future)
+ambitions.create_ambition('Ambition 2', 'Blue', expiry_future)
+ambitions.create_ambition('Ambition 3', 'Green', expiry_future)
+result = 1
+      )");
    }
 
 protected:
@@ -30,6 +45,12 @@ protected:
        return result;
    }
 
+   int getGoldenCoinAmount()
+   {
+       auto coins = query("reward.coins", *mCore);
+       return coins->get<int>("Gold");
+   }
+
    int getTotalCost(const boost::property_tree::ptree& p)
    {
        int result = 0;
@@ -41,11 +62,85 @@ protected:
 
        return result;
    }
+   std::string run(const std::string& code)
+   {
+       boost::property_tree::ptree cmd;
+       cmd.put("operation", "run");
+       cmd.put("script", code);
+
+       auto result = mCore->executeCommandJson(writeJson(cmd));
+       auto ol = readJson<boost::property_tree::ptree>(result);
+       auto val = ol.get_optional<std::string>("result");
+
+       if(val)
+       {
+           return *val;
+       }
+       else
+       {
+           return ol.get<std::string>("error");
+       }
+   }
 
    std::shared_ptr<materia::ICore3> mCore;
 };
 
-BOOST_FIXTURE_TEST_CASE( AddPoints, RewardTest ) 
+BOOST_FIXTURE_TEST_CASE( AddPointsDisciplinePy, RewardTest )
+{
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "object");
+      create.put("defined_id", "reward.coins");
+      create.put("params.Red", 0);
+      create.put("params.Blue", 0);
+      create.put("params.Yellow", 0);
+      create.put("params.Purple", 0);
+      create.put("params.Green", 0);
+
+      expectId(mCore->executeCommandJson(writeJson(create)));
+   }
+
+   set(materia::Id("discipline.level"), 100, *mCore);
+
+   std::string script_result = run(R"(
+import reward
+reward.reward(100)
+result = 1
+   )");
+
+   BOOST_CHECK(getGoldenCoinAmount() > 0);
+   BOOST_CHECK_EQUAL(100, getTotalCoinAmount());
+}
+BOOST_FIXTURE_TEST_CASE( AddPointsDisciplineCpp, RewardTest )
+{
+   {
+      boost::property_tree::ptree create;
+      create.put("operation", "create");
+      create.put("typename", "object");
+      create.put("defined_id", "reward.coins");
+      create.put("params.Red", 0);
+      create.put("params.Blue", 0);
+      create.put("params.Yellow", 0);
+      create.put("params.Purple", 0);
+      create.put("params.Green", 0);
+
+      expectId(mCore->executeCommandJson(writeJson(create)));
+   }
+
+   set(materia::Id("discipline.level"), 100, *mCore);
+
+   boost::property_tree::ptree rwd;
+   rwd.put("operation", "reward");
+   rwd.put("coins", 100);
+   rwd.put("color", "Random");
+
+   mCore->executeCommandJson(writeJson(rwd));
+
+   BOOST_CHECK(getGoldenCoinAmount() > 0);
+   BOOST_CHECK_EQUAL(100, getTotalCoinAmount());
+}
+BOOST_FIXTURE_TEST_CASE( AddPoints, RewardTest )
 {
    boost::property_tree::ptree create;
    create.put("operation", "create");
@@ -113,7 +208,7 @@ BOOST_FIXTURE_TEST_CASE( AddWorkburden, RewardTest )
    create.put("defined_id", "config.reward");
    create.put("params.workburdenPerDay", 200);
 
-   std::cout << mCore->executeCommandJson(writeJson(create));
+   mCore->executeCommandJson(writeJson(create));
 
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 1)); //Friday
                                                                             //
@@ -154,6 +249,8 @@ BOOST_FIXTURE_TEST_CASE( GeneratorsTestRandom, RewardTest )
    create.put("params.entityTypeChoice", "Task");
    mCore->executeCommandJson(writeJson(create));
 
+   set("workburden", -10000, *mCore);
+
    {
       boost::property_tree::ptree create;
       create.put("operation", "create");
@@ -184,11 +281,11 @@ BOOST_FIXTURE_TEST_CASE( GeneratorsTestRandom, RewardTest )
 
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 2));
 
-   BOOST_CHECK_EQUAL(2 + 2, getTotalCoinAmount());
+   BOOST_CHECK_EQUAL(1 + 1 , getTotalCoinAmount());
 
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 3));
 
-   BOOST_CHECK_EQUAL(3 + 3, getTotalCoinAmount());
+   BOOST_CHECK_EQUAL(1 + 1 , getTotalCoinAmount());
 
    {
       boost::property_tree::ptree create;
@@ -202,7 +299,7 @@ BOOST_FIXTURE_TEST_CASE( GeneratorsTestRandom, RewardTest )
 
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 4));
 
-   BOOST_CHECK_EQUAL(5 + 4, getTotalCoinAmount());
+   BOOST_CHECK_EQUAL(3, getTotalCoinAmount());
 
    deleteAll("reward_generator", *mCore);
 
@@ -278,8 +375,8 @@ BOOST_FIXTURE_TEST_CASE( GeneratorsTestSpecific, RewardTest )
 
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 5));
    coins = query("reward.coins", *mCore);
-   BOOST_CHECK_EQUAL(2, coins->get<int>("Red"));
-   BOOST_CHECK_EQUAL(4, coins->get<int>("Blue"));
+   BOOST_CHECK_EQUAL(1, coins->get<int>("Red"));
+   BOOST_CHECK_EQUAL(2, coins->get<int>("Blue"));
    BOOST_CHECK_EQUAL(0, coins->get<int>("Green"));
    BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));
    BOOST_CHECK_EQUAL(0, coins->get<int>("Yellow"));
@@ -307,7 +404,7 @@ BOOST_FIXTURE_TEST_CASE( GeneratorsTestSpecific, RewardTest )
 
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 6));
    coins = query("reward.coins", *mCore);
-   BOOST_CHECK_EQUAL(3, coins->get<int>("Red"));
+   BOOST_CHECK_EQUAL(1, coins->get<int>("Red"));
    BOOST_CHECK(coins->get<int>("Blue") < 3);
    BOOST_CHECK_EQUAL(0, coins->get<int>("Green"));
    BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));
@@ -315,7 +412,7 @@ BOOST_FIXTURE_TEST_CASE( GeneratorsTestSpecific, RewardTest )
 
    mCore->onNewDay(boost::gregorian::date(2021, boost::gregorian::Jan, 7));
    coins = query("reward.coins", *mCore);
-   BOOST_CHECK_EQUAL(4, coins->get<int>("Red"));
+   BOOST_CHECK_EQUAL(1, coins->get<int>("Red"));
    BOOST_CHECK(coins->get<int>("Blue") < 3);
    BOOST_CHECK_EQUAL(0, coins->get<int>("Green"));
    BOOST_CHECK_EQUAL(0, coins->get<int>("Purple"));

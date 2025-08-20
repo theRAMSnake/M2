@@ -136,17 +136,6 @@ std::vector<TypeDef> RewardSS::getTypes()
         {"listId", Type::String}
         }});
 
-    result.push_back({"reward_contract", "contracts", {
-        {"caption", Type::String},
-        {"config_id", Type::String},
-        {"reward", Type::Int},
-        {"daysLeft", Type::Int},
-        {"score", Type::Int},
-        {"goal", Type::Int},
-        {"reward_color", Type::String}, //If set - reward coins
-        {"reward_variable", Type::String}, //If set - reward to a variable
-        }});
-
     result.push_back({"reward_generator", "reward_generators", {
         {"desc", Type::String},
         {"value", Type::Int},
@@ -185,50 +174,6 @@ bool isStackable(const std::string& name)
 
 void RewardSS::onNewDay(const boost::gregorian::date& date)
 {
-    const std::size_t MAX_CONTRACTS = 2;
-    auto ctrs = mOm.getAll("reward_contract");
-
-    for(auto& obj : ctrs)
-    {
-        if(obj["score"].get<Type::Int>() >= obj["goal"].get<Type::Int>())
-        {
-            auto color = obj["reward_color"].get<Type::String>();
-            if(color != "")
-            {
-                addCoins(obj["reward"].get<Type::Int>(), color);
-            }
-            else
-            {
-                //Variable reward
-                auto varName = obj["reward_variable"].get<Type::String>();
-                types::Variable var(mOm, Id(varName));
-                var.inc(obj["reward"].get<Type::Int>());
-            }
-
-            levelUpContract(obj["config_id"].get<Type::String>());
-            mOm.destroy(obj.getId());
-        }
-        else
-        {
-            auto daysLeft = obj["daysLeft"].get<Type::Int>() - 1;
-            if(daysLeft == 0)
-            {
-                mOm.destroy(obj.getId());
-            }
-            else
-            {
-                obj["daysLeft"] = daysLeft;
-                mOm.modify(obj);
-            }
-        }
-    }
-
-    ctrs = mOm.getAll("reward_contract");
-    if(ctrs.size() != MAX_CONTRACTS)
-    {
-        genContract();
-    }
-
     types::Variable wb(mOm, Id("work.burden"));
 
     if(wb > 0)
@@ -252,6 +197,9 @@ void RewardSS::onNewDay(const boost::gregorian::date& date)
     auto coins = mOm.getOrCreate(Id("reward.coins"), "object");
     for(auto o : mOm.getAll("reward_generator"))
     {
+        //std::cout << "Generating for: " << o["desc"].get<Type::String>() << "\n";
+        //std::cout << " value :" << o["value"].get<Type::Int>() << "\n";
+        //std::cout << " color :" << o["color"].get<Type::String>() << "\n";
         std::string color;
         if(o["type"].get<Type::Choice>() == "Random")
         {
@@ -272,47 +220,6 @@ void RewardSS::onNewDay(const boost::gregorian::date& date)
         }
     }
     mOm.modify(coins);
-}
-
-
-void RewardSS::genContract()
-{
-    auto cfg = mOm.getOrCreate(Id("config.reward"), "object");
-    auto cb = mOm.getOrCreate(Id("reward.cb"), "object");
-
-    try
-    {
-        auto options = cfg.getChild(Id("contracts")).getChildren();
-
-        auto& randomItem = options[Rng::gen32() % options.size()];
-        auto configId = randomItem.getId().getGuid();
-        auto level = (cb)[configId].get<Type::Int>();
-
-        auto valueProvider = FunctionToValueProviderAdapter([&randomItem, level, configId](auto& obj)
-        {
-            auto goal = randomItem["goal"].get<Type::Int>() + randomItem["goalGrowth"].get<Type::Double>() * level;
-            auto time = randomItem["time"].get<Type::Int>() + randomItem["timeGrowth"].get<Type::Double>() * level;
-            auto reward = randomItem["rewardBase"].get<Type::Int>() + randomItem["rewardPerLevel"].get<Type::Double>() * level;
-            auto caption = randomItem["caption"].get<Type::String>();
-
-            boost::replace_all(caption, "%", std::to_string(static_cast<std::int64_t>(std::round(goal))));
-
-            obj["caption"] = caption;
-            obj["config_id"] = configId;
-            obj["reward"] = static_cast<std::int64_t>(std::round(reward));
-            obj["daysLeft"] = static_cast<std::int64_t>(std::round(time));
-            obj["score"] = 0;
-            obj["reward_color"] = randomItem["reward_color"].get<Type::String>();
-            obj["reward_variable"] = randomItem["reward_variable"].get<Type::String>();
-            obj["goal"] = static_cast<std::int64_t>(std::round(goal));
-        });
-
-        mOm.create(Id::generate(), "reward_contract", valueProvider);
-    }
-    catch(std::exception& ex)
-    {
-        LOG("Reward config is corrupted: " + std::string(ex.what()));
-    }
 }
 
 void RewardSS::onNewWeek()
@@ -473,6 +380,15 @@ void RewardSS::addCoins(const int coins, const std::string& color)
 
     auto coinsStash = mOm.getOrCreate(Id("reward.coins"), "object");
     coinsStash[colorToUse] = std::max(0, static_cast<int>(coinsStash[colorToUse].get<Type::Int>() + coins));
+
+    types::Variable discipline_level(mOm, Id("discipline.level"));
+    auto val = discipline_level.asInt();
+    auto chance = 1 - 100.0 / static_cast<double>(val + 100);
+    for(int i = 0; i < coins; ++i) {
+        if(val != 0 && Rng::genProbability(chance)) {
+            coinsStash["Gold"] = coinsStash["Gold"].get<Type::Int>() + 1;
+        }
+    }
     mOm.modify(coinsStash);
 }
 

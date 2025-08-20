@@ -16,41 +16,6 @@ JsonRestorationProvider::JsonRestorationProvider(const boost::property_tree::ptr
 
 }
 
-Money parseMoney(const std::string& src)
-{
-    std::istringstream str(src);
-    Money result;
-
-    str >> result.base;
-    if(!str)
-    {
-        throw std::runtime_error("Cannot parse money: " + src);
-    }
-
-    char dummy;
-    str >> dummy;
-
-    if(!str)
-    {
-        throw std::runtime_error("Cannot parse money: " + src);
-    }
-
-    str >> std::setw(2) >> result.coins;
-    if(!str)
-    {
-        throw std::runtime_error("Cannot parse money: " + src);
-    }
-
-    str >> std::setw(0) >> result.currency;
-
-    if(!str)
-    {
-        throw std::runtime_error("Cannot parse money: " + src);
-    }
-
-    return result;
-}
-
 Period parsePeriod(const std::string& src)
 {
     using namespace boost::gregorian;
@@ -99,6 +64,26 @@ std::vector<std::string> extractArray(const boost::property_tree::ptree& ptree)
     return result;
 }
 
+bool is_array_of_objects(const boost::property_tree::ptree& node) {
+    // Assuming arrays are represented by multiple children with the same key
+    // or unnamed nodes. This logic may need to be adjusted based on your actual JSON structure.
+    if (node.empty()) {
+        return false; // Empty node, not an array
+    }
+
+    if (node.size() == 1) {
+        return false;
+    }
+
+    auto first_child_key = node.begin()->first;
+    for (const auto& child : node) {
+        if (child.first != first_child_key) {
+            return false; // Different keys, not an array
+        }
+    }
+    return true;
+}
+
 void JsonRestorationProvider::populate(Object& obj) const
 {
     auto type = obj.getType();
@@ -130,14 +115,25 @@ void JsonRestorationProvider::populate(Object& obj) const
         }
         else
         {
-            //Array of object deserialization is not supported
-            if(c.second.data().empty() && c.second.size() != 0)
+            if(c.second.data().empty() && c.second.size() != 0 && !is_array_of_objects(c.second))
             {
                 Object subobj({"object"}, Id(c.second.get<std::string>("id")));
                 JsonRestorationProvider sub(c.second);
                 sub.populate(subobj);
 
                 obj.setChild(c.first, subobj);
+            }
+            else if(c.second.data().empty() && c.second.size() != 0 && is_array_of_objects(c.second))
+            {
+                std::vector<Object> objectArray;
+                for (const auto& item : c.second)
+                {
+                    Object subobj({"object"}, Id(item.second.get<std::string>("id")));
+                    JsonRestorationProvider sub(item.second);
+                    sub.populate(subobj);
+                    objectArray.push_back(subobj);
+                }
+                obj.setChildren(c.first, objectArray);
             }
             else
             {

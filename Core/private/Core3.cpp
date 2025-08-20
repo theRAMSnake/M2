@@ -71,6 +71,13 @@ Command* parseModify(const boost::property_tree::ptree& src)
    return new ModifyCommand(id, writeJson(params));
 }
 
+Command* parseRun(const boost::property_tree::ptree& src)
+{
+   auto script = getOrThrow<std::string>(src, "script", "Script is not specified");
+
+   return new RunScriptCommand(script);
+}
+
 Command* parseDescribe(const boost::property_tree::ptree& src)
 {
    return new DescribeCommand();
@@ -123,6 +130,7 @@ Core3::Core3(const CoreConfig& config)
    mCommandDefs.push_back({"describe", parseDescribe});
    mCommandDefs.push_back({"random", parseRandom});
    mCommandDefs.push_back({"count", parseCount});
+   mCommandDefs.push_back({"run", parseRun});
    mCommandDefs.push_back({"backup", std::bind(parseBackup, std::placeholders::_1, config.dbFileName)});
 
    mObjManager.initialize(mDb);
@@ -137,10 +145,17 @@ void Core3::TEST_reinitReward()
 
 void Core3::onNewDay(const boost::gregorian::date& date)
 {
+   boost::property_tree::ptree cmd;
+   cmd.put("operation", "run");
+   cmd.put("script", "import daily\ndaily.daily_update()\nresult=0");
+
+   executeCommandJson(writeJson(cmd));
+
    for(auto s : mSubsystems)
    {
       s->onNewDay(date);
    }
+
 }
 
 void Core3::onNewWeek()
@@ -163,6 +178,10 @@ std::string Core3::formatResponce(const ExecutionResult& result)
    if(std::holds_alternative<Success>(result))
    {
       responce["success"] = true;
+   }
+   else if(std::holds_alternative<Error>(result))
+   {
+      responce["error"] = std::get<Error>(result).error;
    }
    else if(std::holds_alternative<ObjectList>(result))
    {
@@ -244,7 +263,18 @@ std::string Core3::executeCommandJson(const std::string& json)
 
 void Core3::notifyLongCommand(const std::string& cmd, unsigned int value)
 {
-   mCommonSS->push(Id("inbox"), "Command execution exceeds time limit: (" + std::to_string(value) + "ms) " + cmd);
+   mCommonSS->push(Id("metrics"), "Command execution exceeds time limit: (" + std::to_string(value) + "ms) " + cmd);
+}
+
+void Core3::healthcheck() {
+   static unsigned int hc_count = 0;
+   mDb.getTable("healthcheck")->directStore(Id("0"), std::to_string(hc_count));
+   auto result = mDb.getTable("healthcheck")->load(Id("0"));
+   if(result && *result == std::to_string(hc_count)) {
+      hc_count++;
+   } else {
+       throw std::runtime_error("Healthcheck failed");
+   }
 }
 
 }

@@ -19,6 +19,7 @@ public:
 
     void onNewDay(const boost::gregorian::date& date) override;
     void onNewWeek() override;
+    void healthcheck() override;
 
     std::string executeCommandJson(const std::string& json) override;
 

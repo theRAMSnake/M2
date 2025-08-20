@@ -19,6 +19,7 @@ public:
 
     virtual void onNewDay(const boost::gregorian::date& date) = 0;
     virtual void onNewWeek() = 0;
+    virtual void healthcheck() = 0;
     virtual void TEST_reinitReward() = 0;
 
     virtual ~ICore3(){}

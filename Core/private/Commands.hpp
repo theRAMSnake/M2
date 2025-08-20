@@ -53,6 +53,17 @@ private:
     const Id mId;
 };
 
+class RunScriptCommand : public Command
+{
+public:
+    RunScriptCommand(const std::string& script);
+
+    ExecutionResult execute(ObjectManager& objManager) override;
+
+private:
+    const std::string mScript;
+};
+
 class QueryCommand : public Command
 {
 public:

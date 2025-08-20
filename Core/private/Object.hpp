@@ -24,6 +24,7 @@ std::string to_string(const materia::Period& src);
 namespace materia
 {
 
+Money parseMoney(const std::string& src);
 class Object;
 //Design: if value is convertible to another type without loss - it would be converted.
 //Can be any materia primitive
@@ -118,6 +119,8 @@ private:
         case Type::Money_v2:
             if constexpr (std::is_same<T, Money>::value)
                 return val;
+            if constexpr (std::is_same<T, std::string>::value)
+                return parseMoney(val);
             break;
 
         case Type::Period:
@@ -149,6 +152,8 @@ private:
             //Nothing
             if constexpr (std::is_same<T, Time>::value)
                 return val;
+            if constexpr (std::is_same<T, std::string>::value)
+                return Time{boost::lexical_cast<std::time_t>(val)};
             break;
         }
 
@@ -175,6 +180,8 @@ private:
 class Object
 {
 public:
+    using ChildrenHolder = std::variant<Object, std::vector<Object>>;
+
     Object(const TypeDef& type, const Id id);
     Object(const Object& other) = default;
     Object(Object&& other) noexcept = default;
@@ -191,6 +198,7 @@ public:
 
     const Object& getChild(const std::string& tag) const;
     std::vector<Object> getChildren() const;
+    const std::map<std::string, ChildrenHolder>& getChildrenMap() const;
     
     const bool contains(const std::string& fieldName) const;
     void clear(const std::string& fieldName);
@@ -209,7 +217,6 @@ private:
     TypeDef mTypeDef;
     Id mId;
     std::vector<Field> mFields;
-    using ChildrenHolder = std::variant<Object, std::vector<Object>>;
     std::map<std::string, ChildrenHolder> mChildren;
 };
 

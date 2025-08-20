@@ -2,12 +2,8 @@ import threading
 import time
 import sys
 import random
-import pygame
 
 stop_event = threading.Event()
-pygame.init()
-pygame.mixer.init()
-pygame.mixer.music.load("./focusman/1.wav")
 
 def do():
     random.seed()
@@ -18,7 +14,7 @@ def do():
         time.sleep(0.99)
         if random.random() < 0.00055:
             print("A coin!")
-            pygame.mixer.music.play(1)
+            #pygame.mixer.music.play(1)
 
     end_time = time.time()
 

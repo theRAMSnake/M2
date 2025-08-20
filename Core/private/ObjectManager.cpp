@@ -9,7 +9,7 @@
 namespace materia
 {
 
-const unsigned int QUERY_LIMIT = 500;
+const unsigned int QUERY_LIMIT = 2000;
 
 ObjectManager::ObjectManager(Database& db, TypeSystem& types, Connections& connections)
 : mConnections(connections)
@@ -90,7 +90,7 @@ std::vector<Object> ObjectManager::query(const std::vector<Id>& ids)
 
     if(objects.size() > QUERY_LIMIT)
     {
-        throw std::runtime_error("Query result is greater then 500");
+        throw std::runtime_error("Query result is greater then 2000");
     }
 
     return objects;
@@ -119,7 +119,7 @@ std::vector<Object> ObjectManager::query(const Filter& filter)
 
     if(objects.size() > QUERY_LIMIT)
     {
-        throw std::runtime_error("Query result is greater then 500");
+        throw std::runtime_error("Query result is greater then 2000");
     }
     return objects;
 }
