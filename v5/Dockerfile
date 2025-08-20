@@ -10,7 +10,7 @@ COPY webapp/package*.json ./webapp/
 
 # Install dependencies
 RUN npm ci
-RUN cd webapp && npm install
+RUN cd webapp && npm ci
 
 # Copy source code
 COPY . .
@@ -18,7 +18,7 @@ COPY . .
 # Build the backend
 RUN npm run build:backend
 
-# Build the webapp
+# Build the webapp for production
 RUN cd webapp && npm run build
 
 # Production stage
@@ -34,11 +34,19 @@ RUN npm ci --only=production
 # Copy built backend
 COPY --from=builder /app/dist ./dist
 
-# Copy built webapp static files
+# Copy built webapp static files (Next.js static export)
 COPY --from=builder /app/webapp/out ./webapp/out
 
 # Create necessary directories
 RUN mkdir -p data logs backups /materia
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nextjs -u 1001
+
+# Change ownership of the app directory
+RUN chown -R nextjs:nodejs /app
+USER nextjs
 
 # Expose port
 EXPOSE 3000
