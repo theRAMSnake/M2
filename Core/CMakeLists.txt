@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.6)
 project(m3core)
 
-find_package(PythonLibs REQUIRED)
+# Use modern Python detection
+find_package(Python3 3.13 EXACT REQUIRED COMPONENTS Interpreter Development)
 LIST(APPEND CMAKE_MODULE_PATH "..")
 
 include_directories("..")
-include_directories(${PYTHON_INCLUDE_DIRS})
-include_directories("/usr/include/python3.13")
+include_directories(${Python3_INCLUDE_DIRS})
 
 add_library(m3core
 private/Core3.cpp
@@ -40,4 +40,4 @@ private/subsystems/Ideas.cpp
 
 find_package(Boost COMPONENTS system REQUIRED)
 
-target_link_libraries(m3core m3common sqlite3 ${Boost_LIBRARIES} pthread fmt profiler ${PYTHON_LIBRARIES})
+target_link_libraries(m3core m3common sqlite3 ${Boost_LIBRARIES} pthread fmt profiler ${Python3_LIBRARIES})
