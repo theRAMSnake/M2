@@ -3,13 +3,19 @@
 #include "Expressions2.hpp"
 #include <iostream>
 #include <Python.h>
+#include <mutex>
 
 namespace materia
 {
 
-// Make sure this is getting accessed from the single thread only
+// Thread-safe globals
 ObjectManager* gOmPtr = nullptr;
 static PyObject* MateriaObjectType = nullptr;
+
+namespace {
+    std::once_flag py_init_once;
+    PyThreadState* main_tstate = nullptr; // only if you ever need it
+}
 
 int is_instance_of_any_class(PyObject *obj) {
     return PyObject_HasAttrString(obj, "__dict__");
@@ -318,66 +324,80 @@ class MateriaObject:
     Py_XDECREF(pNamespace);
 }
 
+static void ensure_python_initialized() {
+    std::call_once(py_init_once, []{
+        // If you use the inittab, append BEFORE Py_Initialize
+        PyImport_AppendInittab("m4", &PyInit_cpp_module);
+
+        Py_Initialize(); // current thread now owns the GIL
+
+        // All Python C-API calls below happen while holding the GIL
+        PyObject* m4 = PyImport_ImportModule("m4");
+        if (!m4) { PyErr_Print(); throw std::runtime_error("Failed to import m4 module."); }
+
+        InitializeMateriaObjectClass(m4);
+
+        PyObject* sys  = PyImport_ImportModule("sys");
+        PyObject* path = PyObject_GetAttrString(sys, "path");
+        PyObject* dirToAdd = PyUnicode_FromString("/root/M2/Core/library");
+        PyList_Append(path, dirToAdd);
+        Py_XDECREF(dirToAdd);
+        Py_XDECREF(path);
+        Py_XDECREF(sys);
+        Py_XDECREF(m4);
+
+        // Release the GIL so other threads can acquire it with PyGILState_Ensure
+        PyEval_SaveThread(); // leaves the GIL unlocked for the process
+    });
+}
 
 std::string runScript(const std::string& code, ObjectManager& om)
 {
     gOmPtr = &om;
 
-    if (!Py_IsInitialized()) {
-        PyImport_AppendInittab("m4", &PyInit_cpp_module);
-        Py_Initialize();
-        // PyEval_InitThreads() is deprecated, threading is automatically initialized in Python 3.7+
-        auto m4Module = PyImport_ImportModule("m4");
-        if (!m4Module) {
-            PyErr_Print();
-            throw std::runtime_error("Failed to import m4 module.");
-        }
+    ensure_python_initialized();          // one-time init; GIL is currently released
 
-        InitializeMateriaObjectClass(m4Module);
-        // Add the 'bin/library' directory to sys.path
-        PyObject* sys = PyImport_ImportModule("sys");
-        PyObject* path = PyObject_GetAttrString(sys, "path");
-        PyObject* dirToAdd = PyUnicode_FromString("../Core/library");
-        PyList_Append(path, dirToAdd);
-
-        Py_XDECREF(dirToAdd);
-        Py_XDECREF(path);
-        Py_XDECREF(sys);
-        Py_XDECREF(m4Module);
-    }
-
-    // Acquire the GIL for this thread
-    PyGILState_STATE gstate = PyGILState_Ensure();
+    PyGILState_STATE gstate = PyGILState_Ensure(); // Acquire GIL for this thread
 
     std::string run_result;
 
-    PyObject* global_dict = PyDict_New();
+    PyObject* globals = PyDict_New();
+    // Make sure builtins are present
+    PyObject* builtins = PyEval_GetBuiltins();
+    PyDict_SetItemString(globals, "__builtins__", builtins);
 
-    PyRun_String("import m4", Py_file_input, global_dict, global_dict);
-    PyObject* result = PyRun_String(code.c_str(), Py_file_input, global_dict, global_dict);
-
-    if (result == nullptr) {
-        throw std::runtime_error(fetchPythonError());
+    // Optionally pre-import your module into this globals
+    PyObject* r1 = PyRun_String("import m4", Py_file_input, globals, globals);
+    if (!r1) { 
+        Py_DECREF(globals);
+        PyGILState_Release(gstate); 
+        throw std::runtime_error(fetchPythonError()); 
     }
+    Py_DECREF(r1);
 
-    Py_XDECREF(result);
-    PyObject* pResult = PyDict_GetItemString(global_dict, "result");
-    if (pResult) {
-        PyObject* pResultStr = PyObject_Str(pResult);
-        if (pResultStr) {
-            run_result = PyUnicode_AsUTF8(pResultStr);
-            Py_DECREF(pResultStr);
-        }
-    } else {
+    PyObject* r2 = PyRun_String(code.c_str(), Py_file_input, globals, globals);
+    if (!r2) { 
+        Py_DECREF(globals);
+        PyGILState_Release(gstate); 
+        throw std::runtime_error(fetchPythonError()); 
+    }
+    Py_DECREF(r2);
+
+    PyObject* pResult = PyDict_GetItemString(globals, "result"); // borrowed
+    if (!pResult) {
+        Py_DECREF(globals);
+        PyGILState_Release(gstate);
         throw std::runtime_error("No 'result' key found in global dictionary.");
     }
 
-    //Do not uncomment - will crash
-    //Py_DECREF(pResult);
+    PyObject* pResultStr = PyObject_Str(pResult);
+    if (pResultStr) {
+        run_result = PyUnicode_AsUTF8(pResultStr);
+        Py_DECREF(pResultStr);
+    }
+    Py_DECREF(globals);
 
-    // Release the GIL
     PyGILState_Release(gstate);
-
     return run_result;
 }
 
