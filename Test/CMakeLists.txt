@@ -26,7 +26,7 @@ ConnectionsTest.cpp
 find_package(Boost COMPONENTS system unit_test_framework filesystem REQUIRED)
 
 link_directories("/usr/local/lib")
-target_link_libraries(Test m3common m3core crypto ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread profiler)
+target_link_libraries(Test m3common m3core crypto ${Boost_LIBRARIES} ${ZeroMQ_LIBRARIES} pthread)
 
 add_custom_command(
         TARGET Test POST_BUILD

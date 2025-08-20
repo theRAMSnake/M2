@@ -40,4 +40,4 @@ private/subsystems/Ideas.cpp
 
 find_package(Boost COMPONENTS system REQUIRED)
 
-target_link_libraries(m3core m3common sqlite3 ${Boost_LIBRARIES} pthread fmt profiler ${Python3_LIBRARIES})
+target_link_libraries(m3core m3common sqlite3 ${Boost_LIBRARIES} pthread fmt ${Python3_LIBRARIES})
