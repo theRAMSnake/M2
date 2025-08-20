@@ -1,5 +1,8 @@
 # Multi-stage build for the complete application
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
+
+# Install Python and build dependencies for native modules
+RUN apk add --no-cache python3 make g++
 
 # Set working directory
 WORKDIR /app
@@ -22,7 +25,10 @@ RUN npm run build:backend
 RUN cd webapp && npm run build
 
 # Production stage
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
+
+# Install Python for native modules (required at runtime)
+RUN apk add --no-cache python3
 
 # Set working directory
 WORKDIR /app
