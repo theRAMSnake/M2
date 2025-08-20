@@ -9,7 +9,7 @@ echo "🚀 Starting Materia V5 Production Deployment..."
 
 # Configuration
 APP_NAME="materia-v5-production"
-HTTP_PORT=80
+HTTP_PORT=3000
 HTTPS_PORT=443
 DATA_DIR="/materia"
 LOGS_DIR="/materia/logs"
@@ -73,6 +73,10 @@ check_prerequisites() {
         print_warning "Certbot is not installed - will install automatically"
     fi
     
+    if ! command -v node &> /dev/null; then
+        print_warning "Node.js is not installed - will install automatically"
+    fi
+    
     print_success "Prerequisites check passed"
 }
 
@@ -84,13 +88,13 @@ install_packages() {
     if command -v apt-get &> /dev/null; then
         # Debian/Ubuntu
         apt-get update
-        apt-get install -y nginx certbot python3-certbot-nginx curl
+        apt-get install -y nginx certbot python3-certbot-nginx curl nodejs npm
     elif command -v yum &> /dev/null; then
         # CentOS/RHEL
-        yum install -y nginx certbot python3-certbot-nginx curl
+        yum install -y nginx certbot python3-certbot-nginx curl nodejs npm
     elif command -v dnf &> /dev/null; then
         # Fedora
-        dnf install -y nginx certbot python3-certbot-nginx curl
+        dnf install -y nginx certbot python3-certbot-nginx curl nodejs npm
     else
         print_error "Unsupported package manager"
         exit 1
@@ -107,6 +111,7 @@ create_directories() {
     mkdir -p "$BACKUPS_DIR"
     mkdir -p "$SSL_DIR"
     mkdir -p "$(dirname "$OLD_DB_PATH")"
+    mkdir -p "$MATERIA_DIR/data"
     
     if [ ! -d "$MATERIA_DIR" ]; then
         mkdir -p "$MATERIA_DIR"
@@ -127,7 +132,16 @@ generate_passwords() {
     if [ ! -f "$MATERIA_DIR/snake.hash" ] || [ ! -f "$MATERIA_DIR/seva.hash" ]; then
         print_warning "Password hashes not found, generating..."
         
+        # Change to the v5 directory to run the script
+        cd "$(dirname "$0")/.."
+        
         if [ -f "scripts/generate-hashes.js" ]; then
+            # Install dependencies if needed
+            if [ ! -d "node_modules" ]; then
+                print_status "Installing Node.js dependencies..."
+                npm install
+            fi
+            
             node scripts/generate-hashes.js
             print_success "Password hashes generated"
         else
@@ -259,6 +273,11 @@ server {
         proxy_connect_timeout 30s;
         proxy_send_timeout 30s;
         proxy_read_timeout 30s;
+        
+        # WebSocket support for Next.js
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
     }
 }
 EOF
@@ -303,6 +322,7 @@ services:
       - $LOGS_DIR:/app/logs
       - $BACKUPS_DIR:/app/backups
       - $MATERIA_DIR:/materia
+      - $MATERIA_DIR/data:/app/data
       - $OLD_DB_PATH:/app/legacy/database.db:ro
     restart: unless-stopped
     healthcheck:
@@ -323,6 +343,9 @@ EOF
 # Deploy the application
 deploy_application() {
     print_status "Deploying application..."
+    
+    # Change to the v5 directory
+    cd "$(dirname "$0")/.."
     
     # Stop existing containers
     docker-compose -f docker-compose.prod.yml down 2>/dev/null || true
@@ -360,7 +383,7 @@ setup_ssl_renewal() {
     print_status "Setting up automatic SSL renewal..."
     
     # Create renewal script
-    cat > /materia/scripts/renew-ssl.sh << 'EOF'
+    cat > $MATERIA_DIR/scripts/renew-ssl.sh << 'EOF'
 #!/bin/bash
 certbot renew --quiet
 cp /etc/letsencrypt/live/*/fullchain.pem /materia/ssl/cert.pem
@@ -368,10 +391,10 @@ cp /etc/letsencrypt/live/*/privkey.pem /materia/ssl/key.pem
 systemctl reload nginx
 EOF
     
-    chmod +x /materia/scripts/renew-ssl.sh
+    chmod +x $MATERIA_DIR/scripts/renew-ssl.sh
     
     # Add to crontab
-    (crontab -l 2>/dev/null; echo "0 12 * * * /materia/scripts/renew-ssl.sh") | crontab -
+    (crontab -l 2>/dev/null; echo "0 12 * * * $MATERIA_DIR/scripts/renew-ssl.sh") | crontab -
     
     print_success "SSL renewal configured"
 }
@@ -388,6 +411,7 @@ show_deployment_info() {
     echo "   Logs Directory: $LOGS_DIR"
     echo "   SSL Directory: $SSL_DIR"
     echo "   Old DB Path: $OLD_DB_PATH"
+    echo "   Data Directory: $MATERIA_DIR/data"
     echo ""
     echo "🌐 Access URLs:"
     echo "   Snake's Interface: https://your-domain.com/snake"
@@ -399,13 +423,14 @@ show_deployment_info() {
     echo "   View logs: docker-compose -f docker-compose.prod.yml logs -f"
     echo "   Stop: docker-compose -f docker-compose.prod.yml down"
     echo "   Restart: docker-compose -f docker-compose.prod.yml restart"
-    echo "   SSL renewal: /opt/materia/scripts/renew-ssl.sh"
+    echo "   SSL renewal: $MATERIA_DIR/scripts/renew-ssl.sh"
     echo ""
     echo "🔒 Security Notes:"
     echo "   - HTTPS is enabled with SSL certificates"
     echo "   - Automatic SSL renewal is configured"
     echo "   - Security headers are enabled"
     echo "   - Old database is mounted read-only"
+    echo "   - Password hashes are stored in $MATERIA_DIR"
     echo ""
 }
 
