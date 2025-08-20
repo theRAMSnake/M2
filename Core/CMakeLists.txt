@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.6)
 project(m3core)
 
-find_package(PythonLibs 3.13 REQUIRED)
+find_package(PythonLibs REQUIRED)
 LIST(APPEND CMAKE_MODULE_PATH "..")
 
 include_directories("..")
