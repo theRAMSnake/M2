@@ -6,6 +6,7 @@ LIST(APPEND CMAKE_MODULE_PATH "..")
 
 include_directories("..")
 include_directories(${PYTHON_INCLUDE_DIRS})
+include_directories("/usr/include/python3.13")
 
 add_library(m3core
 private/Core3.cpp
