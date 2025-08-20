@@ -326,7 +326,7 @@ std::string runScript(const std::string& code, ObjectManager& om)
     if (!Py_IsInitialized()) {
         PyImport_AppendInittab("m4", &PyInit_cpp_module);
         Py_Initialize();
-        PyEval_InitThreads(); // Initialize threading support
+        // PyEval_InitThreads() is deprecated, threading is automatically initialized in Python 3.7+
         auto m4Module = PyImport_ImportModule("m4");
         if (!m4Module) {
             PyErr_Print();
