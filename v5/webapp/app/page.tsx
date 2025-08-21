@@ -26,14 +26,15 @@ export default function Home() {
       setCurrentUser('snake'); // Default to snake
     }
 
-    // Check if user is already logged in
-    const token = localStorage.getItem('materia-token');
+    // Check if user is already logged in for the specific user
+    const tokenKey = `materia-token-${currentUser}`;
+    const token = localStorage.getItem(tokenKey);
     if (token) {
       verifyToken(token);
     } else {
       setLoading(false);
     }
-  }, []);
+  }, [currentUser]);
 
   const verifyToken = async (token: string) => {
     try {
@@ -47,11 +48,13 @@ export default function Home() {
         const data = await response.json();
         setUser(data.user);
       } else {
-        localStorage.removeItem('materia-token');
+        const tokenKey = `materia-token-${currentUser}`;
+        localStorage.removeItem(tokenKey);
       }
     } catch (error) {
       console.error('Token verification failed:', error);
-      localStorage.removeItem('materia-token');
+      const tokenKey = `materia-token-${currentUser}`;
+      localStorage.removeItem(tokenKey);
     } finally {
       setLoading(false);
     }
@@ -59,12 +62,14 @@ export default function Home() {
 
   const handleLogin = (userData: User, token: string) => {
     setUser(userData);
-    localStorage.setItem('materia-token', token);
+    const tokenKey = `materia-token-${currentUser}`;
+    localStorage.setItem(tokenKey, token);
   };
 
   const handleLogout = () => {
     setUser(null);
-    localStorage.removeItem('materia-token');
+    const tokenKey = `materia-token-${currentUser}`;
+    localStorage.removeItem(tokenKey);
   };
 
   if (loading) {

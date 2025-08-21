@@ -46,3 +46,36 @@ export interface ErrorResponse {
   error: string;
   message: string;
 }
+
+export interface CalendarItem {
+  id: string;
+  text: string;
+  dateTime: string;
+  endTime: string;
+  isPrivate: boolean;
+  color: string;
+  createdBy: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CalendarItemRequest {
+  id?: string;
+  text: string;
+  dateTime: string;
+  endTime: string;
+  isPrivate: boolean;
+  color: string;
+}
+
+export interface CalendarItemResponse {
+  id: string;
+  text: string;
+  dateTime: string;
+  endTime: string;
+  isPrivate: boolean;
+  color: string;
+  createdBy: string;
+  createdAt: Date;
+  updatedAt: Date;
+}

@@ -10,6 +10,8 @@ import { AuthMiddleware } from './middleware/auth';
 import { AuthRoutes } from './routes/auth';
 import { DocumentRoutes } from './routes/documents';
 import { routes as makeUpRoutes } from './apps/make-up';
+import calendarRoutes from './apps/calendar/routes';
+import { backupRoutes } from './routes/backup';
 import { logger } from './utils/logger';
 
 class MateriaV5Server {
@@ -102,6 +104,12 @@ class MateriaV5Server {
     // Make-up app routes (authentication required)
     apiRouter.use('/make-up', this.authMiddleware.authenticate as any, makeUpRoutes);
 
+    // Calendar app routes (authentication required)
+    apiRouter.use('/calendar', this.authMiddleware.authenticate as any, calendarRoutes);
+
+    // Backup routes (authentication required)
+    apiRouter.use('/backup', this.authMiddleware.authenticate as any, backupRoutes);
+
     // API info endpoint
     apiRouter.get('/', (req, res) => {
       res.json({
@@ -111,6 +119,8 @@ class MateriaV5Server {
           auth: '/auth',
           documents: '/documents',
           makeUp: '/make-up',
+          calendar: '/calendar',
+          backup: '/backup',
           health: '/health'
         }
       });

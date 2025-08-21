@@ -22,8 +22,10 @@ import {
   Menu as MenuIcon,
   Dashboard as DashboardIcon,
   Face as MakeUpIcon,
+  Event as CalendarIcon,
 } from '@mui/icons-material';
-import { MakeUpApp, DashboardApp } from './apps';
+import { MakeUpApp, DashboardApp, CalendarApp } from './apps';
+import { getAuthToken } from '../utils/auth';
 
 interface User {
   id: string;
@@ -51,10 +53,11 @@ interface App {
 // App configuration - hardcoded user access
 const APP_CONFIG = {
   snake: [
-    { id: 'dashboard', name: 'Dashboard', icon: DashboardIcon },
+    { id: 'calendar', name: 'Calendar', icon: CalendarIcon },
   ],
   seva: [
     { id: 'makeup', name: 'Make Up', icon: MakeUpIcon },
+    { id: 'calendar', name: 'Calendar', icon: CalendarIcon },
   ],
 };
 
@@ -63,11 +66,12 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
   const [loading, setLoading] = useState(true);
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
   const [documentData, setDocumentData] = useState<any>(null);
-  const [currentApp, setCurrentApp] = useState<string>('dashboard');
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   // Get available apps for current user
   const availableApps = APP_CONFIG[currentUser as keyof typeof APP_CONFIG] || APP_CONFIG.snake;
+  
+  const [currentApp, setCurrentApp] = useState<string>('dashboard');
 
   useEffect(() => {
     loadDocuments();
@@ -75,7 +79,7 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
 
   const loadDocuments = async () => {
     try {
-      const token = localStorage.getItem('materia-token');
+      const token = getAuthToken();
       const response = await fetch('/api/documents', {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -95,7 +99,7 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
 
   const loadDocument = async (path: string) => {
     try {
-      const token = localStorage.getItem('materia-token');
+      const token = getAuthToken();
       const response = await fetch(`/api/documents/${encodeURIComponent(path)}`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -114,7 +118,7 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
 
   const saveDocument = async (path: string, data: any) => {
     try {
-      const token = localStorage.getItem('materia-token');
+      const token = getAuthToken();
       const response = await fetch(`/api/documents/${encodeURIComponent(path)}`, {
         method: 'POST',
         headers: {
@@ -134,6 +138,7 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
 
   const handleAppSelect = (appId: string) => {
     setCurrentApp(appId);
+    setDrawerOpen(false);
   };
 
   const toggleDrawer = () => {
@@ -144,6 +149,8 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
     switch (currentApp) {
       case 'makeup':
         return <MakeUpApp />;
+      case 'calendar':
+        return <CalendarApp />;
       case 'dashboard':
       default:
         return <DashboardApp user={user} />;

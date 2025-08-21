@@ -306,4 +306,17 @@ export class DatabaseService {
     }
   }
 
+  // Create backup using SQLite's online backup API (works with exclusive mode)
+  async createBackup(backupPath: string): Promise<void> {
+    try {
+      // Use SQLite's VACUUM INTO command which works even in exclusive mode
+      const stmt = this.db.prepare(`VACUUM INTO ?`);
+      stmt.run(backupPath);
+      logger.info(`Database backup created: ${backupPath}`);
+    } catch (error) {
+      logger.error(`Error creating backup: ${error}`);
+      throw error;
+    }
+  }
+
 }

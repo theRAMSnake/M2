@@ -50,6 +50,7 @@ import {
   People as PeopleIcon,
   Timeline as TimelineIcon,
 } from '@mui/icons-material';
+import { getAuthToken } from '../../utils/auth';
 
 interface BusinessEvent {
   id: string;
@@ -110,7 +111,7 @@ export function MakeUpApp() {
     try {
       setLoading(true);
       setError(null);
-      const token = localStorage.getItem('materia-token');
+      const token = getAuthToken();
       const response = await fetch('/api/make-up/business-events', {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -162,7 +163,7 @@ export function MakeUpApp() {
     if (!eventToDelete) return;
 
     try {
-      const token = localStorage.getItem('materia-token');
+      const token = getAuthToken();
       const response = await fetch(`/api/make-up/business-events/${eventToDelete.id}`, {
         method: 'DELETE',
         headers: {
@@ -186,7 +187,7 @@ export function MakeUpApp() {
   const handleSaveEvent = async () => {
     try {
       setError(null);
-      const token = localStorage.getItem('materia-token');
+      const token = getAuthToken();
       
       const eventData = {
         id: editingEvent?.id || Date.now().toString(),
