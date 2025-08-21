@@ -19,6 +19,14 @@ import {
   Checkbox,
   Alert,
   Grid,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemButton,
+  Chip,
+  Divider,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -49,9 +57,12 @@ const COLOR_PRESETS = [
   { value: 'grey', label: 'Grey', color: '#9e9e9e' },
 ];
 
-type ViewMode = 'month' | 'week';
+type ViewMode = 'month' | 'week' | 'compact';
 
 export function CalendarApp() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  
   const [items, setItems] = useState<CalendarItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -60,7 +71,7 @@ export function CalendarApp() {
   const [editingItem, setEditingItem] = useState<CalendarItem | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [viewMode, setViewMode] = useState<ViewMode>('month');
+  const [viewMode, setViewMode] = useState<ViewMode>(isMobile ? 'compact' : 'month');
   const [formData, setFormData] = useState({
     title: '',
     start: new Date(),
@@ -207,6 +218,14 @@ export function CalendarApp() {
 
   const getColorByValue = (colorValue: string) => {
     return COLOR_PRESETS.find(preset => preset.value === colorValue)?.color || '#2196f3';
+  };
+
+  const getUpcomingEvents = () => {
+    const now = new Date();
+    return items
+      .filter(item => new Date(item.start) >= now)
+      .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())
+      .slice(0, 50); // Limit to 50 upcoming events
   };
 
   const navigatePrevious = () => {
@@ -426,7 +445,7 @@ export function CalendarApp() {
   const getViewLabel = () => {
     if (viewMode === 'month') {
       return format(currentDate, 'MMMM yyyy');
-    } else {
+    } else if (viewMode === 'week') {
       const start = startOfWeek(currentDate);
       const end = endOfWeek(currentDate);
       if (isSameMonth(start, end)) {
@@ -434,6 +453,8 @@ export function CalendarApp() {
       } else {
         return `${format(start, 'MMM d, yyyy')} - ${format(end, 'MMM d, yyyy')}`;
       }
+    } else { // compact
+      return 'Upcoming Events';
     }
   };
 
@@ -511,21 +532,38 @@ export function CalendarApp() {
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', gap: 1 }}>
-            {(['month', 'week'] as ViewMode[]).map((view) => (
+            {isMobile ? (
+              // On mobile, only show compact view button (disabled since it's the only option)
               <Button
-                key={view}
-                variant={viewMode === view ? 'contained' : 'outlined'}
+                variant="contained"
                 size="small"
-                onClick={() => setViewMode(view)}
+                disabled
                 sx={{
                   textTransform: 'none',
                   minWidth: 'auto',
                   px: 2,
                 }}
               >
-                {view.charAt(0).toUpperCase() + view.slice(1)}
+                Compact
               </Button>
-            ))}
+            ) : (
+              // On desktop, show all view options
+              (['month', 'week', 'compact'] as ViewMode[]).map((view) => (
+                <Button
+                  key={view}
+                  variant={viewMode === view ? 'contained' : 'outlined'}
+                  size="small"
+                  onClick={() => setViewMode(view)}
+                  sx={{
+                    textTransform: 'none',
+                    minWidth: 'auto',
+                    px: 2,
+                  }}
+                >
+                  {view.charAt(0).toUpperCase() + view.slice(1)}
+                </Button>
+              ))
+            )}
           </Box>
         </Box>
 
@@ -628,7 +666,7 @@ export function CalendarApp() {
                 })}
               </Grid>
             </>
-          ) : (
+          ) : viewMode === 'week' ? (
                          /* Week View with Hourly Columns */
              <Box sx={{ height: '100vh', overflow: 'auto' }}>
                {/* Time Column Headers */}
@@ -795,6 +833,81 @@ export function CalendarApp() {
                   </Grid>
                 ))}
              </Box>
+          ) : (
+            /* Compact View - Upcoming Events List */
+            <Box sx={{ height: '70vh', overflow: 'auto' }}>
+              <List sx={{ width: '100%' }}>
+                {getUpcomingEvents().length === 0 ? (
+                  <ListItem>
+                    <ListItemText
+                      primary="No upcoming events"
+                      secondary="Click the + button to add a new event"
+                      sx={{ textAlign: 'center', color: 'text.secondary' }}
+                    />
+                  </ListItem>
+                ) : (
+                  getUpcomingEvents().map((event, index) => (
+                    <Box key={event.id}>
+                      <ListItemButton
+                        onClick={() => handleEditItem(event)}
+                        sx={{
+                          py: 2,
+                          '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)' },
+                        }}
+                      >
+                        <ListItemText
+                          primary={
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
+                              <Chip
+                                size="small"
+                                sx={{
+                                  bgcolor: getColorByValue(event.color),
+                                  color: 'white',
+                                  minWidth: 20,
+                                  height: 20,
+                                  '& .MuiChip-label': {
+                                    px: 0.5,
+                                    fontSize: '0.7rem',
+                                  },
+                                }}
+                                label="●"
+                              />
+                              <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+                                {event.title}
+                              </Typography>
+                              {event.isPrivate && (
+                                <Chip
+                                  size="small"
+                                  label="Private"
+                                  variant="outlined"
+                                  sx={{ ml: 'auto', fontSize: '0.7rem' }}
+                                />
+                              )}
+                            </Box>
+                          }
+                          secondary={
+                            <Box sx={{ mt: 0.5 }}>
+                              <Typography variant="body2" color="text.secondary">
+                                {format(new Date(event.start), 'EEEE, MMMM d, yyyy')}
+                              </Typography>
+                              <Typography variant="body2" color="text.secondary">
+                                {format(new Date(event.start), 'h:mm a')} - {format(new Date(event.end), 'h:mm a')}
+                                {new Date(event.start).toDateString() !== new Date(event.end).toDateString() && 
+                                  ` (+${Math.ceil((new Date(event.end).getTime() - new Date(event.start).getTime()) / (1000 * 60 * 60 * 24))}d)`
+                                }
+                              </Typography>
+                            </Box>
+                          }
+                        />
+                      </ListItemButton>
+                      {index < getUpcomingEvents().length - 1 && (
+                        <Divider sx={{ bgcolor: 'rgba(255, 255, 255, 0.12)' }} />
+                      )}
+                    </Box>
+                  ))
+                )}
+              </List>
+            </Box>
           )}
         </Box>
 
