@@ -1,16 +1,11 @@
 import { Router, Response } from 'express';
 import { AuthRequest } from '../types';
-import { AuthMiddleware } from '../middleware/auth';
 import { DatabaseService } from '../storage/database';
 import { logger } from '../utils/logger';
-import { spawn } from 'child_process';
 import { join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 
 const router = Router();
-
-// Apply auth middleware to all backup routes
-router.use(AuthMiddleware);
 
 interface BackupResponse {
   success: boolean;
@@ -22,7 +17,7 @@ interface BackupResponse {
 // Create backup endpoint (like v4's backup operation)
 router.post('/create', async (req: AuthRequest, res: Response<BackupResponse>) => {
   try {
-    logger.info(`Backup requested by user: ${req.user?.username}`);
+    logger.info(`Backup requested by user: ${req.user?.name}`);
 
     // Ensure backup directory exists
     const backupDir = '/materia/backups';
