@@ -381,26 +381,7 @@ wait_for_ready() {
     return 1
 }
 
-# Setup automatic SSL renewal
-setup_ssl_renewal() {
-    print_status "Setting up automatic SSL renewal..."
-    
-    # Create renewal script
-    cat > $MATERIA_DIR/scripts/renew-ssl.sh << 'EOF'
-#!/bin/bash
-certbot renew --quiet
-cp /etc/letsencrypt/live/*/fullchain.pem /materia/ssl/cert.pem
-cp /etc/letsencrypt/live/*/privkey.pem /materia/ssl/key.pem
-systemctl reload nginx
-EOF
-    
-    chmod +x $MATERIA_DIR/scripts/renew-ssl.sh
-    
-    # Add to crontab
-    (crontab -l 2>/dev/null; echo "0 12 * * * $MATERIA_DIR/scripts/renew-ssl.sh") | crontab -
-    
-    print_success "SSL renewal configured"
-}
+# SSL renewal setup removed - handled externally
 
 # Display deployment information
 show_deployment_info() {
@@ -454,7 +435,6 @@ main() {
     create_production_compose
     deploy_application
     wait_for_ready
-    setup_ssl_renewal
     show_deployment_info
 }
 

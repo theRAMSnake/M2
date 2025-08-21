@@ -21,23 +21,31 @@ def checkMateriaV5():
     print("Checking Materia v5 connection")
     
     try:
-        # Try different possible v5 endpoints
+        # Try v5 endpoint
         v5_urls = [
-            "http://ramsnake.net:3000/health",
-            "https://ramsnake.net/health", 
-            "http://ramsnake.net/health"
+            "https://ramsnake.net:8443/health",
         ]
         
         for url in v5_urls:
             try:
-                response = requests.get(url, timeout=10)
+                print(f"    - Trying: {url}")
+                response = requests.get(url, timeout=10, verify=False)  # Skip SSL verification for testing
+                print(f"    - Response: {response.status_code}")
                 if response.status_code == 200:
                     print(f"  - v5 connection OK ({url})")
-                    return url.replace('/health', '')
-            except:
-                continue
+                    # Remove /health and /api/health to get base URL
+                    base_url = url.replace('/health', '').replace('/api', '')
+                    return base_url
+                else:
+                    print(f"    - Got status {response.status_code}")
+            except requests.exceptions.Timeout:
+                print(f"    - Timeout")
+            except requests.exceptions.ConnectionError:
+                print(f"    - Connection refused")
+            except Exception as e:
+                print(f"    - Error: {e}")
         
-        print("  - v5 connection not available (this is OK if v5 is not deployed yet)")
+        print("  - v5 connection not available - check if server is running and accessible")
         return None
         
     except Exception as e:
