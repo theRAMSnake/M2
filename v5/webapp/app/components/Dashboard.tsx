@@ -24,8 +24,9 @@ import {
   Face as MakeUpIcon,
   Event as CalendarIcon,
   AdminPanelSettings as AdminIcon,
+  ShoppingCart as ShoppingCartIcon,
 } from '@mui/icons-material';
-import { MakeUpApp, DashboardApp, CalendarApp, AdminApp } from './apps';
+import { MakeUpApp, DashboardApp, CalendarApp, AdminApp, ShopListApp } from './apps';
 import { getAuthToken } from '../utils/auth';
 
 interface User {
@@ -56,10 +57,12 @@ const APP_CONFIG = {
   snake: [
     { id: 'calendar', name: 'Calendar', icon: CalendarIcon },
     { id: 'admin', name: 'Admin', icon: AdminIcon },
+    { id: 'shoplist', name: 'Shop List', icon: ShoppingCartIcon },
   ],
   seva: [
     { id: 'makeup', name: 'Make Up', icon: MakeUpIcon },
     { id: 'calendar', name: 'Calendar', icon: CalendarIcon },
+    { id: 'shoplist', name: 'Shop List', icon: ShoppingCartIcon },
   ],
 };
 
@@ -155,6 +158,8 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
         return <CalendarApp />;
       case 'admin':
         return <AdminApp />;
+      case 'shoplist':
+        return <ShopListApp />;
       case 'dashboard':
       default:
         return <DashboardApp user={user} />;
@@ -183,7 +188,7 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
             Materia
           </Typography>
           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            v5.0.2
+            v5.0.3
           </Typography>
         </Box>
         
@@ -259,7 +264,7 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
                 {availableApps.find(app => app.id === currentApp)?.name}
               </Typography>
               <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                v5.0.2
+                v5.0.3
               </Typography>
             </Box>
             
