@@ -11,6 +11,7 @@ import { AuthRoutes } from './routes/auth';
 import { DocumentRoutes } from './routes/documents';
 import { routes as makeUpRoutes } from './apps/make-up';
 import calendarRoutes from './apps/calendar/routes';
+import adminRoutes from './apps/admin/routes';
 import { backupRoutes } from './routes/backup';
 import { logger } from './utils/logger';
 
@@ -107,6 +108,9 @@ class MateriaV5Server {
     // Calendar app routes (authentication required)
     apiRouter.use('/calendar', this.authMiddleware.authenticate as any, calendarRoutes);
 
+    // Admin app routes (authentication required, snake user only)
+    apiRouter.use('/admin', this.authMiddleware.authenticate, adminRoutes);
+
     // Backup routes (authentication required)
     apiRouter.use('/backup', this.authMiddleware.authenticate as any, backupRoutes);
 
@@ -120,6 +124,7 @@ class MateriaV5Server {
           documents: '/documents',
           makeUp: '/make-up',
           calendar: '/calendar',
+          admin: '/admin',
           backup: '/backup',
           health: '/health'
         }

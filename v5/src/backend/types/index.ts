@@ -79,3 +79,19 @@ export interface CalendarItemResponse {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface TaskStatus {
+  id: string;
+  name: string;
+  status: 'idle' | 'running' | 'completed' | 'failed';
+  startedAt?: Date;
+  completedAt?: Date;
+  error?: string;
+  progress?: number;
+}
+
+export interface TaskResult {
+  success: boolean;
+  message: string;
+  data?: any;
+}

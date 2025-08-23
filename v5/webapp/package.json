@@ -1,6 +1,6 @@
 {
   "name": "materia-webapp",
-  "version": "1.0.0",
+  "version": "5.0.2",
   "description": "Shared Materia webapp for all users",
   "scripts": {
     "dev": "next dev -p 3001",

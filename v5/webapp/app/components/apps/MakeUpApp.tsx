@@ -86,6 +86,18 @@ interface WeeklyMetrics {
 const CATEGORIES = ['Client A', 'Client B', 'Ads cost', 'Other cost'];
 const EVENTS_PER_PAGE = 10;
 
+// Display mapping for UI
+const getCategoryDisplayName = (category: string): string => {
+  switch (category) {
+    case 'Client A':
+      return 'Client Cash';
+    case 'Client B':
+      return 'Client Pin';
+    default:
+      return category;
+  }
+};
+
 export function MakeUpApp() {
   const [events, setEvents] = useState<BusinessEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -569,7 +581,7 @@ export function MakeUpApp() {
                     {paginatedEvents.map((event) => (
                       <TableRow key={event.id}>
                         <TableCell>{new Date(event.date).toLocaleDateString()}</TableCell>
-                        <TableCell>{event.category}</TableCell>
+                        <TableCell>{getCategoryDisplayName(event.category)}</TableCell>
                         <TableCell align="right" sx={{ 
                           color: event.category.includes('cost') ? 'error.main' : 'success.main',
                           fontWeight: 'bold'
@@ -639,10 +651,10 @@ export function MakeUpApp() {
                             Category Breakdown:
                           </Typography>
                           <Typography variant="body2">
-                            Client A: {summary.clientACount} events ({formatCurrency(summary.clientATotal)})
+                            Client Cash: {summary.clientACount} events ({formatCurrency(summary.clientATotal)})
                           </Typography>
                           <Typography variant="body2">
-                            Client B: {summary.clientBCount} events ({formatCurrency(summary.clientBTotal)})
+                            Client Pin: {summary.clientBCount} events ({formatCurrency(summary.clientBTotal)})
                           </Typography>
                           <Typography variant="body2">
                             Ads Cost: {summary.adsCostCount} events ({formatCurrency(summary.adsCostTotal)})
@@ -859,7 +871,7 @@ export function MakeUpApp() {
               >
                 {CATEGORIES.map((category) => (
                   <MenuItem key={category} value={category}>
-                    {category}
+                    {getCategoryDisplayName(category)}
                   </MenuItem>
                 ))}
               </TextField>
@@ -905,7 +917,7 @@ export function MakeUpApp() {
                   <strong>Date:</strong> {new Date(eventToDelete.date).toLocaleDateString()}
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'white' }}>
-                  <strong>Category:</strong> {eventToDelete.category}
+                  <strong>Category:</strong> {getCategoryDisplayName(eventToDelete.category)}
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'white' }}>
                   <strong>Amount:</strong> {formatCurrency(eventToDelete.amount)}

@@ -1,6 +1,6 @@
 {
   "name": "materia-v5",
-  "version": "1.0.0",
+  "version": "5.0.2",
   "description": "Materia v5 - Simplified architecture with SQLite backend",
   "main": "dist/backend/server.js",
   "scripts": {
@@ -16,6 +16,7 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
+    "axios": "^1.11.0",
     "bcrypt": "^5.1.1",
     "better-sqlite3": "^9.2.2",
     "cors": "^2.8.5",
