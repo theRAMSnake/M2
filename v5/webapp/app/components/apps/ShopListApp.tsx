@@ -70,7 +70,7 @@ export function ShopListApp() {
       setLoading(true);
       setError(null);
       const token = getAuthToken();
-      const response = await fetch('/api/documents/shared%2Fshop_list', {
+      const response = await fetch('/api/documents/shared/shop_list', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -97,7 +97,7 @@ export function ShopListApp() {
     try {
       setError(null);
       const token = getAuthToken();
-      const response = await fetch('/api/documents/shared%2Fshop_list', {
+              const response = await fetch('/api/documents/shared/shop_list', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

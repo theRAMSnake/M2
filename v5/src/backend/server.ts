@@ -87,7 +87,7 @@ class MateriaV5Server {
       res.json({
         status: 'ok',
         timestamp: new Date().toISOString(),
-        version: '5.0.0'
+        version: '5.0.5'
       });
     });
 
@@ -118,7 +118,7 @@ class MateriaV5Server {
     apiRouter.get('/', (req, res) => {
       res.json({
         name: 'Materia V5 API',
-        version: '5.0.0',
+        version: '5.0.5',
         endpoints: {
           auth: '/auth',
           documents: '/documents',
@@ -137,7 +137,7 @@ class MateriaV5Server {
     this.app.get('/api/describe', (req, res) => {
       res.json({
         strategy_node: true,
-        version: '5.0.0',
+        version: '5.0.5',
         message: 'Materia V5 - Legacy compatibility mode'
       });
     });

@@ -20,11 +20,12 @@ export class DocumentRoutes {
   }
 
   private setupRoutes(): void {
-    // Get document by path
-    this.router.get('/:path(*)', async (req: Request, res: Response) => {
+    // List documents (with optional prefix) - MUST come before /:path(*) route
+    this.router.get('/', async (req: AuthRequest, res: Response) => {
       try {
-        const { path } = req.params;
-        const user = (req as AuthRequest).user;
+
+        const user = req.user;
+        const prefix = req.query.prefix as string | undefined;
         
         if (!user) {
           res.status(401).json({
@@ -34,18 +35,65 @@ export class DocumentRoutes {
           return;
         }
 
-        const data = await this.dbService.readDocument(path);
+        let documents: any[] = [];
+        
+        if (prefix) {
+          // Get both the document itself (if it exists) and its immediate children
+          const [exactMatch, children] = await Promise.all([
+            this.dbService.readDocument(prefix).then(data => data ? [{ path: prefix, data, updatedAt: new Date() }] : []),
+            this.dbService.getChildren(prefix)
+          ]);
+          documents = [...exactMatch, ...children];
+        } else {
+          // For root, get root documents
+          documents = await this.dbService.getRootDocuments();
+        }
+        
+        res.json({
+          documents: documents.map(doc => ({
+            path: doc.path,
+            data: doc.data,
+            updatedAt: doc.updatedAt
+          }))
+        });
+      } catch (error) {
+        logger.error('Error listing documents:', error);
+        const errorResponse: ErrorResponse = {
+          error: 'InternalServerError',
+          message: error instanceof Error ? error.message : 'Failed to list documents'
+        };
+        res.status(500).json(errorResponse);
+      }
+    });
+
+    // Get document by path
+    this.router.get('/:path(*)', async (req: AuthRequest, res: Response) => {
+      try {
+
+        const { path } = req.params;
+        const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+        const user = req.user;
+        
+        if (!user) {
+          res.status(401).json({
+            error: 'Unauthorized',
+            message: 'Authentication required'
+          });
+          return;
+        }
+
+        const data = await this.dbService.readDocument(normalizedPath);
         
         if (data === null) {
           res.status(404).json({
             error: 'NotFound',
-            message: `Document not found: ${path}`
+            message: `Document not found: ${normalizedPath}`
           });
           return;
         }
 
         res.json({
-          path,
+          path: normalizedPath,
           data,
           updatedAt: new Date()
         });
@@ -60,10 +108,11 @@ export class DocumentRoutes {
     });
 
     // Create or update document
-    this.router.post('/:path(*)', async (req: Request, res: Response) => {
+    this.router.post('/:path(*)', async (req: AuthRequest, res: Response) => {
       try {
         const { path } = req.params;
-        const user = (req as AuthRequest).user;
+        const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+        const user = req.user;
         
         if (!user) {
           res.status(401).json({
@@ -74,14 +123,14 @@ export class DocumentRoutes {
         }
 
         const validatedData = documentSchema.parse({
-          path,
+          path: normalizedPath,
           data: req.body
         });
 
-        await this.dbService.writeDocument(path, validatedData.data);
+        await this.dbService.writeDocument(normalizedPath, validatedData.data);
         
         res.json({
-          path,
+          path: normalizedPath,
           data: validatedData.data,
           updatedAt: new Date()
         });
@@ -104,10 +153,11 @@ export class DocumentRoutes {
     });
 
     // Delete document
-    this.router.delete('/:path(*)', async (req: Request, res: Response) => {
+    this.router.delete('/:path(*)', async (req: AuthRequest, res: Response) => {
       try {
         const { path } = req.params;
-        const user = (req as AuthRequest).user;
+        const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+        const user = req.user;
         
         if (!user) {
           res.status(401).json({
@@ -117,10 +167,10 @@ export class DocumentRoutes {
           return;
         }
 
-        await this.dbService.deleteDocument(path);
+        await this.dbService.deleteDocument(normalizedPath);
         
         res.json({
-          message: `Document deleted: ${path}`
+          message: `Document deleted: ${normalizedPath}`
         });
       } catch (error) {
         logger.error(`Error deleting document ${req.params.path}:`, error);
@@ -132,45 +182,10 @@ export class DocumentRoutes {
       }
     });
 
-    // List documents (with optional prefix)
-    this.router.get('/', async (req: Request, res: Response) => {
-      try {
-        const user = (req as AuthRequest).user;
-        const prefix = req.query.prefix as string | undefined;
-        
-        if (!user) {
-          res.status(401).json({
-            error: 'Unauthorized',
-            message: 'Authentication required'
-          });
-          return;
-        }
-
-        const documents = prefix 
-          ? await this.dbService.getChildren(prefix)
-          : await this.dbService.getRootDocuments();
-        
-        res.json({
-          documents: documents.map(doc => ({
-            path: doc.path,
-            data: doc.data,
-            updatedAt: doc.updatedAt
-          }))
-        });
-      } catch (error) {
-        logger.error('Error listing documents:', error);
-        const errorResponse: ErrorResponse = {
-          error: 'InternalServerError',
-          message: error instanceof Error ? error.message : 'Failed to list documents'
-        };
-        res.status(500).json(errorResponse);
-      }
-    });
-
     // Batch write endpoint
-    this.router.post('/batch', async (req: Request, res: Response) => {
+    this.router.post('/batch', async (req: AuthRequest, res: Response) => {
       try {
-        const user = (req as AuthRequest).user;
+        const user = req.user;
         
         if (!user) {
           res.status(401).json({

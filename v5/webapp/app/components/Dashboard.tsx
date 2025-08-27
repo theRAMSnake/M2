@@ -16,6 +16,7 @@ import {
   CardContent,
   CardActionArea,
   IconButton,
+  Badge,
 } from '@mui/material';
 import { 
   LogoutOutlined, 
@@ -25,8 +26,10 @@ import {
   Event as CalendarIcon,
   AdminPanelSettings as AdminIcon,
   ShoppingCart as ShoppingCartIcon,
+  StickyNote2 as StickyIcon,
+  Storage as DbViewIcon,
 } from '@mui/icons-material';
-import { MakeUpApp, DashboardApp, CalendarApp, AdminApp, ShopListApp } from './apps';
+import { MakeUpApp, DashboardApp, CalendarApp, AdminApp, ShopListApp, StickiesApp, DbViewApp } from './apps';
 import { getAuthToken } from '../utils/auth';
 
 interface User {
@@ -58,11 +61,14 @@ const APP_CONFIG = {
     { id: 'calendar', name: 'Calendar', icon: CalendarIcon },
     { id: 'admin', name: 'Admin', icon: AdminIcon },
     { id: 'shoplist', name: 'Shop List', icon: ShoppingCartIcon },
+    { id: 'stickies', name: 'Stickies', icon: StickyIcon },
+    { id: 'dbview', name: 'DB Viewer', icon: DbViewIcon },
   ],
   seva: [
     { id: 'makeup', name: 'Make Up', icon: MakeUpIcon },
     { id: 'calendar', name: 'Calendar', icon: CalendarIcon },
     { id: 'shoplist', name: 'Shop List', icon: ShoppingCartIcon },
+    { id: 'stickies', name: 'Stickies', icon: StickyIcon },
   ],
 };
 
@@ -72,6 +78,7 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
   const [documentData, setDocumentData] = useState<any>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [todayEventsCount, setTodayEventsCount] = useState(0);
 
   // Get available apps for current user
   const availableApps = APP_CONFIG[currentUser as keyof typeof APP_CONFIG] || APP_CONFIG.snake;
@@ -80,6 +87,14 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
 
   useEffect(() => {
     loadDocuments();
+    loadTodayEventsCount();
+    
+    // Refresh events count every 5 minutes
+    const interval = setInterval(() => {
+      loadTodayEventsCount();
+    }, 5 * 60 * 1000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const loadDocuments = async () => {
@@ -141,13 +156,54 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
     }
   };
 
+  const loadTodayEventsCount = async () => {
+    try {
+      const token = getAuthToken();
+      const response = await fetch('/api/calendar/items', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const calendarItems = data.data?.items || [];
+        
+        // Filter events for today
+        const today = new Date();
+        const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999);
+        
+        const todayEvents = calendarItems.filter((item: any) => {
+          const eventDate = new Date(item.dateTime);
+          return eventDate >= startOfDay && eventDate <= endOfDay;
+        });
+        
+        setTodayEventsCount(todayEvents.length);
+      }
+    } catch (error) {
+      console.error('Failed to load today\'s events count:', error);
+    }
+  };
+
   const handleAppSelect = (appId: string) => {
     setCurrentApp(appId);
     setDrawerOpen(false);
+    
+    // Refresh events count when calendar app is selected or when returning to dashboard
+    if (appId === 'calendar' || appId === 'dashboard') {
+      loadTodayEventsCount();
+    }
   };
 
   const toggleDrawer = () => {
-    setDrawerOpen(!drawerOpen);
+    const newDrawerOpen = !drawerOpen;
+    setDrawerOpen(newDrawerOpen);
+    
+    // Refresh events count when drawer is opened
+    if (newDrawerOpen) {
+      loadTodayEventsCount();
+    }
   };
 
   const renderCurrentApp = () => {
@@ -160,10 +216,36 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
         return <AdminApp />;
       case 'shoplist':
         return <ShopListApp />;
+      case 'stickies':
+        return <StickiesApp />;
+      case 'dbview':
+        return <DbViewApp />;
       case 'dashboard':
       default:
         return <DashboardApp user={user} />;
     }
+  };
+
+  const renderAppIcon = (app: any) => {
+    if (app.id === 'calendar') {
+      return (
+        <Badge badgeContent={todayEventsCount > 0 ? todayEventsCount : undefined} color="error" max={99}>
+          <app.icon sx={{ 
+            fontSize: 48, 
+            mb: 1.5,
+            color: 'inherit',
+          }} />
+        </Badge>
+      );
+    }
+    
+    return (
+      <app.icon sx={{ 
+        fontSize: 48, 
+        mb: 1.5,
+        color: 'inherit',
+      }} />
+    );
   };
 
   return (
@@ -188,7 +270,7 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
             Materia
           </Typography>
           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            v5.0.3
+            v5.0.5
           </Typography>
         </Box>
         
@@ -217,11 +299,7 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
                        p: 2,
                      }}
                    >
-                     <app.icon sx={{ 
-                       fontSize: 48, 
-                       mb: 1.5,
-                       color: 'inherit',
-                     }} />
+                     {renderAppIcon(app)}
                      <Typography 
                        variant="body1" 
                        component="div"
@@ -264,7 +342,7 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
                 {availableApps.find(app => app.id === currentApp)?.name}
               </Typography>
               <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                v5.0.3
+                v5.0.5
               </Typography>
             </Box>
             

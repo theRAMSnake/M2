@@ -134,10 +134,14 @@ export function CalendarApp() {
 
   const handleEditItem = (item: CalendarItem) => {
     setEditingItem(item);
+    
+    // Ensure end time is valid when editing
+    const validEnd = validateAndAdjustEndTime(item.start, item.end);
+    
     setFormData({
       title: item.title,
       start: item.start,
-      end: item.end,
+      end: validEnd,
       isPrivate: item.isPrivate,
       color: item.color,
     });
@@ -174,9 +178,57 @@ export function CalendarApp() {
     }
   };
 
+  const validateAndAdjustEndTime = (newStart: Date, currentEnd: Date) => {
+    // If end time is before or equal to start time, adjust it to 1 hour after start
+    if (currentEnd <= newStart) {
+      return new Date(newStart.getTime() + 60 * 60 * 1000); // 1 hour later
+    }
+    return currentEnd;
+  };
+
+  const getDurationText = (start: Date, end: Date) => {
+    const durationMs = end.getTime() - start.getTime();
+    const durationMinutes = Math.round(durationMs / (1000 * 60));
+    
+    if (durationMinutes < 60) {
+      return `${durationMinutes} minute${durationMinutes !== 1 ? 's' : ''}`;
+    } else if (durationMinutes < 1440) { // Less than 24 hours
+      const hours = Math.floor(durationMinutes / 60);
+      const minutes = durationMinutes % 60;
+      if (minutes === 0) {
+        return `${hours} hour${hours !== 1 ? 's' : ''}`;
+      } else {
+        return `${hours} hour${hours !== 1 ? 's' : ''} ${minutes} minute${minutes !== 1 ? 's' : ''}`;
+      }
+    } else {
+      const days = Math.floor(durationMinutes / 1440);
+      const hours = Math.floor((durationMinutes % 1440) / 60);
+      if (hours === 0) {
+        return `${days} day${days !== 1 ? 's' : ''}`;
+      } else {
+        return `${days} day${days !== 1 ? 's' : ''} ${hours} hour${hours !== 1 ? 's' : ''}`;
+      }
+    }
+  };
+
   const handleSaveItem = async () => {
     try {
       setError(null);
+      
+      // Validate that end time is not smaller than start time
+      if (formData.end <= formData.start) {
+        setError('End time must be after start time');
+        return;
+      }
+      
+      // Validate minimum duration (at least 5 minutes)
+      const durationMs = formData.end.getTime() - formData.start.getTime();
+      const durationMinutes = Math.round(durationMs / (1000 * 60));
+      if (durationMinutes < 5) {
+        setError('Event must be at least 5 minutes long');
+        return;
+      }
+      
       const token = getAuthToken();
       
       const itemData = {
@@ -934,10 +986,15 @@ export function CalendarApp() {
                  label="Start Date & Time"
                  type="datetime-local"
                  value={format(formData.start, "yyyy-MM-dd'T'HH:mm")}
-                 onChange={(e) => setFormData({ 
-                   ...formData, 
-                   start: new Date(e.target.value)
-                 })}
+                 onChange={(e) => {
+                   const newStart = new Date(e.target.value);
+                   const adjustedEnd = validateAndAdjustEndTime(newStart, formData.end);
+                   setFormData({ 
+                     ...formData, 
+                     start: newStart,
+                     end: adjustedEnd
+                   });
+                 }}
                  InputLabelProps={{ shrink: true }}
                  fullWidth
                  required
@@ -946,11 +1003,78 @@ export function CalendarApp() {
                 label="End Date & Time"
                 type="datetime-local"
                 value={format(formData.end, "yyyy-MM-dd'T'HH:mm")}
-                onChange={(e) => setFormData({ ...formData, end: new Date(e.target.value) })}
+                onChange={(e) => {
+                  const newEnd = new Date(e.target.value);
+                  if (newEnd <= formData.start) {
+                    setError('End time must be after start time');
+                  } else if ((newEnd.getTime() - formData.start.getTime()) < 5 * 60 * 1000) {
+                    setError('Event must be at least 5 minutes long');
+                  } else {
+                    setError(null);
+                  }
+                  setFormData({ ...formData, end: newEnd });
+                }}
                 InputLabelProps={{ shrink: true }}
                 fullWidth
                 required
+                error={formData.end <= formData.start}
+                helperText={
+                  formData.end <= formData.start 
+                    ? 'End time must be after start time' 
+                    : (formData.end.getTime() - formData.start.getTime()) < 5 * 60 * 1000
+                    ? 'Event must be at least 5 minutes long'
+                    : `Duration: ${getDurationText(formData.start, formData.end)}`
+                }
               />
+              
+              {/* Quick Duration Buttons */}
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={() => {
+                    const newEnd = new Date(formData.start.getTime() + 30 * 60 * 1000); // 30 minutes
+                    setFormData({ ...formData, end: newEnd });
+                    setError(null);
+                  }}
+                >
+                  30 min
+                </Button>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={() => {
+                    const newEnd = new Date(formData.start.getTime() + 60 * 60 * 1000); // 1 hour
+                    setFormData({ ...formData, end: newEnd });
+                    setError(null);
+                  }}
+                >
+                  1 hour
+                </Button>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={() => {
+                    const newEnd = new Date(formData.start.getTime() + 2 * 60 * 60 * 1000); // 2 hours
+                    setFormData({ ...formData, end: newEnd });
+                    setError(null);
+                  }}
+                >
+                  2 hours
+                </Button>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={() => {
+                    const newEnd = new Date(formData.start.getTime() + 4 * 60 * 60 * 1000); // 4 hours
+                    setFormData({ ...formData, end: newEnd });
+                    setError(null);
+                  }}
+                >
+                  4 hours
+                </Button>
+              </Box>
+              
               <TextField
                 label="Color"
                 select
@@ -1007,7 +1131,11 @@ export function CalendarApp() {
             <Button 
               onClick={handleSaveItem} 
               variant="contained"
-              disabled={!formData.title}
+              disabled={
+                !formData.title || 
+                formData.end <= formData.start || 
+                (formData.end.getTime() - formData.start.getTime()) < 5 * 60 * 1000 // Less than 5 minutes
+              }
             >
               {editingItem ? 'Update' : 'Add'}
             </Button>
