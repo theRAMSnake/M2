@@ -11,6 +11,7 @@ import { AuthRoutes } from './routes/auth';
 import { DocumentRoutes } from './routes/documents';
 import { routes as makeUpRoutes } from './apps/make-up';
 import calendarRoutes from './apps/calendar/routes';
+import choresRoutes from './apps/chores/routes';
 import adminRoutes from './apps/admin/routes';
 import { backupRoutes } from './routes/backup';
 import { logger } from './utils/logger';
@@ -87,7 +88,7 @@ class MateriaV5Server {
       res.json({
         status: 'ok',
         timestamp: new Date().toISOString(),
-        version: '5.0.5'
+        version: '5.0.6'
       });
     });
 
@@ -108,6 +109,9 @@ class MateriaV5Server {
     // Calendar app routes (authentication required)
     apiRouter.use('/calendar', this.authMiddleware.authenticate as any, calendarRoutes);
 
+    // Chores app routes (authentication required)
+    apiRouter.use('/chores', this.authMiddleware.authenticate as any, choresRoutes);
+
     // Admin app routes (authentication required, snake user only)
     apiRouter.use('/admin', this.authMiddleware.authenticate, adminRoutes);
 
@@ -118,12 +122,13 @@ class MateriaV5Server {
     apiRouter.get('/', (req, res) => {
       res.json({
         name: 'Materia V5 API',
-        version: '5.0.5',
+        version: '5.0.6',
         endpoints: {
           auth: '/auth',
           documents: '/documents',
           makeUp: '/make-up',
           calendar: '/calendar',
+          chores: '/chores',
           admin: '/admin',
           backup: '/backup',
           health: '/health'
@@ -137,7 +142,7 @@ class MateriaV5Server {
     this.app.get('/api/describe', (req, res) => {
       res.json({
         strategy_node: true,
-        version: '5.0.5',
+        version: '5.0.6',
         message: 'Materia V5 - Legacy compatibility mode'
       });
     });

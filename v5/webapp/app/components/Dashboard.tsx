@@ -28,8 +28,9 @@ import {
   ShoppingCart as ShoppingCartIcon,
   StickyNote2 as StickyIcon,
   Storage as DbViewIcon,
+  CleaningServices as ChoresIcon,
 } from '@mui/icons-material';
-import { MakeUpApp, DashboardApp, CalendarApp, AdminApp, ShopListApp, StickiesApp, DbViewApp } from './apps';
+import { MakeUpApp, DashboardApp, CalendarApp, ChoresApp, AdminApp, ShopListApp, StickiesApp, DbViewApp } from './apps';
 import { getAuthToken } from '../utils/auth';
 
 interface User {
@@ -43,12 +44,6 @@ interface DashboardProps {
   currentUser: string;
 }
 
-interface Document {
-  path: string;
-  data: any;
-  updatedAt: string;
-}
-
 interface App {
   id: string;
   name: string;
@@ -59,6 +54,7 @@ interface App {
 const APP_CONFIG = {
   snake: [
     { id: 'calendar', name: 'Calendar', icon: CalendarIcon },
+    { id: 'chores', name: 'Chores', icon: ChoresIcon },
     { id: 'admin', name: 'Admin', icon: AdminIcon },
     { id: 'shoplist', name: 'Shop List', icon: ShoppingCartIcon },
     { id: 'stickies', name: 'Stickies', icon: StickyIcon },
@@ -67,18 +63,17 @@ const APP_CONFIG = {
   seva: [
     { id: 'makeup', name: 'Make Up', icon: MakeUpIcon },
     { id: 'calendar', name: 'Calendar', icon: CalendarIcon },
+    { id: 'chores', name: 'Chores', icon: ChoresIcon },
     { id: 'shoplist', name: 'Shop List', icon: ShoppingCartIcon },
     { id: 'stickies', name: 'Stickies', icon: StickyIcon },
   ],
 };
 
 export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
-  const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedPath, setSelectedPath] = useState<string | null>(null);
-  const [documentData, setDocumentData] = useState<any>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [todayEventsCount, setTodayEventsCount] = useState(0);
+  const [urgentChoresCount, setUrgentChoresCount] = useState(0);
 
   // Get available apps for current user
   const availableApps = APP_CONFIG[currentUser as keyof typeof APP_CONFIG] || APP_CONFIG.snake;
@@ -86,75 +81,17 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
   const [currentApp, setCurrentApp] = useState<string>('dashboard');
 
   useEffect(() => {
-    loadDocuments();
     loadTodayEventsCount();
+    loadUrgentChoresCount();
     
-    // Refresh events count every 5 minutes
+    // Refresh counts every 5 minutes
     const interval = setInterval(() => {
       loadTodayEventsCount();
+      loadUrgentChoresCount();
     }, 5 * 60 * 1000);
     
     return () => clearInterval(interval);
   }, []);
-
-  const loadDocuments = async () => {
-    try {
-      const token = getAuthToken();
-      const response = await fetch('/api/documents', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setDocuments(data.documents || []);
-      }
-    } catch (error) {
-      console.error('Failed to load documents:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadDocument = async (path: string) => {
-    try {
-      const token = getAuthToken();
-      const response = await fetch(`/api/documents/${encodeURIComponent(path)}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setDocumentData(data.data);
-        setSelectedPath(path);
-      }
-    } catch (error) {
-      console.error('Failed to load document:', error);
-    }
-  };
-
-  const saveDocument = async (path: string, data: any) => {
-    try {
-      const token = getAuthToken();
-      const response = await fetch(`/api/documents/${encodeURIComponent(path)}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
-
-      if (response.ok) {
-        await loadDocuments(); // Refresh the list
-      }
-    } catch (error) {
-      console.error('Failed to save document:', error);
-    }
-  };
 
   const loadTodayEventsCount = async () => {
     try {
@@ -182,28 +119,37 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
         setTodayEventsCount(todayEvents.length);
       }
     } catch (error) {
-      console.error('Failed to load today\'s events count:', error);
+      console.error('Failed to load today events count:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadUrgentChoresCount = async () => {
+    try {
+      const token = getAuthToken();
+      const response = await fetch('/api/chores/urgent-count', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUrgentChoresCount(data.data?.count || 0);
+      }
+    } catch (error) {
+      console.error('Failed to load urgent chores count:', error);
     }
   };
 
   const handleAppSelect = (appId: string) => {
     setCurrentApp(appId);
     setDrawerOpen(false);
-    
-    // Refresh events count when calendar app is selected or when returning to dashboard
-    if (appId === 'calendar' || appId === 'dashboard') {
-      loadTodayEventsCount();
-    }
   };
 
   const toggleDrawer = () => {
-    const newDrawerOpen = !drawerOpen;
-    setDrawerOpen(newDrawerOpen);
-    
-    // Refresh events count when drawer is opened
-    if (newDrawerOpen) {
-      loadTodayEventsCount();
-    }
+    setDrawerOpen(!drawerOpen);
   };
 
   const renderCurrentApp = () => {
@@ -212,6 +158,8 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
         return <MakeUpApp />;
       case 'calendar':
         return <CalendarApp />;
+      case 'chores':
+        return <ChoresApp />;
       case 'admin':
         return <AdminApp />;
       case 'shoplist':
@@ -239,6 +187,18 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
       );
     }
     
+    if (app.id === 'chores') {
+      return (
+        <Badge badgeContent={urgentChoresCount > 0 ? urgentChoresCount : undefined} color="error" max={99}>
+          <app.icon sx={{ 
+            fontSize: 48, 
+            mb: 1.5,
+            color: 'inherit',
+          }} />
+        </Badge>
+      );
+    }
+    
     return (
       <app.icon sx={{ 
         fontSize: 48, 
@@ -250,108 +210,85 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
-                    {/* Left Drawer */}
-        <Drawer
-          variant="temporary"
-          open={drawerOpen}
-          onClose={toggleDrawer}
-          sx={{
-            '& .MuiDrawer-paper': {
-              width: 420,
-              boxSizing: 'border-box',
-              bgcolor: 'background.paper',
-              borderRight: '1px solid',
-              borderColor: 'divider',
-            },
-          }}
-        >
+      {/* Left Drawer */}
+      <Drawer
+        variant="temporary"
+        open={drawerOpen}
+        onClose={toggleDrawer}
+        sx={{
+          '& .MuiDrawer-paper': {
+            width: 420,
+            boxSizing: 'border-box',
+            bgcolor: 'background.paper',
+            borderRight: '1px solid',
+            borderColor: 'divider',
+          },
+        }}
+      >
         <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
           <Typography variant="h6" component="div" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
             Materia
           </Typography>
           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            v5.0.5
+            v5.0.6
           </Typography>
         </Box>
         
-                 <Box sx={{ p: 2 }}>
-           <Grid container spacing={2}>
-             {availableApps.map((app) => (
-                               <Grid item xs={4} key={app.id}>
-                 <Card 
-                   sx={{ 
-                     aspectRatio: '1',
-                     bgcolor: currentApp === app.id ? 'primary.main' : 'background.paper',
-                     color: currentApp === app.id ? 'primary.contrastText' : 'text.primary',
-                     '&:hover': {
-                       bgcolor: currentApp === app.id ? 'primary.dark' : 'action.hover',
-                     },
-                   }}
-                 >
-                   <CardActionArea
-                     onClick={() => handleAppSelect(app.id)}
-                     sx={{ 
-                       height: '100%',
-                       display: 'flex',
-                       flexDirection: 'column',
-                       alignItems: 'center',
-                       justifyContent: 'center',
-                       p: 2,
-                     }}
-                   >
-                     {renderAppIcon(app)}
-                     <Typography 
-                       variant="body1" 
-                       component="div"
-                       sx={{ 
-                         fontWeight: 'medium',
-                         textAlign: 'center',
-                         fontSize: '0.9rem',
-                       }}
-                     >
-                       {app.name}
-                     </Typography>
-                   </CardActionArea>
-                 </Card>
-               </Grid>
-             ))}
-           </Grid>
-         </Box>
+        <Box sx={{ p: 2 }}>
+          <Grid container spacing={2}>
+            {availableApps.map((app) => (
+              <Grid item xs={4} key={app.id}>
+                <Card 
+                  sx={{ 
+                    aspectRatio: '1',
+                    bgcolor: currentApp === app.id ? 'primary.main' : 'background.paper',
+                    color: currentApp === app.id ? 'primary.contrastText' : 'text.primary',
+                    '&:hover': {
+                      bgcolor: currentApp === app.id ? 'primary.dark' : 'action.hover',
+                    },
+                  }}
+                >
+                  <CardActionArea
+                    onClick={() => handleAppSelect(app.id)}
+                    sx={{ 
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      p: 2,
+                    }}
+                  >
+                    {renderAppIcon(app)}
+                    <Typography variant="caption" sx={{ textAlign: 'center', fontWeight: 500 }}>
+                      {app.name}
+                    </Typography>
+                  </CardActionArea>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
       </Drawer>
 
-                    {/* Main Content Area */}
-        <Box sx={{ 
-          flexGrow: 1, 
-          display: 'flex', 
-          flexDirection: 'column',
-        }}>
-        {/* Header */}
-        <AppBar position="static" elevation={0} sx={{ bgcolor: 'background.paper' }}>
+      {/* Main Content */}
+      <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+        {/* Top AppBar */}
+        <AppBar position="static" sx={{ bgcolor: 'background.paper', color: 'text.primary' }}>
           <Toolbar>
             <IconButton
               edge="start"
               color="inherit"
+              aria-label="menu"
               onClick={toggleDrawer}
-              sx={{ mr: 2, color: 'text.primary' }}
+              sx={{ mr: 2 }}
             >
               <MenuIcon />
             </IconButton>
-            
-            <Box sx={{ flexGrow: 1 }}>
-              <Typography variant="h6" sx={{ color: 'text.primary' }}>
-                {availableApps.find(app => app.id === currentApp)?.name}
-              </Typography>
-              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                v5.0.5
-              </Typography>
-            </Box>
-            
-            <Button
-              color="inherit"
-              onClick={onLogout}
-              startIcon={<LogoutOutlined />}
-              sx={{ textTransform: 'none', color: 'text.primary' }}
-            >
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              {availableApps.find(app => app.id === currentApp)?.name || 'Dashboard'}
+            </Typography>
+            <Button color="inherit" onClick={onLogout} startIcon={<LogoutOutlined />}>
               Logout
             </Button>
           </Toolbar>
@@ -359,7 +296,13 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
 
         {/* App Content */}
         <Box sx={{ flexGrow: 1, p: 3 }}>
-          {renderCurrentApp()}
+          {loading ? (
+            <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+              <CircularProgress />
+            </Container>
+          ) : (
+            renderCurrentApp()
+          )}
         </Box>
       </Box>
     </Box>

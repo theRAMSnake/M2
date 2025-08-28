@@ -1,0 +1,1 @@
+export { ChoresService } from './service';

@@ -34,6 +34,7 @@ import {
   ChevronRight as ChevronRightIcon,
 } from '@mui/icons-material';
 import { getAuthToken } from '../../utils/auth';
+import { COLOR_PRESETS, getColorValue, getDefaultColor } from '../../utils/colorPresets';
 
 interface CalendarItem {
   id: string;
@@ -44,18 +45,6 @@ interface CalendarItem {
   color: string;
   createdBy?: string;
 }
-
-const COLOR_PRESETS = [
-  { value: 'red', label: 'Red', color: '#f44336' },
-  { value: 'pink', label: 'Pink', color: '#e91e63' },
-  { value: 'purple', label: 'Purple', color: '#9c27b0' },
-  { value: 'blue', label: 'Blue', color: '#2196f3' },
-  { value: 'green', label: 'Green', color: '#4caf50' },
-  { value: 'yellow', label: 'Yellow', color: '#ffeb3b' },
-  { value: 'orange', label: 'Orange', color: '#ff9800' },
-  { value: 'brown', label: 'Brown', color: '#795548' },
-  { value: 'grey', label: 'Grey', color: '#9e9e9e' },
-];
 
 type ViewMode = 'month' | 'week' | 'compact';
 
@@ -77,7 +66,7 @@ export function CalendarApp() {
     start: new Date(),
     end: new Date(new Date().getTime() + 60 * 60 * 1000),
     isPrivate: false,
-    color: 'blue',
+    color: getDefaultColor(),
   });
 
   useEffect(() => {
@@ -127,7 +116,7 @@ export function CalendarApp() {
       start: defaultStart,
       end: defaultEnd,
       isPrivate: false,
-      color: 'blue',
+      color: getDefaultColor(),
     });
     setDialogOpen(true);
   };
@@ -269,7 +258,11 @@ export function CalendarApp() {
   };
 
   const getColorByValue = (colorValue: string) => {
-    return COLOR_PRESETS.find(preset => preset.value === colorValue)?.color || '#2196f3';
+    return getColorValue(colorValue);
+  };
+
+  const getColorLabel = (colorValue: string) => {
+    return COLOR_PRESETS.find(p => p.value === colorValue)?.label || colorValue;
   };
 
   const getUpcomingEvents = () => {
@@ -488,7 +481,7 @@ export function CalendarApp() {
       start: defaultStart,
       end: defaultEnd,
       isPrivate: false,
-      color: 'blue',
+      color: getDefaultColor(),
     });
     setEditingItem(null);
     setDialogOpen(true);
@@ -1170,7 +1163,7 @@ export function CalendarApp() {
                   <strong>Duration:</strong> {Math.round((itemToDelete.end.getTime() - itemToDelete.start.getTime()) / (1000 * 60))} minutes
                 </Typography>
                 <Typography variant="body2">
-                  <strong>Color:</strong> {COLOR_PRESETS.find(p => p.value === itemToDelete.color)?.label || itemToDelete.color}
+                  <strong>Color:</strong> {getColorLabel(itemToDelete.color)}
                 </Typography>
                 <Typography variant="body2">
                   <strong>Visibility:</strong> {itemToDelete.isPrivate ? 'Private' : 'Public'}

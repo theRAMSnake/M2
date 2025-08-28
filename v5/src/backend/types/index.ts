@@ -95,3 +95,25 @@ export interface TaskResult {
   message: string;
   data?: any;
 }
+
+export interface Chore {
+  id: string;
+  title: string;
+  is_urgent: boolean;
+  color: string;
+  is_done: boolean;
+  reoccurance_period?: number; // days, optional
+  undone_from?: string; // ISO date string when chore should be undone
+  createdBy: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ChoreRequest {
+  id?: string;
+  title: string;
+  is_urgent: boolean;
+  color: string;
+  is_done: boolean;
+  reoccurance_period?: number;
+}
