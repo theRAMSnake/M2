@@ -1,12 +1,15 @@
 import { TaskManager, TaskStatus, TaskResult } from '../../utils/taskManager';
+import { TaskScheduler } from '../../utils/taskScheduler';
 import { User } from '../../types';
 import { logger } from '../../utils/logger';
 
 export class AdminService {
   private taskManager: TaskManager;
+  private taskScheduler: TaskScheduler;
 
   constructor() {
     this.taskManager = TaskManager.getInstance();
+    this.taskScheduler = TaskScheduler.getInstance();
   }
 
   public isAuthorized(user: User): boolean {
@@ -35,4 +38,10 @@ export class AdminService {
     return this.taskManager.isTaskRunning(taskId);
   }
 
+  public getSchedulerStatus(): { isRunning: boolean; scheduledTasks: string[] } {
+    return {
+      isRunning: this.taskScheduler.isSchedulerRunning(),
+      scheduledTasks: this.taskScheduler.getScheduledTasks()
+    };
+  }
 }

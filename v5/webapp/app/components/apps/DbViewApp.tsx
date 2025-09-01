@@ -21,6 +21,10 @@ import {
   IconButton,
   useTheme,
   useMediaQuery,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -54,6 +58,7 @@ export function DbViewApp() {
   const [newPath, setNewPath] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [queryPath, setQueryPath] = useState('');
+  const [searchMode, setSearchMode] = useState<'prefix' | 'search'>('prefix');
 
   // Load documents on component mount
   useEffect(() => {
@@ -88,12 +93,45 @@ export function DbViewApp() {
     }
   };
 
+  const searchDocuments = async (searchTerm: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const token = getAuthToken();
+      
+      const url = `/api/documents/search?q=${encodeURIComponent(searchTerm)}`;
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const docs = data.documents || [];
+        setDocuments(docs);
+      } else {
+        const errorText = await response.text();
+        setError(`Failed to search documents: ${response.status} ${errorText}`);
+      }
+    } catch (error) {
+      setError(`Failed to search documents: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSearch = () => {
-    loadDocuments(queryPath);
+    if (searchMode === 'search') {
+      searchDocuments(queryPath);
+    } else {
+      loadDocuments(queryPath);
+    }
   };
 
   const handleClearSearch = () => {
     setQueryPath('');
+    setSearchMode('prefix');
     loadDocuments('');
   };
 
@@ -168,7 +206,12 @@ export function DbViewApp() {
       });
 
       if (response.ok) {
-        await loadDocuments(queryPath); // Refresh the list
+        // Refresh the list with current mode
+        if (searchMode === 'search' && queryPath) {
+          await searchDocuments(queryPath);
+        } else {
+          await loadDocuments(queryPath);
+        }
         setAddDialogOpen(false);
         setNewPath('');
       } else {
@@ -194,7 +237,12 @@ export function DbViewApp() {
       });
 
       if (response.ok) {
-        await loadDocuments(queryPath); // Refresh the list
+        // Refresh the list with current mode
+        if (searchMode === 'search' && queryPath) {
+          await searchDocuments(queryPath);
+        } else {
+          await loadDocuments(queryPath);
+        }
         if (selectedDocument?.path === documentToDelete.path) {
           setSelectedDocument(null);
           setJsonValue('');
@@ -246,7 +294,13 @@ export function DbViewApp() {
             <Button
               variant="outlined"
               startIcon={<RefreshIcon />}
-              onClick={() => loadDocuments(queryPath)}
+              onClick={() => {
+                if (searchMode === 'search' && queryPath) {
+                  searchDocuments(queryPath);
+                } else {
+                  loadDocuments(queryPath);
+                }
+              }}
             >
               Refresh
             </Button>
@@ -261,12 +315,27 @@ export function DbViewApp() {
 
         {/* Search Bar */}
         <Paper sx={{ p: 2, mb: 3, bgcolor: 'background.default' }}>
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <InputLabel>Mode</InputLabel>
+              <Select
+                value={searchMode}
+                onChange={(e) => setSearchMode(e.target.value as 'prefix' | 'search')}
+                label="Mode"
+              >
+                <MenuItem value="prefix">Prefix</MenuItem>
+                <MenuItem value="search">Search</MenuItem>
+              </Select>
+            </FormControl>
             <TextField
-              label="Query Path"
+              label={searchMode === 'search' ? 'Search Term' : 'Query Path'}
               value={queryPath}
               onChange={(e) => setQueryPath(e.target.value)}
-              placeholder="Enter path to query (e.g., /snake, /calendar, or leave empty for root)"
+                             placeholder={
+                 searchMode === 'search' 
+                   ? 'Enter search term to find documents by path or content (e.g., calendar, user, title, etc.)'
+                   : 'Enter path to query (e.g., /snake, /calendar, or leave empty for root)'
+               }
               fullWidth
               size="small"
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -276,7 +345,7 @@ export function DbViewApp() {
               startIcon={<SearchIcon />}
               onClick={handleSearch}
             >
-              Search
+              {searchMode === 'search' ? 'Search' : 'Query'}
             </Button>
             <Button
               variant="outlined"
@@ -285,6 +354,12 @@ export function DbViewApp() {
               Clear
             </Button>
           </Box>
+                     <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+             {searchMode === 'search' 
+               ? 'Search mode: Finds documents containing the search term in the path or document content'
+               : 'Prefix mode: Lists documents under the specified path prefix'
+             }
+           </Typography>
         </Paper>
 
         <Grid container spacing={2} sx={{ height: '70vh' }}>

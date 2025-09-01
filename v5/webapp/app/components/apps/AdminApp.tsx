@@ -21,7 +21,8 @@ import {
   CheckCircle as SuccessIcon,
   Error as ErrorIcon,
   Schedule as IdleIcon,
-  Sync as RunningIcon
+  Sync as RunningIcon,
+  Timer as TimerIcon
 } from '@mui/icons-material';
 import { getAuthToken } from '../../utils/auth';
 
@@ -41,9 +42,15 @@ interface TaskResult {
   data?: any;
 }
 
+interface SchedulerStatus {
+  isRunning: boolean;
+  scheduledTasks: string[];
+}
+
 const AdminApp: React.FC = () => {
   const [tasks, setTasks] = useState<string[]>([]);
   const [taskStatuses, setTaskStatuses] = useState<TaskStatus[]>([]);
+  const [schedulerStatus, setSchedulerStatus] = useState<SchedulerStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [startingTask, setStartingTask] = useState<string | null>(null);
@@ -91,6 +98,27 @@ const AdminApp: React.FC = () => {
       setTaskStatuses(data.data.statuses);
     } catch (err) {
       console.error('Error fetching task statuses:', err);
+    }
+  };
+
+  const fetchSchedulerStatus = async () => {
+    try {
+      const response = await fetch('/api/admin/scheduler/status', {
+        headers: {
+          'Authorization': `Bearer ${getAuthToken()}`
+        }
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Scheduler status API error:', response.status, errorText);
+        throw new Error(`Failed to fetch scheduler status: ${response.status} ${errorText}`);
+      }
+
+      const data = await response.json();
+      setSchedulerStatus(data.data);
+    } catch (err) {
+      console.error('Error fetching scheduler status:', err);
     }
   };
 
@@ -180,6 +208,7 @@ const AdminApp: React.FC = () => {
       setLoading(true);
       await fetchAvailableTasks();
       await fetchTaskStatuses();
+      await fetchSchedulerStatus();
       setLoading(false);
     };
 
@@ -250,6 +279,52 @@ const AdminApp: React.FC = () => {
       </Typography>
       
 
+
+      {/* Scheduler Status */}
+      {schedulerStatus && (
+        <Box mt={3} mb={3}>
+          <Card>
+            <CardContent>
+              <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+                <Box display="flex" alignItems="center" gap={1}>
+                  <TimerIcon />
+                  <Typography variant="h6">
+                    Task Scheduler
+                  </Typography>
+                </Box>
+                <Chip
+                  label={schedulerStatus.isRunning ? 'Running' : 'Stopped'}
+                  color={schedulerStatus.isRunning ? 'success' : 'error'}
+                  size="small"
+                />
+              </Box>
+              
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Scheduled Tasks: {schedulerStatus.scheduledTasks.length}
+              </Typography>
+              
+              {schedulerStatus.scheduledTasks.length > 0 && (
+                <Box mt={1}>
+                  <Typography variant="body2" color="text.secondary">
+                    Active schedules: {schedulerStatus.scheduledTasks.join(', ')}
+                  </Typography>
+                </Box>
+              )}
+              
+              <Box mt={2}>
+                <Button
+                  variant="outlined"
+                  startIcon={<RefreshIcon />}
+                  onClick={fetchSchedulerStatus}
+                  size="small"
+                >
+                  Refresh Status
+                </Button>
+              </Box>
+            </CardContent>
+          </Card>
+        </Box>
+      )}
 
       <Box mt={3}>
         <Grid container spacing={3}>

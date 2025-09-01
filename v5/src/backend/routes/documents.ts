@@ -20,6 +20,47 @@ export class DocumentRoutes {
   }
 
   private setupRoutes(): void {
+    // Search documents - MUST come before /:path(*) route
+    this.router.get('/search', async (req: AuthRequest, res: Response) => {
+      try {
+        const user = req.user;
+        const searchTerm = req.query.q as string | undefined;
+        
+        if (!user) {
+          res.status(401).json({
+            error: 'Unauthorized',
+            message: 'Authentication required'
+          });
+          return;
+        }
+
+        if (!searchTerm || searchTerm.trim() === '') {
+          res.status(400).json({
+            error: 'ValidationError',
+            message: 'Search term is required'
+          });
+          return;
+        }
+
+        const documents = await this.dbService.searchDocuments(searchTerm.trim());
+        
+        res.json({
+          documents: documents.map(doc => ({
+            path: doc.path,
+            data: doc.data,
+            updatedAt: doc.updatedAt
+          }))
+        });
+      } catch (error) {
+        logger.error('Error searching documents:', error);
+        const errorResponse: ErrorResponse = {
+          error: 'InternalServerError',
+          message: error instanceof Error ? error.message : 'Failed to search documents'
+        };
+        res.status(500).json(errorResponse);
+      }
+    });
+
     // List documents (with optional prefix) - MUST come before /:path(*) route
     this.router.get('/', async (req: AuthRequest, res: Response) => {
       try {

@@ -51,6 +51,7 @@ import {
   Timeline as TimelineIcon,
 } from '@mui/icons-material';
 import { getAuthToken } from '../../utils/auth';
+import { generateId } from '../../utils/idGenerator';
 
 interface BusinessEvent {
   id: string;
@@ -202,7 +203,7 @@ export function MakeUpApp() {
       const token = getAuthToken();
       
       const eventData = {
-        id: editingEvent?.id || Date.now().toString(),
+        id: generateId(editingEvent?.id),
         date: formData.date,
         amount: parseFloat(formData.amount),
         category: formData.category as BusinessEvent['category'],

@@ -35,6 +35,7 @@ import {
 } from '@mui/icons-material';
 import { getAuthToken } from '../../utils/auth';
 import { COLOR_PRESETS, getColorValue, getDefaultColor } from '../../utils/colorPresets';
+import { generateId } from '../../utils/idGenerator';
 
 interface CalendarItem {
   id: string;
@@ -221,7 +222,7 @@ export function CalendarApp() {
       const token = getAuthToken();
       
       const itemData = {
-        id: editingItem?.id || Date.now().toString(),
+        id: generateId(editingItem?.id),
         text: formData.title,
         dateTime: formData.start.toISOString(),
         endTime: formData.end.toISOString(),
@@ -267,10 +268,19 @@ export function CalendarApp() {
 
   const getUpcomingEvents = () => {
     const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+    
     return items
-      .filter(item => new Date(item.start) >= now)
+      .filter(item => {
+        const eventStart = new Date(item.start);
+        // Include events that are either:
+        // 1. Starting today (including passed ones)
+        // 2. Starting in the future
+        return (eventStart >= startOfToday && eventStart <= endOfToday) || eventStart > now;
+      })
       .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())
-      .slice(0, 50); // Limit to 50 upcoming events
+      .slice(0, 50); // Limit to 50 events
   };
 
   const navigatePrevious = () => {
@@ -578,19 +588,22 @@ export function CalendarApp() {
           </Box>
           <Box sx={{ display: 'flex', gap: 1 }}>
             {isMobile ? (
-              // On mobile, only show compact view button (disabled since it's the only option)
-              <Button
-                variant="contained"
-                size="small"
-                disabled
-                sx={{
-                  textTransform: 'none',
-                  minWidth: 'auto',
-                  px: 2,
-                }}
-              >
-                Compact
-              </Button>
+              // On mobile, show compact and week view options
+              (['compact', 'week'] as ViewMode[]).map((view) => (
+                <Button
+                  key={view}
+                  variant={viewMode === view ? 'contained' : 'outlined'}
+                  size="small"
+                  onClick={() => setViewMode(view)}
+                  sx={{
+                    textTransform: 'none',
+                    minWidth: 'auto',
+                    px: 2,
+                  }}
+                >
+                  {view.charAt(0).toUpperCase() + view.slice(1)}
+                </Button>
+              ))
             ) : (
               // On desktop, show all view options
               (['month', 'week', 'compact'] as ViewMode[]).map((view) => (
@@ -891,65 +904,80 @@ export function CalendarApp() {
                     />
                   </ListItem>
                 ) : (
-                  getUpcomingEvents().map((event, index) => (
-                    <Box key={event.id}>
-                      <ListItemButton
-                        onClick={() => handleEditItem(event)}
-                        sx={{
-                          py: 2,
-                          '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)' },
-                        }}
-                      >
-                        <ListItemText
-                          primary={
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                              <Chip
-                                size="small"
-                                sx={{
-                                  bgcolor: getColorByValue(event.color),
-                                  color: 'white',
-                                  minWidth: 20,
-                                  height: 20,
-                                  '& .MuiChip-label': {
-                                    px: 0.5,
-                                    fontSize: '0.7rem',
-                                  },
-                                }}
-                                label="●"
-                              />
-                              <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                                {event.title}
-                              </Typography>
-                              {event.isPrivate && (
+                  getUpcomingEvents().map((event, index) => {
+                    const now = new Date();
+                    const eventStart = new Date(event.start);
+                    const isPassed = eventStart < now;
+                    
+                    return (
+                      <Box key={event.id}>
+                        <ListItemButton
+                          onClick={() => handleEditItem(event)}
+                          sx={{
+                            py: 2,
+                            opacity: isPassed ? 0.6 : 1,
+                            '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)' },
+                          }}
+                        >
+                          <ListItemText
+                            primary={
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                                 <Chip
                                   size="small"
-                                  label="Private"
-                                  variant="outlined"
-                                  sx={{ ml: 'auto', fontSize: '0.7rem' }}
+                                  sx={{
+                                    bgcolor: isPassed ? '#666666' : getColorByValue(event.color),
+                                    color: 'white',
+                                    minWidth: 20,
+                                    height: 20,
+                                    '& .MuiChip-label': {
+                                      px: 0.5,
+                                      fontSize: '0.7rem',
+                                    },
+                                  }}
+                                  label={isPassed ? "✓" : "●"}
                                 />
-                              )}
-                            </Box>
-                          }
-                          secondary={
-                            <Box sx={{ mt: 0.5 }}>
-                              <Typography variant="body2" color="text.secondary">
-                                {format(new Date(event.start), 'EEEE, MMMM d, yyyy')}
-                              </Typography>
-                              <Typography variant="body2" color="text.secondary">
-                                {format(new Date(event.start), 'h:mm a')} - {format(new Date(event.end), 'h:mm a')}
-                                {new Date(event.start).toDateString() !== new Date(event.end).toDateString() && 
-                                  ` (+${Math.ceil((new Date(event.end).getTime() - new Date(event.start).getTime()) / (1000 * 60 * 60 * 24))}d)`
-                                }
-                              </Typography>
-                            </Box>
-                          }
-                        />
-                      </ListItemButton>
-                      {index < getUpcomingEvents().length - 1 && (
-                        <Divider sx={{ bgcolor: 'rgba(255, 255, 255, 0.12)' }} />
-                      )}
-                    </Box>
-                  ))
+                                <Typography 
+                                  variant="subtitle1" 
+                                  sx={{ 
+                                    fontWeight: 500,
+                                    textDecoration: isPassed ? 'line-through' : 'none',
+                                    color: isPassed ? 'text.secondary' : 'text.primary',
+                                  }}
+                                >
+                                  {event.title}
+                                </Typography>
+                                {event.isPrivate && (
+                                  <Chip
+                                    size="small"
+                                    label="Private"
+                                    variant="outlined"
+                                    sx={{ ml: 'auto', fontSize: '0.7rem' }}
+                                  />
+                                )}
+                              </Box>
+                            }
+                            secondary={
+                              <Box sx={{ mt: 0.5 }}>
+                                <Typography variant="body2" color="text.secondary">
+                                  {format(new Date(event.start), 'EEEE, MMMM d, yyyy')}
+                                  {isPassed && " (Passed)"}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                  {format(new Date(event.start), 'h:mm a')} - {format(new Date(event.end), 'h:mm a')}
+                                  {new Date(event.start).toDateString() !== new Date(event.end).toDateString() && 
+                                    ` (+${Math.ceil((new Date(event.end).getTime() - new Date(event.start).getTime()) / (1000 * 60 * 60 * 24))}d)`
+                                  }
+                                </Typography>
+                              </Box>
+                            }
+                          />
+                        </ListItemButton>
+                        {index < getUpcomingEvents().length - 1 && (
+                          <Divider sx={{ bgcolor: 'rgba(255, 255, 255, 0.12)' }} />
+                        )}
+                      </Box>
+                    );
+                  })
                 )}
               </List>
             </Box>

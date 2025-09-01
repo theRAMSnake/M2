@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { CalendarService } from './service';
 import { AuthRequest, CalendarItemRequest } from '../../types';
+import { generateId } from '../../utils/routeHelpers';
 
 const router = Router();
 const calendarService = new CalendarService();
@@ -44,7 +45,7 @@ router.post('/items', async (req: AuthRequest, res) => {
     }
 
     // Generate ID if not provided
-    const id = itemData.id || Date.now().toString();
+    const id = generateId(itemData.id);
     
     await calendarService.addCalendarItem(req.user.id, {
       id,

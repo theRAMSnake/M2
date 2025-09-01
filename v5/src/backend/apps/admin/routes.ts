@@ -64,6 +64,22 @@ router.get('/tasks/:taskId/status', requireAdmin, async (req: AuthRequest, res) 
   }
 });
 
+// GET /api/admin/scheduler/status - Get scheduler status
+router.get('/scheduler/status', requireAdmin, async (req: AuthRequest, res) => {
+  try {
+    const schedulerStatus = adminService.getSchedulerStatus();
+    res.json({ 
+      success: true,
+      data: schedulerStatus
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: 'Failed to get scheduler status'
+    });
+  }
+});
+
 // GET /api/admin/tasks - Get all available tasks (must be last to avoid conflicts)
 router.get('/tasks', requireAdmin, async (req: AuthRequest, res) => {
   try {

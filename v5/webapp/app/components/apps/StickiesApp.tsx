@@ -30,6 +30,7 @@ import {
   Close as CloseIcon,
 } from '@mui/icons-material';
 import { getAuthToken } from '../../utils/auth';
+import { generateId } from '../../utils/idGenerator';
 
 interface Sticky {
   id: string;
@@ -176,7 +177,7 @@ export function StickiesApp() {
     } else {
       // Add new sticky
       const newSticky: Sticky = {
-        id: Date.now().toString(),
+        id: generateId(),
         title: formData.title,
         content: formData.content,
         position: { x: 50, y: 50 },

@@ -43,6 +43,7 @@ import {
 } from '@mui/icons-material';
 import { getAuthToken } from '../../utils/auth';
 import { COLOR_PRESETS, getColorValue, getDefaultColor } from '../../utils/colorPresets';
+import { generateId } from '../../utils/idGenerator';
 
 interface Chore {
   id: string;
@@ -51,6 +52,7 @@ interface Chore {
   color: string;
   is_done: boolean;
   reoccurance_period?: number;
+  undone_from?: string; // ISO date string when chore should be undone
   createdBy: string;
   createdAt: Date;
   updatedAt: Date;
@@ -67,7 +69,7 @@ export function ChoresApp() {
   const [choreToDelete, setChoreToDelete] = useState<Chore | null>(null);
   const [editingChore, setEditingChore] = useState<Chore | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [hideDoneChores, setHideDoneChores] = useState(false);
+  const [hideDoneChores, setHideDoneChores] = useState(true);
   const [choreType, setChoreType] = useState<'personal' | 'family'>('personal');
   const [formData, setFormData] = useState({
     title: '',
@@ -155,7 +157,7 @@ export function ChoresApp() {
       
       const choreData = {
         ...formData,
-        id: editingChore?.id || Date.now().toString(),
+        id: generateId(editingChore?.id),
       };
 
       const endpoint = choreType === 'personal' ? '/api/chores/personal' : '/api/chores/family';
@@ -252,6 +254,19 @@ export function ChoresApp() {
     return chores;
   };
 
+  const getDaysUntilNextOccurrence = (chore: Chore): number | null => {
+    if (!chore.is_done || !chore.reoccurance_period || !chore.undone_from) {
+      return null;
+    }
+
+    const undoneFromDate = new Date(chore.undone_from);
+    const now = new Date();
+    const timeDiff = undoneFromDate.getTime() - now.getTime();
+    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    
+    return daysDiff;
+  };
+
   const renderChoreList = (chores: Chore[], title: string, type: 'personal' | 'family') => {
     const filteredChores = getFilteredChores(chores);
     
@@ -275,78 +290,90 @@ export function ChoresApp() {
             </Typography>
           ) : (
             <List>
-              {filteredChores.map((chore) => (
-                <ListItem
-                  key={chore.id}
-                  disablePadding
-                  sx={{
-                    mb: 1,
-                    border: `2px solid ${getColorValue(chore.color)}`,
-                    borderRadius: 1,
-                    backgroundColor: chore.is_done ? 'action.hover' : 'background.paper',
-                  }}
-                >
-                  <ListItemButton
-                    onClick={() => handleToggleChore(chore)}
+              {filteredChores.map((chore) => {
+                const daysUntilNext = getDaysUntilNextOccurrence(chore);
+                
+                return (
+                  <ListItem
+                    key={chore.id}
+                    disablePadding
                     sx={{
-                      textDecoration: chore.is_done ? 'line-through' : 'none',
-                      color: chore.is_urgent && !chore.is_done ? 'error.main' : 'inherit',
+                      mb: 1,
+                      border: `2px solid ${getColorValue(chore.color)}`,
+                      borderRadius: 1,
+                      backgroundColor: chore.is_done ? 'action.hover' : 'background.paper',
                     }}
                   >
-                    <ListItemIcon>
-                      {chore.is_done ? (
-                        <CheckCircleIcon color="success" />
-                      ) : (
-                        <RadioButtonUncheckedIcon />
-                      )}
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          {chore.title}
-                          {chore.is_urgent && !chore.is_done && (
-                            <PriorityHighIcon color="error" fontSize="small" />
-                          )}
-                          {chore.reoccurance_period && (
-                            <Chip 
-                              label={`${chore.reoccurance_period}d`} 
-                              size="small" 
-                              variant="outlined"
-                              color="secondary"
-                            />
-                          )}
-                        </Box>
-                      }
-                      secondary={
-                        <Typography variant="caption" color="text.secondary">
-                          {new Date(chore.updatedAt).toLocaleDateString()}
-                        </Typography>
-                      }
-                    />
-                    <Box sx={{ display: 'flex', gap: 1 }}>
-                      <IconButton
-                        size="small"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditChore(chore);
-                        }}
-                      >
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteChore(chore);
-                        }}
-                        color="error"
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Box>
-                  </ListItemButton>
-                </ListItem>
-              ))}
+                    <ListItemButton
+                      onClick={() => handleToggleChore(chore)}
+                      sx={{
+                        textDecoration: chore.is_done ? 'line-through' : 'none',
+                        color: chore.is_urgent && !chore.is_done ? 'error.main' : 'inherit',
+                      }}
+                    >
+                      <ListItemIcon>
+                        {chore.is_done ? (
+                          <CheckCircleIcon color="success" />
+                        ) : (
+                          <RadioButtonUncheckedIcon />
+                        )}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            {chore.title}
+                            {chore.is_urgent && !chore.is_done && (
+                              <PriorityHighIcon color="error" fontSize="small" />
+                            )}
+                            {chore.reoccurance_period && (
+                              <Chip 
+                                label={`${chore.reoccurance_period}d`} 
+                                size="small" 
+                                variant="outlined"
+                                color="secondary"
+                              />
+                            )}
+                            {daysUntilNext !== null && (
+                              <Chip 
+                                label={daysUntilNext > 0 ? `${daysUntilNext}d left` : 'Due today'} 
+                                size="small" 
+                                variant="outlined"
+                                color={daysUntilNext <= 0 ? 'error' : daysUntilNext <= 1 ? 'warning' : 'info'}
+                              />
+                            )}
+                          </Box>
+                        }
+                        secondary={
+                          <Typography variant="caption" color="text.secondary">
+                            {new Date(chore.updatedAt).toLocaleDateString()}
+                          </Typography>
+                        }
+                      />
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        <IconButton
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditChore(chore);
+                          }}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteChore(chore);
+                          }}
+                          color="error"
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Box>
+                    </ListItemButton>
+                  </ListItem>
+                );
+              })}
             </List>
           )}
         </AccordionDetails>

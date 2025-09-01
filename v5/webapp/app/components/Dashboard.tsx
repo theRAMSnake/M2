@@ -74,6 +74,7 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [todayEventsCount, setTodayEventsCount] = useState(0);
   const [urgentChoresCount, setUrgentChoresCount] = useState(0);
+  const [stickiesCount, setStickiesCount] = useState(0);
 
   // Get available apps for current user
   const availableApps = APP_CONFIG[currentUser as keyof typeof APP_CONFIG] || APP_CONFIG.snake;
@@ -81,13 +82,28 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
   const [currentApp, setCurrentApp] = useState<string>('dashboard');
 
   useEffect(() => {
-    loadTodayEventsCount();
-    loadUrgentChoresCount();
+    const loadAllCounts = async () => {
+      setLoading(true);
+      try {
+        await Promise.all([
+          loadTodayEventsCount(),
+          loadUrgentChoresCount(),
+          loadStickiesCount()
+        ]);
+      } catch (error) {
+        console.error('Failed to load counts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAllCounts();
     
     // Refresh counts every 5 minutes
     const interval = setInterval(() => {
       loadTodayEventsCount();
       loadUrgentChoresCount();
+      loadStickiesCount();
     }, 5 * 60 * 1000);
     
     return () => clearInterval(interval);
@@ -120,8 +136,6 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
       }
     } catch (error) {
       console.error('Failed to load today events count:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -140,6 +154,33 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
       }
     } catch (error) {
       console.error('Failed to load urgent chores count:', error);
+    }
+  };
+
+  const loadStickiesCount = async () => {
+    try {
+      const token = getAuthToken();
+      console.log('Loading stickies count...');
+      const response = await fetch('/api/stickies/count', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('Stickies count response status:', response.status);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Stickies count API response:', data);
+        const count = data.data?.count || 0;
+        console.log('Setting stickies count to:', count);
+        setStickiesCount(count);
+      } else {
+        console.error('Failed to load stickies count:', response.status, response.statusText);
+        const errorText = await response.text();
+        console.error('Error response body:', errorText);
+      }
+    } catch (error) {
+      console.error('Failed to load stickies count:', error);
     }
   };
 
@@ -199,6 +240,19 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
       );
     }
     
+    if (app.id === 'stickies') {
+      console.log('Rendering stickies badge with count:', stickiesCount);
+      return (
+        <Badge badgeContent={stickiesCount > 0 ? stickiesCount : undefined} color="error" max={99}>
+          <app.icon sx={{ 
+            fontSize: 48, 
+            mb: 1.5,
+            color: 'inherit',
+          }} />
+        </Badge>
+      );
+    }
+
     return (
       <app.icon sx={{ 
         fontSize: 48, 

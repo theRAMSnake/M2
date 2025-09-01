@@ -13,8 +13,10 @@ import { routes as makeUpRoutes } from './apps/make-up';
 import calendarRoutes from './apps/calendar/routes';
 import choresRoutes from './apps/chores/routes';
 import adminRoutes from './apps/admin/routes';
+import stickiesRoutes from './apps/stickies/routes';
 import { backupRoutes } from './routes/backup';
 import { logger } from './utils/logger';
+import { TaskScheduler } from './utils/taskScheduler';
 
 class MateriaV5Server {
   private app: express.Application;
@@ -115,6 +117,9 @@ class MateriaV5Server {
     // Admin app routes (authentication required, snake user only)
     apiRouter.use('/admin', this.authMiddleware.authenticate, adminRoutes);
 
+    // Stickies app routes (authentication required)
+    apiRouter.use('/stickies', this.authMiddleware.authenticate as any, stickiesRoutes);
+
     // Backup routes (authentication required)
     apiRouter.use('/backup', this.authMiddleware.authenticate as any, backupRoutes);
 
@@ -130,6 +135,7 @@ class MateriaV5Server {
           calendar: '/calendar',
           chores: '/chores',
           admin: '/admin',
+          stickies: '/stickies',
           backup: '/backup',
           health: '/health'
         }
@@ -198,12 +204,20 @@ class MateriaV5Server {
       logger.info(`API: http://localhost:${this.port}/api`);
       logger.info(`Snake's interface: http://localhost:${this.port}/snake`);
       logger.info(`Seva's interface: http://localhost:${this.port}/seva`);
+      
+      // Start the task scheduler
+      const taskScheduler = TaskScheduler.getInstance();
+      taskScheduler.start();
+      logger.info('Task scheduler started');
     });
 
     // Graceful shutdown
     process.on('SIGTERM', () => {
       logger.info('SIGTERM received, shutting down gracefully');
       server.close(() => {
+        // Stop the task scheduler
+        const taskScheduler = TaskScheduler.getInstance();
+        taskScheduler.stop();
         this.dbService.close();
         logger.info('Server closed');
         process.exit(0);
@@ -213,6 +227,9 @@ class MateriaV5Server {
     process.on('SIGINT', () => {
       logger.info('SIGINT received, shutting down gracefully');
       server.close(() => {
+        // Stop the task scheduler
+        const taskScheduler = TaskScheduler.getInstance();
+        taskScheduler.stop();
         this.dbService.close();
         logger.info('Server closed');
         process.exit(0);

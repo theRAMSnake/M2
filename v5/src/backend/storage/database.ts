@@ -280,18 +280,18 @@ export class DatabaseService {
     }
   }
 
-  // Search documents by path
+  // Search documents by path and data content
   async searchDocuments(searchTerm: string): Promise<Document[]> {
     try {
       const query = `
         SELECT id, path, data, created_at, updated_at 
         FROM documents 
-        WHERE path LIKE ? 
+        WHERE path LIKE ? OR data LIKE ?
         ORDER BY updated_at DESC
       `;
       
       const stmt = this.db.prepare(query);
-      const results = stmt.all(`%${searchTerm}%`) as any[];
+      const results = stmt.all(`%${searchTerm}%`, `%${searchTerm}%`) as any[];
 
       return results.map(row => ({
         id: row.id,

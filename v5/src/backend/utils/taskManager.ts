@@ -221,6 +221,47 @@ export class IngestionTask extends BackgroundTask {
   }
 }
 
+export class DailyUpdateTask extends BackgroundTask {
+  constructor() {
+    super('daily-update', 'Daily Update');
+  }
+
+  protected async run(): Promise<TaskResult> {
+    try {
+      logger.info('Starting daily update task (no-op)');
+      
+      // Simulate some progress
+      this.updateProgress(25);
+      await this.delay(500);
+      
+      this.updateProgress(50);
+      await this.delay(500);
+      
+      this.updateProgress(75);
+      await this.delay(500);
+      
+      this.updateProgress(100);
+      logger.info('Daily update task completed successfully (no-op)');
+      
+      return {
+        success: true,
+        message: 'Daily update completed successfully (no-op)',
+        data: {
+          timestamp: new Date().toISOString(),
+          note: 'This is a placeholder task with no actual logic'
+        }
+      };
+    } catch (error) {
+      logger.error('Daily update task failed:', error);
+      throw error;
+    }
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+}
+
 export class TaskManager {
   private static instance: TaskManager;
   private tasks: Map<string, BackgroundTask> = new Map();
@@ -228,6 +269,7 @@ export class TaskManager {
   private constructor() {
     // Initialize available tasks
     this.tasks.set('ingestion', new IngestionTask());
+    this.tasks.set('daily-update', new DailyUpdateTask());
   }
 
   public static getInstance(): TaskManager {
