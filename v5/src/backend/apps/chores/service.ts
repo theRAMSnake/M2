@@ -1,5 +1,6 @@
 import { DatabaseService } from '../../storage/database';
 import { Chore } from '../../types';
+import { DisciplineService } from '../discipline/service';
 
 export class ChoresService {
   private db: DatabaseService;
@@ -66,7 +67,7 @@ export class ChoresService {
       throw new Error('Personal chore not found');
     }
     
-    const choreToSave = this.buildChoreForUpdate(updatedChore, choreId, existingChore);
+    const choreToSave = await this.buildChoreForUpdate(updatedChore, choreId, existingChore);
     await this.saveChore(`/${userId}/chores/${choreId}`, choreToSave);
   }
 
@@ -76,7 +77,7 @@ export class ChoresService {
       throw new Error('Family chore not found');
     }
     
-    const choreToSave = this.buildChoreForUpdate(updatedChore, choreId, existingChore);
+    const choreToSave = await this.buildChoreForUpdate(updatedChore, choreId, existingChore);
     await this.saveChore(`/shared/chores/${choreId}`, choreToSave);
   }
 
@@ -159,17 +160,18 @@ export class ChoresService {
     }
   }
 
-  private buildChoreForUpdate(
+  private async buildChoreForUpdate(
     updatedChore: Omit<Chore, 'createdBy' | 'createdAt' | 'updatedAt'>, 
     choreId: string, 
     existingChore: Chore
-  ): Chore {
+  ): Promise<Chore> {
     const choreToSave: Chore = { 
       ...updatedChore, 
       id: choreId, 
       createdBy: existingChore.createdBy,
       createdAt: existingChore.createdAt,
       updatedAt: new Date(),
+      hasBeenRewarded: existingChore.hasBeenRewarded, // Preserve existing reward status
     };
     
     // Handle reoccurance logic when chore is marked as done
@@ -177,6 +179,23 @@ export class ChoresService {
       const undoneDate = new Date();
       undoneDate.setDate(undoneDate.getDate() + updatedChore.reoccurance_period);
       choreToSave.undone_from = undoneDate.toISOString();
+    }
+    
+    // Don't clear reward flag when manually undone - only clear on respawn
+    // The reward flag should persist even if manually undone
+    
+    // Reward coins when chore is marked as done (but wasn't done before and hasn't been rewarded yet)
+    // Default hasBeenRewarded to false for existing documents (backward compatibility)
+    const hasBeenRewarded = existingChore.hasBeenRewarded ?? false;
+    if (updatedChore.is_done && !existingChore.is_done && !hasBeenRewarded) {
+      try {
+        const disciplineService = new DisciplineService();
+        await disciplineService.rewardChoreCompletion(updatedChore.color, updatedChore.title);
+        choreToSave.hasBeenRewarded = true; // Mark as rewarded
+      } catch (error) {
+        console.error('Error rewarding chore completion:', error);
+        // Don't fail the chore update if discipline reward fails
+      }
     }
     
     return choreToSave;
@@ -190,11 +209,12 @@ export class ChoresService {
         const now = new Date();
         
         if (now >= undoneDate) {
-          // Undo the chore
+          // Undo the chore and clear reward flag for next completion cycle
           const updatedChore: Chore = {
             ...chore,
             is_done: false,
             undone_from: undefined,
+            hasBeenRewarded: false, // Clear reward flag for next completion
             updatedAt: new Date(),
           };
           

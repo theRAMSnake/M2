@@ -159,6 +159,59 @@ export function StickiesApp() {
     await saveStickies(newData);
   };
 
+  // Function to find the next available position for a new sticky
+  const findNextAvailablePosition = (existingStickies: Sticky[], newStickySize: { width: number; height: number }) => {
+    const GRID_SIZE = 20; // Grid spacing for positioning
+    const MARGIN = 20; // Margin from edges
+    const MAX_ATTEMPTS = 1000; // Prevent infinite loops
+    
+    // Start from top-left corner
+    let x = MARGIN;
+    let y = MARGIN;
+    
+    for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+      // Check if this position is available
+      const isPositionAvailable = !existingStickies.some(sticky => {
+        const stickyRight = sticky.position.x + sticky.size.width;
+        const stickyBottom = sticky.position.y + sticky.size.height;
+        const newRight = x + newStickySize.width;
+        const newBottom = y + newStickySize.height;
+        
+        // Check for overlap
+        return !(x >= stickyRight || newRight <= sticky.position.x || 
+                y >= stickyBottom || newBottom <= sticky.position.y);
+      });
+      
+      if (isPositionAvailable) {
+        return { x, y };
+      }
+      
+      // Move to next position (left to right, then next row)
+      x += GRID_SIZE;
+      
+      // If we've gone too far right, move to next row
+      if (x + newStickySize.width > window.innerWidth - MARGIN) {
+        x = MARGIN;
+        y += GRID_SIZE;
+      }
+      
+      // If we've gone too far down, start from top again but offset
+      if (y + newStickySize.height > window.innerHeight - MARGIN) {
+        y = MARGIN;
+        x += GRID_SIZE * 2; // Offset to avoid infinite loops
+      }
+    }
+    
+    // Fallback: return a position that's offset from existing stickies
+    const maxX = Math.max(...existingStickies.map(s => s.position.x + s.size.width), 0);
+    const maxY = Math.max(...existingStickies.map(s => s.position.y + s.size.height), 0);
+    
+    return { 
+      x: Math.max(MARGIN, maxX + GRID_SIZE), 
+      y: Math.max(MARGIN, maxY + GRID_SIZE) 
+    };
+  };
+
   const handleSaveSticky = async () => {
     if (!formData.title.trim()) return;
 
@@ -175,13 +228,16 @@ export function StickiesApp() {
         )
       };
     } else {
-      // Add new sticky
+      // Add new sticky with tiled position
+      const defaultSize = { width: 200, height: 150 };
+      const position = findNextAvailablePosition(data.stickies, defaultSize);
+      
       const newSticky: Sticky = {
         id: generateId(),
         title: formData.title,
         content: formData.content,
-        position: { x: 50, y: 50 },
-        size: { width: 200, height: 150 },
+        position,
+        size: defaultSize,
         color: formData.color,
         createdAt: now,
         updatedAt: now,

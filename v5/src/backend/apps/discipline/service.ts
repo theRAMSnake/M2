@@ -1,5 +1,6 @@
 import { DatabaseService } from '../../storage/database';
 import { generateId } from '../../utils/routeHelpers';
+import { ChoresService } from '../chores/service';
 import crypto from 'crypto';
 
 export interface CoinBalance {
@@ -50,6 +51,23 @@ export class DisciplineService {
   private readonly COIN_COLORS = ['red', 'blue', 'purple', 'yellow', 'green'] as const;
   private readonly INITIAL_COUPON_PRICE = 4;
   private readonly MAX_HISTORY_ENTRIES = 100;
+
+  // Map chore colors to coin colors
+  private mapChoreColorToCoinColor(choreColor: string): string {
+    const colorMapping: Record<string, string> = {
+      'red': 'red',
+      'pink': 'red',      // Map pink to red
+      'purple': 'purple',
+      'blue': 'blue',
+      'green': 'green',
+      'yellow': 'yellow',
+      'orange': 'yellow', // Map orange to yellow
+      'brown': 'yellow',  // Map brown to yellow
+      'grey': 'blue',     // Map grey to blue
+    };
+    
+    return colorMapping[choreColor] || 'blue'; // Default to blue if color not found
+  }
 
   constructor() {
     this.db = DatabaseService.getInstance();
@@ -206,6 +224,19 @@ export class DisciplineService {
   async addCoins(color: string, amount: number): Promise<CoinBalance> {
     const data = await this.loadDisciplineData();
     const historyEntries = await this.modifyCoins(data, color, amount, 'manual_add');
+    
+    if (historyEntries.length > 0) {
+      await this.addHistoryEntries(historyEntries);
+    }
+    
+    await this.saveDisciplineData(data);
+    return data.coins;
+  }
+
+  async rewardChoreCompletion(choreColor: string, choreTitle: string): Promise<CoinBalance> {
+    const data = await this.loadDisciplineData();
+    const coinColor = this.mapChoreColorToCoinColor(choreColor);
+    const historyEntries = await this.modifyCoins(data, coinColor, 1, `Chore completed: ${choreTitle}`);
     
     if (historyEntries.length > 0) {
       await this.addHistoryEntries(historyEntries);
@@ -384,6 +415,10 @@ export class DisciplineService {
     const rewardEntries = await this.applyWorkBurdenReward(data);
     allHistoryEntries.push(...rewardEntries);
     
+    // Apply chores completion reward
+    const choresRewardEntries = await this.applyChoresCompletionReward(data);
+    allHistoryEntries.push(...choresRewardEntries);
+    
     // Save all changes at once
     if (allHistoryEntries.length > 0) {
       await this.addHistoryEntries(allHistoryEntries);
@@ -413,6 +448,27 @@ export class DisciplineService {
       return await this.modifyCoins(data, 'purple', -2, 'Workburden reward');
     } else if (data.workBurden < 0) {
       return await this.modifyCoins(data, 'purple', 1, 'Workburden reward');
+    }
+    
+    return [];
+  }
+
+  private async applyChoresCompletionReward(data: DisciplineData): Promise<CoinHistoryEntry[]> {
+    // If there are no chores left (all done) - add +2 random coins
+    // -- reason "Chores completion reward"
+    try {
+      const choresService = new ChoresService();
+      const allChores = await choresService.getChores('snake');
+      
+      // Check if there are any incomplete chores
+      const incompleteChores = allChores.filter(chore => !chore.is_done);
+      
+      if (incompleteChores.length === 0 && allChores.length > 0) {
+        // All chores are done and there are chores to begin with
+        return await this.modifyCoins(data, 'random', 2, 'Chores completion reward');
+      }
+    } catch (error) {
+      console.error('Error checking chores completion:', error);
     }
     
     return [];

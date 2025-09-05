@@ -104,6 +104,7 @@ export interface Chore {
   is_done: boolean;
   reoccurance_period?: number; // days, optional
   undone_from?: string; // ISO date string when chore should be undone
+  hasBeenRewarded?: boolean; // tracks if this completion cycle has been rewarded
   createdBy: string;
   createdAt: Date;
   updatedAt: Date;
