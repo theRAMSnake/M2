@@ -316,6 +316,15 @@ export class DisciplineService {
     await this.saveDisciplineData(data);
   }
 
+  async emptyPool(poolId: string): Promise<void> {
+    const data = await this.loadDisciplineData();
+    const pool = data.pools.find(p => p.id === poolId);
+    if (pool) {
+      pool.currentAmount = 0;
+      await this.saveDisciplineData(data);
+    }
+  }
+
   async getPools(): Promise<Pool[]> {
     const data = await this.loadDisciplineData();
     return data.pools;

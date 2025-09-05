@@ -231,6 +231,26 @@ router.delete('/pools/:poolId', async (req: AuthRequest, res) => {
   }
 });
 
+router.post('/pools/:poolId/empty', async (req: AuthRequest, res) => {
+  try {
+    const { poolId } = req.params;
+    
+    const service = new DisciplineService();
+    await service.emptyPool(poolId);
+    
+    res.json({
+      success: true,
+      message: 'Pool emptied successfully'
+    });
+  } catch (error) {
+    console.error('Error emptying pool:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to empty pool'
+    });
+  }
+});
+
 // Work Burden routes
 router.get('/workburden', async (req: AuthRequest, res) => {
   try {

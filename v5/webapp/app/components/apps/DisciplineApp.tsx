@@ -28,6 +28,7 @@ import {
   Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
+  Clear as ClearIcon,
   Psychology as PsychologyIcon,
   MonetizationOn as CoinsIcon,
   CardGiftcard as GiftIcon,
@@ -255,6 +256,32 @@ export function DisciplineApp() {
     }
   };
 
+  const emptyPool = async (poolId: string) => {
+    if (!confirm('Are you sure you want to empty this pool?')) {
+      return;
+    }
+
+    try {
+      const token = getAuthToken();
+      const response = await fetch(`/api/discipline/pools/${poolId}/empty`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to empty pool');
+      }
+
+      const result = await response.json();
+      fetchData();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to empty pool');
+    }
+  };
+
   const getCoinColorStyle = (color: string) => {
     const colorMap: Record<string, { backgroundColor: string; color: string }> = {
       red: { backgroundColor: '#ef4444', color: 'white' },
@@ -445,9 +472,9 @@ export function DisciplineApp() {
         </Button>
       </Box>
 
-      <Box display="flex" gap={3} sx={{ height: '80vh' }}>
+      <Box display="flex" gap={3} sx={{ minHeight: '80vh' }}>
         {/* Main Content - 75% width */}
-        <Box sx={{ flex: '0 0 75%', display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ flex: '0 0 75%', display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
           {/* Coins Section */}
       <Card sx={{ mb: 3 }}>
         <CardHeader
@@ -480,51 +507,44 @@ export function DisciplineApp() {
             ))}
           </Grid>
 
-                     <Divider sx={{ my: 2 }} />
+          <Divider sx={{ my: 3 }} />
 
-           <Box display="flex" justifyContent="center">
-             <Button
-               variant="contained"
-               onClick={() => setAddCoinsDialogOpen(true)}
-               startIcon={<AddIcon />}
-             >
-               Add Coins
-             </Button>
-           </Box>
+          <Box display="flex" justifyContent="center" gap={2}>
+            <Button
+              variant="outlined"
+              onClick={() => setAddCoinsDialogOpen(true)}
+              startIcon={<AddIcon />}
+            >
+              Add Coins
+            </Button>
+          </Box>
         </CardContent>
       </Card>
 
       {/* Coupons Section */}
-      <Card sx={{ mb: 3 }}>
-        <CardHeader
-          title={
-            <Box display="flex" alignItems="center" gap={1}>
-              <GiftIcon />
-              <Typography variant="h6">Coupons</Typography>
+      <Card sx={{ mb: 2 }}>
+        <CardContent sx={{ py: 2 }}>
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Box display="flex" alignItems="center" gap={2}>
+              <Typography variant="body1">
+                Next coupon: {data.nextCouponPrice} coins
+              </Typography>
+              <Chip 
+                label={data.nextCouponColor} 
+                size="small" 
+                sx={getCoinColorStyle(data.nextCouponColor)}
+              />
             </Box>
-          }
-        />
-                 <CardContent>
-           <Box display="flex" justifyContent="space-between" alignItems="center">
-             <Box display="flex" alignItems="center" gap={2}>
-               <Typography variant="body1">
-                 Next coupon: {data.nextCouponPrice} coins
-               </Typography>
-               <Chip 
-                 label={data.nextCouponColor} 
-                 size="small" 
-                 sx={getCoinColorStyle(data.nextCouponColor)}
-               />
-             </Box>
-             <Button
-               variant="contained"
-               onClick={buyCoupon}
-               disabled={!canEarnCoupon()}
-             >
-               Buy Coupon
-             </Button>
-           </Box>
-         </CardContent>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={buyCoupon}
+              disabled={!canEarnCoupon()}
+            >
+              Buy Coupon
+            </Button>
+          </Box>
+        </CardContent>
       </Card>
 
              {/* Pools Section */}
@@ -539,24 +559,12 @@ export function DisciplineApp() {
            ) : (
              <Grid container spacing={2} sx={{ mb: 3 }}>
                {data.pools.map(pool => (
-                 <Grid item xs={12} key={pool.id}>
-                   <Card variant="outlined">
-                     <CardContent>
-                       <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
-                         <Typography variant="h6">{pool.name}</Typography>
-                         <Box>
-                           <IconButton
-                             onClick={() => {
-                               setEditingPool(pool);
-                               setEditDialogOpen(true);
-                             }}
-                           >
-                             <EditIcon />
-                           </IconButton>
-                           <IconButton onClick={() => deletePool(pool.id)}>
-                             <DeleteIcon />
-                           </IconButton>
-                         </Box>
+                 <Grid item xs={12} sm={6} md={4} lg={2.4} key={pool.id}>
+                   <Card variant="outlined" sx={{ minHeight: '140px' }}>
+                     <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                       {/* Title occupying full width */}
+                       <Box sx={{ mb: 2 }}>
+                         <Typography variant="subtitle1" sx={{ fontWeight: 'bold', wordBreak: 'break-word', lineHeight: 1.2, width: '100%' }}>{pool.name}</Typography>
                        </Box>
                        <Box sx={{ mb: 1 }}>
                          <Box display="flex" justifyContent="space-between" sx={{ mb: 1 }}>
@@ -571,9 +579,31 @@ export function DisciplineApp() {
                            sx={{ height: 8, borderRadius: 4 }}
                          />
                        </Box>
-                       <Typography variant="body2" color="text.secondary">
+                       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                          Pool for storing earned coupons
                        </Typography>
+                       
+                       {/* Buttons at the bottom */}
+                       <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 'auto' }}>
+                         <IconButton size="small" sx={{ padding: '4px' }}
+                           onClick={() => {
+                             setEditingPool(pool);
+                             setEditDialogOpen(true);
+                           }}
+                         >
+                           <EditIcon sx={{ fontSize: '16px' }} />
+                         </IconButton>
+                         <IconButton size="small" sx={{ padding: '4px' }}
+                           onClick={() => emptyPool(pool.id)}
+                           disabled={pool.currentAmount === 0}
+                           title="Empty pool"
+                         >
+                           <ClearIcon sx={{ fontSize: '16px' }} />
+                         </IconButton>
+                         <IconButton size="small" sx={{ padding: '4px' }} onClick={() => deletePool(pool.id)}>
+                           <DeleteIcon sx={{ fontSize: '16px' }} />
+                         </IconButton>
+                       </Box>
                      </CardContent>
                    </Card>
                  </Grid>
@@ -596,8 +626,8 @@ export function DisciplineApp() {
        </Card>
         </Box>
 
-        {/* Notebook Section - 25% width, 50% height */}
-        <Box sx={{ flex: '0 0 25%', height: '50%' }}>
+        {/* Notebook Section - 25% width */}
+        <Box sx={{ flex: '0 0 25%', minHeight: '400px' }}>
           <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <CardHeader
               title={
