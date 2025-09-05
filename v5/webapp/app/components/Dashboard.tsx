@@ -33,6 +33,7 @@ import {
 } from '@mui/icons-material';
 import { MakeUpApp, DashboardApp, CalendarApp, ChoresApp, AdminApp, ShopListApp, StickiesApp, DbViewApp, DisciplineApp } from './apps';
 import { WorkBurdenCounter } from './WorkBurdenCounter';
+import { Statuses } from './Statuses';
 import { getAuthToken } from '../utils/auth';
 
 interface User {
@@ -289,7 +290,7 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
             Materia
           </Typography>
           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            v5.0.7
+            v5.0.8
           </Typography>
         </Box>
         
@@ -347,6 +348,7 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               {availableApps.find(app => app.id === currentApp)?.name || 'Dashboard'}
             </Typography>
+            <Statuses onAppClick={setCurrentApp} />
             {currentUser === 'snake' && <WorkBurdenCounter />}
             <Button color="inherit" onClick={onLogout} startIcon={<LogoutOutlined />}>
               Logout
