@@ -29,8 +29,10 @@ import {
   StickyNote2 as StickyIcon,
   Storage as DbViewIcon,
   CleaningServices as ChoresIcon,
+  Psychology as DisciplineIcon,
 } from '@mui/icons-material';
-import { MakeUpApp, DashboardApp, CalendarApp, ChoresApp, AdminApp, ShopListApp, StickiesApp, DbViewApp } from './apps';
+import { MakeUpApp, DashboardApp, CalendarApp, ChoresApp, AdminApp, ShopListApp, StickiesApp, DbViewApp, DisciplineApp } from './apps';
+import { WorkBurdenCounter } from './WorkBurdenCounter';
 import { getAuthToken } from '../utils/auth';
 
 interface User {
@@ -59,6 +61,7 @@ const APP_CONFIG = {
     { id: 'shoplist', name: 'Shop List', icon: ShoppingCartIcon },
     { id: 'stickies', name: 'Stickies', icon: StickyIcon },
     { id: 'dbview', name: 'DB Viewer', icon: DbViewIcon },
+    { id: 'discipline', name: 'Discipline', icon: DisciplineIcon },
   ],
   seva: [
     { id: 'makeup', name: 'Make Up', icon: MakeUpIcon },
@@ -209,6 +212,8 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
         return <StickiesApp />;
       case 'dbview':
         return <DbViewApp />;
+      case 'discipline':
+        return <DisciplineApp />;
       case 'dashboard':
       default:
         return <DashboardApp user={user} />;
@@ -284,7 +289,7 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
             Materia
           </Typography>
           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            v5.0.6
+            v5.0.7
           </Typography>
         </Box>
         
@@ -342,6 +347,7 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               {availableApps.find(app => app.id === currentApp)?.name || 'Dashboard'}
             </Typography>
+            {currentUser === 'snake' && <WorkBurdenCounter />}
             <Button color="inherit" onClick={onLogout} startIcon={<LogoutOutlined />}>
               Logout
             </Button>

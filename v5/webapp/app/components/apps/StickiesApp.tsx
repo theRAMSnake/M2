@@ -85,7 +85,7 @@ export function StickiesApp() {
       setLoading(true);
       setError(null);
       const token = getAuthToken();
-      const response = await fetch('/api/documents/shared/stickies', {
+      const response = await fetch('/api/stickies', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -112,7 +112,7 @@ export function StickiesApp() {
     try {
       setError(null);
       const token = getAuthToken();
-              const response = await fetch('/api/documents/shared/stickies', {
+      const response = await fetch('/api/stickies', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

@@ -43,6 +43,32 @@ router.get('/count', checkAuthorization, async (req: AuthRequest, res) => {
   }
 });
 
+// GET /api/stickies - Get stickies data
+router.get('/', checkAuthorization, async (req: AuthRequest, res) => {
+  try {
+    const stickiesDoc = await dbService.readDocument('/shared/stickies');
+    if (stickiesDoc) {
+      const stickiesData = typeof stickiesDoc === 'string' ? JSON.parse(stickiesDoc) : stickiesDoc;
+      sendSuccessResponse(res, stickiesData);
+    } else {
+      sendSuccessResponse(res, { stickies: [] });
+    }
+  } catch (error) {
+    handleServiceError(error, res, 'loading stickies');
+  }
+});
+
+// POST /api/stickies - Save stickies data
+router.post('/', checkAuthorization, async (req: AuthRequest, res) => {
+  try {
+    const stickiesData = req.body;
+    await dbService.writeDocument('/shared/stickies', stickiesData);
+    sendSuccessResponse(res, { message: 'Stickies saved successfully' });
+  } catch (error) {
+    handleServiceError(error, res, 'saving stickies');
+  }
+});
+
 // Temporary debug endpoint to see what's in the database
 router.get('/debug', checkAuthorization, async (req: AuthRequest, res) => {
   try {

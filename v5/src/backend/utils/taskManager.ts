@@ -1,6 +1,8 @@
 import { logger } from './logger';
 import { WasteCalendarFetcher } from './wasteCalendarFetcher';
 import { CalendarService } from '../apps/calendar/service';
+import { DatabaseService } from '../storage/database';
+import { DisciplineService } from '../apps/discipline/service';
 
 export interface TaskStatus {
   id: string;
@@ -222,33 +224,32 @@ export class IngestionTask extends BackgroundTask {
 }
 
 export class DailyUpdateTask extends BackgroundTask {
+  private dbService: DatabaseService;
+  private disciplineService: DisciplineService;
+
   constructor() {
     super('daily-update', 'Daily Update');
+    this.dbService = DatabaseService.getInstance();
+    this.disciplineService = new DisciplineService();
   }
 
   protected async run(): Promise<TaskResult> {
     try {
-      logger.info('Starting daily update task (no-op)');
+      logger.info('Starting daily update task');
       
-      // Simulate some progress
-      this.updateProgress(25);
-      await this.delay(500);
+      // Increment work burden (weekdays only)
+      await this.disciplineService.incrementWorkBurdenDaily();
       
-      this.updateProgress(50);
-      await this.delay(500);
+      // Apply daily modifiers (weekdays only)
+      await this.disciplineService.applyDailyModifiers();
       
-      this.updateProgress(75);
-      await this.delay(500);
-      
-      this.updateProgress(100);
-      logger.info('Daily update task completed successfully (no-op)');
+      logger.info('Daily update task completed successfully');
       
       return {
         success: true,
-        message: 'Daily update completed successfully (no-op)',
+        message: 'Daily update completed successfully',
         data: {
-          timestamp: new Date().toISOString(),
-          note: 'This is a placeholder task with no actual logic'
+          timestamp: new Date().toISOString()
         }
       };
     } catch (error) {
@@ -257,9 +258,6 @@ export class DailyUpdateTask extends BackgroundTask {
     }
   }
 
-  private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
 }
 
 export class TaskManager {
