@@ -118,3 +118,49 @@ export interface ChoreRequest {
   is_done: boolean;
   reoccurance_period?: number;
 }
+
+export interface JournalFolder {
+  id: string;
+  name: string;
+  path: string;
+  parentPath?: string;
+  createdBy: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface JournalPage {
+  id: string;
+  title: string;
+  content: string; // XHTML content
+  path: string;
+  parentPath: string;
+  createdBy: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface JournalFolderRequest {
+  id?: string;
+  name: string;
+  parentPath?: string;
+}
+
+export interface JournalPageRequest {
+  id?: string;
+  title: string;
+  content: string;
+  parentPath: string;
+}
+
+export interface JournalItem {
+  id: string;
+  name: string;
+  type: 'folder' | 'page';
+  path: string;
+  parentPath?: string;
+  createdBy: string;
+  createdAt: Date;
+  updatedAt: Date;
+  content?: string; // Only for pages
+}

@@ -38,7 +38,7 @@ export const createValidationMiddleware = (requiredFields: string[]) => {
     const data = req.body;
     
     for (const field of requiredFields) {
-      if (data[field] === undefined || data[field] === null || data[field] === '') {
+      if (data[field] === undefined || data[field] === null) {
         return res.status(400).json({ 
           error: 'Bad request',
           message: `Missing required field: ${field}`

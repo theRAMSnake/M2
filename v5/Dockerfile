@@ -21,6 +21,8 @@ COPY . .
 # Build the backend
 RUN npm run build:backend
 
+RUN cd webapp && npm ci && npm ls @tinymce/tinymce-react | cat && test -d node_modules/@tinymce/tinymce-react && echo OK
+
 # Build the webapp for production
 RUN cd webapp && npm run build
 

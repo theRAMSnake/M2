@@ -7,3 +7,4 @@ export { ShopListApp } from './ShopListApp';
 export { StickiesApp } from './StickiesApp';
 export { DbViewApp } from './DbViewApp';
 export { DisciplineApp } from './DisciplineApp';
+export { default as JournalApp } from './JournalApp';

@@ -1,6 +1,6 @@
 {
   "name": "materia-v5",
-  "version": "5.0.8",
+  "version": "5.0.9",
   "description": "Materia v5 - Simplified architecture with SQLite backend",
   "main": "dist/backend/server.js",
   "scripts": {

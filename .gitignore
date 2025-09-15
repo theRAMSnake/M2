@@ -6,3 +6,18 @@ Desktop/build-Desktop-Desktop-Debug
 WebApp2/node_modules
 WebApp2/client/dist
 CMakeLists.txt
+
+# v5 specific exclusions
+v5/node_modules/
+v5/webapp/node_modules/
+v5/dist/
+v5/webapp/.next/
+v5/webapp/out/
+v5/webapp/build/
+v5/data/
+v5/logs/
+v5/backups/
+v5/*.log
+v5/.env*
+v5/coverage/
+v5/*.tsbuildinfo

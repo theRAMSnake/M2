@@ -75,7 +75,7 @@ export function DisciplineApp() {
   const [error, setError] = useState<string | null>(null);
 
   // Form states
-  const [addCoinColor, setAddCoinColor] = useState<string>('red');
+  const [addCoinColor, setAddCoinColor] = useState<string>('random');
   const [addCoinAmount, setAddCoinAmount] = useState<number>(1);
   const [newPoolName, setNewPoolName] = useState<string>('');
   const [newPoolMaxAmount, setNewPoolMaxAmount] = useState<number>(10);

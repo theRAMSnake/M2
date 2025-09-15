@@ -15,6 +15,7 @@ import choresRoutes from './apps/chores/routes';
 import adminRoutes from './apps/admin/routes';
 import stickiesRoutes from './apps/stickies/routes';
 import disciplineRoutes from './apps/discipline/routes';
+import journalRoutes from './apps/journal/routes';
 import { backupRoutes } from './routes/backup';
 import { logger } from './utils/logger';
 import { TaskScheduler } from './utils/taskScheduler';
@@ -91,7 +92,7 @@ class MateriaV5Server {
       res.json({
         status: 'ok',
         timestamp: new Date().toISOString(),
-        version: '5.0.7'
+        version: '5.0.9'
       });
     });
 
@@ -124,6 +125,9 @@ class MateriaV5Server {
     // Discipline app routes (authentication required, snake user only)
     apiRouter.use('/discipline', this.authMiddleware.authenticate as any, disciplineRoutes);
 
+    // Journal app routes (authentication required)
+    apiRouter.use('/journal', this.authMiddleware.authenticate as any, journalRoutes);
+
     // Backup routes (authentication required)
     apiRouter.use('/backup', this.authMiddleware.authenticate as any, backupRoutes);
 
@@ -131,7 +135,7 @@ class MateriaV5Server {
     apiRouter.get('/', (req, res) => {
       res.json({
         name: 'Materia V5 API',
-        version: '5.0.7',
+        version: '5.0.9',
         endpoints: {
           auth: '/auth',
           documents: '/documents',
@@ -141,6 +145,7 @@ class MateriaV5Server {
           admin: '/admin',
           stickies: '/stickies',
           discipline: '/discipline',
+          journal: '/journal',
           backup: '/backup',
           health: '/health'
         }
@@ -153,7 +158,7 @@ class MateriaV5Server {
     this.app.get('/api/describe', (req, res) => {
       res.json({
         strategy_node: true,
-        version: '5.0.7',
+        version: '5.0.9',
         message: 'Materia V5 - Legacy compatibility mode'
       });
     });

@@ -30,8 +30,9 @@ import {
   Storage as DbViewIcon,
   CleaningServices as ChoresIcon,
   Psychology as DisciplineIcon,
+  Book as JournalIcon,
 } from '@mui/icons-material';
-import { MakeUpApp, DashboardApp, CalendarApp, ChoresApp, AdminApp, ShopListApp, StickiesApp, DbViewApp, DisciplineApp } from './apps';
+import { MakeUpApp, DashboardApp, CalendarApp, ChoresApp, AdminApp, ShopListApp, StickiesApp, DbViewApp, DisciplineApp, JournalApp } from './apps';
 import { WorkBurdenCounter } from './WorkBurdenCounter';
 import { Statuses } from './Statuses';
 import { getAuthToken } from '../utils/auth';
@@ -63,6 +64,7 @@ const APP_CONFIG = {
     { id: 'stickies', name: 'Stickies', icon: StickyIcon },
     { id: 'dbview', name: 'DB Viewer', icon: DbViewIcon },
     { id: 'discipline', name: 'Discipline', icon: DisciplineIcon },
+    { id: 'journal', name: 'Journal', icon: JournalIcon },
   ],
   seva: [
     { id: 'makeup', name: 'Make Up', icon: MakeUpIcon },
@@ -70,6 +72,7 @@ const APP_CONFIG = {
     { id: 'chores', name: 'Chores', icon: ChoresIcon },
     { id: 'shoplist', name: 'Shop List', icon: ShoppingCartIcon },
     { id: 'stickies', name: 'Stickies', icon: StickyIcon },
+    { id: 'journal', name: 'Journal', icon: JournalIcon },
   ],
 };
 
@@ -215,6 +218,8 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
         return <DbViewApp />;
       case 'discipline':
         return <DisciplineApp />;
+      case 'journal':
+        return <JournalApp userId={user.id} />;
       case 'dashboard':
       default:
         return <DashboardApp user={user} />;
@@ -290,7 +295,7 @@ export function Dashboard({ user, onLogout, currentUser }: DashboardProps) {
             Materia
           </Typography>
           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            v5.0.8
+            v5.0.9
           </Typography>
         </Box>
         

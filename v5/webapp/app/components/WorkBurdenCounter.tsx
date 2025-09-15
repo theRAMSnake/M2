@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
   Box, 
   Typography, 
@@ -29,6 +29,7 @@ export function WorkBurdenCounter() {
   const [error, setError] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [decreaseAmount, setDecreaseAmount] = useState<number>(0);
+  const decreaseInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     loadWorkBurden();
@@ -108,6 +109,17 @@ export function WorkBurdenCounter() {
     if (workBurden <= 320) return 'warning.main';
     return 'error.main';
   };
+
+  // Focus the input when dialog opens
+  useEffect(() => {
+    if (dialogOpen) {
+      const id = setTimeout(() => {
+        decreaseInputRef.current?.focus();
+        decreaseInputRef.current?.select();
+      }, 50);
+      return () => clearTimeout(id);
+    }
+  }, [dialogOpen]);
 
   if (loading) {
     return (
@@ -190,6 +202,14 @@ export function WorkBurdenCounter() {
               inputProps={{ min: 1 }}
               placeholder="Enter amount to decrease"
               sx={{ mb: 2 }}
+              autoFocus
+              inputRef={decreaseInputRef}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleDecrease();
+                }
+              }}
             />
 
             <Typography variant="body2" color="text.secondary">

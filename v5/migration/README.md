@@ -27,20 +27,30 @@ The script follows this process:
 
 ## Usage
 
-### Basic Usage
+### Business Event Migration
 
 ```bash
 python migrate.py /path/to/old/database.db /path/to/new/database.db
 ```
 
-### Example
+### Journal Migration
 
 ```bash
-# Migrate from old database to new v5 database
+python migrate_journal.py /path/to/old/database.db /path/to/new/database.db
+```
+
+### Examples
+
+```bash
+# Migrate business events from old database to new v5 database
 python migrate.py "C:\infra\materia.bu1755644404.375228" "C:\M2\v5\data\materia-v5.db"
+
+# Migrate journal data from old database to new v5 database
+python migrate_journal.py "C:\infra\materia.bu1755644404.375228" "C:\M2\v5\data\materia-v5.db"
 
 # Or with relative paths
 python migrate.py ../data/old-materia.db ./data/materia-v5.db
+python migrate_journal.py ../data/old-materia.db ./data/materia-v5.db
 ```
 
 ### Command Line Options
@@ -59,13 +69,26 @@ Currently supports migration of:
 
 ### BusinessEvent
 - **Source**: All children of the 'finance' materia object in the old database
-- **Destination**: `/migrated/business_events/{event_id}` in the new database
+- **Destination**: `/seva/business_events/{event_id}` in the new database
 - **Fields**: 
   - `id`: Unique identifier (auto-generated if missing)
   - `date`: Event date
   - `amount`: Financial amount (in euros)
   - `category`: Event category ('Client A', 'Client B', 'Ads cost', 'Other cost')
   - `description`: Optional description
+
+### Journal Data
+- **Source**: `journal_header` and `journal_content` objects with hierarchical relationships
+- **Destination**: `/seva/journal/{path}` in the new database
+- **Fields**:
+  - `id`: Unique identifier from old system
+  - `name`/`title`: Journal item name/title
+  - `type`: 'folder' or 'page'
+  - `path`: Hierarchical path structure
+  - `parentPath`: Parent folder path
+  - `content`: Rich text content (for pages only)
+  - `createdBy`: User ID (default: 'seva')
+  - `createdAt`/`updatedAt`: Timestamps
 
 ## Migration Process
 
@@ -123,6 +146,30 @@ To add support for additional data types:
 4. Add the migration call to the `run_migration` method
 5. Update this README with the new supported type
 
+## Testing
+
+### Test Journal Migration
+
+Run the test script to verify journal migration functionality:
+
+```bash
+python test_journal_migration.py
+```
+
+This will:
+- Create sample old database with journal data
+- Run the migration process
+- Verify the results
+- Clean up temporary files
+
+### Test Business Event Migration
+
+Run the existing test script:
+
+```bash
+python test_migration.py
+```
+
 ## Troubleshooting
 
 ### Common Issues
@@ -139,11 +186,20 @@ To add support for additional data types:
    - Data may not match the BusinessEvent format
    - Check the old database structure and data format
 
+4. **"No journal_header objects found"**
+   - The old database may not contain journal data
+   - Check if the database has the expected journal structure
+
+5. **"No journal items were migrated"**
+   - Journal data may not match the expected format
+   - Check the old database structure and connection relationships
+
 ### Debug Mode
 
 Use the `--verbose` flag for additional debugging information:
 ```bash
 python migrate.py old.db new.db --verbose
+python migrate_journal.py old.db new.db --verbose
 ```
 
 ## Security Notes
